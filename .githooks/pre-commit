@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
-# .githooks/pre-commit — runs all six quality layers locally.
+# .githooks/pre-commit — runs all six quality layers on every commit.
 #
 # Layers: L1 syntax/DOM · L2 visual · L3 W3C/a11y · L4 pedagogy ·
 #         L5 semantic provenance · L6 graph/privacy.
 #
+# Scope: files staged for commit when lesson HTML changed; the whole corpus
+# otherwise, so every commit gets the full ladder.
+#
 # Default posture is report-only so concurrent authoring never deadlocks.
 # Set CHECK_LESSONS_STRICT=1 to make findings block the commit.
+#
+# Install once per clone: git config core.hooksPath .githooks
 
 set -o pipefail
-
-STAGED_HTML=$(git diff --cached --name-only --diff-filter=ACM -- 'lessons/*.html' 'index.html' || true)
-
-if [ -z "$STAGED_HTML" ]; then
-    exit 0
-fi
 
 python3 -I tools/run_layers.py --staged
 exit $?

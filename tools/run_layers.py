@@ -52,15 +52,20 @@ def main() -> int:
 
     if explicit:
         targets = [os.path.relpath(p, ROOT) if os.path.isabs(p) else p for p in explicit]
+        scope = 'explicit'
     else:
         targets = staged_targets() if staged else all_targets()
+        scope = 'staged' if staged and targets else 'corpus'
+        if staged and not targets:
+            # Every commit runs all six layers; with no lesson edits, sweep the corpus.
+            targets = all_targets()
+            scope = 'corpus (no lesson changes staged)'
     if not targets:
-        print('No lesson HTML changes to check.')
+        print('No lesson HTML files found.')
         return 0
 
     lesson_targets = [t for t in targets if t.startswith('lessons/')]
-    print(f'Running 6 local quality layers on {len(targets)} file(s)'
-          f'{" (staged)" if staged else ""}\n')
+    print(f'Running 6 local quality layers on {len(targets)} file(s) [{scope}]\n')
 
     results: list[tuple[str, int, str]] = []
 
