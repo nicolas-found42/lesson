@@ -419,12 +419,12 @@ def main() -> int:
             for e in errs:
                 print(f'  [ERROR] {e}')
                 total_errors += 1
+            total_warnings += len(warns)
             for w in warns:
                 print(f'  [WARN]  {w}')
-                total_warnings += 1
         elif warns:
             print(f'OK   {base} ({len(warns)} warnings)')
-            total_warnings += 1
+            total_warnings += len(warns)
         else:
             print(f'OK   {base}')
 
