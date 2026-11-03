@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anatomy of a web page</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 0 · Orientation · Lesson 0.8</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 0 · Lesson 0.8</p>
+  <h1>Anatomy of a web page</h1>
+  <p class="lede">Every page you ship is a small set of text files. One holds the words, one holds the look, one holds the behaviour. Learn to tell them apart and you can point your agent at the right one.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0003-your-project-is-a-folder.html">0.3 Your project is a folder</a></span><span>Win: you can name which file does which job</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Sooner or later a page will look wrong: a heading in the wrong colour, a button that does nothing, a picture that refuses to appear. If you cannot tell which file owns which job, the only thing you can say is "the page is broken". That sends your agent hunting through the whole folder. If you can say "the words are right but the colours are wrong", you have already halved the search, and you can check the result yourself.</p>
+
+<h2>Three languages, three jobs</h2>
+<p>A web page is built from three kinds of text file. They are usually described as three languages, though only one of them is a programming language in the usual sense.</p>
+<ul>
+  <li><strong>HTML</strong> carries the structure and the content: headings, paragraphs, lists, pictures, links, buttons. MDN's glossary calls it <q>a descriptive language that specifies webpage structure.</q><sup class="cite"><a href="#src-html">[1]</a></sup> "Descriptive" is the key word. You are labelling what each piece of text <em>is</em>, not telling the browser to compute anything.</li>
+  <li><strong>CSS</strong> carries the look: colours, fonts, spacing, size, position. MDN defines it as <q>a declarative language that controls how webpages look in the browser.</q><sup class="cite"><a href="#src-css">[2]</a></sup> The same HTML can look like a newspaper, a shop or a game menu, purely by changing CSS.</li>
+  <li><strong>JavaScript</strong> carries the behaviour: what happens when someone clicks, types or waits. MDN describes it as <q>a programming language used most often for dynamic client-side scripts on webpages.</q><sup class="cite"><a href="#src-js">[3]</a></sup> It can also change the page while you look at it.</li>
+</ul>
+<span class="sidenote">MDN calls HTML, CSS and JavaScript the three core web technologies, and notes that CSS usually styles HTML.<sup class="cite"><a href="#src-css">[2]</a></sup> That is the relationship to hold on to: HTML first, the other two attached to it.</span>
+<p>A useful picture: HTML is the skeleton and the words, CSS is the skin and clothing, JavaScript is the muscles that move things. A page can exist with only HTML. It can look finished with HTML and CSS. It only reacts to you once JavaScript is there.</p>
+
+<h2>The browser assembles the page from named files</h2>
+<p>You do not paste the CSS and JavaScript into every page by hand. The HTML file <em>names</em> them, and the browser fetches each one and applies it. MDN's beginner tutorial puts the CSS link inside the page's head, the part of the file that describes the page rather than displaying it.<sup class="cite"><a href="#src-style">[5]</a></sup> For JavaScript, MDN explains that the script element <q>applies the JavaScript to the page so it can affect the HTML</q>.<sup class="cite"><a href="#src-interact">[6]</a></sup></p>
+<p>Those names are paths, and paths are where beginners get hurt. MDN's file-structure guide gives the rule plainly: <q>To link to a target file in the same folder as the invoking HTML file, just use the filename.</q><sup class="cite"><a href="#src-files">[7]</a></sup> If your page asks for <code>style.css</code> and the file is really called <code>styles/style.css</code>, the browser does not stop and complain loudly. It simply draws the page without that styling.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user published a small gallery. On their own machine it had a dark background, tidy cards and working buttons. At the public address, the same page appeared as plain black text on white, and the buttons did nothing. The HTML was fine. It was asking for its stylesheet and its script at paths that only existed on the user's computer. The files had travelled to the host; the directions to them had not. The agent repointed both links relative to the page, and the gallery came back.</p>
+</div>
+<p>This is the most common "it worked yesterday" surprise on the way to a live site, and it has nothing to do with the quality of the design. A page is a bundle of files that must find each other.</p>
+
+<h2>A worked example: one invitation, three files</h2>
+<p>Here is a complete little page in a folder called <code>invite</code>. The front page holds the words, a heading and a button.</p>
+<pre><code>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;Saturday lunch&lt;/title&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Saturday lunch&lt;/h1&gt;
+  &lt;p id="count"&gt;Bringing: 0&lt;/p&gt;
+  &lt;button id="add"&gt;Count me in&lt;/button&gt;
+  &lt;script src="script.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>The head names <code>style.css</code>. That file decides how the heading and button look:</p>
+<pre><code>h1 { color: darkred; }
+button { font-size: 1.2rem; padding: 0.6rem 1rem; }</code></pre>
+<p>The script at the end of the body names <code>script.js</code>. That file makes the button count:</p>
+<pre><code>let n = 0;
+const label = document.getElementById("count");
+document.getElementById("add").addEventListener("click", () =&gt; {
+  n = n + 1;
+  label.textContent = "Bringing: " + n;
+});</code></pre>
+
+<table class="ref">
+  <thead><tr><th>What you see</th><th>Which file to open</th></tr></thead>
+  <tbody>
+    <tr><td>Wrong words, missing heading, a link going nowhere</td><td><code>index.html</code></td></tr>
+    <tr><td>Right words, ugly colours, cramped spacing, tiny text</td><td><code>style.css</code></td></tr>
+    <tr><td>A button that does nothing, a counter stuck at zero</td><td><code>script.js</code></td></tr>
+  </tbody>
+</table>
+<p>Notice what is <em>not</em> in the table: taste. All three files can be correct and the page still unattractive. That is a design decision, not a bug, and it is yours to make.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Close your eyes. Name the three languages, one job each, and say which file the browser reads first. Then say what happens if <code>style.css</code> is missing.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>HTML</strong> gives structure and content, <strong>CSS</strong> gives appearance, <strong>JavaScript</strong> gives behaviour. The browser reads the HTML file first, then fetches the files it names. If the stylesheet cannot be found, the page still appears, but unstyled.</p></div>
+</div>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in the practice folder from lesson <a href="0007-first-prompt-to-a-page.html">0.7</a>, with approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</label></li>
+    <li><label><input type="checkbox"> Ask: "List every file that makes up the page at this address, and say in one line what each file does."</label></li>
+    <li><label><input type="checkbox"> Ask: "Change only the main heading's colour, and tell me which file you edited and which line."</label></li>
+    <li><label><input type="checkbox"> Approve, reload the page in your browser, and check that only the colour changed.</label></li>
+  </ol>
+  <div class="expect"><p>You should get a short file list naming the HTML page and any stylesheet or script it uses, not a tour of the whole folder. The colour change should be reported as an edit to the CSS file (or to a style block inside the HTML), with a line number. If the agent instead rewrote the whole page, ask it to restore the file and make the one-line change. That answer tells you whether it understands the anatomy too.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">The words on your page are correct, but every colour is wrong. Which file most likely needs the edit?</p>
+  <button class="opt" type="button">The stylesheet file, which sets the colours and spacing.</button>
+  <button class="opt" type="button">The HTML file, which sets the headings and the words.</button>
+  <button class="opt" type="button">The script file, which sets the clicking and the counting.</button>
+  <button class="opt" type="button">The image file, which sets the background and the texture.</button>
+  <div class="why"><p>Colours and spacing belong to CSS. Changing HTML would change the words or structure, and JavaScript would change behaviour.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which sentence best describes what the HTML file does for a page?</p>
+  <button class="opt" type="button">It gives the page its colours and its spacing.</button>
+  <button class="opt" type="button">It gives the page its structure and its text.</button>
+  <button class="opt" type="button">It gives the page its clicks and its updates.</button>
+  <button class="opt" type="button">It gives the page its files and its folders.</button>
+  <div class="why"><p>HTML labels content: this is a heading, this is a paragraph, this is a button. CSS handles appearance and JavaScript handles behaviour.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A button appears correctly but nothing happens when you click it. Where do you look first?</p>
+  <button class="opt" type="button">In the HTML file that declares the button tag.</button>
+  <button class="opt" type="button">In the CSS file that styles the button shape.</button>
+  <button class="opt" type="button">In the JavaScript file that listens for clicks.</button>
+  <button class="opt" type="button">In the image file that draws the button icon.</button>
+  <div class="why"><p>The button is on screen, so HTML and CSS did their jobs. Reacting to a click is behaviour, which is JavaScript's job, though a broken script path can also be the cause.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Your_first_website/Creating_the_content">MDN: HTML — Creating the content</a>. It builds one small page from an empty file, then adds styling and interactivity in the next two articles. You do not need to type along; read the first section and look at how the files refer to each other.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Ask the agent that gave you this course. Try: <em>"Show me the head and body of my page and explain each line in plain words"</em> or <em>"My page lost its styling. Which link should we check first, and what should it say?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-html">MDN contributors, <a href="https://developer.mozilla.org/en-US/docs/Glossary/HTML">HTML (Glossary)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-css">MDN contributors, <a href="https://developer.mozilla.org/en-US/docs/Glossary/CSS">CSS (Glossary)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-js">MDN contributors, <a href="https://developer.mozilla.org/en-US/docs/Glossary/JavaScript">JavaScript (Glossary)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-content">MDN contributors, <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Your_first_website/Creating_the_content">HTML: Creating the content</a>. Retrieved 2026-11-02.</li>
+  <li id="src-style">MDN contributors, <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Your_first_website/Styling_the_content">CSS: Styling the content</a>. Retrieved 2026-11-02.</li>
+  <li id="src-interact">MDN contributors, <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Your_first_website/Adding_interactivity">JavaScript: Adding interactivity</a>. Retrieved 2026-11-02.</li>
+  <li id="src-files">MDN contributors, <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Environment_setup/Dealing_with_files">Dealing with files</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name the three files behind a page, say what each one does, and point your agent at the right one when something looks or behaves wrong.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/setup.html">Setup</a></p>
+  <div class="pager"><a href="0007-first-prompt-to-a-page.html">Previous: First prompt to a page</a> · <a href="0012-static-vs-dynamic.html">Next: Static vs dynamic</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

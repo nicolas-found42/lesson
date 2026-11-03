@@ -22,7 +22,7 @@
 
 <h2>What a batch yes actually says</h2>
 <p>It says: <em>I have read your list, and I accept every recommended answer in it except the ones I name.</em> The reading is part of the sentence. Because each question already carries a recommendation with a one-line reason, the list is designed to be decided in one pass — Anthropic describes the interview as <q>multiple-choice questions about the parts you haven’t pinned down</q>.<sup class="cite"><a href="#src-a1">[1]</a></sup> OpenAI's guidance asks for the same exchange, with the agent told to <q>challenge your assumptions</q> before any code is written.<sup class="cite"><a href="#src-b1">[2]</a></sup></p>
-<p>So a batch yes is a decision about the recommendations, not a surrender of judgement. The recommendations cover cost, effort and ordinary defaults — the kind of thing an agent is better placed to choose than you are. Anthropic's own style documentation makes this split explicit: one built-in style has the agent <q>make reasonable assumptions rather than asking about routine decisions</q>, while leaving the exceptional cases to a separate check.<sup class="cite"><a href="#src-a2">[3]</a></sup> Your batch yes is that idea, applied to a list you can read.</p>
+<p>So a batch yes is a decision about the recommendations, not a surrender of judgement. The recommendations cover cost, effort and ordinary defaults — the kind of thing an agent is better placed to choose than you are. Anthropic's own style documentation makes this split explicit: one built-in style has the agent <q>reasonable assumptions rather than asking about routine decisions</q>, while leaving the exceptional cases to a separate check.<sup class="cite"><a href="#src-a2">[3]</a></sup> Your batch yes is that idea, applied to a list you can read.</p>
 
 <h2>The three parts of a batch yes</h2>
 <p>A good reply to a long interview has the same three parts every time.</p>
@@ -76,6 +76,23 @@
   <p>Accept in bulk, amend by number, ask for the read-back, and never let the batch yes stand in for an approval prompt. Two amendments in a one-line reply is normal. Seven amendments means you wanted a conversation, not a batch.</p>
 </div>
 
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Questions can arrive through Claude Code's built-in ask tool, which is listed among the tools that always need your input.<sup class="cite"><a href="#src-a4">[4]</a></sup> Answering in the chat works the same way: type the batch reply and let the tool or the chat record it.</p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Codex can plan first: its Plan mode <q>lets Codex gather context, ask clarifying questions, and build a stronger plan before implementation.</q><sup class="cite"><a href="#src-b1">[2]</a></sup> The numbered list you are accepting usually appears there, before any edit.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>omp may show the questions as a dialog: arrows move, Enter chooses, Space toggles a multi-select, and <q>the Other row</q> lets you <q>type a custom answer</q>.<sup class="cite"><a href="#src-c1">[5]</a></sup> Escape cancels rather than guesses.</p>
+  </div>
+</div>
+
 <h2>Do it in your own session</h2>
 <p>Use the interview you already have, or ask for a fresh one on any small goal. The point of this exercise is the reply, not the questions.</p>
 <div class="doit">
@@ -108,18 +125,18 @@
 <div class="quiz" data-correct="2">
   <span class="label">Question 1 of 3</span>
   <p class="q">You receive fourteen numbered questions, each with a recommended answer. What makes "yes to all" a real decision?</p>
-  <button class="opt" type="button">You send it quickly, then check the result much later on.</button>
-  <button class="opt" type="button">You ask the same agent to answer every question by itself now.</button>
-  <button class="opt" type="button">You read the list and name any exceptions in the same reply.</button>
-  <button class="opt" type="button">You answer only the questions that really look technical enough.</button>
+  <button class="opt" type="button">You send it quickly and check the result much later.</button>
+  <button class="opt" type="button">You ask the same agent to answer each question itself.</button>
+  <button class="opt" type="button">You read the list and name exceptions in the reply.</button>
+  <button class="opt" type="button">You answer only questions that seem more technical right now.</button>
   <div class="why"><p>The acceptance is only a decision if it was read and, where needed, amended. The exceptions are what make the batch yours rather than the agent's.</p></div>
 </div>
 <div class="quiz" data-correct="0">
   <span class="label">Question 2 of 3</span>
   <p class="q">Which question should you answer by name instead of folding it into the batch?</p>
-  <button class="opt" type="button">One that permanently deletes the drafts that your friends made.</button>
-  <button class="opt" type="button">One that picks a font size for the main heading.</button>
-  <button class="opt" type="button">One that names the folder where the app source lives.</button>
+  <button class="opt" type="button">One that deletes the drafts that your friends had made.</button>
+  <button class="opt" type="button">One that picks the size for the main heading text.</button>
+  <button class="opt" type="button">One that names the folder holding the app source files.</button>
   <button class="opt" type="button">One that chooses a light grey colour for the background.</button>
   <div class="why"><p>Deleting other people's work is irreversible and shared. Font sizes, folder names and background colours are ordinary defaults that a batch yes can safely carry.</p></div>
 </div>
@@ -128,7 +145,7 @@
   <p class="q">The read-back lists thirteen decisions but one of your two amendments is missing. What is the best next move?</p>
   <button class="opt" type="button">Accept the spec and fix the behaviour after the build.</button>
   <button class="opt" type="button">Start a new session and repeat all of the questions.</button>
-  <button class="opt" type="button">Assume that the missing amendment was silently recorded for you.</button>
+  <button class="opt" type="button">Assume that the amendment was recorded quietly by the agent.</button>
   <button class="opt" type="button">Say which amendment is missing and ask it to restate.</button>
   <div class="why"><p>The read-back exists to catch exactly this. Naming the gap costs one sentence now; discovering it after the build costs a change to working code.</p></div>
 </div>
@@ -149,6 +166,7 @@
   <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>, "Brainstorm with Claude first". Retrieved 2026-11-02.</li>
   <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>, "Plan first for difficult tasks". Retrieved 2026-11-02.</li>
   <li id="src-a2">Anthropic, <a href="https://code.claude.com/docs/en/output-styles">Output styles</a> (Proactive style: routine assumptions and the separate destructive-action check). Retrieved 2026-11-02.</li>
+  <li id="src-a4">Anthropic, <a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a> (tools that require user interaction). Retrieved 2026-11-02.</li>
   <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a> (question dialog, the "Other" row, Escape). Retrieved 2026-11-02. Single-vendor source.</li>
 </ol>
 </main>

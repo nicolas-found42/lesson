@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A reference is a spec</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 1 · Telling the agent what you want · Lesson 1.8</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.8</p>
+  <h1>A reference is a spec</h1>
+  <p class="lede">"Make it feel like this" is a target. "Make it nice" is a guess. Point at something that already exists, say which parts you mean, and your own last working version becomes the bar for everything after it.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0016-goal-audience-not-method.html">1.1 Goal and audience, not method</a></span><span>Win: you can turn a taste into something the agent can hit</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Lesson 1.1 gave you a goal and an audience. Those say what should exist and who it is for. They do not say what "clean", "smooth" or "professional" mean to you. Those words live in your head, and the agent fills them with an average of everything it has seen. The page then satisfies the sentence and disappoints the person. A reference closes that gap: you point at something that already exists and say which parts of it you mean.</p>
+
+<h2>Adjectives are guesses; a reference is a target</h2>
+<p>"Make the menu look modern" is not a specification. "Make the menu look like this screen, with the same wide margins and the same large photo, but without the ad banner" is. The second sentence gives the agent something outside your head to aim at, and it gives you something to point at when the result is wrong.</p>
+<div class="compare">
+  <div class="bad"><span class="label">Only adjectives</span><p>"Make the recipe page look clean and modern, and make it feel friendly."</p></div>
+  <div class="good"><span class="label">Named reference, named parts</span><p>"Copy the wide margins and the big photo from this screen. Skip its ad banner and its sign-up box. Keep my text and my colours."</p></div>
+</div>
+<p>The weak version leaves every decision open, so the agent picks its favourites and you correct it by feel. The strong version still leaves room: the agent chooses the typeface, the spacing scale, the exact sizes. It closes only the decisions you actually cared about, which is the point of a <span class="term" title="An existing page or app, named or shown, whose specific qualities you ask the agent to match.">reference</span>.</p>
+
+<h2>Three parts of a usable reference</h2>
+<ol>
+  <li><strong>The thing itself.</strong> One named screen, app or page. Not a company, not a whole product, not "the web".</li>
+  <li><strong>The parts to copy.</strong> The qualities you can see and name: margin width, photo size, number of columns, where the button sits, how much space is between lines.</li>
+  <li><strong>The parts to skip.</strong> Its colours, its ads, its account flow, its wording, its logo. Anything you do not want arriving with the rest.</li>
+</ol>
+<p>Anthropic's prompting guide makes the general case: <q>Examples are one of the most reliable ways to steer Claude’s output format, tone, and structure.</q> It also asks that examples <q>Mirror your actual use case closely.</q><sup class="cite"><a href="#src-p1">[1]</a></sup> A reference is an example you did not have to write.</p>
+<span class="sidenote">This is why "make it feel like a big popular app" fails. It names a brand, not a behaviour, so the agent copies whatever it remembers about that brand, which may not be the part you meant.</span>
+<p>Claude Code's best-practices page shows the same move with a design image: <q>build the settings page from the mockup</q>. Then it adds what the picture alone cannot say, <q>not just the layout</q>, and lists the states and flows it wants.<sup class="cite"><a href="#src-a7">[2]</a></sup> The picture sets the target; the sentence sets the boundary.</p>
+<p>Codex's guide calls this slot "Context" and asks <q>Which files, folders, docs, examples, or errors matter</q> for the task.<sup class="cite"><a href="#src-b7">[3]</a></sup> A reference is context you chose on purpose. Nothing about the agent changes: it still decides the steps.</p>
+
+<h2>Both of you have to be able to see it</h2>
+<p>A reference you can only name is weaker than one you can show. If the target is a screen you use, capture it and hand over the picture. Claude Code's guide is direct about this: <q>paste the screenshot of the design or the error into the prompt.</q><sup class="cite"><a href="#src-a7">[2]</a></sup> The agent can then look at the same pixels you are looking at.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Paste the image straight into the prompt. Anthropic documents pasting images, and warns that a pasted image path can be blocked by a read rule, in which case the path stays as text.<sup class="cite"><a href="#src-a7">[2]</a></sup> If the picture does not appear in the prompt, say so and attach it again.</p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>The CLI takes an image with the first message: <code>codex --image</code>. OpenAI describes it as a way to <q>Pass an error screenshot, architecture diagram, or design reference with the first prompt</q>.<sup class="cite"><a href="#src-b1">[4]</a></sup> In the app, paste the picture into the composer instead.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p><q>Paste with Ctrl + V</q>, or drag the file in, or mention it by path such as <code>@path/to/image.png</code>.<sup class="cite"><a href="#src-c1">[5]</a></sup> omp's documentation is written only by its own authors, so check anything that surprises you against what you see on screen.</p>
+  </div>
+</div>
+<span class="sidenote">Lesson 1.9 covers screenshots as evidence of a bug, taken after the work exists. Here the picture is a target, handed over before any work starts.</span>
+<p>Sometimes you cannot show it: the app is on a phone you cannot capture, or it is a paper menu on a café wall. Then describe the reference in things you can count. "Three columns, a photo that fills the top half, one button per row, no more than six words per line" survives the trip into the agent's hands. "Cosy and inviting" does not.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three parts of a usable reference, and say why a brand name on its own is not one.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The thing itself (one named screen), the parts to copy, and the parts to skip. A brand name is not enough because it names no behaviour, so the agent copies whatever it remembers, which may be the wrong part.</p></div>
+</div>
+
+<h2>Your own accepted version is the calmest reference</h2>
+<p>A reference from outside answers "what should this feel like?" A second kind of target answers "how good is good enough, this time?" Call it a <span class="term" title="A version of your own work that you already accepted, kept, and use as the minimum bar for later work.">baseline</span>: a version you already looked at, liked and kept. It is the least ambiguous reference you will ever have, because it is made of your own content, at your own size, on your own screen.</p>
+<p>The sentence that does the work is short: <em>at or above v1</em>. It says three things at once. There is a version called v1. It is the minimum. Everything new is measured against it, not against a fresh opinion. Without that sentence, a request for six more pages or six more items is six separate guesses that each look fine alone.</p>
+<p>Codex's guide puts this in the fourth slot of its prompt template: <q>What should be true before the task is complete</q>. It adds that the agent can run the check loop <q>only if it knows what “good” looks like</q>.<sup class="cite"><a href="#src-b7">[3]</a></sup> A baseline is the cheapest way to tell it.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user building a small catalog had one detail page they were happy with. The photo filled the top half of the screen, the price sat beside the name, and the button stayed put when the description grew long. They then asked for six more pages. Each new page looked reasonable on its own; side by side, the prices had drifted, two buttons were a different height, and one page had gone to two columns on a phone. The next message was four words: "at or above the first one." The agent turned the accepted page into a short list of traits, checked all six against it, and reworked two of them.</p>
+</div>
+<p>Nothing in that second message described a design. It named a version and a direction. That is enough when the version exists and can be opened.</p>
+
+<h2>Make the bar checkable</h2>
+<p>A bar you cannot check turns back into a mood. Write each trait so that two people looking at the screen would agree on pass or fail. Then ask the agent to compare, not to remember. Claude Code's page lists checks an agent can read, including <q>A browser screenshot next to the mockup</q> and <q>A script that diffs output against a fixture</q>.<sup class="cite"><a href="#src-a7">[2]</a></sup> You do not need to build either one today. You need to ask for the comparison in a form you could inspect.</p>
+<table class="ref">
+  <thead><tr><th>Trait</th><th>How to check it</th><th>Pass looks like</th></tr></thead>
+  <tbody>
+    <tr><td>Photo size</td><td>Open v1 and the new page at the same window width</td><td>The photo covers the same share of the top half</td></tr>
+    <tr><td>Price position</td><td>Look at both pages with a long description</td><td>Price stays on the same line as the name</td></tr>
+    <tr><td>Button height</td><td>Measure or compare against a straight edge</td><td>Same height, same distance from the text</td></tr>
+    <tr><td>Phone layout</td><td>Narrow the window to a phone width</td><td>One column on both pages</td></tr>
+  </tbody>
+</table>
+<p>Four rows are enough for a first pass. The list is also the answer to a useful question you can ask afterwards: "Which of these four did you check, and what did you see?" That question belongs to Unit 2, but the list starts here.</p>
+
+<h2>When a reference becomes a trap</h2>
+<div class="warn">
+  <span class="label">Three guards</span>
+  <p><strong>Say what to skip.</strong> A reference arrives whole. Without a skip list, its colours, ads and account screens come along, and the agent may reasonably think you wanted them.</p>
+  <p><strong>Keep it to one screen.</strong> "Like that whole app" is a product brief, not a reference. Pick the screen whose behaviour you mean.</p>
+  <p><strong>Copy the feel, not the assets.</strong> Do not ask for another site's logo, photos or text. Ask for spacing, sizes and layout, and supply your own content.</p>
+</div>
+<p>A reference also carries its device. A desktop dashboard with four columns is a poor target for a phone page; if you show one, say which parts survive the narrow screen. The baseline avoids this trap by construction, because your v1 already runs where your users are.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in the practice folder from lesson <a href="0007-first-prompt-to-a-page.html">0.7</a>, with approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</label></li>
+    <li><label><input type="checkbox"> Pick one screen you can open and, if possible, capture: a page you use, or your own earlier practice page. Choose the single most important thing on it that you want copied.</label></li>
+    <li><label><input type="checkbox"> Fill in the template below. Name the thing, the parts to copy, the parts to skip, and three checks. Delete any line you cannot fill honestly.</label></li>
+    <li><label><input type="checkbox"> Send it. Then ask: "Which parts did you copy, which did you skip, and how did you compare the result with the reference?"</label></li>
+  </ol>
+  <div class="prompt">
+    <button class="copy" type="button">Copy</button>
+    <pre>Use [this screen / the attached picture] as the reference for my page.
+Copy only these parts: [wide margins, a large photo at the top, one button per row].
+Skip these parts: [its colours, its ad banner, its sign-up box, its wording].
+Keep my content and my words.
+Done when all three are true:
+1. [the photo fills the same share of the top half]
+2. [the price stays on the same line as the name, even with a long description]
+3. [the page is one column at phone width]
+Before you change anything, list what you will copy, what you will skip, and how you will check each of the three.</pre>
+  </div>
+  <div class="prompt">
+    <button class="copy" type="button">Copy</button>
+    <pre>Treat the current [page] as v1. Keep it exactly as it is.
+Anything new must be at or above v1 on these points: [photo size, price position, button height, phone layout].
+When you are done, show me v1 and the new version side by side, and tell me where the new one is worse.</pre>
+  </div>
+  <div class="expect"><p>You should see the agent name concrete decisions (margins, sizes, column count) rather than moods, and list the checks it will run. If it answers with "clean and modern", the reference or the copy list was too vague. Tighten one line and send it again. On the baseline prompt, the side-by-side report should mention at least one real difference, or say plainly that it found none.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Which request uses a reference as a specification?</p>
+  <button class="opt" type="button">Make the page look modern and feel nice on phones.</button>
+  <button class="opt" type="button">Copy a popular recipe site and then change its text.</button>
+  <button class="opt" type="button">Copy this screen's spacing and skip its ad banner.</button>
+  <button class="opt" type="button">Build a page that works well and loads very fast.</button>
+  <div class="why"><p>Only the third names a specific thing and says which parts to take and which to leave. The others give a mood, or copy a whole product without a boundary.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You accepted one page and now need six more. Why is that page a useful baseline?</p>
+  <button class="opt" type="button">It is the newest work, so it must be the best one.</button>
+  <button class="opt" type="button">It was made by the agent, so it needs no checking.</button>
+  <button class="opt" type="button">It is the only page with real content in it.</button>
+  <button class="opt" type="button">You accepted it, and new work can be compared with it.</button>
+  <div class="why"><p>A baseline works because it was accepted and still exists. "At or above v1" then means something checkable, instead of a fresh opinion about each new page.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">What is missing from "make it feel like that notes app"?</p>
+  <button class="opt" type="button">The name of the agent you want to use for the job.</button>
+  <button class="opt" type="button">Which parts to copy and which parts to leave out.</button>
+  <button class="opt" type="button">The colour of the button that saves each new note.</button>
+  <button class="opt" type="button">The number of pages the finished app should have.</button>
+  <div class="why"><p>A bare name points at a whole product. Without a copy list and a skip list, the agent picks whatever it remembers, which may be the wrong parts.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> (Anthropic). Read the section on giving a specific prompt. It shows a prompt built from a mockup, then lists what the picture still cannot say. That pairing is the whole lesson in one example, and it applies to Codex and omp too.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on choosing a reference? Ask the agent that gave you this course. Try: <em>"Here is the screen I like and here is my page. Which three visible traits should I ask to copy, and which should I tell the agent to skip?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-p1">Anthropic, <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">Prompting best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b7">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> turn a taste into a named reference with a copy list and a skip list, and use your own accepted version as the bar for everything after it.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0022-plan-then-human-go.html">Previous: Plan, then a human go</a> · <a href="0024-show-dont-tell.html">Next: Show, don't tell</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

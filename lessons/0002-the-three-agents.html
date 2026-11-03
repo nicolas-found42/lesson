@@ -25,7 +25,7 @@
 <p>All three are programs you launch from a <a href="0003-your-project-is-a-folder.html">project folder</a> in a terminal, and all three keep a <span class="term" title="a saved run you can return to">session</span> you can resume later. You will install one in lesson 0.5 and learn the terminal in 0.4. Nothing here depends on having them yet.</p>
 
 <h2>The same three things, in each shell</h2>
-<p>Each agent below starts from a folder, reads a plain-text file of standing instructions, shows you an approval prompt before risky actions, and lets you stop a run in progress. Those are the four things to learn. The next section shows what each one calls them.</p>
+<p>Each agent below starts from a folder, reads a plain-text file of standing instructions, has a setting that decides when it asks before risky actions, and lets you stop a run in progress. Those are the four things to learn. The next section shows what each one calls them.</p>
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
     <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
@@ -39,7 +39,7 @@
     <p>Made by OpenAI. Its CLI page says it can <q>inspect code, make changes, run commands, and automate repeatable work without leaving your terminal.</q><sup class="cite"><a href="#src-b1">[5]</a></sup> Start it by running <code>codex</code> in a project folder.<sup class="cite"><a href="#src-b1">[5]</a></sup> It reads <code>AGENTS.md</code>: <q>Codex reads AGENTS.md files before doing any work.</q><sup class="cite"><a href="#src-b3">[6]</a></sup> Its default posture pairs a <code>workspace-write</code> sandbox with <code>on-request</code> approvals, where the agent <q>asks when it needs to go beyond that boundary.</q><sup class="cite"><a href="#src-b2">[7]</a></sup> While it works, <kbd>Enter</kbd> adds instructions to the current turn and <kbd>Tab</kbd> queues a follow-up.<sup class="cite"><a href="#src-b4">[8]</a></sup></p>
   </div>
   <div role="tabpanel" data-panel="omp" hidden>
-    <p>An independent open-source agent from Stencil Labs, describing itself as <q>a coding agent with the IDE wired in.</q><sup class="cite"><a href="#src-c1">[9]</a></sup> Start it with <code>omp</code> in your project folder. It reads <code>AGENTS.md</code> from the repository root, which it <q>loads it automatically and applies it throughout the session.</q><sup class="cite"><a href="#src-c3">[10]</a></sup> Its built-in default is the least cautious of the three: <q>The built-in default is yolo.</q><sup class="cite"><a href="#src-c2">[11]</a></sup> Press <kbd>Esc</kbd> to stop the active turn.<sup class="cite"><a href="#src-c4">[12]</a></sup> All omp documentation comes from its own authors, so treat surprising claims with care.</p>
+    <p>An independent open-source agent from Stencil Labs, describing itself as <q>a coding agent with the IDE wired in.</q><sup class="cite"><a href="#src-c1">[9]</a></sup> Start it with <code>omp</code> in your project folder. Its rules file is <code>AGENTS.md</code> at the repository root: <q>omp loads it automatically and applies it throughout the session.</q><sup class="cite"><a href="#src-c3">[10]</a></sup> Its built-in default is the least cautious of the three: <q>The built-in default is yolo.</q><sup class="cite"><a href="#src-c2">[11]</a></sup> Press <kbd>Esc</kbd> to stop the active turn.<sup class="cite"><a href="#src-c4">[12]</a></sup> All omp documentation comes from its own authors, so treat surprising claims with care.</p>
   </div>
 </div>
 <span class="sidenote">Your tab choice is remembered; later lessons put your agent first.</span>
@@ -75,7 +75,7 @@
 
 <h2>Choosing, once</h2>
 <p>For this course, choose one agent and stay with it through the first shipped page. The choice is mostly practical: whatever you can install and sign into, on the machine you have. All three can read and edit the files in a folder and run commands there, which is all the first-ship path needs.</p>
-<p>Two honest differences, from the vendors' own pages. Codex also runs inside the ChatGPT desktop app, not only the terminal; Claude Code also exists as a desktop and IDE surface.<sup class="cite"><a href="#src-b5">[13]</a><a href="#src-a1">[1]</a></sup> omp is terminal-first and its docs are its only documentation.<sup class="cite"><a href="#src-c1">[9]</a></sup> Neither fact changes the loop.</p>
+<p>Two honest differences, from the vendors' own pages. Codex also runs inside the ChatGPT desktop app, not only the terminal; Claude Code also exists as a desktop and IDE surface.<sup class="cite"><a href="#src-b5">[13]</a><a href="#src-a1">[1]</a></sup> omp is a terminal program, and its docs are its only documentation.<sup class="cite"><a href="#src-c1">[9]</a></sup> Neither fact changes the loop.</p>
 <div class="callout">
   <span class="label">The rule for this course</span>
   <p>One project, one agent, one rules file, until the page is live. Switching is allowed later, and lesson 1.12 shows how to write the rules file so a switch is cheap.</p>

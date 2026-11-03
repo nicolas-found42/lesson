@@ -34,7 +34,7 @@ All core concepts in this curriculum are vendor-neutral and agent-agnostic. Wher
 
 ## 🗺️ Curriculum Architecture
 
-The curriculum is planned as a granular graph of ~15-minute lessons across 10 sequential units, tracked in `.scratch/lesson-index.md` and `.scratch/curriculum.json`.
+The curriculum is planned as a granular graph of ~15-minute lessons across 10 sequential units. The course home page (`index.html`) serves as the public navigation portal for published modules, while the author's local planning specifications are tracked in `.scratch/lesson-index.md` and `.scratch/curriculum.json`.
 
 A prioritized **First-Ship Path (marked with ★)** guides learners from zero terminal knowledge to deploying a live static web page via GitHub Pages before exploring deeper topics. The lesson files in `lessons/` are populated progressively against this curriculum specification.
 
@@ -67,28 +67,24 @@ A prioritized **First-Ship Path (marked with ★)** guides learners from zero te
 ---
 
 ## 📂 Repository Layout
-
 ```
 .
 ├── lessons/              # Standalone, interactive HTML lesson modules (actively populated)
 │   ├── 0001-what-a-coding-agent-is.html
 │   ├── 0002-the-three-agents.html
 │   ├── 0003-your-project-is-a-folder.html
-│   └── ... (see .scratch/lesson-index.md for complete sequence)
+│   └── ... (navigable via index.html)
 ├── assets/               # Shared, lightweight CSS & JS runtime
 │   ├── lesson.css        # Minimalist, accessible Tufte-style typography
 │   └── lesson.js         # Interactive tabs, revealable recalls, and quiz scoring
+├── index.html            # Course home portal and lesson directory
 ├── MISSION.md            # Target learner persona, learning objectives, and core constraints
 ├── NOTES.md              # Author decisions, privacy rules, and pedagogical guidelines
 ├── RESOURCES.md          # Primary source documentation references & URLs
-├── .scratch/             # Development scratchpad, curriculum specs, and private audit logs
-│   ├── curriculum.json   # Definitive schema of all 116 lessons, prerequisites, and metadata
-│   ├── concept-map.md    # Conceptual dependency graph
-│   ├── terms-seed.md     # Standardized glossary definitions
-│   └── scripts/          # Integrity & quality test harnesses (validate_lesson.py)
 └── README.md             # Project documentation and navigation guide
 ```
 
+*(Note: `.scratch/` contains the author's local working draft notes, validation scripts, and raw curriculum maps, which are kept uncommitted to preserve private session logs.)*
 ---
 
 ## 📖 Lesson Design & Standards

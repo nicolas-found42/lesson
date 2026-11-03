@@ -17,8 +17,8 @@
 <main>
 
 <h2>Why this matters for shipping your app</h2>
-<p>The first lesson showed that one message can become fifty tool calls. That is useful right up to the moment the agent is fifty calls into the wrong idea. Beginners then face a false choice: sit and watch, or stop everything and start over. Both waste the thing you have least of, which is time before your app exists.</p>
-<p>There is a third way. A <span class="term" title="One message from you plus the agent's whole response to it.">turn</span> can be steered while it runs. You can add a condition it should respect, halt one bad action, ask what it thinks it is doing, and then let it continue. Used well, steering is how a fifteen-minute wait becomes a fifteen-minute result instead of a fifteen-minute lesson.</p>
+<p>The first lesson showed that one message can become fifty tool calls. That is useful right up to the moment the agent is fifty calls into the wrong idea. Beginners then face a false choice: sit and watch, or stop everything and start over. Both waste the time you need to get your app finished.</p>
+<p>There is a third way. A <span class="term" title="One message from you plus the agent's whole response to it.">turn</span> can be steered while it runs: add a condition, halt one bad action, ask what it thinks it is doing, then let it continue. Steering is how a fifteen-minute wait becomes a result instead of a lesson.</p>
 
 <h2>Three moves, in order of force</h2>
 <p>Everything in this lesson is one of three moves. Learn the difference and you will stop reaching for the biggest one first.</p>
@@ -40,7 +40,7 @@
   <div class="row tool"><span class="who">agent</span><span>found 9 matches in 6 files…</span></div>
   <div class="row you"><span class="who">you</span><span class="note">Now the agent reads your line before it edits anything.</span></div>
 </div>
-<p>That is the whole trick, and it is the one to practise first. A queued message is cheap: the agent has not been derailed, and you have not lost your place in the work. What you must not do is queue a contradiction and expect it to be read instantly. It lands after the current action, not before it.</p>
+<p>That is the trick to practise first. A queued message is cheap: the agent has not been derailed and you have not lost your place. But it lands after the current action, not before it, so do not queue a contradiction and expect it to be read instantly.</p>
 <p>One caution: a queued message is not a pause. If the action already running is the wrong one, queueing does not save you. That is what the next section is for.</p>
 
 <h2>Interrupt: Esc stops the action, not the work</h2>
@@ -99,7 +99,7 @@ Answer in four parts:
   </div>
   <div role="tabpanel" data-panel="omp" hidden>
     <p><strong>Steer:</strong> <code>Enter</code> sends a steering message to the active turn. <strong>Queue:</strong> <code>Ctrl+Q</code> or <code>Ctrl+Enter</code>. <strong>Interrupt:</strong> <code>Escape</code>. <strong>Continue:</strong> <code>.</code> or <code>c</code>.<sup class="cite"><a href="#src-c1">[5]</a></sup></p>
-    <p>Escape is focus-sensitive: if a picker or autocomplete is open, the first press closes that instead.<sup class="cite"><a href="#src-c2">[7]</a></sup> Press it again for the run itself.</p>
+    <p>Escape is focus-sensitive: if a picker or autocomplete is open, the first press closes that instead.<sup class="cite"><a href="#src-c2">[6]</a></sup> Press it again for the run itself.</p>
   </div>
 </div>
 <span class="sidenote">Only Claude Code and omp document a one-word resume. If your tool does not, write one short sentence naming the next step instead; the effect is the same.</span>

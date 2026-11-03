@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The terminal in five commands</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 0 · Orientation &amp; setup · Lesson 0.4</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 0 · Lesson 0.4 · First-ship path ★</p>
+  <h1>The terminal in five commands</h1>
+  <p class="lede">The terminal is the room your agent works in. Five commands are enough to walk into the right folder, see what is there, open it, and start something — and to fix things when the agent says a file exists that you cannot find.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0003-your-project-is-a-folder.html">0.3 Your project is a folder</a></span><span>Win: you can find and open your project folder from a terminal</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Everything later in this course happens in a <span class="term" title="The folder a program treats as its current place. Commands that name a file without a full path look there first.">working directory</span>: the folder a program is currently standing in. When you start a coding agent, it takes its bearings from the folder you started it in. Start it one level too high and it will treat your whole home folder as the project. Start it inside the wrong copy and it will edit a file you are not looking at.</p>
+<p>You do not need to become a command-line user. You need enough to answer one question reliably — <em>which folder am I in, and what is in it?</em> — because that question explains most of the confusing moments in the first week: a file that "does not exist", a page that will not load, an agent that changed the wrong thing.</p>
+
+<h2>A terminal is a place to type</h2>
+<p>On a Mac, press <code>Cmd + Space</code>, type <code>Terminal</code>, and press Enter. Anthropic's guide for first-time users describes what appears: <q>A window will appear with a blinking cursor. This is your terminal, where you type commands.</q><sup class="cite"><a href="#src-terminal-guide">[1]</a></sup></p>
+<p>A <span class="term" title="A program that reads the lines you type, runs them, and prints the result. Also called a shell.">shell</span> is the program inside that window that reads your line, runs it, and prints what came back. You type a command, press Enter, read the result, and type the next one. That is the whole interaction. There is nothing to click.</p>
+<span class="sidenote">Two words, one thing: the window is the terminal; the program reading your typing is the shell. This course says "terminal" for both unless the difference matters.</span>
+
+<h2>1. Where am I? <code>pwd</code></h2>
+<p><code>pwd</code> stands for "print working directory". Its manual page says it <q>writes the absolute pathname of the current working directory to the standard output.</q><sup class="cite"><a href="#src-pwd-man">[2]</a></sup> In plain words: it prints the full address of the folder you are standing in, starting from the top of the disk.</p>
+<pre><code>my-app % pwd
+~/projects/my-app</code></pre>
+<p>The <code>%</code> and everything left of it is the prompt: the shell telling you it is ready for a line. You do not type it. The line below is the answer. On many systems the prompt already shows the folder name, which is convenient but not a substitute for asking — prompts are configurable and can be shortened or wrong-looking.</p>
+
+<h2>2. What is here? <code>ls</code></h2>
+<p><code>ls</code> lists a folder's contents. The manual says that for a folder, <q>ls displays the names of files contained within that directory</q>, and with no argument it lists the folder you are in.<sup class="cite"><a href="#src-ls-man">[3]</a></sup></p>
+<pre><code>my-app % ls
+index.html    notes    style.css</code></pre>
+<p>Two details matter immediately. First, plain <code>ls</code> hides names that begin with a dot. GNU's manual states that it lists folders while <q>omitting files with names beginning with '.'</q>.<sup class="cite"><a href="#src-ls-gnu">[4]</a></sup> Settings files and project metadata often start with a dot, so a folder can look nearly empty while holding plenty. Second, <code>ls</code> shows names, not contents: seeing <code>index.html</code> in the list tells you the file is there, not what it says.</p>
+<p>If you want to see hidden entries too, <code>ls -a</code> includes them. You can also give <code>ls</code> a folder name to look inside it without moving: <code>ls notes</code>.</p>
+
+<h2>3. Go there: <code>cd</code></h2>
+<p><code>cd</code> changes the working directory. Bash's manual says: <q>Change the current working directory to directory</q>, and if you give it no folder at all, <q>the value of the HOME shell variable is used</q>.<sup class="cite"><a href="#src-cd">[5]</a></sup> So <code>cd</code> alone takes you home, and <code>cd</code> with a name takes you into that folder:</p>
+<pre><code>my-app % cd notes
+notes % pwd
+~/projects/my-app/notes
+notes % cd ..
+my-app %</code></pre>
+<p><code>..</code> means "the folder above this one". Your prompt changes when you move, so run <code>pwd</code> whenever you are unsure — it is cheap and it never lies.</p>
+<div class="warn">
+  <span class="label">The error you will meet most</span>
+  <p>A wrong folder name gives a short error and leaves you where you were. On this Mac, <code>cd nonexistent-folder</code> prints <code>zsh:cd:1: no such file or directory: nonexistent-folder</code>. The shell did not move. That is useful: a failed <code>cd</code> never drops you somewhere unexpected, so you can safely try again.</p>
+</div>
+
+<h2>4. Show me: <code>open</code></h2>
+<p><code>open</code> hands a file or folder to the program your Mac associates with it. Its manual page says it <q>opens a file (or a directory or URL), just as if you had double-clicked the file's icon.</q><sup class="cite"><a href="#src-open-man">[6]</a></sup> A single dot means "this folder", so this is the command that turns a path you typed into a window you can look at:</p>
+<pre><code>my-app % open .
+my-app % open index.html</code></pre>
+<p>The first line opens the folder in Finder. The second opens the page in your browser, which is often the fastest way to check that a file the agent edited is the file you think it is. <code>open</code> is a macOS command; other systems have their own equivalent, which this lesson does not cover.</p>
+
+<h2>5. Run something: a name, then Enter</h2>
+<p>The fifth "command" is not one word. It is the habit of running a program by typing its name. Most programs finish and give you the prompt back. Some keep running: a server, a watcher, a live view. You will meet these constantly, because that is how a project is started.</p>
+<p>The rule to remember: while a program is running in the foreground, the prompt does not come back. That is not a freeze. <code>Ctrl + C</code> sends an interrupt that stops it; Bash's manual describes this as the shell receiving <q>keyboard-generated signals such as SIGINT (usually generated by '^C')</q>.<sup class="cite"><a href="#src-signals">[7]</a></sup></p>
+<pre><code>my-app % top
+Processes: 512 total, 3 running, 509 sleeping
+...
+^C
+my-app %</code></pre>
+<p><code>top</code> shows the programs running on your Mac, sorted by activity. It is a safe thing to try: it only reads. Press <code>q</code> to quit, or <code>Ctrl + C</code>, and your prompt returns. The important part is the last line: an empty prompt means the program has ended and the terminal is yours again.</p>
+
+<table class="ref">
+  <tr><th>You want to</th><th>Type</th><th>What comes back</th></tr>
+  <tr><td>Know where you are</td><td><code>pwd</code></td><td>The full path of this folder</td></tr>
+  <tr><td>See what is here</td><td><code>ls</code></td><td>A list of names</td></tr>
+  <tr><td>Move into a folder</td><td><code>cd notes</code></td><td>Nothing; the prompt changes</td></tr>
+  <tr><td>Move up one level</td><td><code>cd ..</code></td><td>Nothing; the prompt changes</td></tr>
+  <tr><td>Open this folder</td><td><code>open .</code></td><td>A Finder window</td></tr>
+  <tr><td>Start a program</td><td>its name, then Enter</td><td>Output, and no prompt until it ends</td></tr>
+</table>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: which command tells you where you are, which one shows what is beside you, and which one moves you? What does an empty prompt mean?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><code>pwd</code> prints the working directory; <code>ls</code> lists what is in it; <code>cd</code> moves you. <code>open .</code> shows the folder in Finder. A prompt with nothing running means the last program has ended and the shell is ready for the next line — if you expected one to keep going, it stopped, perhaps because it failed.</p></div>
+</div>
+
+<h2>A session, start to finish</h2>
+<p>Here is a real sequence, edited only to use a made-up path. Read the prompt as well as the output; the prompt is the evidence of where you are.</p>
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>pwd</span></div>
+  <div class="row tool"><span class="who">tool</span><span>~/projects/my-app</span></div>
+  <div class="row you"><span class="who">you</span><span>ls</span></div>
+  <div class="row tool"><span class="who">tool</span><span>index.html  notes  style.css</span></div>
+  <div class="row you"><span class="who">you</span><span>cd notes</span></div>
+  <div class="row you"><span class="who">you</span><span>ls</span></div>
+  <div class="row tool"><span class="who">tool</span><span>todo.txt</span></div>
+  <div class="row you"><span class="who">you</span><span>cd ..</span></div>
+  <div class="row you"><span class="who">you</span><span>open .</span></div>
+  <div class="row flag"><span class="who">note</span><span class="note">You asked for the folder, not the page. Finder opens; nothing appears in the terminal.</span></div>
+</div>
+<p>Notice what is missing: no confirmation messages. <code>cd</code> and <code>open</code> print nothing when they succeed. Silence is the normal sign of success, which is why checking with <code>pwd</code> and <code>ls</code> beats watching for a "done" line.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to copy the newest download into a project. The agent ran a listing command and got a strange result — the output looked like a different program's, not a folder listing. The user's shell had a shortcut named <code>ls</code> that pointed at another tool. The agent noticed the mismatch, retried with the full path <code>/bin/ls</code>, and the listing was correct.</p>
+  <p>Two habits come out of that. If a command's output does not look like what its name promises, suspect the environment before suspecting the project. And an agent with a terminal can diagnose this itself, if it actually looks at the output instead of assuming the command worked.</p>
+</div>
+
+<h2>Do it in your own folder</h2>
+<p>Use the project folder you made in <a href="0003-your-project-is-a-folder.html">0.3</a>. Nothing here changes a file; you are only looking.</p>
+<div class="doit">
+  <span class="label">Your turn</span>
+  <ol>
+    <li><label><input type="checkbox"> Open Terminal (on a Mac: <code>Cmd + Space</code>, type <code>Terminal</code>, Enter).</label></li>
+    <li><label><input type="checkbox"> Type <code>pwd</code> and press Enter. Read the path out loud; that is your starting point.</label></li>
+    <li><label><input type="checkbox"> Use <code>cd</code> to move into your project folder. If you are unsure of the name, run <code>ls</code> first and copy it exactly.</label></li>
+    <li><label><input type="checkbox"> Run <code>pwd</code> again, then <code>ls</code>. You should be able to name every entry.</label></li>
+    <li><label><input type="checkbox"> Run <code>open .</code> and look at the Finder window. Does it match the list?</label></li>
+    <li><label><input type="checkbox"> Run <code>top</code>, watch for a second, then press <code>q</code> or <code>Ctrl + C</code>. Confirm the prompt is back.</label></li>
+  </ol>
+  <div class="expect">
+    <p><strong>What you should see:</strong> the same path after step 4's <code>pwd</code> as the folder you meant; a Finder window showing exactly the names from <code>ls</code>; and, after <code>top</code>, your own prompt again, ready for a line. If the Finder window shows a different set of files, you are not where you think you are — run <code>pwd</code> and compare it with the window's title bar.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Start your agent from the right folder</h2>
+<p>All three agents take the working directory as the project. The installation lesson comes next; these are the start commands you will use once installed.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Move into the project folder with <code>cd</code>, then type <code>claude</code> and press Enter. Its terminal guide adds two facts worth knowing now: <q>You can't click on things in the terminal</q>, and <code>Esc</code> interrupts the agent while it is working.<sup class="cite"><a href="#src-terminal-guide">[1]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>OpenAI's CLI page gives the step in one line: <q>Open a project directory and run codex.</q><sup class="cite"><a href="#src-codex">[8]</a></sup> "Open a project directory" means <code>cd</code> into it first. The first run asks you to sign in.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>The omp docs show the pattern as two lines, <code>cd my-project</code> then <code>omp</code>, and describe it plainly: <q>Bare omp opens the interactive terminal UI.</q><sup class="cite"><a href="#src-omp">[9]</a></sup> Its documentation comes only from its own authors.</p>
+  </div>
+</div>
+<span class="sidenote">If the agent's first message mentions a folder you did not expect, stop and run <code>pwd</code>. It is almost always the working directory, not the agent.</span>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">A command finishes and your prompt appears again. What does that mean?</p>
+  <button class="opt" type="button">The shell is ready for your next command</button>
+  <button class="opt" type="button">The last command has failed and stopped now</button>
+  <button class="opt" type="button">Your project folder has now been fully saved</button>
+  <button class="opt" type="button">The agent is busy working in this folder</button>
+  <div class="why"><p>The prompt means the foreground program has ended and the shell is waiting. Success and failure both return a prompt; the printed output, not the prompt's return, tells you which happened.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You run <code>ls</code> and it prints nothing at all. What is the best reading?</p>
+  <button class="opt" type="button">It most likely worked, since silence is normal</button>
+  <button class="opt" type="button">The command is still running in the background</button>
+  <button class="opt" type="button">The terminal has frozen and needs a restart</button>
+  <button class="opt" type="button">The command never reached the shell at all</button>
+  <div class="why"><p>An empty listing can simply mean the folder is empty, or that everything in it starts with a dot and is hidden from plain <code>ls</code>. Silence from a command is normal; check with <code>pwd</code> and <code>ls -a</code>.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">An agent says it created a file, but you cannot find it. What should you check first?</p>
+  <button class="opt" type="button">Whether the agent used the newest model</button>
+  <button class="opt" type="button">Which folder the agent was started in</button>
+  <button class="opt" type="button">Whether your Mac needs a software update</button>
+  <button class="opt" type="button">Whether the file is too large to open</button>
+  <div class="why"><p>The file exists somewhere; the usual reason you cannot see it is that your agent, or your Finder window, is looking at a different working directory. Run <code>pwd</code> in the agent's session and in yours.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/terminal-guide">Terminal guide for new users</a> — Anthropic's walkthrough of opening a terminal, pasting a command and leaving a session. It is written for one agent, but the terminal half applies to all three. Read the macOS section only.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a folder name? Ask the agent that gave you this course: <em>"Here is the output of pwd and ls: … Which folder am I in, and how do I get to my project?"</em> Paste the real lines; guessing at paths wastes more time than it saves.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-terminal-guide">Anthropic, <a href="https://code.claude.com/docs/en/terminal-guide">Terminal guide for new users</a>. Retrieved 2026-11-02.</li>
+  <li id="src-pwd-man">Apple, <code>man pwd</code> (macOS manual page). Run locally on this Mac, 2026-11-02.</li>
+  <li id="src-ls-man">Apple, <code>man ls</code> (macOS manual page). Run locally on this Mac, 2026-11-02.</li>
+  <li id="src-ls-gnu">GNU Project, <a href="https://www.gnu.org/software/coreutils/manual/html_node/ls-invocation.html">ls: List directory contents</a> (GNU Coreutils 9.12). Retrieved 2026-11-02.</li>
+  <li id="src-cd">GNU Project, <a href="https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html">Bourne Shell Builtins</a> (Bash Reference Manual, the <code>cd</code> entry). Retrieved 2026-11-02.</li>
+  <li id="src-open-man">Apple, <code>man open</code> (macOS manual page). Run locally on this Mac, 2026-11-02.</li>
+  <li id="src-signals">GNU Project, <a href="https://www.gnu.org/software/bash/manual/html_node/Signals.html">Signals</a> (Bash Reference Manual). Retrieved 2026-11-02.</li>
+  <li id="src-codex">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-npm">npm, <a href="https://docs.npmjs.com/cli/v11/commands/npm-run">npm-run</a>. Retrieved 2026-11-02. Background for the "run" step in later lessons.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> open a terminal, find out which folder you are in, list and open it, move between folders, and stop a program that keeps running.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/setup.html">Setup (all three agents)</a> · <a href="../reference/safety-checklist.html">Safety checklist</a></p>
+  <div class="pager"><span>Next: 0.5 Install and sign in</span><a href="0005-install-and-sign-in.html">0.5 Install and sign in →</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

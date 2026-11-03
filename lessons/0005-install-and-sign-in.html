@@ -86,13 +86,13 @@
 </div>
 
 <h2>What first launch may also ask</h2>
-<p>Claude Code may also ask about permissions and Codex asks about its sandbox and approval policy during setup. Those questions decide what the agent may do without asking. For now, choose the option that keeps approval prompts on. Lesson <a href="0006-approvals-and-permissions.html">0.6</a> explains each choice; you can change it later without reinstalling.</p>
+<p>First launch can also touch permissions. Each agent applies a default permission mode, and any prompt you see about allowing an action belongs to that topic, not to installation. For now, choose the option that keeps approval prompts on. Lesson <a href="0006-approvals-and-permissions.html">0.6</a> explains each choice; you can change it later without reinstalling.</p>
 
 <h2>A first launch, step by step</h2>
 <p>This is the shape of a typical first run on a Mac, with the small delay that most beginners hit. Treat it as an illustration of the sequence, not a transcript of one recorded session.</p>
 <div class="transcript">
   <div class="row tool"><span class="who">term</span><span>curl -fsSL https://…/install.sh | bash</span></div>
-  <div class="row tool"><span class="who">out</span><span>installed to /Users/you/.local/bin/claude</span></div>
+  <div class="row tool"><span class="who">out</span><span>installed to ~/.local/bin/claude</span></div>
   <div class="row tool"><span class="who">term</span><span>claude --version</span></div>
   <div class="row flag"><span class="who">out</span><span>zsh: command not found: claude</span></div>
   <div class="row"><span class="who">note">The install worked. This window was opened before the folder existed in PATH.</span></div>
@@ -131,7 +131,7 @@
     <li><label><input type="checkbox"> Open a new terminal window and run the matching <code>--version</code> command.</label></li>
     <li><label><input type="checkbox"> Make a throwaway folder and go into it: <code>mkdir ~/agent-test &amp;&amp; cd ~/agent-test</code></label></li>
     <li><label><input type="checkbox"> Start your agent there and complete the browser sign-in.</label></li>
-    <li><label><input type="checkbox"> Ask it one harmless question, such as <em>"Which folder are you working in?"</em>, then leave with <code>/exit</code> (Claude Code, omp) or <code>Ctrl+C</code> twice (Codex).</label></li>
+    <li><label><input type="checkbox"> Ask it one harmless question, such as <em>"Which folder are you working in?"</em>, then leave the session: <code>/exit</code> works in all three.</label></li>
   </ol>
   <div class="expect">
     <p>You should see a version number, then a prompt that names your project folder, then an answer that names the same folder. If instead you see <q>command not found</q>, you are in the wrong window or the installer's PATH line has not been applied yet; repeat step 2 in a fresh window before anything else.</p>
@@ -143,18 +143,18 @@
 <div class="quiz" data-correct="2">
   <span class="label">Question 1 of 3</span>
   <p class="q">The install command finishes, but the version check says "command not found". What is the likely cause?</p>
-  <button class="opt" type="button">The vendor has withdrawn the download from its server.</button>
+  <button class="opt" type="button">The vendor has now withdrawn the download from its server.</button>
   <button class="opt" type="button">The agent needs an account before it can even install.</button>
   <button class="opt" type="button">The install folder is missing from the terminal search list.</button>
-  <button class="opt" type="button">The computer needs a full restart before any new program runs.</button>
+  <button class="opt" type="button">The computer needs a full restart before the program starts.</button>
   <div class="why"><p>Install and PATH are separate. The program is on disk; the terminal simply has not been told where to look. A new window, and the installer's PATH line, fixes it.</p></div>
 </div>
 <div class="quiz" data-correct="0">
   <span class="label">Question 2 of 3</span>
   <p class="q">What does signing in actually do on first launch?</p>
-  <button class="opt" type="button">Links the work to your account and stores a credential locally.</button>
-  <button class="opt" type="button">Uploads your project folder to the vendor before you begin.</button>
-  <button class="opt" type="button">Replaces the install step with a browser-only version.</button>
+  <button class="opt" type="button">Links work to an account and stores a local credential.</button>
+  <button class="opt" type="button">Uploads your whole project folder up to the vendor first.</button>
+  <button class="opt" type="button">Replaces the whole install step with a browser page only.</button>
   <button class="opt" type="button">Turns off approval prompts so the agent can act freely.</button>
   <div class="why"><p>Sign-in is about identity and billing, and it saves a credential so later sessions start without a browser. It does not upload your folder or change what the agent may do.</p></div>
 </div>
@@ -162,9 +162,9 @@
   <span class="label">Question 3 of 3</span>
   <p class="q">You are about to use an agent on a shared computer. What should you do before leaving?</p>
   <button class="opt" type="button">Delete the project folder so nobody else can open it.</button>
-  <button class="opt" type="button">Uninstall and reinstall the agent at the next login.</button>
-  <button class="opt" type="button">Change your account password from the same machine.</button>
-  <button class="opt" type="button">Sign out so the stored credential is removed from that machine.</button>
+  <button class="opt" type="button">Uninstall and reinstall the agent again at the next login.</button>
+  <button class="opt" type="button">Change your account password twice from that same machine now.</button>
+  <button class="opt" type="button">Sign out so the stored credential leaves that machine now.</button>
   <div class="why"><p>The credential sits on the machine between sessions. Signing out removes it; neither reinstalling nor deleting a project does that job.</p></div>
 </div>
 <p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>

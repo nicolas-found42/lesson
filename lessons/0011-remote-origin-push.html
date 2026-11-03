@@ -164,9 +164,9 @@ If the push is refused, stop and tell me the exact message instead of trying ano
   <span class="label">Question 2 of 4</span>
   <p class="q">You edit a file but do not commit it. What does push send?</p>
   <button class="opt" type="button">Only committed snapshots, never your newer uncommitted edit</button>
-  <button class="opt" type="button">Every file on disk, including your newer uncommitted edit</button>
-  <button class="opt" type="button">The uncommitted edit, but not the older commit snapshots</button>
-  <button class="opt" type="button">Nothing at all, until you close your agent session</button>
+  <button class="opt" type="button">Every file on disk, including newer uncommitted edits</button>
+  <button class="opt" type="button">The uncommitted edit, but not older commit snapshots</button>
+  <button class="opt" type="button">Nothing whatsoever, until you close your agent session</button>
   <div class="why"><p>Push copies commits. An edit that was never committed is not inside any commit, so it stays on your machine until you commit it and push again.</p></div>
 </div>
 <div class="quiz" data-correct="2">
@@ -184,7 +184,7 @@ If the push is refused, stop and tell me the exact message instead of trying ano
   <button class="opt" type="button">The newest commit was never pushed to origin</button>
   <button class="opt" type="button">The friend must install Git on their phone</button>
   <button class="opt" type="button">GitHub Pages only updates one time each month</button>
-  <button class="opt" type="button">The page is committed only after it goes live</button>
+  <button class="opt" type="button">The page is committed only after going live</button>
   <div class="why"><p>The published site is built from the repository on GitHub. A commit that stayed on your laptop cannot appear there. Check <code>git status -sb</code> for <code>ahead</code> before blaming the host; lesson 6.6 separates deploying from pushing.</p></div>
 </div>
 <p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
