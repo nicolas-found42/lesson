@@ -92,30 +92,21 @@ A prioritized **First-Ship Path (marked with ★)** guides learners from zero te
 
 ## 🧪 Quality Flow (local-first)
 
-All six verification layers run locally on **every commit**. GitHub only runs what is needed to publish the site.
+All six verification layers — syntax/DOM, visual layout, W3C/ARIA, pedagogy, semantic provenance, and graph/privacy — run locally on **every commit**. GitHub runs only a structural deploy gate plus the Pages publish.
 
-| Layer | Gate | Tool |
-| :--- | :--- | :--- |
-| **L1** | Syntax, DOM balance, component contracts | `tools/check_lessons.py` |
-| **L2** | Visual/layout overflow at six viewports (320→1280px) | `tools/deep/visual.mjs` (Playwright + system Chrome) |
-| **L3** | W3C Nu conformance and ARIA tab/panel pairing | `tools/deep/html.mjs` (vnu-jar, needs Java 11+) |
-| **L4** | Pedagogy: prose budget, readability, giveaway wording | `tools/check_lessons.py` |
-| **L5** | Quote provenance against the cited evidence base | `tools/check_lessons.py` + `tools/deep/claims.py` |
-| **L6** | Link graph, index sync, privacy/entropy shield | `tools/check_lessons.py` |
+Agent-facing instructions live in [`AGENTS.md`](AGENTS.md): install steps, run modes, how to read findings, and authoring rules.
 
 ```bash
-npm install                                  # once: Playwright for L2
-git config core.hooksPath .githooks          # once: enable the commit hook
-python3 -I tools/run_layers.py               # full ladder over the corpus
-python3 -I tools/run_layers.py --staged      # exactly what the hook runs
-CHECK_LESSONS_STRICT=1 git commit            # make findings block the commit
+npm install                          # once: Playwright for the visual layer
+git config core.hooksPath .githooks  # once per clone: enable the commit hook
+CHECK_LESSONS_STRICT=1 git commit    # make findings block instead of report
 ```
 
-The hook is **report-only** by default so concurrent authoring never deadlocks; set `CHECK_LESSONS_STRICT=1` to make it blocking. Privacy terms are read at runtime from the uncommitted `.scratch/` workspace and never live in a tracked file.
+The hook is **report-only** by default so concurrent authoring never deadlocks. Privacy terms are read at runtime from the uncommitted `.scratch/` workspace and never live in a tracked file.
 
 ### Deployment
 
-`.github/workflows/deploy.yml` does two things on push to `main`: a structural **deploy gate** (site files present, `index.html` valid, no links to missing files) and the **Pages deploy**. The deep layers stay local. After the first workflow run, GitHub Pages must use "GitHub Actions" as its source, which is already configured for this repository.
+`.github/workflows/deploy.yml` gates the push (`index.html` valid, no links to missing files) and publishes. Source is set to "GitHub Actions" for this repository.
 
 ---
 

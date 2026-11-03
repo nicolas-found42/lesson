@@ -494,6 +494,7 @@ def main() -> int:
     total_errors = 0
     total_warnings = 0
     failed_files = 0
+    show_warning_detail = '--verbose' in sys.argv or len(files) <= 5
 
     # Layer 6 — Graph integrity: every lesson must be linked from index.html (corpus mode only)
     if not args:
@@ -524,6 +525,9 @@ def main() -> int:
                 print(f'  [WARN]  {w}')
         elif warns:
             print(f'OK   {base} ({len(warns)} warnings)')
+            if show_warning_detail:
+                for w in warns:
+                    print(f'  [WARN]  {w}')
             total_warnings += len(warns)
         else:
             print(f'OK   {base}')
