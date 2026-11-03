@@ -54,7 +54,7 @@ no changes added to commit (use "git add" and/or "git commit -a")</code></pre>
 <pre><code>$ git status
 On branch main
 nothing to commit, working tree clean</code></pre>
-<p>Pro Git explains it: <q>This means you have a clean working directory; in other words, none of your tracked files are modified.</q><sup class="cite"><a href="#src-pgclean">[9]</a></sup> Note the careful wording. Clean means the files git knows about match the last commit, and no untracked files are present either. It does not mean your app works, and it does not mean the last commit is good.</p>
+<p>Pro Git explains it: <q>This means you have a clean working directory; in other words, none of your tracked files are modified.</q><sup class="cite"><a href="#src-pg">[1]</a></sup> Note the careful wording. Clean means the files git knows about match the last commit, and no untracked files are present either. It does not mean your app works, and it does not mean the last commit is good.</p>
 <p>For a shorter list, add <code>--short</code>. Two columns of letters appear before each path:</p>
 <pre><code>$ git status --short
  M index.html
@@ -63,8 +63,8 @@ nothing to commit, working tree clean</code></pre>
 <p>The left column describes what is picked for the next commit, the right column describes the working tree. An empty left column and <code>M</code> on the right means "edited, not yet picked". <code>??</code> means untracked.<sup class="cite"><a href="#src-gs">[2]</a></sup> This form is handy when the agent shows you a status summary, because it fits on one screen.</p>
 
 <h2>Command two: <code>git diff</code></h2>
-<p>Status gives you names. Diff gives you lines. Pro Git describes the pair this way: status answers "very generally by listing the file names", while diff <q>shows you the exact lines added and removed — the patch, as it were.</q><sup class="cite"><a href="#src-pg">[4]</a></sup></p>
-<p>With no arguments, diff compares the working tree to what is picked for the next commit, which usually means your last commit:<sup class="cite"><a href="#src-gd">[5]</a></sup></p>
+<p>Status gives you names. Diff gives you lines. Pro Git describes the pair this way: status answers "very generally by listing the file names", while diff <q>shows you the exact lines added and removed — the patch, as it were.</q><sup class="cite"><a href="#src-pg">[1]</a></sup></p>
+<p>With no arguments, diff compares the working tree to what is picked for the next commit, which usually means your last commit:<sup class="cite"><a href="#src-gd">[4]</a></sup></p>
 <pre><code>$ git diff
 diff --git a/index.html b/index.html
 index 00b1dc1..9c5cfd9 100644
@@ -103,7 +103,7 @@ index 00b1dc1..9c5cfd9 100644
 </table>
 
 <h2>What your agent does to these two places</h2>
-<p>Every agent in this course edits the working tree, not the history. omp's documentation states it plainly: <q>File changes are applied to your working tree as omp works.</q> It adds: <q>They are not committed unless you ask for a commit.</q><sup class="cite"><a href="#src-omp">[6]</a></sup> Claude Code's documentation lists what it can see when it starts in a folder, and one item is <q>Your git state. Current branch, uncommitted changes, and recent commit history.</q><sup class="cite"><a href="#src-cc">[7]</a></sup> Codex's security guidance recommends you <q>keep <code>git status</code> clean before delegating.</q><sup class="cite"><a href="#src-cx">[8]</a></sup></p>
+<p>Every agent in this course edits the working tree, not the history. omp's documentation states it plainly: <q>File changes are applied to your working tree as omp works.</q> It adds: <q>They are not committed unless you ask for a commit.</q><sup class="cite"><a href="#src-omp">[5]</a></sup> Claude Code's documentation lists what it can see when it starts in a folder, and one item is <q>Your git state. Current branch, uncommitted changes, and recent commit history.</q><sup class="cite"><a href="#src-cc">[6]</a></sup> Codex's security guidance recommends you <q>keep <code>git status</code> clean before delegating.</q><sup class="cite"><a href="#src-cx">[7]</a></sup></p>
 <p>Two consequences follow. First, an uncommitted change is normal and expected in the middle of a task; it is not an error. Second, an uncommitted change is fragile: it can be overwritten, undone, or swept into an unrelated commit, and no history entry will help you recover it. Lesson 3.13 covers checkpointing for that reason.</p>
 
 <div class="vignette">
@@ -149,19 +149,19 @@ index 00b1dc1..9c5cfd9 100644
 <div class="quiz" data-correct="2">
   <span class="label">Question 2 of 3</span>
   <p class="q">An agent creates a brand-new file. <code>git diff</code> shows nothing. Why?</p>
-  <button class="opt" type="button">The agent saved the file outside your project folder.</button>
-  <button class="opt" type="button">Git deleted the new file before you could inspect it.</button>
-  <button class="opt" type="button">Diff ignores files that were never committed before.</button>
-  <button class="opt" type="button">The new file is empty, so there is nothing to show.</button>
+  <button class="opt" type="button">The agent saved the new file elsewhere instead</button>
+  <button class="opt" type="button">Git removed the new file before you looked</button>
+  <button class="opt" type="button">Diff skips files that were never committed yet</button>
+  <button class="opt" type="button">The new file was empty with nothing inside</button>
   <div class="why"><p>Diff compares tracked content. A file that has never been committed has no earlier version to compare against, so <code>git status</code> lists it instead.</p></div>
 </div>
 <div class="quiz" data-correct="3">
   <span class="label">Question 3 of 3</span>
   <p class="q">Before you say "commit all", what is the useful check?</p>
-  <button class="opt" type="button">Ask the agent whether it believes the work is good.</button>
-  <button class="opt" type="button">Open the app and click through every single page.</button>
-  <button class="opt" type="button">Delete the hidden folder so the history starts fresh.</button>
-  <button class="opt" type="button">Read status and name each file that will go in.</button>
+  <button class="opt" type="button">Ask the agent if the work looks good enough</button>
+  <button class="opt" type="button">Open the app and click through each page now</button>
+  <button class="opt" type="button">Delete the folder so your whole history restarts now</button>
+  <button class="opt" type="button">Read status and name every file that goes in</button>
   <div class="why"><p>"Commit all" means all. Status shows which files are uncommitted, including forgotten scratch notes and someone else's work in progress. Naming them first is the cheap guard.</p></div>
 </div>
 <p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
@@ -178,11 +178,10 @@ index 00b1dc1..9c5cfd9 100644
 
 <h2>Sources</h2>
 <ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
-  <li id="src-pg">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, 2.2 Git Basics — Recording Changes to the Repository</a>, git-scm.com. Retrieved 2026-11-02. Used for status, untracked files, and the status-versus-diff distinction.</li>
+  <li id="src-pg">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, 2.2 Git Basics — Recording Changes to the Repository</a>, git-scm.com. Retrieved 2026-11-02. Used for status, untracked files, the meaning of a clean working tree, and the status-versus-diff distinction.</li>
   <li id="src-gs">Git project, <a href="https://git-scm.com/docs/git-status">git-status(1)</a>. Retrieved 2026-11-02. Used for what status reports and for the short-format codes.</li>
   <li id="src-gg">Git project, <a href="https://git-scm.com/docs/gitglossary">gitglossary(7)</a>. Retrieved 2026-11-02. Used for the definition of working tree.</li>
   <li id="src-gd">Git project, <a href="https://git-scm.com/docs/git-diff">git-diff(1)</a>. Retrieved 2026-11-02. Used for what a bare <code>git diff</code> compares. Also checked locally with <code>man git-diff</code> (git 2.56.0).</li>
-  <li id="src-pgclean">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, 2.2</a>. Retrieved 2026-11-02. Used for the meaning of "working tree clean".</li>
   <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source. Used for edits landing in the working tree.</li>
   <li id="src-cc">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02. Used for what git state the agent can see.</li>
   <li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/docs/agent-approvals-security">Agent approvals &amp; security</a>. Retrieved 2026-11-02. Used for the recommendation to start from a clean status.</li>

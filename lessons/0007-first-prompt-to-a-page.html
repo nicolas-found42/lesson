@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your first prompt, and a page on your screen</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 0 · Orientation · Lesson 0.7</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 0 · Lesson 0.7 · First-ship path ★</p>
+  <h1>Your first prompt, and a page on your screen</h1>
+  <p class="lede">One short message, one small page, one address you can open. This is the moment the agent stops being an idea and starts being a thing you can look at.</p>
+  <div class="meta">
+    <span>About 15 minutes</span>
+    <span>Builds on: <a href="0005-install-and-sign-in.html">0.5 Install and sign in</a>, <a href="0006-approvals-and-permissions.html">0.6 Approvals and permissions</a></span>
+    <span>Win: you can ask for a page, open it yourself, and say what the address means</span>
+  </div>
+</header>
+<main>
+
+<h2>Why this is the moment</h2>
+<p>Your mission is a public app that other people can open. Before anything can be published, a page has to exist and you have to be able to see it. Today you make that happen once, slowly, and notice every step. Later lessons repeat the same move at larger sizes.</p>
+<p>You already know the agent reads files, changes them and runs commands, and that it asks your permission before it acts. This lesson spends that knowledge on a single, visible outcome.</p>
+
+<h2>Ask for an outcome you can check</h2>
+<p>A first prompt works when it names three things: what should exist, where it should live, and how you will judge it. That is not a magic formula. It is the smallest amount of information that lets the agent stop at the right place instead of guessing.</p>
+<p>Here is the prompt this lesson uses. It asks for one page, in the folder you are standing in, that you will look at yourself.</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Build a single web page in this folder. It should show a big heading that says "Hello from my first page" and one sentence under it saying today's date. Keep it to one HTML file with no frameworks and no build step.
+
+Then start it on a local server and open it in my browser so I can see it. Tell me the exact address you opened.</pre></div>
+<p>Two sentences carry the weight. "One HTML file with no frameworks" keeps the result small enough to inspect. "Start it and open it" asks for a result you can see, not a description of a result.</p>
+<p>That last habit is worth naming, because it does not come from a menu. In real sessions, people fall into a two-word ritual after every change: <em>start and open</em>. It means the agent should run the thing and put it in front of you, rather than telling you it would work. A short, boring phrase like that is easy to reuse for the rest of the course.</p>
+
+<h2>What happens after you press Enter</h2>
+<p>From the outside it looks like a long pause. Inside, the loop you met in lesson 0.1 runs several times.</p>
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>Build a single web page in this folder … start it and open it.</span></div>
+  <div class="row tool"><span class="who">tool</span><span>list the folder — is anything already here?</span></div>
+  <div class="row tool"><span class="who">tool</span><span>write index.html (asks your approval first)</span></div>
+  <div class="row tool"><span class="who">tool</span><span>run a local server on port 8000</span></div>
+  <div class="row tool"><span class="who">tool</span><span>open http://localhost:8000 in your browser</span></div>
+  <div class="row"><span class="who">agent</span><span>Serving at http://localhost:8000 — it is open in your browser.</span></div>
+  <div class="row note">The middle four lines are tool calls. You only wrote the first line and read the last.</div>
+</div>
+<p>Your agent may choose a different port, or open the page a different way. What matters is that the last line contains an address you can type, and a window on your screen that you can look at.</p>
+<div class="callout">
+  <span class="label">Keep the session open</span>
+  <p>A page served this way exists only while the server process is running. If you close the terminal, or the agent stops the process, the address stops answering. That is normal, not breakage. Ask the agent to start it again.</p>
+</div>
+
+<h2>What "localhost" and "port" mean</h2>
+<p><strong>localhost</strong> is the name a computer uses for itself. A page at a localhost address is being handed to your browser by a small program running on your own machine, out of a folder on your own disk. Nobody else can reach that address. The numeric form <code>127.0.0.1</code> means the same thing.<sup class="cite"><a href="#src-claude-desktop">[1]</a></sup></p>
+<p>A <strong>port</strong> is a numbered doorway on a computer, so that several services can listen at the same address without colliding. Mozilla's glossary puts it as: <q>a port is a communication endpoint. Ports are designated by numbers</q>.<sup class="cite"><a href="#src-mdn-port">[2]</a></sup> When you read <code>http://localhost:8000</code>, the part after the colon is the doorway. Change the number and you knock on a different door.</p>
+<span class="sidenote">The plain-language definition of localhost above is mine, not a quotation. The linked Mozilla page documents the port part and the localhost address used to reach a local server.</span>
+<p>Mozilla's beginner guide shows the same shape with a one-line Python server: it runs the folder you are standing in, and <q>By default, this will run the contents of the directory on a local web server, on port 8000.</q><sup class="cite"><a href="#src-mdn-server">[3]</a></sup> You then open <code>localhost:8000</code> and click the page. If that port is busy, the guide's advice is to pick another number and use it in the address.<sup class="cite"><a href="#src-mdn-server">[3]</a></sup></p>
+<p>That is why the number in the agent's message may not be 8000, or 3000, or whatever you saw in a tutorial. The message is the truth about this run. Read the address it printed; do not retype one from memory.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>In your own words: if a page is at <code>http://localhost:5173</code>, who is serving it, and who can open it besides you?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A small server program on <strong>your own computer</strong> is serving files from a folder on your disk, and it is listening on <strong>port 5173</strong>. Only you can open it, because <code>localhost</code> means "this machine". To let other people in, the files have to be published somewhere public, which is a later unit.</p></div>
+</div>
+
+<h2>Two ways a page can reach your screen</h2>
+<p>There is an older, simpler way to see an HTML file, and it is worth knowing so you can tell the two apart when something behaves oddly.</p>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Double-click the file</span>
+    <p>The browser opens the file directly from your disk. The address starts with <code>file://</code>. One page with text on it works fine. Anthropic's terminal guide for beginners uses exactly this: once the files exist, <q>double-click the HTML file to open it in your browser</q>.<sup class="cite"><a href="#src-cc-terminal">[4]</a></sup></p>
+    <p>The limit appears as soon as the page loads other files, or a script asks the network for something. Browsers treat those requests as crossing a boundary and may refuse them.<sup class="cite"><a href="#src-mdn-server">[3]</a></sup></p>
+  </div>
+  <div class="good">
+    <span class="label">Serve it, then open the address</span>
+    <p>A local server reads the same folder and answers at <code>http://localhost:PORT</code>. The page behaves the way it will behave on the real web: links, images, styles and scripts load through the same kind of request.</p>
+    <p>This is why "start it and open it" is the habit worth keeping. It matches the thing you will eventually publish, instead of a special case that only works on your desktop.</p>
+  </div>
+</div>
+
+<h2>Do it: one page, in front of you</h2>
+<p>Use an empty folder, not an existing project. Lesson 0.3 covers making one and moving into it; lesson 0.4 covers the commands. Keep approvals on, as lesson 0.6 argued.</p>
+<div class="doit">
+  <span class="label">Your turn — about 5 minutes</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your terminal and go into an empty folder, for example <code>cd ~/Desktop/my-first-page</code>.</label></li>
+    <li><label><input type="checkbox"> Start your agent with <code>claude</code>, <code>codex</code>, or <code>omp</code>, from inside that folder.</label></li>
+    <li><label><input type="checkbox"> Paste the prompt from above, then press Enter and let it work.</label></li>
+    <li><label><input type="checkbox"> Read each approval request before you accept it. You should see it ask to create one file, then to run a command.</label></li>
+    <li><label><input type="checkbox"> Look at the page in the browser window that opens, then read the address in the agent's message.</label></li>
+    <li><label><input type="checkbox"> Ask for one visible change: <em>"Change the heading to say hello to me by name, then start it and open it again."</em> Approve, then reload the page and look.</label></li>
+  </ol>
+  <div class="expect">
+    <p>A browser window shows your heading and a date. The address bar reads something like <code>http://localhost:8000</code> with a number that may not be 8000. After the second request, the heading changes and the agent prints the address again. If the port changed, the old address may no longer work — use the new one.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Where the tools differ</h2>
+<p>All three agents can create the file. They differ in who opens the browser and what they can see once it is open.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>In the terminal you can ask it to run the server and open the address; in the desktop app a preview pane does the opening, and <q>By default, the preview opens http://localhost:&lt;port&gt;.</q><sup class="cite"><a href="#src-claude-desktop">[1]</a></sup> After a change you can run <code>/verify</code>, which the docs describe as having Claude <q>build and run the app and look at the result</q>.<sup class="cite"><a href="#src-cc-bp">[5]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>The CLI can run the server, but it cannot show you the page: <q>Browser isn't available in Codex CLI or the Codex IDE extension.</q><sup class="cite"><a href="#src-codex-browser">[6]</a></sup> Your browser, opened by you or by the server's own open flag, is the window. For a shared preview inside the chat, the same page says to use the ChatGPT desktop app.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp can drive a browser of its own. Its docs call it <q>the right choice for rendered pages, local development servers, screenshots</q>, and it runs headless by default, so you may not see a window until you ask for one.<sup class="cite"><a href="#src-omp-web">[7]</a></sup> Ask in plain words: <em>"open http://localhost:8000 and show me a screenshot"</em>.</p>
+  </div>
+</div>
+
+<h2>When no page appears</h2>
+<p>Most first attempts work; the failures are boring and easy to name. Check these before you ask the agent to rewrite anything.</p>
+<ul>
+  <li><strong>The address does not load.</strong> The server probably stopped, or it is on a different port than the one you typed. Ask: <em>"Is the server still running, and what exact address is it on?"</em></li>
+  <li><strong>The page looks empty or stale.</strong> Reload the tab. Dev servers normally read the file from disk when the browser asks, so an edit made while the server runs usually shows up on reload; if it does not, ask the agent whether it restarted the server.</li>
+  <li><strong>The browser opened one address and the agent reported another.</strong> Trust the one that renders the page, and ask the agent to reconcile them.</li>
+  <li><strong>Nothing at all happened.</strong> The agent may be waiting on an approval you did not notice. Look at the last lines of its output before typing anything.</li>
+</ul>
+<p>When you are done looking, stop the server rather than leaving it running for days. Pressing <kbd>Ctrl</kbd>+<kbd>C</kbd> in the terminal that runs it ends the process; the address then stops answering, which is the expected result.</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">The agent says it opened <code>http://localhost:5173</code>. What are you looking at?</p>
+  <button class="opt" type="button">A page on a public server, visible to anyone.</button>
+  <button class="opt" type="button">A page from your own machine, on port 5173.</button>
+  <button class="opt" type="button">A file on your Desktop, opened by double click.</button>
+  <button class="opt" type="button">A page the agent wrote but never did serve.</button>
+  <div class="why"><p><code>localhost</code> means your own computer, and 5173 is the port its server is listening on. Nobody else can reach that address.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">The browser shows "can't connect" at the address the agent gave you. What is the most likely cause?</p>
+  <button class="opt" type="button">A paid plan is required before the page opens.</button>
+  <button class="opt" type="button">Your computer has run out of its free space.</button>
+  <button class="opt" type="button">The agent forgot to write any page file here.</button>
+  <button class="opt" type="button">The server stopped, so the page will not load.</button>
+  <div class="why"><p>A local page exists only while its server runs. Ask whether the server is still up and which port it is on before changing any code.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">In plain words, what is a port?</p>
+  <button class="opt" type="button">A numbered doorway for a service on one machine.</button>
+  <button class="opt" type="button">A folder where the agent saves all its files.</button>
+  <button class="opt" type="button">A password that keeps a page away from strangers.</button>
+  <button class="opt" type="button">A copy of the page stored inside the browser.</button>
+  <div class="why"><p>A port is a numbered endpoint that a program listens on, which is why two servers on one machine need two numbers. It is not storage and not security.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/set_up_a_local_testing_server">How do you set up a local testing server?</a> — Mozilla's beginner page. It shows a two-command server, explains why some pages will not work when opened as files, and covers changing the port. Read the Python section only; you do not need Node for this course.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a blank page? Paste the agent's last few lines and the address from your browser. Try asking your agent: <em>"Explain, in plain words, what is running right now and where my files are."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-claude-desktop">Anthropic, <a href="https://code.claude.com/docs/en/desktop">Claude Code desktop app</a> — preview servers and localhost addresses. Retrieved 2026-11-02.</li>
+  <li id="src-mdn-port">Mozilla, <a href="https://developer.mozilla.org/en-US/docs/Glossary/Port">Port (MDN glossary)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-mdn-server">Mozilla, <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/set_up_a_local_testing_server">How do you set up a local testing server?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cc-terminal">Anthropic, <a href="https://code.claude.com/docs/en/terminal-guide">Terminal guide for new users</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cc-bp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> — the <code>/verify</code> step. Retrieved 2026-11-02.</li>
+  <li id="src-codex-browser">OpenAI, <a href="https://learn.chatgpt.com/docs/browser">Browser</a> — availability and previewing a local app. Retrieved 2026-11-02.</li>
+  <li id="src-omp-web">Stencil Labs, <a href="https://omp.sh/docs/web">Web &amp; browser</a> — managed browser for local servers and screenshots. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> write a first prompt that names an outcome, ask for it to be started and opened, and explain what the localhost address and its port mean.</p>
+  <p>Quick reference: <a href="../reference/setup.html">Setup</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../reference/agent-loop.html">The agent loop</a></p>
+  <div class="pager"><span>Next: 0.8 Anatomy of a web page — <a href="0008-anatomy-of-a-web-page.html">what you are looking at</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skills, slash commands and @-mentions</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 1 · Telling the agent what you want · Lesson 1.11</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.11</p>
+  <h1>Skills, slash commands and @-mentions</h1>
+  <p class="lede">You will type the same instructions again and again: how to check a page, how to review a change, how to write a release note. A skill saves that procedure once, under a name. This lesson shows what those packs are, how to start one, and how to point the agent at a file.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0001-what-a-coding-agent-is.html">Lesson 0.1</a></span><span>Win: you can load a saved procedure by name and attach a file on purpose</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>Explaining a procedure from scratch each time costs attention and gives a slightly different result. Anthropic's skill page names the trigger: create one <q>when you keep pasting the same instructions, checklist, or multi-step procedure into chat</q>.<sup class="cite"><a href="#src-a8">[1]</a></sup> OpenAI says skills <q>reduce the need to paste the same prompt, template, requirements, or process into every chat</q>.<sup class="cite"><a href="#src-b9">[2]</a></sup></p>
+<p>For you, twenty minutes spent teaching an agent how <em>your</em> pages get checked is paid back on every later change.</p>
+
+<h2>A skill is a folder with a short file</h2>
+<p>The name is grander than the thing. A <span class="term" title="A reusable instruction pack the agent can load by name">skill</span> is a folder holding a file called <code>SKILL.md</code>, plus any templates or scripts the procedure needs. The file has two parts: a short header saying <em>when</em> the skill applies, and the instructions the agent follows when it does.<sup class="cite"><a href="#src-a8">[1]</a></sup><sup class="cite"><a href="#src-b10">[3]</a></sup></p>
+<p>The header is the only part always visible. Codex starts with <q>each skill's name and description</q>, then loads <q>the full <code>SKILL.md</code> instructions when they decide to use that skill</q>.<sup class="cite"><a href="#src-b10">[3]</a></sup> Anthropic: <q>a skill's body loads only when it's used</q>.<sup class="cite"><a href="#src-a8">[1]</a></sup> A long checklist can sit unused in your project and cost nothing until you need it.</p>
+<div class="callout">
+  <span class="label">One sentence to remember</span>
+  <p>A skill is a procedure, stored as text, that the agent reads only when the task calls for it.</p>
+</div>
+
+<h2>Slash commands are names you type</h2>
+<p>A <span class="term" title="A name typed after a forward slash at the start of a prompt">slash command</span> is what it sounds like. Type <code>/</code> at the start of an empty prompt and a list appears; some names are built in (<code>/help</code>, <code>/status</code>), others are saved packs. The boundary is blurry in Claude Code: its documentation states that <q>custom commands have been merged into skills</q>, so a file at <code>.claude/commands/deploy.md</code> and a folder at <code>.claude/skills/deploy/SKILL.md</code> both create <code>/deploy</code>.<sup class="cite"><a href="#src-a8">[1]</a></sup></p>
+<p>So "run the deploy command" means: type <code>/</code>, pick the name, and the saved instructions arrive with the turn. Spelling differs by tool; the tabs give the verified forms.</p>
+
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Skills follow the open Agent Skills standard. You invoke one <q>directly with <code>/skill-name</code></q>, or let Claude load it when your request matches the description.<sup class="cite"><a href="#src-a8">[1]</a></sup> Personal skills live at <code>~/.claude/skills/&lt;name&gt;/SKILL.md</code> and apply to every project; project skills live at <code>.claude/skills/&lt;name&gt;/SKILL.md</code> and can be committed so the whole team gets them.<sup class="cite"><a href="#src-a8">[1]</a></sup></p>
+    <p>To see the list, type <code>/</code> at the start of a prompt — the shortcut table labels that row <q>Command or skill</q>.<sup class="cite"><a href="#src-a6">[4]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Codex can start a skill when your task matches its description, or explicitly: run <code>/skills</code> to browse and pick one, or type <code>$</code> to mention a skill by name.<sup class="cite"><a href="#src-b10">[3]</a></sup> Project skills are read from <code>.agents/skills</code> in your working folder up to the repository root, and personal skills from <code>~/.agents/skills</code>.<sup class="cite"><a href="#src-b10">[3]</a></sup></p>
+    <p><code>/presets</code> is the neighbouring idea: <q>Save and run prompts or slash commands</q> in numbered slots.<sup class="cite"><a href="#src-b13">[5]</a></sup> Use a preset for a prompt you retype; use a skill when the procedure needs its own files and a description.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp loads a skill when your request matches its description, with no special syntax. To require one, use <code>/skill:&lt;name&gt;</code>, for example <code>/skill:postgres Review migrations/042_add_status.sql for lock risk.</code><sup class="cite"><a href="#src-c9">[7]</a></sup> Skills live at <code>~/.omp/agent/skills/&lt;name&gt;/SKILL.md</code> for every project, or <code>.omp/skills/&lt;name&gt;/SKILL.md</code> inside one repository.<sup class="cite"><a href="#src-c9">[7]</a></sup></p>
+    <p><code>/extensions</code> opens a list where each skill shows its description, scope and source path, so you can switch one off. omp's docs are written only by its own authors; check surprising details there.</p>
+  </div>
+</div>
+
+<h2>@-mentions point at a file</h2>
+<p>The third habit is smaller and used far more often. When you want the agent to look at a particular file, type <code>@</code> and start writing its name. Claude Code's shortcut table calls this a <q>File path mention</q> and says it will <q>Trigger file path autocomplete</q>.<sup class="cite"><a href="#src-a6">[4]</a></sup> In omp, <q>omp reads an <code>@path</code> mention into the turn automatically</q>.<sup class="cite"><a href="#src-c10">[8]</a></sup> In Codex you can do the same with <code>/mention src/lib/api.ts</code><sup class="cite"><a href="#src-b13">[5]</a></sup>, and its prompting guidance tells you to say <q>which files, folders, docs, examples, or errors matter</q>.<sup class="cite"><a href="#src-b14">[6]</a></sup></p>
+<p>An <span class="term" title="Typing @ plus a file name to attach that file to the turn">@-mention</span> attaches material; it does not explain why. omp warns that <q>a path by itself supplies context but not intent</q>.<sup class="cite"><a href="#src-c10">[8]</a></sup> "Look at @index.html" is weaker than "the heading in @index.html overlaps the button on a narrow window".</p>
+
+<div class="transcript" role="group" aria-label="Example session showing a skill and an @-mention">
+  <div class="row you"><span class="who">you</span><span>/</span></div>
+  <div class="row tool"><span class="who">list</span><span>/preflight · /help · /status · /clear …</span></div>
+  <div class="row you"><span class="who">you</span><span>/preflight @index.html @style.css</span></div>
+  <div class="row tool"><span class="who">tool</span><span>read  the preflight procedure file</span></div>
+  <div class="row tool"><span class="who">tool</span><span>read  index.html, style.css</span></div>
+  <div class="row"><span class="who">agent</span><span>Running the preflight steps: checking the page at two window widths, then listing anything that overlaps or scrolls sideways.</span></div>
+  <div class="row"><span class="who">note</span><span>The name loaded a saved checklist. The mentions supplied the two files it needed.</span></div>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what does a skill add that an @-mention does not, and what does an @-mention add that a skill does not?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A skill adds a <strong>procedure</strong> — a saved set of steps and rules, loaded by name or by matching your request. An @-mention adds <strong>material</strong> — the actual contents of one file, for this turn. You often want both, and the material alone never states what you want done with it.</p></div>
+</div>
+
+<h2>What a pack cannot do</h2>
+<p>A skill is instructions, not a permission. omp's page is explicit: a skill <q>does not add permissions or an executable tool by itself</q>, and a playbook <q>may instruct the agent to run commands using the session's existing permissions</q>.<sup class="cite"><a href="#src-c9">[7]</a></sup> Your approval prompts still stand between the agent and your files, so keep them on. A skill that says "deploy without asking" does not get to skip that gate. It asks the agent to try, nothing more.</p>
+<p>The second limit is trust. Skills are discovered from the project folder, so <q>a repository you open can contribute instructions</q>.<sup class="cite"><a href="#src-c9">[7]</a></sup> omp's rule is <q>Treat a skill like code</q>: inspect <code>SKILL.md</code> and any scripts beside it before enabling it, especially in a freshly cloned repository.<sup class="cite"><a href="#src-c9">[7]</a></sup> Unit 5 covers the wider version.</p>
+
+<h2>Use them in this order</h2>
+<table class="ref">
+  <thead><tr><th>You want…</th><th>Use</th><th>Because</th></tr></thead>
+  <tbody>
+    <tr><td>a fact that is always true here ("our pages live in <code>docs/</code>")</td><td>the project rules file</td><td>always loaded, so it should stay short. Lesson 1.12</td></tr>
+    <tr><td>a procedure you run sometimes ("check a page before shipping")</td><td>a skill</td><td>loaded on demand, so it can be long</td></tr>
+    <tr><td>one file the agent must read now</td><td>an @-mention</td><td>attaches contents for this turn only</td></tr>
+  </tbody>
+</table>
+<p>Anthropic draws the same line from the other side: write a skill when <q>a section of CLAUDE.md has grown into a procedure rather than a fact</q>.<sup class="cite"><a href="#src-a8">[1]</a></sup> omp tells you to use context files instead <q>For guidance that must always be present</q>.<sup class="cite"><a href="#src-c9">[7]</a></sup></p>
+
+<h2>A pack, a gate, and a written procedure</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user opened a session with one sentence: their app felt clunky, and a beginner would struggle to move around it. They did not describe a fix. Instead they started a saved interview pack, which required the agent to inspect the app first and then ask numbered questions, each with a recommended answer. Twenty-six questions followed; the user answered most of them with "yes to all" and corrected three.</p>
+  <p>Next they started a research pack, which produced a short note on comparable interfaces with sources, saved in the project. For the build, they used a third pack deliberately marked as human-triggered: the agent could not start it on its own. Typing its name <em>was</em> the "go".</p>
+</div>
+<p>The point is not that you need three packs. A name can carry a whole way of working, and the same mechanism can hold a gate. All three tools can keep a skill out of automatic reach: Claude Code's <code>disable-model-invocation: true</code> means <q>Claude can't invoke the skill on its own</q>;<sup class="cite"><a href="#src-a8">[1]</a></sup> Codex's <code>allow_implicit_invocation: false</code> turns off matching while keeping explicit <code>$skill</code> calls working;<sup class="cite"><a href="#src-b10">[3]</a></sup> omp's <code>hide</code> removes a skill from automatic matching and keeps <code>/skill:&lt;name&gt;</code> available.<sup class="cite"><a href="#src-c9">[7]</a></sup> Use that for anything that publishes, deletes, or sends.</p>
+
+<div class="doit">
+  <span class="label">Try it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your project folder, start your agent, and type a single <code>/</code> at the start of the prompt. Read the list. Do not run anything yet.</label></li>
+    <li><label><input type="checkbox"> Close the list without choosing anything, then type <code>@</code> followed by two or three letters of a file you recognise. Pick it from the suggestions, then delete it without sending.</label></li>
+    <li><label><input type="checkbox"> Send: <em>"Which skills do you have available? List each name, its description, and where it came from."</em></label></li>
+    <li><label><input type="checkbox"> Send: <em>"Using @index.html, tell me in one sentence what this file is for. Then say what the mention gave you that my sentence did not."</em></label></li>
+  </ol>
+  <div class="expect">
+    <p>Step 1 shows built-in names and possibly project or personal packs; the list is the honest inventory, not a promise. Step 3 should produce names with source paths, or a clear "none installed" — both are useful answers. Step 4 should mention reading the file and should separate the file's contents from your instruction. If it claims a skill you cannot find on disk, ask it to show the path; lesson 1.12 covers the rules file, which is the other place instructions hide.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">What does a skill add to your agent?</p>
+  <button class="opt" type="button">Saved steps for a task that you repeat</button>
+  <button class="opt" type="button">A faster model used for your larger projects</button>
+  <button class="opt" type="button">A backup copy of your whole project folder</button>
+  <button class="opt" type="button">A browser profile holding all your saved logins</button>
+  <div class="why"><p>A skill stores a procedure in <code>SKILL.md</code> and loads it when needed. It changes no model, makes no backup, and holds no login.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You type <code>@</code> and pick a file. What did you just do?</p>
+  <button class="opt" type="button">Started a brand new session in same folder</button>
+  <button class="opt" type="button">Runs the last command again with no changes</button>
+  <button class="opt" type="button">Attaches a file so its contents enter context</button>
+  <button class="opt" type="button">Lists every single skill installed for this project</button>
+  <div class="why"><p>An @-mention supplies material for this turn. It does not say what to do with the material, and it does not start or list anything.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A cloned project brings its own skill. What is the safe habit?</p>
+  <button class="opt" type="button">Trust it because a skill never runs commands</button>
+  <button class="opt" type="button">Enable it first and inspect the logs later</button>
+  <button class="opt" type="button">Delete the whole repository and clone it again</button>
+  <button class="opt" type="button">Read the skill file before you enable it</button>
+  <div class="why"><p>A skill is instructions, and instructions can tell the agent to run things under your existing permissions. Read <code>SKILL.md</code> and its scripts first, then decide.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/skills">Extend Claude with skills</a> — Anthropic's page, including a complete fourteen-line example of a <code>SKILL.md</code> that summarises uncommitted changes. It is written for one tool, but the folder layout and the header-plus-instructions shape are shared by the others.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Unsure whether something should be a skill, a rules-file line, or a sentence you type? Ask: <em>"Here is a procedure I repeat — should this be a skill, and what would its description say?"</em> Paste the steps you keep retyping.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a8">Anthropic, <a href="https://code.claude.com/docs/en/skills">Extend Claude with skills</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b9">OpenAI, <a href="https://learn.chatgpt.com/docs/skills-and-plugins">Skills &amp; Plugins</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b10">OpenAI, <a href="https://learn.chatgpt.com/docs/build-skills">Build skills</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a6">Anthropic, <a href="https://code.claude.com/docs/en/interactive-mode">Interactive mode (shortcuts and quick commands)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b13">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex developer commands</a> (<code>/presets</code>, <code>/mention</code>). Retrieved 2026-11-02.</li>
+  <li id="src-b14">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a> (context section). Retrieved 2026-11-02.</li>
+  <li id="src-c9">Stencil Labs, <a href="https://omp.sh/docs/skills">omp — Skills</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-c10">Stencil Labs, <a href="https://omp.sh/docs/using">omp — Using omp</a> (@-mentions). Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> say what a skill is, start one by name, attach a file on purpose, and check a pack before you trust it.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Previous: 1.10 <a href="0025-steering-mid-run.html">Steering mid-run</a></span><span>Next: 1.12 <a href="0027-project-rules-file.html">The project rules file</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

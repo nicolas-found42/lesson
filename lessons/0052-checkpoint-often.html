@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkpoint often: why long unsaved runs are risky</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control as the safety net · Lesson 3.13</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.13 · First-ship path ★</p>
+  <h1>Checkpoint often</h1>
+  <p class="lede">A coding agent can work for an hour and change a hundred lines across a dozen files. If none of that is committed, the folder holds one undivided lump of work. A checkpoint cuts the lump into pieces you can keep, compare and drop.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0009-why-save-points-exist.html">3.1 Why save points exist</a></span><span>Win: you know when to ask for a commit, and why the moment matters</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your mission needs a working app at a public address. The way you get there is a series of changes, most of them made by an agent while you read a paragraph or two of its report. If every change lands on top of the last with no commit in between, then the only state you can return to is the one from this morning — or none at all. You would be building on a pile with no floors.</p>
+<p>This lesson is the habit that keeps floors under the pile. <a href="0009-why-save-points-exist.html">Lesson 3.1</a> explained what a commit stores. Here you decide when to take one.</p>
+
+<h2>"Saved" is not the same as "committed"</h2>
+<p>Your agent writes to files on disk. Those writes are saved in the ordinary sense: close the laptop and the text is still there. So the sentence "my work is saved" is true and useless at the same time. What matters is whether the state is <em>committed</em> — copied into the project's history as a snapshot with a name.</p>
+<p>Anthropic's documentation for Claude Code draws the line: its built-in checkpoints <q>work alongside git rather than replacing it.</q><sup class="cite"><a href="#src-cl-bp">[4]</a></sup> The omp documentation says the same thing from the other side: <q>File changes are applied to your working tree as omp works. They are not committed unless you ask for a commit.</q><sup class="cite"><a href="#src-omp">[5]</a></sup> Nothing in the folder records a state unless someone takes that step.</p>
+<p>So a <span class="term" title="A commit taken at a chosen moment so later work has a safe state to return to.">checkpoint</span> is a commit you take on purpose, at a boundary you chose. The next section shows what accumulates when you skip it.</p>
+
+<h2>What one long run can pile up</h2>
+<p>Here is a small project before a run. One file, one commit, nothing else.</p>
+<pre><code>$ git status --short
+$ git log --oneline
+4d2ccea Add a first page</code></pre>
+<p>The agent is then asked to lay out a grid of recipe cards and make them respond to clicks. It works for a while and reports success. Before anyone commits, the folder looks like this:</p>
+<pre><code>$ git status --short
+ M index.html
+?? css/
+?? js/
+$ git diff --stat
+ index.html | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)</code></pre>
+<p>Notice the gap: <code>git diff</code> reports 18 added lines, but the folder also gained two new files containing 108 lines. <span class="term" title="Files git is not yet tracking; they must be selected before a commit can include them.">Untracked</span> files are outside this comparison.<sup class="cite"><a href="#src-pg">[1]</a></sup> These outputs came from a throwaway project prepared for this lesson.</p>
+<p>Nothing is lost yet. But if a later edit breaks the layout while improving the click handler, separating the two will require more investigation. A checkpoint between those steps would give you a clear comparison.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>In one session, a small visual fix expanded into nearly a day of work, with no commit for about nineteen hours. The resulting change was too large for an automated reviewer, which skipped it. In another session, about fifty minutes of autonomous work left source edits and new tooling uncommitted. These were risks, not reports of lost files: the useful work had no recent recorded boundary.</p>
+</div>
+
+<p>A run can keep finding more work. Choose the checkpoint boundaries yourself rather than waiting for the agent to declare the whole project finished.</p>
+
+<h2>Four things a checkpoint buys you</h2>
+<p>The point of committing often is not tidiness. It changes what you are able to do next.</p>
+<table class="ref">
+  <thead><tr><th>Without a checkpoint</th><th>With one</th></tr></thead>
+  <tbody>
+    <tr><td>A later edit may overwrite work you liked.</td><td>You have a recorded version to compare against.</td></tr>
+    <tr><td>Stopping leaves an unfinished pile to understand later.</td><td>A checkpoint identifies what was working at the break.</td></tr>
+    <tr><td>Several steps may have introduced a failure.</td><td>You can check earlier commits to narrow the cause.</td></tr>
+    <tr><td>A large mixed change is harder to review.</td><td>Small, focused changes are easier to inspect.</td></tr>
+  </tbody>
+</table>
+<p>Small commits do not remove the need to investigate. They give that investigation useful boundaries instead of one tangled before-and-after comparison.</p>
+
+<h2>A rhythm you can follow</h2>
+<p>Codex's documentation gives the instruction in one line: <q>Create Git checkpoints before and after a task so you can revert changes.</q><sup class="cite"><a href="#src-cx-cli">[2]</a></sup> Before and after. That is the whole rhythm, and the "before" half is the part people skip. A checkpoint taken after the damage is a record of the damage.</p>
+<p>Four moments cover almost everything in a beginner project:</p>
+<ul>
+  <li><strong>Before a risky instruction.</strong> "Rewrite the home page", "change the colour scheme everywhere", "try a different layout". If the result is worse, the previous state exists.</li>
+  <li><strong>After something works.</strong> You opened the page and the gallery loaded. That state is now worth keeping, even if the code is not pretty.</li>
+  <li><strong>Before you stop for the day.</strong> Record the verified work so tomorrow's starting point has a name.</li>
+  <li><strong>Before an unattended run.</strong> If you are going to leave the agent working while you do something else, the last known-good state should already be committed.</li>
+</ul>
+<p>OpenAI's security guidance puts the reason plainly: <q>Commit frequently so you can roll back in small increments.</q><sup class="cite"><a href="#src-cx-sec">[3]</a></sup> Small increments are the unit of rollback. One enormous commit gives you one enormous increment.</p>
+<div class="callout">
+  <span class="label">Checkpoint is not stop</span>
+  <p>A commit does not end the session. You can record a working step and continue. You can also stop an agent before committing: stopping does not itself discard files. If the agent is making unwanted changes, stop it first, inspect what remains, and then decide what is safe to record.</p>
+</div>
+
+<h2>Built-in undo is not a checkpoint</h2>
+<p>Claude Code has its own checkpoints, but they <q>are separate from git</q>.<sup class="cite"><a href="#src-cl-hcw">[6]</a></sup> Its documentation warns that a file changed only by a shell command is not restored by that rewind feature.<sup class="cite"><a href="#src-cl-bp">[4]</a></sup> Do not assume a tool's undo covers every action it performed.</p>
+<p>A Git commit can include changes regardless of which tool made them, provided you select them for that commit. It does not automatically include every file. Check the list, leave unrelated work alone, and never sweep in passwords or API keys. <a href="0043-commit-messages.html">3.4 Commit messages and staging</a> covers that selection.</p>
+<p>Git's reference log records <q>when the tips of branches and other references were updated</q>, not a history of every file edit.<sup class="cite"><a href="#src-reflog">[7]</a></sup> Do not count on it to rescue overwritten uncommitted work.</p>
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: when does Codex recommend checkpoints, and why does Claude Code's rewind not replace Git commits?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Before and after a task.</strong> Claude Code's rewind has limits, including files changed only by shell commands. A Git commit records the content you deliberately select, regardless of which tool changed it. Neither mechanism excuses skipping inspection.</p></div>
+</div>
+
+<h2>Asking for a checkpoint</h2>
+<p>Keep approval prompts on, as described in <a href="0006-approvals-and-permissions.html">0.6 Approvals and permissions</a>. Adapt the named task in this prompt to your own project.</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Pause before starting more edits. Help me checkpoint the recipe-card layout.
+
+Show git status --short, summarize the changes, and identify untracked
+files. Tell me what was checked and what remains unchecked.
+Propose the exact files to include and a clear commit message.
+Exclude unrelated work, secrets and generated clutter.
+Wait for my approval before staging or committing.
+
+After I approve, create the commit and show its identifier and the
+remaining status. Do not push, deploy or begin another task.</pre></div>
+
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Claude Code's checkpoints cannot reverse actions affecting remote systems.<sup class="cite"><a href="#src-cl-hcw">[6]</a></sup> A Git commit cannot undo a sent message or a database change either. Keep approvals on; recording files is not permission to perform irreversible actions.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>OpenAI recommends a feature branch and a clean <code>git status</code> before delegating.<sup class="cite"><a href="#src-cx-sec">[3]</a></sup> If other work is already present, ask Codex to identify and preserve it rather than silently including it in your checkpoint.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp says changes <q>are not committed unless you ask for a commit.</q><sup class="cite"><a href="#src-omp">[5]</a></sup> Use the same approval-first prompt above. A finished turn is not evidence that the work entered Git history. This is single-vendor documentation.</p>
+  </div>
+</div>
+<span class="sidenote">A session transcript records a conversation; a commit records selected project content. Keep the distinction clear.</span>
+
+<h2>Try it in your own project</h2>
+<div class="doit">
+  <span class="label">Do this now (about 6 minutes)</span>
+  <ol>
+    <li><label><input type="checkbox"> In your project folder, run <code>git status --short</code>. Note how many files are changed or untracked.</label></li>
+    <li><label><input type="checkbox"> Run <code>git diff --stat</code>. Compare its line count with what <code>status</code> listed.</label></li>
+    <li><label><input type="checkbox"> Use the prompt above for your actual task. Inspect the proposed files, check the result, then approve the checkpoint. If there are no changes, ask for one small wording edit first and check it.</label></li>
+    <li><label><input type="checkbox"> Run <code>git log --oneline -5</code> and confirm your new commit is at the top.</label></li>
+    <li><label><input type="checkbox"> Name the next boundary where you will checkpoint again: after a small working step, or before a risky change.</label></li>
+  </ol>
+  <div class="expect">
+    <p>Your log should have your new identifier and message at the top. Here is the prepared example; your history and identifiers will differ:</p>
+    <pre><code>$ git log --oneline
+43b91b3 Lay out recipe cards and wire the click handler
+4d2ccea Add a first page
+
+$ git status --short
+(no output means nothing is waiting)</code></pre>
+    <p>Status should be empty if you committed all intended work and nothing else was pending. If unrelated changes remain, that is fine: the agent should explain them rather than delete them. The win is knowing exactly what your checkpoint includes.</p>
+  </div>
+</div>
+
+<h2>When a checkpoint is not enough</h2>
+<p>A local commit is not an off-machine backup. See <a href="0011-remote-origin-push.html">3.6 Remote, origin, push</a> for copying committed work to a remote. Do not mistake “committed” for “published.”</p>
+<p>The aim is to make the next step recoverable. Continue with <a href="0050-undo.html">3.11 Undo</a> for recovery choices, or <a href="0063-long-unsupervised-runs.html">4.9 Long unsupervised runs</a> for supervising work between checkpoints.</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">An agent has edited for an hour with no commit. What is actually at risk?</p>
+  <button class="opt" type="button">The uncommitted work, if later edits break it</button>
+  <button class="opt" type="button">The committed history, which git might erase forever</button>
+  <button class="opt" type="button">Your browser settings, which the agent may change</button>
+  <button class="opt" type="button">The remote copy, which GitHub could silently delete</button>
+  <div class="why"><p>Committed history and the remote copy are separate from this hour's edits. The hour of uncommitted work is the exposed part: one bad rewrite and there is no earlier state to return to.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which request makes the safest checkpoint in the middle of a task?</p>
+  <button class="opt" type="button">Stop this whole session and begin anew elsewhere</button>
+  <button class="opt" type="button">Commit the working files, then keep on going</button>
+  <button class="opt" type="button">Copy the whole folder to the desktop manually</button>
+  <button class="opt" type="button">Ask the agent to remember the current state</button>
+  <div class="why"><p>A commit records the folder and can be compared or restored later. A folder copy is unversioned and easy to confuse with the original; asking the agent to remember depends on the agent, not on the project.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Which statement about Claude Code's built-in checkpoints is accurate?</p>
+  <button class="opt" type="button">They replace git commits for every ordinary project</button>
+  <button class="opt" type="button">They restore every file that any command changed</button>
+  <button class="opt" type="button">They work alongside git and cover edited files</button>
+  <button class="opt" type="button">They store a permanent copy in the remote</button>
+  <div class="why"><p>The documentation says checkpoints are separate from git and work alongside it, and that they only cover file changes. A file changed by a shell command is not restored, so they are not a substitute for a commit.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, Recording Changes to the Repository</a> — the chapter that explains status, staging and commits with real terminal output. Read the section on checking the status of your files, then the part on committing. It is longer than this lesson, and it is the reference the rest of Unit 3 leans on.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Unsure whether something is worth a commit? Ask the agent: <em>"I am about to ask you to change the layout. Is everything that currently works committed? Show me the output."</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-pg">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git: Recording Changes to the Repository</a>. Retrieved 2026-11-02. Quoted on committing each time the project reaches a state worth recording.</li>
+  <li id="src-cx-cli">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cx-sec">OpenAI, <a href="https://learn.chatgpt.com/docs/agent-approvals-security">Agent approvals and security</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cl-bp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-cl-hcw">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02.</li>
+  <li id="src-reflog">Git project, <a href="https://git-scm.com/docs/git-reflog">git-reflog documentation</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> say why an uncommitted run is fragile, choose the four moments that need a checkpoint, and ask your agent for one without stopping the work.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><a href="0051-permission-errors.html">← 3.12 Permission errors</a> · <a href="0053-default-branch-rename.html">3.14 Default branch rename →</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

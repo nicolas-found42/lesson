@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Integration branch vs per-ticket branches</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 9 · Working at scale · Lesson 9.2</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 9 · Lesson 9.2</p>
+  <h1>Integration branch vs per-ticket branches</h1>
+  <p class="lede">When you have several tickets in flight at once, you have to decide where finished work collects: straight onto main, or onto a holding branch first. This lesson shows both layouts and when each one saves you pain.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0044-branch.html">3.5 Branch</a></span><span>Win: you can choose a branch layout for a multi-ticket job and say why</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>So far your app has had one line of work: make a branch, build a thing, merge it back. That works until you run several pieces of work side by side — a search page, a style pass, a settings screen. Git calls a branch <q>a lightweight movable pointer to one of these commits</q><sup class="cite"><a href="#src-git1">[1]</a></sup>, which means branches are cheap: you can have many at once. The question is not whether you <em>can</em> — it is which arrangement keeps main safe and keeps the pieces from colliding.</p>
+
+<h2>Two words, one decision</h2>
+<p>A <strong>per-ticket branch</strong> is one branch made for a single ticket, created from main, and merged back when that ticket is done. GitHub's documentation names the pattern: <q>A branch you create to build a feature is commonly called a feature branch or topic branch.</q><sup class="cite"><a href="#src-gh1">[2]</a></sup> One ticket, one branch, one pull request.</p>
+<p>An <strong>integration branch</strong> is one extra branch (often named <code>integration</code> or <code>develop</code>) that collects several finished tickets before any of it goes to main. Ticket branches merge into it; later, the whole batch merges to main in one step.</p>
+<p>The git command underneath both layouts is the same. To merge is to <q>join two or more development histories together</q><sup class="cite"><a href="#src-git2">[3]</a></sup> — the layouts differ only in <em>which</em> histories join <em>when</em>.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Before reading further: with three tickets and one integration branch, which branch do you create each ticket branch <em>from</em>, and which branch does each ticket merge <em>into</em>? Write both answers.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Each ticket branch is created from <strong>main</strong> (or from integration, if your convention says so — pick one and stick to it), and each finished ticket merges into the <strong>integration branch</strong>, not into main. Main receives everything only once, at the end.</p></div>
+</div>
+
+<h2>Layout A: every ticket goes straight to main</h2>
+<p>Ticket branch off main, finish, merge to main, delete the branch, next ticket. This is the layout you already know from lesson 3.5. Its virtue is that main is always current: each merged ticket is visible, reviewable, and shippable on its own, in small pieces.</p>
+<p>Its cost appears when several agents work at once, or when the tickets only make sense <em>together</em>. If ticket 3 is broken but tickets 1 and 2 are fine, main now contains the broken piece, and rolling back means unpicking a merge.</p>
+
+<h2>Layout B: a holding branch between the tickets and main</h2>
+<p>Ticket branches still come off main, but their pull requests target the integration branch. Main does not move until you are satisfied with the whole batch. If one ticket turns out badly, you drop that one merge from integration; main never saw it.</p>
+<p>The cost: main gets one big merge at the end, so review happens in bulk, and problems between tickets surface late rather than one at a time. GitHub's conflict guidance applies to both layouts — <q>Merge conflicts often happen when people make different changes to the same line of the same file</q><sup class="cite"><a href="#src-gh2">[4]</a></sup> — but with an integration branch, several tickets' worth of overlap arrives at once instead of dribbling in.</p>
+
+<div class="compare">
+  <div class="col">
+    <h3>Per-ticket → main</h3>
+    <p><em>Best when:</em> tickets are independent; each should ship as soon as it is done.</p>
+    <p><em>You get:</em> small reviews; main always current; a bad ticket must be reverted from main.</p>
+  </div>
+  <div class="col">
+    <h3>Tickets → integration → main</h3>
+    <p><em>Best when:</em> tickets belong to one feature; you want to test the whole batch before main moves.</p>
+    <p><em>You get:</em> a safe staging area; main moves once; review happens in one big batch.</p>
+  </div>
+</div>
+
+<h2>What this looks like with an agent</h2>
+<p>A coding agent does not care which layout you choose, but it must be told. Left alone, it will pick something sensible or something surprising, and you will find out by reading <code>git branch</code> afterwards. In one real session, a user handed an agent a long roadmap of tickets and named exactly three to build. The agent gave each ticket its own branch, worked on them in parallel, and merged each finished ticket into a shared integration branch. At the end it opened a single pull request covering all three. That one decision — three small branches, one holding branch, one PR — is Layout B, and it worked because the tickets were parts of one feature. Later in the same run the user said, in effect: <q>stop work when these three tickets have merged and closed.</q> Naming the done-state kept a many-ticket job from sprawling.</p>
+
+<div class="vignette">
+  <p><strong>Spot the layout.</strong> A user asks an agent to build three related screens for a gallery app. The agent creates <code>ticket-search</code>, <code>ticket-style</code>, and <code>ticket-settings</code>, finishes them in turn, and after each one runs <code>git switch integration</code> then <code>git merge ticket-search</code>. When all three are in, it proposes one pull request from <code>integration</code> to <code>main</code>. The user reviews once, merges once. If the settings screen had gone wrong, main would still be untouched.</p>
+</div>
+
+<h2>Try it yourself</h2>
+<p>You can feel both layouts in five minutes with a throwaway folder. This is real git, the same commands your agent would run — check the result at each step.</p>
+
+<div class="doit">
+  <span class="label">Do it: build the integration layout</span>
+  <ol>
+    <li>Make a scratch repo and give it a starting file:
+      <pre><code>mkdir branch-practice &amp;&amp; cd branch-practice
+git init -b main
+echo "&lt;h1&gt;my app&lt;/h1&gt;" &gt; index.html
+git add . &amp;&amp; git commit -m "first page"</code></pre></li>
+    <li>Create the holding branch, then go back to main for ticket work:
+      <pre><code>git switch -c integration
+git switch main</code></pre></li>
+    <li>Build "ticket A" on its own branch and merge it into integration:
+      <pre><code>git switch -c ticket-search
+echo "&lt;p&gt;search&lt;/p&gt;" &gt; search.html
+git add . &amp;&amp; git commit -m "add search page"
+git switch integration
+git merge ticket-search</code></pre></li>
+    <li>Build "ticket B" the same way, from main, into integration:
+      <pre><code>git switch main
+git switch -c ticket-dark
+echo "body { background: #222; }" &gt; dark.css
+git add . &amp;&amp; git commit -m "add dark styles"
+git switch integration
+git merge ticket-dark</code></pre></li>
+    <li>Compare the two lines of history:
+      <pre><code>ls
+git switch main
+ls</code></pre></li>
+  </ol>
+  <div class="expect">On <code>integration</code> you should see <code>dark.css&nbsp; index.html&nbsp; search.html</code>. After switching to <code>main</code>, only <code>index.html</code> — main has not moved. (Real output, git 2.56.0.) Note the pattern in steps 3–4: each ticket branched from <em>main</em> and merged into <em>integration</em>. If two tickets edit the same lines, a merge will stop and ask you to resolve it — lesson 3.9 covers that.</div>
+</div>
+
+<h2>Choosing, in one sentence each</h2>
+<p>Choose per-ticket-to-main when each ticket could ship alone and you want small, steady steps. Choose an integration branch when the tickets are one feature and you want to prove the whole batch before main changes. Mixing them without saying so is the real hazard: if your agent merges to main while you expected a holding branch, you learn it from the diff, not from a warning. So put the layout in the prompt — <em>"one branch per ticket; merge each into <code>integration</code>; PR to main only when all three are in"</em> — and confirm with <code>git branch</code> and <code>git log</code> afterwards.</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">In the integration layout, where does a finished ticket merge first?</p>
+  <button class="opt" type="button">Into the newest other unfinished ticket branch.</button>
+  <button class="opt" type="button">Straight onto main, then copied to integration.</button>
+  <button class="opt" type="button">Onto the integration branch, and never main.</button>
+  <div class="why"><p>The integration branch is the holding area between ticket branches and main. Main receives the whole batch in one merge at the end; individual tickets do not touch it.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which situation most favors an integration branch over per-ticket merges to main?</p>
+  <button class="opt" type="button">Three tickets forming one feature you test together.</button>
+  <button class="opt" type="button">Each ticket separate and shippable on its own.</button>
+  <button class="opt" type="button">One typo correction that must ship out today.</button>
+  <div class="why"><p>A holding branch pays off when tickets belong together and you want main to move once, after the batch is proven. Independent or urgent single changes are simpler merged straight to main.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You told the agent to use a holding branch, but suspect it merged to main. What is the fastest check?</p>
+  <button class="opt" type="button">Ask the agent politely whether it is quite sure.</button>
+  <button class="opt" type="button">Run git branch and git log and look yourself.</button>
+  <button class="opt" type="button">Delete the repo and re-clone it from the remote.</button>
+  <div class="why"><p>Claims are not evidence (lesson 2.2): the branch pointers are facts you can read with <code>git branch</code> and <code>git log</code> in seconds. Asking the agent may help, but the repo is the source of truth.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell">Pro Git: Branches in a Nutshell</a> — the chapter behind lesson 3.5, now with a reason to reread it: the "remote branches" section shows what these layouts look like once a remote (lesson 3.6) is involved. Read the first half only.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Try: <em>"Show me what the branch diagram looks like after three tickets merge into integration, then integration merges into main"</em> or <em>"Rewrite my ticket prompt so the agent uses the integration layout."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-git1">Chacon &amp; Straub, <a href="https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell">Pro Git 2nd ed., Branches in a Nutshell</a> (git-scm.com, CC BY-NC-SA 3.0). Retrieved 2026-11-02. Quote: "A branch in Git is … a lightweight movable pointer to one of these commits."</li>
+  <li id="src-gh1">GitHub, <a href="https://docs.github.com/en/pull-requests/reference/branches">GitHub Docs: Branches</a>. Retrieved 2026-11-02. Quote: "A branch you create to build a feature is commonly called a feature branch or topic branch."</li>
+  <li id="src-git2">Git project, <a href="https://git-scm.com/docs/git-merge">git-merge reference</a>. Retrieved 2026-11-02. Quote: "Join two or more development histories together."</li>
+  <li id="src-gh2">GitHub, <a href="https://docs.github.com/en/pull-requests/reference/merge-conflicts">GitHub Docs: Merge conflicts</a>. Retrieved 2026-11-02. Quote: "Merge conflicts often happen when people make different changes to the same line of the same file."</li>
+</ol>
+
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> describe per-ticket branches and an integration branch, run the integration layout yourself in a scratch repo, and name the layout in your prompt so the agent cannot guess.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/agent-loop.html">The agent loop (one page)</a></p>
+  <div class="pager"><span>Next: 9.3 Parallel agents and shared build folders</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

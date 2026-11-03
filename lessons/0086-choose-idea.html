@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choose your capstone idea</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 7 · Capstone · Lesson 7.1</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 7 · Lesson 7.1 · First-ship path ★</p>
+  <h1>Choose your capstone idea</h1>
+  <p class="lede">Everything you have learned so far was practice. Now you pick the app you will actually take from a blank folder to a public link. The skill in this lesson is choosing an idea small enough to ship — and knowing the fallback if you cannot choose.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0015-ship-a-hello-world-page.html">M.1 Ship a hello world page</a> and the other ★ lessons, especially <a href="0016-goal-audience-not-method.html">1.1 Goal + audience</a>, <a href="0055-definition-done-acceptance-criteria.html">4.1 Definition of done</a>, <a href="0056-scope-creep-scope-ladder.html">4.2 Scope creep</a></span><span>Win: you can name your capstone idea, its audience, and its "done when" line — or take the fallback</span></div>
+</header>
+<main>
+
+<h2>Why the choice comes first</h2>
+<p>The course mission is to take one idea to a public app by directing a coding agent. Units 0 through 6 taught you the moves: prompt with a goal and audience, verify with your own eyes, save your work with git, and ship a static site to a live URL. The capstone (lessons 7.2 and 7.3) is where you run all of those moves on your own project.</p>
+<p>That makes this the highest-leverage decision you will make in the course — and also the easiest place to get stuck. Beginners often stall before the first prompt, waiting for the perfect idea. OpenAI's Codex guidance opens its own prompting advice with the question, <q>Goal: What are you trying to change or build?</q><sup class="cite"><a href="#src-b7">[1]</a></sup> You need an answer to that before anything else. The good news: for learning purposes, the <em>choice</em> matters far less than finishing. A finished modest app teaches more than an abandoned ambitious one.</p>
+
+<h2>What makes an idea shippable for you</h2>
+<p>You are looking for an idea that passes four tests. If a candidate fails one, shrink it (lesson 4.2's scope ladder) or pick another.</p>
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>From lesson 6.1: what does "static" mean for a web app, and why does this course ship static apps first? Answer in your own words before revealing.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A static app is a fixed set of files (HTML, CSS, JavaScript) served the same way to every visitor, with no server-side program or database of its own. It is shippable first because hosting it is free and simple — GitHub Pages serves files from your repository<sup class="cite"><a href="#src-d3">[4]</a></sup> — and because it removes whole categories of failures (secrets, servers, databases) you have not yet learned to handle.</p></div>
+</div>
+<p>The four tests, in order:</p>
+<p><strong>1. It works as a static app.</strong> Everything you have shipped so far lives on GitHub Pages, which serves files from a repository.<sup class="cite"><a href="#src-d3">[4]</a></sup> Your capstone should not need accounts, a private database, or a paid service. A quiz, a recipe box, a habit tracker that saves to the browser's own storage, a schedule for one club — all static. Anything needing logins or shared data across people is not, yet; Unit 8 covers why.</p>
+<p><strong>2. It has one audience you can name.</strong> Lesson 1.1 taught "goal + audience, not method". "So my club members can check rehearsal times on their phones" is an audience. "A social platform" is not. You will reuse this sentence in your first capstone prompt.</p>
+<p><strong>3. You can write its "done when" in one line.</strong> Lesson 4.1: acceptance criteria before building. If you cannot write a single sentence like "done when I can add a plant, see it in the list, and mark it watered", the idea is still two ideas.</p>
+<p><strong>4. You would use it, or know someone who would.</strong> This is your verification fuel. In lesson 2.13 you learned to walk the app as a first-time user; that is much easier when you actually know what correct behaviour looks like.</p>
+
+<div class="compare">
+  <span class="label">Two ideas, one passes</span>
+  <div>
+    <p><strong>Idea A: "A travel social network."</strong> Needs logins, a shared database, photo uploads, and moderation. Fails tests 1 and 3. You would spend the capstone fighting problems Unit 8 has not taught you to solve yet, and never reach a live link.</p>
+    <p><strong>Idea B: "A one-page packing-list builder for my own trips, saved in this browser."</strong> Add items, tick them off, keep a few saved lists. Passes all four tests: static, one named user (you), one-line "done when", and you know exactly what right looks like.</p>
+  </div>
+</div>
+
+<h2>Shrink before you commit</h2>
+<p>Most stuck learners are not out of ideas; they are out of <em>small</em> ideas. Apply the scope ladder from lesson 4.2: if your idea is a product, ask what the plugin-sized version is; if that is still big, what the demo-sized version is. Then apply lesson 4.3 and say "and stop there" out loud. Anthropic's agent-building guidance stresses building with guardrails and testing in a bounded environment<sup class="cite"><a href="#src-d1">[5]</a></sup> — a tiny, well-specified project is exactly that kind of boundary for you as a director.</p>
+<span class="sidenote">Claude Code's best-practices page describes the classic beginner failure — the agent reported done, but <q>it had no way to check its own work.</q><sup class="cite"><a href="#src-a7">[3]</a></sup> A crisp one-line "done when" is what gives it (and you) that way.</span>
+
+<h2>The fallback example</h2>
+<p>If you cannot choose in the next ten minutes, take the fallback. It exists so that no learner reaches lesson 7.2 without a project. It is deliberately plain, and it still exercises every skill on the first-ship path.</p>
+<div class="vignette">
+  <span class="label">The fallback: a single-page recipe card</span>
+  <p>One page, one recipe. It shows the ingredients as a checklist a cook can tick on a phone, the steps in order, and a servings control that rescales the ingredient amounts. Audience: you, cooking with messy hands and a phone on the counter. Done when: ticking items persists after reloading the page, and changing servings from two to four doubles every listed amount. Everything is static; nothing leaves the browser. The final recipe can be your own, so the content is yours even if the template is not.</p>
+</div>
+<p>The fallback's value is honesty about scope: it is the smallest thing that still needs an interview, a plan, real verification, and a deploy. If your own idea is bigger than the fallback, shrink it until it is only modestly bigger — never until it is smaller.</p>
+
+<h2>Commit in writing</h2>
+<p>Do not hold the choice in your head. Write a three-line project card — idea, audience, done-when — and keep it in the project folder. Lesson 1.12's rules file is the natural home: the agent reads it every session, so your goal travels with the repo.</p>
+<div class="doit">
+  <span class="label">Do it now: choose and write the card</span>
+  <p>In your project folder (a fresh folder is fine; lesson 0.3), start your agent and paste this prompt:</p>
+  <div class="prompt"><pre>I want to plan my first real app. Do not build anything yet.
+Interview me with numbered questions, each with a recommended
+answer, to pin down: the one-line idea, who it is for, the
+single sentence "done when", and what is explicitly OUT of
+scope. Cap the interview at six questions. When we agree,
+write the answers as a short card at the top of AGENTS.md
+(or CLAUDE.md if I use Claude Code), and stop there.</pre></div>
+  <p class="expect">What you should see: six or fewer numbered questions with recommendations, then a short card written into your rules file and a stop — no files built, no git activity. If it starts building, interrupt (lesson 1.10) and repeat "do not build anything yet".</p>
+</div>
+<p>Keep approval prompts on throughout; a planning session should not need any file edits beyond the card itself.</p>
+
+<div class="callout">
+  <span class="label">You are the decider</span>
+  <p>The agent can recommend features, structure, and libraries. It cannot know which idea you care about. Lesson 1.6: recommendations are inputs; product intent is yours. If the interview's recommended answers describe a different app than you pictured, override them.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">A friend suggests a capstone idea that needs user accounts and a shared database. By this course's rules, what is the issue?</p>
+  <button class="opt" type="button">Storing user data in code is too hard for agents.</button>
+  <button class="opt" type="button">Accounts always break the git save points you rely on.</button>
+  <button class="opt" type="button">It cannot ship as the static apps this unit deploys.</button>
+  <button class="opt" type="button">People apps are always worse than small personal tools now.</button>
+  <div class="why"><p>The problem is deployment shape, not difficulty: static hosting serves fixed files to everyone, and accounts need a server plus secrets — Unit 8 territory. Shrink to a static version or pick another idea.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Your idea is "a fitness app for everyone with sharing and challenges". Which fix follows the scope ladder?</p>
+  <button class="opt" type="button">Ask the agent to build it in one long overnight session.</button>
+  <button class="opt" type="button">Cut to "my own workout log that saves in this browser".</button>
+  <button class="opt" type="button">Hire a reviewer to check every single line before it ships.</button>
+  <button class="opt" type="button">Add a budget so the agent never spends over one dollar.</button>
+  <div class="why"><p>The ladder moves the idea down a level (product → personal tool) so it passes the four tests. Budgets and reviewers are good habits from Units 4 and 2, but neither fixes an oversized idea.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Ten minutes in, you still cannot pick between three ideas. What does this lesson say to do?</p>
+  <button class="opt" type="button">Take the fallback recipe card and start moving right now.</button>
+  <button class="opt" type="button">Combine all three into one app keeping every last option.</button>
+  <button class="opt" type="button">Delay the capstone a while until good inspiration finally arrives.</button>
+  <button class="opt" type="button">Let the agent silently pick whichever one it likes best.</button>
+  <div class="why"><p>The fallback exists precisely so indecision never blocks lesson 7.2. Combining ideas recreates the scope problem, and the choice is a product decision the agent cannot make for you.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a> — OpenAI's guidance on describing a goal before building. Tool-specific, but the "start from the goal" habit is the same one this lesson teaches. Read the section on writing the first prompt.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Try: <em>"Here are my three candidate ideas — which is smallest to ship as a static app, and what would you cut from each?"</em> or <em>"Turn my idea into a one-line 'done when'."</em> Advice is fine; the decision stays yours.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-b7">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/overview">Claude Code overview</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-d3">GitHub, <a href="https://docs.github.com/en/pages/quickstart">Quickstart for GitHub Pages</a>. Retrieved 2026-11-02.</li>
+  <li id="src-d1">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as outdated on page). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> test an idea against the four shippability tests, shrink it with the scope ladder, take the fallback without guilt, and commit your choice in a written card.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../index.html">Course index</a></p>
+  <div class="pager"><span>Next: 7.2 Interview → plan → build → verify → ship → share (<a href="0087-interview-plan-build-verify-ship-share.html">coming</a>)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

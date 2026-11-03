@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What not to track: .gitignore</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control · Lesson 3.3</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.3 · First-ship path ★</p>
+  <h1>What not to track: <code>.gitignore</code></h1>
+  <p class="lede">A save point should contain the things you meant to keep, and nothing else. One small text file decides which files git refuses to save, and that same file can quietly erase work you thought was safe.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0010-repo-working-tree-uncommitted-change.html">3.2 Repository, working tree, uncommitted change</a></span><span>Win: you can tell what your save points leave out, and why</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>When you publish an app, your project folder becomes public in a way that is hard to reverse. Anything git has saved travels with it. A key you pasted into a settings file, a folder of downloaded packages, a fifty-megabyte video: all of it becomes part of what other people can download, and part of every copy that already exists on someone else's machine. The flip side matters as much. Files git was told to skip never travel at all, which is fine for a cache and disastrous for instructions your agent needs to do its job on another machine.</p>
+<p>This lesson is about the single file that draws that line.</p>
+
+<h2>One file, one list of patterns</h2>
+<p>A <span class="term">.gitignore</span> file is a plain text file at the top of your project, holding one pattern per line. Git reads it whenever it decides whether a path is worth mentioning. The git manual describes the goal plainly: the file <q>specifies intentionally untracked files that Git should ignore.</q><sup class="cite"><a href="#src-gi">[1]</a></sup> GitHub's own instructions put the file in the repository root, and add that you should <q>commit the .gitignore file into your repository</q> so the rules travel with the project.<sup class="cite"><a href="#src-gh">[2]</a></sup></p>
+<p>A pattern is only a name-matching rule. <code>node_modules/</code> means "the folder called node_modules, anywhere in this project". <code>.env</code> means "a file named .env, anywhere". A line beginning with <code>#</code> is a comment, and a blank line is ignored. The syntax is the same one your shell uses for wildcards, which Pro Git calls <q>simplified regular expressions that shells use</q>.<sup class="cite"><a href="#src-pg">[3]</a></sup></p>
+<p>Ignoring is not deleting. The file stays on your disk exactly where it was. Git stops offering to add it, and <code>git status</code> stops listing it.<sup class="cite"><a href="#src-gs">[4]</a></sup></p>
+
+<h2>Three things you keep out</h2>
+<p>Almost everything people ignore falls into three groups.</p>
+<p><strong>Secrets.</strong> A key, a password, a login token. These belong in a file that stays on your machine, often named <code>.env</code>, and nowhere else. If that file is committed, the secret is in your history, and removing it later is a rewrite of history that GitHub documents as carrying a <q>high risk of recontamination</q>.<sup class="cite"><a href="#src-ghs">[5]</a></sup> The cheap move is to list the file before the first commit ever happens.</p>
+<p><strong>Caches and generated files.</strong> The <code>node_modules</code> folder an installer creates, compiled output, log files, temporary editor files. Pro Git names exactly this class: <q>automatically generated files such as log files or files produced by your build system</q>.<sup class="cite"><a href="#src-pg">[3]</a></sup> They can be rebuilt from the files that matter, so saving them adds weight and noise with no value.</p>
+<p><strong>Big files.</strong> GitHub warns above 50 MiB and <q>blocks files larger than 100 MiB</q>.<sup class="cite"><a href="#src-ghl">[6]</a></sup> A video, a database dump or a folder of images pushed once stays in history even after you delete the file, because history is a stack of snapshots, not a current-state mirror. A blocked push in the middle of shipping is a bad time to learn this.</p>
+
+<div class="callout">
+  <span class="label">The rule of thumb</span>
+  <p>Ask of each file: could someone rebuild this from the rest of the project, or must it stay private? If either answer is yes, it does not belong in a save point.</p>
+</div>
+
+<h2>The trap: a rule does not touch files already tracked</h2>
+<p>This is the part beginners get wrong, and the git manual says it in one line: <q>Files already tracked by Git are not affected.</q><sup class="cite"><a href="#src-gi">[1]</a></sup> Adding <code>.env</code> to <code>.gitignore</code> after you have committed it changes nothing. The secret is already in the snapshot, and every later commit carries it forward.</p>
+<p>The fix is a two-step move, and both steps matter. First, remove the file from git's index while leaving it on disk, with <code>git rm --cached</code>. Second, add the ignore rule, so it cannot be added back. GitHub's page describes it the same way: <q>If you want to ignore a file that is already checked in, you must untrack the file before you add a rule to ignore it.</q><sup class="cite"><a href="#src-gh">[2]</a></sup> The git manual adds the reason for the second step: <q>The filename can then be added to the .gitignore file to stop the file from being reintroduced in later commits.</q><sup class="cite"><a href="#src-gi">[1]</a></sup></p>
+<p>Note what this does not do. The old snapshot still contains the secret. Untracking stops the leak from growing; it does not clean the past. That is a separate, harder job, covered in Unit 8.</p>
+
+<h2>Why an ignored skill disappears</h2>
+<p>Now the failure that catches experienced users, not only beginners. An agent that has worked out how to test your app can write those steps down as a <span class="term">skill</span>: a small folder of instructions it loads in later sessions. Claude Code puts project skills under <code>.claude/skills/</code>, Codex under <code>.agents/skills/</code>, omp under <code>.omp/skills/</code>.<sup class="cite"><a href="#src-cc">[7]</a></sup><sup class="cite"><a href="#src-cx">[8]</a></sup><sup class="cite"><a href="#src-omp">[9]</a></sup> Those folders sit inside your project, next to your code.</p>
+<p>Many projects ignore the whole agent folder. The habit comes from a sensible place: agent state, logs and session files are not source code. But <code>.claude/</code> with a trailing slash excludes everything inside, skills included. The skill works perfectly on the machine that wrote it. It never reaches a commit, so it is not on your other computer, not in a fresh checkout, and not in the copy your teammate clones. The agent that wrote it will not warn you unless you ask.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user spent an afternoon having an agent build a project-local testing skill: launch a desktop app, drive its menus with scripted keys, save screenshots and logs as evidence. It worked. The agent used it to map six screens. Near the end, the agent mentioned, three separate times, that there would be no pull request. The reason was the same each time. The agent folder was listed in the ignore file, so the skill existed only in that one working copy. Nothing was committed, and the next person to open the project would have to rebuild it from scratch.</p>
+</div>
+
+<p>The transcript of how that looks in practice:</p>
+<pre><code>you      "Check whether the skill we wrote is saved."
+agent    run   git status --short
+agent    run   git check-ignore -v .claude/skills/testing/SKILL.md
+output         .gitignore:7:.claude/   .claude/skills/testing/SKILL.md
+agent    says  "It is ignored by line 7 of .gitignore, so it has
+                never been committed."</code></pre>
+<p><code>git check-ignore</code> is the tool for exactly this question. It prints the path if it is excluded, and with <code>-v</code> it prints <q>the exclude pattern together with the path</q>, so you learn which line did it.<sup class="cite"><a href="#src-gci">[10]</a></sup> The same demo on this machine, in a throwaway repository, produced this:</p>
+<pre><code>$ git check-ignore -v .env node_modules/pkg.js .claude/skills/check/SKILL.md
+.gitignore:2:.env             .env
+.gitignore:1:node_modules/    node_modules/pkg.js
+.gitignore:3:.claude/         .claude/skills/check/SKILL.md</code></pre>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the three groups of files you keep out of a save point, and what happens if you add an ignore rule for a file you already committed?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Secrets</strong> (keys, passwords, tokens), <strong>caches and generated files</strong> (packages, build output, logs), and <strong>big files</strong> (videos, dumps, image folders). A rule does not touch files already tracked: the old snapshot still holds the file, and you must untrack it with <code>git rm --cached</code> before the rule can take effect.</p></div>
+</div>
+
+<h2>Where a project skill lives</h2>
+<p>If you want a skill to travel with the project, it has to live in a folder that your ignore file does not exclude, and it has to be committed. This is what each agent expects.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Project skills live at <code>.claude/skills/&lt;name&gt;/SKILL.md</code>. The documentation is explicit about sharing: <q>Commit it so your team gets it too</q>.<sup class="cite"><a href="#src-cc">[7]</a></sup> If your ignore file contains <code>.claude/</code>, narrow it, or add an exception for the skills folder.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Team skills <q>can be checked into .agents/skills inside a repository</q>, while personal skills sit in <code>$HOME/.agents/skills</code>.<sup class="cite"><a href="#src-cx">[8]</a></sup> Ignoring <code>.agents/</code> wholesale removes the shared ones along with the private state.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Skills live at <code>~/.omp/agent/skills/&lt;name&gt;/SKILL.md</code> for your machine, or <code>.omp/skills/&lt;name&gt;/SKILL.md</code> inside the project.<sup class="cite"><a href="#src-omp">[9]</a></sup> omp's docs come only from its own authors, so check anything surprising with your teacher.</p>
+  </div>
+</div>
+
+<div class="warn">
+  <span class="label">Do not ignore the rules file</span>
+  <p>Your project's rules file is the other thing an agent reads to know how your project works. It is a normal file in the project and belongs in a commit. The same goes for the <code>.gitignore</code> file itself: it is only useful to others if they receive it.</p>
+</div>
+
+<div class="doit">
+  <span class="label">Try it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> In your project folder, run <code>ls -a</code> and look for a file named <code>.gitignore</code>.</label></li>
+    <li><label><input type="checkbox"> If it exists, open it and read the lines. If it does not, ask your agent: "Create a .gitignore for this project and explain each line."</label></li>
+    <li><label><input type="checkbox"> Run <code>git status --short</code> and note which files appear.</label></li>
+    <li><label><input type="checkbox"> Run <code>git check-ignore -v .env</code>. Then try it with a file you know is committed, such as <code>index.html</code>.</label></li>
+    <li><label><input type="checkbox"> Ask your agent: "Which folders in this project does .gitignore exclude, and does that include any skill or rules files?"</label></li>
+  </ol>
+  <div class="expect">
+    <p>Step 4 prints one line for <code>.env</code>, naming the pattern and line number that excludes it, and prints nothing for <code>index.html</code> because tracked files are not subject to ignore rules. Step 5 should name each excluded folder in plain words and tell you whether a skill folder is inside one of them. If a skill you rely on turns out to be ignored, that is the finding worth acting on: narrow the rule, commit the skill, and check with <code>git status</code> that it now appears.</p>
+  </div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You add <code>.env</code> to <code>.gitignore</code>, but you committed that file last week. What does the new rule do?</p>
+  <button class="opt" type="button">It keeps the file tracked until you remove it</button>
+  <button class="opt" type="button">It stops showing the file after your next commit</button>
+  <button class="opt" type="button">It changes nothing for a file still tracked now</button>
+  <button class="opt" type="button">It untracks the file the next time you commit</button>
+  <div class="why"><p>The git manual says files already tracked are not affected. The old commit still holds the secret, and the file keeps appearing in status until you untrack it with <code>git rm --cached</code> and commit that removal.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which pair most clearly belongs in an ignore file rather than a save point?</p>
+  <button class="opt" type="button">A cache you can rebuild and a local key file</button>
+  <button class="opt" type="button">A backup of the app and your own photo files</button>
+  <button class="opt" type="button">A list of test results and the app page files</button>
+  <button class="opt" type="button">A copy of the docs and the project readme file</button>
+  <div class="why"><p>Both are rebuildable or private: a package cache can be recreated from its lockfile, and a key must never travel. The other options mix in files that are the actual source of your app, which you do want in history.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Your ignore file excludes <code>.claude/</code>. The agent writes a useful project skill there. What is the sound move?</p>
+  <button class="opt" type="button">Ignore that one folder and commit the skill file</button>
+  <button class="opt" type="button">Ignore the whole agent folder and keep on working</button>
+  <button class="opt" type="button">Commit the whole folder and forget the ignore rule</button>
+  <button class="opt" type="button">Ask the agent to save the skill somewhere else</button>
+  <div class="why"><p>The skill belongs in the project. The narrow fix is to keep the folder excluded but re-include the skills path, or to replace the folder rule with a list of the specific state files you meant to exclude. Moving it elsewhere hides the problem rather than fixing it.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://git-scm.com/docs/gitignore">gitignore(5)</a> — the reference page, and shorter than it looks. Read the description and the pattern-format bullets, then stop before the examples. It answers the two questions beginners ask most: why a rule did not apply, and why an exception inside an excluded folder did not work.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Read my .gitignore and tell me, for each line, what it protects against"</em> or <em>"Is any skill or rules file in this project currently ignored by git?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-gi">Git project, <a href="https://git-scm.com/docs/gitignore">gitignore(5)</a>. Retrieved 2026-11-02. Also checked locally with <code>git help gitignore</code> (git 2.56.0). Used for what the file is, the tracked-files caveat, and pattern syntax.</li>
+  <li id="src-gh">GitHub, <a href="https://docs.github.com/en/get-started/git-basics/ignoring-files">Ignoring files</a>. Retrieved 2026-11-02. Used for placing and committing the file, and for untracking a checked-in file.</li>
+  <li id="src-pg">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, 2.2 — Recording Changes to the Repository</a>, git-scm.com. Retrieved 2026-11-02. Used for which files are usually ignored and for glob patterns.</li>
+  <li id="src-gs">Git project, <a href="https://git-scm.com/docs/git-status">git-status(1)</a>. Retrieved 2026-11-02. Used for how ignored paths are hidden from status.</li>
+  <li id="src-ghs">GitHub, <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository">Removing sensitive data from a repository</a>. Retrieved 2026-11-02. Used for the risk of recontamination after a history rewrite.</li>
+  <li id="src-ghl">GitHub, <a href="https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github">About large files on GitHub</a>. Retrieved 2026-11-02. Used for the 50 MiB warning and 100 MiB block.</li>
+  <li id="src-cc">Anthropic, <a href="https://code.claude.com/docs/en/skills">Agent Skills</a>. Retrieved 2026-11-02. Used for the project skill path and the instruction to commit it.</li>
+  <li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Best practices</a>. Retrieved 2026-11-02. Used for personal and shared skill locations.</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/skills">omp skills</a>. Retrieved 2026-11-02. Single-vendor source. Used for the project and personal skill paths.</li>
+  <li id="src-gci">Git project, <a href="https://git-scm.com/docs/git-check-ignore">git-check-ignore(1)</a>. Retrieved 2026-11-02. Also checked locally with <code>git check-ignore -v</code> in a throwaway repository (git 2.56.0). Used for reading which pattern excludes a path.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain what <code>.gitignore</code> does, name the three kinds of files you keep out of a save point, untrack a file that slipped in, and check whether a skill folder is being silently excluded.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/safety-checklist.html">Safety checklist</a></p>
+  <div class="pager"><a href="0010-repo-working-tree-uncommitted-change.html">Previous: 3.2 Repository, working tree, uncommitted change</a> · <a href="0043-commit-messages.html">Next: 3.4 Commit messages</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

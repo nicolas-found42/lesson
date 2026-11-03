@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The build step: source becomes deployable files</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.2</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 6 · Lesson 6.2 · First-ship path ★</p>
+  <h1>The build step: source becomes deployable files</h1>
+  <p class="lede">Many projects are not published as-is. A program first turns your source files into a separate folder of finished files, and it is that folder — not your source — that goes online. Knowing which is which stops the classic "works on my machine, blank on the web" surprise.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Needs: <a href="0012-static-vs-dynamic.html">6.1 Static vs dynamic</a></span><span>Win: you can point at your build output and say what it is, and check that the host is serving it</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>Your mission is to get a real app onto a public URL. Some projects — a folder with an <code>index.html</code>, a stylesheet and a script — are already static sites: what you wrote is what gets served. Lesson 6.1 drew that line. But plenty of projects are written in a form browsers cannot run directly: a different flavor of JavaScript, several files joined into one, images that get renamed and compressed. Those projects need a <strong>build step</strong> in between, and if you and your agent publish the wrong folder, your visitors see nothing.</p>
+
+<h2>Source, build, output</h2>
+<p>Three words carry this whole lesson:</p>
+<ul>
+  <li><strong>Source</strong> — the files you and the agent edit. Human-readable, full of structure.</li>
+  <li><strong>Build step</strong> — a program that reads the source and writes a fresh set of files: joining, renaming, shrinking, rewriting.</li>
+  <li><strong>Build output</strong> — the folder of finished files the build step wrote. This is what a host should serve.</li>
+</ul>
+<p>Think of a print shop. Your source is the manuscript. The build step is the printing and binding. The output is the stack of finished books that actually gets shipped. You would never ship the manuscript, and you would never edit the printed book — edits go into the manuscript, and you print again.</p>
+<p>GitHub's own description of Pages shows where the build step sits: Pages "takes HTML, CSS, and JavaScript files straight from a repository on GitHub, optionally runs the files through a build process, and publishes a website."<sup class="cite"><a href="#src-gh1">[1]</a></sup> That word <em>optionally</em> is the fork in the road: simple projects skip it, built projects do not.</p>
+
+<h2>Where the output lives</h2>
+<p>Build tools write the output to a folder with a short conventional name. Vite, a common build tool, states its default plainly: "You are using the default build output location (dist)"<sup class="cite"><a href="#src-vite1">[3]</a></sup> — and notes the location can be changed in the tool's settings. Other tools use names like <code>build</code> or <code>out</code>. You never memorize these: you look, or you ask the agent, <em>"which folder does the build write, and where is it configured?"</em></p>
+<p>The output folder is normally listed in <code>.gitignore</code> (lesson 3.3) — it can be regenerated at any time from the source, so nobody stores it in the repository. That is also why it can quietly go stale: the output on disk may be older than your latest source edits.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>In your own words: what does a build step consume, what does it produce, and which of the two does a host serve?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>It consumes <strong>source</strong> (the files being edited) and produces a fresh <strong>output folder</strong> of deployable files. The host serves the <strong>output</strong>, not the source. Editing source does not change the site until the build runs again.</p></div>
+</div>
+
+<h2>Two settings that come with a build</h2>
+<p>Once a build joins the picture, two settings matter, and both are places beginners get burned.</p>
+<p><strong>The output folder choice.</strong> The host must be pointed at the output folder, not the project root. GitHub Pages offers exactly this choice when you publish: "You can publish your site when changes are pushed to a specific branch, or you can write a GitHub Actions workflow to publish your site"<sup class="cite"><a href="#src-gh2">[2]</a></sup> — and either way you name which branch and folder is the publishing source. Lesson 6.5 walks through the Actions option; here you only need to recognize the decision.</p>
+<p><strong>The base path.</strong> A built page contains links to its own files. The build tool needs to know what address prefix those links should carry. Vite documents this setting as the "Base public path when served in development or production"<sup class="cite"><a href="#src-vite2">[4]</a></sup> — by default it assumes your site sits at the top of a domain. If your site actually lives in a subfolder (as free project pages do — lesson 6.3 owns that topic), and the build assumed the top of a domain, every link inside the built page points to an address that does not exist. The page loads; everything it references is missing. You see a blank or unstyled page.</p>
+
+<span class="sidenote">One consequence worth knowing now: because a build rewrites your files, the thing that runs on the host is <em>not</em> the thing you edited. Debugging a built site means changing the source, rebuilding, and republishing — never editing the output by hand.</span>
+
+<h2>A real pattern, anonymized</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to turn a single public page into a small site holding several design drafts, one per folder, so colleagues could compare them. The agent built the site with a build tool and published it. Later, when asked to merge a change, the agent followed the repository's own rules and ran the site's checks first — and one check failed: the build step, newly added by the agent itself, was failing. The failure had been invisible because the live site still showed the old build. The agent fixed the build, waited for it to pass, and only then published. The lesson the user took away: after any change, <em>run the build, then look at the fresh output</em> — a green-looking site can be yesterday's output.</p>
+</div>
+
+<h2>Build locally, deploy the output</h2>
+<p>For a static app the flow has three moves, and your agent does the middle one on request:</p>
+<ol>
+  <li>Edit source (you and the agent, as always).</li>
+  <li>Run the build — one command the project already defines. Ask the agent: <em>"what is this project's build command? run it and show me the last few lines."</em> A healthy build ends quietly, naming the files it wrote.</li>
+  <li>Publish the output folder to the host, and open the real URL to confirm.</li>
+</ol>
+<div class="prompt">
+<span class="label">Prompt — find out how this project ships</span>
+<pre>Look at this project and answer in plain words: does it need a build step? If yes, what is the build command, which folder does the build write, and what setting sets the base path? Then run the build and show me the last lines of its output. Do not change any files yet.</pre>
+</div>
+<p>This is a safe ask: it only reads and builds, publishes nothing, and it leaves <em>you</em> knowing the project's shape — which matters the next time a deploy looks wrong.</p>
+
+<div class="doit">
+  <span class="label">Do it now — run a build and find its output</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your project folder in your agent (or a project your agent built earlier). If your project is a plain <code>index.html</code> with no build tool, say so instead — that is a valid answer, and this lesson still applies to your next project.</label></li>
+    <li><label><input type="checkbox"> Paste the prompt above. Read the agent's answer: does it name a build command, an output folder, and a base-path setting?</label></li>
+    <li><label><input type="checkbox"> In your terminal, run <code>ls</code> in the project folder and look for the output folder the agent named (for example <code>dist</code> or <code>build</code>).</label></li>
+    <li><label><input type="checkbox"> Check <code>.gitignore</code> (lesson 3.3): is the output folder listed there? If yes, that confirms the project treats it as regenerable, not as source.</label></li>
+  </ol>
+  <div class="expect"><p>You should see the output folder in the listing, and its name in <code>.gitignore</code>. If the agent named a folder you cannot find, ask: <em>"the build says it wrote to dist, but I don't see dist — where did the output go?"</em> Asking beats guessing.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">What does a build step produce?</p>
+  <button class="opt" type="button">A folder built ready to serve</button>
+  <button class="opt" type="button">A list of your recent commits</button>
+  <button class="opt" type="button">A private backup of the source</button>
+  <button class="opt" type="button">A new title for hosting tools</button>
+  <div class="why"><p>A build reads your source files and writes a fresh output folder of finished files — that folder is what a host should serve. Commits and backups are version control (unit 3), and hosting is the service that serves files (lesson 6.1).</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Your project uses a build tool. What goes to the host?</p>
+  <button class="opt" type="button">The source files and rules</button>
+  <button class="opt" type="button">The build output folder only</button>
+  <button class="opt" type="button">The source and output folders</button>
+  <button class="opt" type="button">A copy of everything there</button>
+  <div class="why"><p>The host serves the built output, not the source. Shipping both wastes space and can confuse the host about which page is real; the output folder is normally gitignored precisely because it is regenerated by the build.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">After a build, the live page is blank. What is the most likely cause?</p>
+  <button class="opt" type="button">The built links use the wrong base</button>
+  <button class="opt" type="button">The build was never run before pushing</button>
+  <button class="opt" type="button">The browser cannot reach the hosting service</button>
+  <button class="opt" type="button">The source files were edited during deploy</button>
+  <div class="why"><p>A blank page after a successful build usually means the build assumed the top of a domain while the site lives in a subfolder, so every internal link misses. "Never run the build" would leave the host with nothing to serve, which shows a 404 rather than a blank page. Lesson 6.3 covers the subpath case in detail.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages">What is GitHub Pages?</a> — GitHub's own one-paragraph definition, including the phrase "optionally runs the files through a build process". Read only the first section; the publishing details belong to lessons 6.3 and 6.5.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Explain build step versus deploy using a bakery example"</em> or <em>"Why is the build output gitignored but the source isn't?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-gh1">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages">What is GitHub Pages?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gh2">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">Configuring a publishing source for your GitHub Pages site</a>. Retrieved 2026-11-02.</li>
+  <li id="src-vite1">Vite (VoidZero), <a href="https://vite.dev/guide/static-deploy">Deploying a Static Site</a>. Retrieved 2026-11-02.</li>
+  <li id="src-vite2">Vite (VoidZero), <a href="https://vite.dev/config/shared-options">Shared Options (base)</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> say what a build step consumes and produces, name your project's output folder, and check that a host is being pointed at the output — not the source.</p>
+  <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Next: <a href="0013-github-pages.html">6.3 GitHub Pages</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

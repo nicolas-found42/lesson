@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conflicting requirements: spot them, surface them, choose</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 4 · Scope &amp; stopping · Lesson 4.6</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 4 · Lesson 4.6</p>
+  <h1>Conflicting requirements: spot them, surface them, choose</h1>
+  <p class="lede">Two things you ask for can pull in opposite directions. Make the conflict visible before the agent builds around an assumption you never approved.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0055-definition-done-acceptance-criteria.html">4.1 Definition of done</a></span><span>Win: you can make an agent list its conflicts and choose one yourself, in writing</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Shipping your app means deciding what matters most when you cannot have everything. “Make it fast and show fifty large photos” may hide a choice about speed versus detail. If the agent drops one requirement without asking, you could receive a working page that misses your purpose.</p>
+<p>Learn three moves. Spot a possible conflict. Ask the agent to explain it. Then choose on purpose, before it builds.</p>
+
+<h2>Two "musts" can contradict</h2>
+<p><span class="term" title="Requirements that cannot all be met under the same stated conditions">Conflicting requirements</span> cannot all be met under the same conditions. “Show the latest scores while offline” conflicts with “get every score from the internet right now.” Other pairs are tensions, not proven contradictions. Fifty large photos and a fast page might both work, depending on image sizes and the connection. Ask for evidence before you call a target impossible.</p>
+<p>Catch a conflict early and it costs you one question. Catch it late and it costs you a rebuild, because the agent has already shaped the app around one side of the pair.</p>
+
+<h2>The agent might choose without asking</h2>
+<p>Anthropic's documentation on instruction files warns that <q>if two instructions contradict each other, Claude may pick one arbitrarily.</q><sup class="cite"><a href="#src-ccmem">[1]</a></sup> That warning concerns Claude Code's rules files. It is not a general rule about every agent. Still, it is a good reason to ask for conflicts out loud. Silence is not agreement.</p>
+<p>Separate three cases. An unclear phrase needs a definition. A difficult target needs looking into. Requirements that cannot both hold need your decision. “This seems hard” is not proof that you must give something up. Ask which requirements clash, under what conditions, and what evidence backs the claim.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user wanted a simulation to run roughly a thousand times faster while still showing every stage smoothly. The agent measured the current app, tried changes, and reported that the combination was not achievable with that implementation and computer. It undid failed experiments and asked which requirement to relax. The useful result was not a promised speedup: it was a visible decision between watching all the detail and completing more work quickly. More research could explore alternatives, but it did not itself settle the user's priority.</p>
+</div>
+
+<h2>Make the agent surface conflicts before it builds</h2>
+<p>Ask the agent to list conflicts before it edits. Anthropic's best-practices page recommends interviewing the user: <q>It keeps asking until the answers add up to a spec.</q><sup class="cite"><a href="#src-ccbp">[2]</a></sup> A spec is a written description of what to build. Claude Code's question tool likewise exists to <q>gather requirements or clarify ambiguity.</q><sup class="cite"><a href="#src-cctools">[3]</a></sup> You do not need a special tool here. The same plain prompt works in Claude Code, Codex and omp.</p>
+<div class="prompt">
+  <span class="label">Copy this — works in any agent</span>
+  <pre><code>Do not edit files yet. Check my requirements for conflicts.
+For each possible conflict, name the two requirements, explain why they
+clash, and separate evidence from assumptions. Suggest two choices and
+recommend one based on my goal. Ask which choice I want, then wait.
+After I answer, restate the revised acceptance criteria before editing.</code></pre>
+</div>
+<p>Three phrases do the work. “Do not edit” keeps the checking apart from the building. “Evidence from assumptions” stops a guess from becoming a reason to cut your feature. “Wait” keeps the product decision with you. These are requests, not guarantees. Read the reply and check that it names both sides.</p>
+<p>Write the answer as one line, in the form “X vs Y — because Z”. For the gallery: “instant loading vs fifty full-size photos — because each photo adds load time.” That line is easy to check, and easy to paste into your plan later.</p>
+
+<h2>Same request, with and without the instruction</h2>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Without it — silent pick</span>
+    <p>"Make the gallery page load instantly and put all fifty full-size photos on it." The agent ships a page with ten compressed thumbnails. Speed was easier to satisfy. It never mentions that the two asks fought.</p>
+  </div>
+  <div class="good">
+    <span class="label">With it — conflict surfaced</span>
+    <p>Same request, plus the prompt block above. The agent replies: "Instant loading vs fifty full-size photos — each photo adds load time. Which wins?" You answer "loading speed". The plan says so in one sentence.</p>
+  </div>
+</div>
+
+<h2>When a conflict reaches you: choose deliberately</h2>
+<p>A <span class="term" title="A choice that gains something by giving something else up">trade-off</span> gains something by giving something else up. Choose from your app's audience and purpose, not from whichever option sounds most technical. A compromise can be right: fewer photos at first, more on request. Approve it on purpose anyway. Ask what the user gains, what they lose, and how the new result will be checked.</p>
+<table class="ref">
+  <thead><tr><th>Priority word</th><th>Meaning</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr><td>Must</td><td>Non-negotiable; the app fails without it</td><td>"Loads in under two seconds"</td></tr>
+    <tr><td>Should</td><td>Strongly wanted; can be traded away in a conflict</td><td>"Shows photo captions on hover"</td></tr>
+    <tr><td>Nice</td><td>Delight only; first thing to drop when something must give</td><td>"Animated transitions between photos"</td></tr>
+  </tbody>
+</table>
+<p>These are priority labels for your project, not tool settings. They help explain what can change. They cannot stop two “musts” from clashing. Do not quietly demote either one. Tell the agent: “If meeting one must would break another, show me the conflict and wait.” A recommendation is useful. Permission to change your priorities is a separate thing.</p>
+<p>A demotion you did not choose is still a demotion. If the agent decides your captions are “nice” rather than “should”, the next version may drop them without a word. The labels only help if you set them.</p>
+
+<h2>Write the choice down</h2>
+<p>Reply with an explicit replacement: “Loading speed wins. Show ten photos initially and let visitors request the rest. Keep the two-second target, measured under the conditions we agreed.” Then ask the agent to rewrite the acceptance criteria from <a href="0055-definition-done-acceptance-criteria.html">4.1</a>. The old demand should go, not sit beside the new one. Check the result against that revised list. Do not accept the agent's word that it found a compromise.</p>
+<p>Write the decision where you will see it again: in the spec, not only in the chat. A conflict you settled last week is a requirement you do not have to argue about twice.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: when two of your requirements conflict, what are the three moves this lesson teaches, and who makes the final choice?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Spot</strong> a possible incompatibility; <strong>surface</strong> both requirements and the evidence; <strong>choose</strong> which requirement changes. You make the product decision, then ask the agent to rewrite the acceptance criteria.</p></div>
+</div>
+
+<div class="doit">
+  <span class="label">Do it now: surface one real conflict</span>
+  <ol>
+    <li><label><input type="checkbox"> Choose a feature in your app and write its requirements. If you need a practice case, use “show current scores while offline” and “retrieve every score live from the internet.” Keep approval prompts on as explained in <a href="0006-approvals-and-permissions.html">0.6</a>.</label></li>
+    <li><label><input type="checkbox"> Paste the prompt block above, followed by your two requirements, and send it to your agent.</label></li>
+    <li><label><input type="checkbox"> Check that the reply names both requirements and explains the incompatibility. If it calls a target impossible without evidence, ask what remains unknown.</label></li>
+    <li><label><input type="checkbox"> Choose an option and name what you are giving up. For the practice case: choose offline access to previously stored scores, not current live scores.</label></li>
+    <li><label><input type="checkbox"> Ask for revised acceptance criteria only. Do not authorize implementation during this exercise.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see the conflicting pair, a reason, options, and a pause for your decision. After your answer, the new criteria should reflect the choice without retaining the incompatible old demand. If the agent reports no conflict, compare its interpretation with yours; do not invent a conflict merely to complete the exercise.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You ask for a page that loads instantly and also shows fifty big photos. The agent ships a fast page with ten small thumbnails and says nothing. What happened?</p>
+  <button class="opt" type="button">It silently changed one requirement instead of asking you to choose.</button>
+  <button class="opt" type="button">It openly checked both requirements before asking you to approve changes.</button>
+  <button class="opt" type="button">It built two complete alternatives before asking you to pick one.</button>
+  <div class="why"><p>The visible result no longer matches your photo requirement. Whatever the agent's reasoning, it changed the requirement without your decision. Ask it to surface the conflict and revise the criteria with you.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which line, added to a prompt, best makes an agent surface conflicts before building?</p>
+  <button class="opt" type="button">Build everything first, then report any conflicting requirements during the review.</button>
+  <button class="opt" type="button">Ignore difficult requirements and build whatever remaining features seem most useful.</button>
+  <button class="opt" type="button">List conflicting requirements first, explain each conflict, then await my decision.</button>
+  <div class="why"><p>Listing pairs first, then asking and waiting, forces the conflict onto paper and the decision to you. The other lines either delay the conflict past the build or hand the choice back to the agent.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">The agent reports: "fast loading vs fifty photos — they conflict". What is the best next move?</p>
+  <button class="opt" type="button">Tell the agent to average both goals without another product decision.</button>
+  <button class="opt" type="button">Choose the winning requirement and ask for the revised acceptance criteria.</button>
+  <button class="opt" type="button">Request more attempts without changing either of the original project criteria.</button>
+  <div class="why"><p>Once the conflict has evidence, choose deliberately and update what counts as done. Another attempt or an unapproved compromise does not resolve the requirements.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> — read the "Brainstorm with Claude first" section: asking the agent to interview you until the answers add up to a spec. Written for one tool, but the interview pattern works in all three.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Have a real feature in mind? Ask the agent that gave you this course: <em>"Here are two requirements I want for my app. Do they conflict, and what would each one cost?"</em> Then ask it to write the conflict in the "X vs Y — because …" form.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-ccmem">Anthropic, <a href="https://code.claude.com/docs/en/memory">How Claude Code remembers your project (CLAUDE.md)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-ccbp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cctools">Anthropic, <a href="https://code.claude.com/docs/en/tools-reference">Claude Code tools reference — AskUserQuestion</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> spot pairs of requirements that conflict, make the agent list them and ask before building, and choose the winner yourself in writing with priority words.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><a href="0059-root-cause-vs-workaround.html">← 4.5 Root cause vs workaround</a><a href="0061-reward-hacking-goodhart.html">4.7 Reward hacking →</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

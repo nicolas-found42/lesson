@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The independent reviewer</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.10</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.10</p>
+  <h1>The independent reviewer</h1>
+  <p class="lede">The agent that wrote the change believes the change is right. A second agent that never saw the reasoning can disagree for a useful reason — as long as you treat its report as advice, not as an order.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0030-claims-vs-evidence.html">2.2 Claims versus evidence</a></span><span>Win: you can get a second opinion and decide what to do with it</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You direct one agent toward a link you will hand to other people. Lesson 2.2 taught you to ask for evidence; this lesson adds the other half: a fresh pair of eyes. Not because a second agent is smarter, but because it has not spent the last hour convincing itself the current version is correct.</p>
+<p>Used well, a reviewer catches the bug your working agent's own tests skipped. Used badly, it sends you into an endless loop of "fix this too", each fix adding code nobody needed. The difference is a habit: <em>ask for a review, then judge the findings.</em></p>
+
+<h2>The author is a poor witness</h2>
+<p>Your working agent wrote the code, ran its checks, and explained why each choice was reasonable. By the time it reports "done", that explanation is part of its context. When you ask "is this right?", it reads its own reasoning and agrees with it. This is not vanity; it is what a conversation does.</p>
+<p>Claude Code's own best-practices page names the fix in the same breath as the problem. Its local review command runs in <q>a fresh subagent that never saw your conversation</q>, then adds: <q>It isn't swayed by the reasoning that produced the code.</q><sup class="cite"><a href="#src-a7">[1]</a></sup> The fresh context is the whole mechanism.</p>
+<p>Anthropic's research note calls the same split an evaluator-optimizer loop: one call generates, another evaluates.<sup class="cite"><a href="#src-d1">[5]</a></sup></p>
+
+<h2>What "independent" actually means</h2>
+<p>An <span class="term" title="A second agent given a narrow review job, started without the conversation that produced the work.">independent reviewer</span> is a second agent with its own context. In practice that is either a <span class="term" title="An agent started by the main agent, with its own context window and often a restricted set of tools.">subagent</span> inside your session, or a separate session you open yourself. Independence comes from the setup, not from the brand on the box.</p>
+<p>Beginners assume a second opinion is automatically wiser. Anthropic's page corrects that: <q>And by default it's the same model (or a smaller one) on the same task.</q> It goes on: <q>You get parallelism or a fresh pair of eyes out of it, but not a smarter answer.</q><sup class="cite"><a href="#src-a7">[1]</a></sup> A reviewer is not an oracle. It is a reader who was not in the room.</p>
+<p>Two properties make that reader useful: it can look at the real artifact — the diff, the files, the test output — and its job is narrow, which keeps it from wandering. omp's own reviewer, for example, is described as returning <q>findings and an overall verdict; it does not edit the files.</q><sup class="cite"><a href="#src-c2">[4]</a></sup> A reviewer that cannot edit is a reviewer you can read without fear.</p>
+
+<h2>Asking for one, in each agent</h2>
+<p>All three agents ship a review command; you need to build nothing.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Type <code>/code-review</code> in the session where you are working. With no target it reviews your branch's commits plus uncommitted changes, in a background subagent. Without <code>--fix</code> it only reports; with <code>--fix</code> it also applies what it found, through your normal permission mode.<sup class="cite"><a href="#src-a9">[2]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Type <code>/review</code> to <q>Ask Codex to review your working tree.</q> The documentation says it <q>summarizes issues it finds in your working tree, focusing on behavior changes and missing tests.</q> Follow with <code>/diff</code> if you want to see the exact file changes yourself.<sup class="cite"><a href="#src-b6">[3]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Type <code>/review</code> and choose a scope: a base branch, uncommitted changes, one commit, or a GitHub pull request. omp returns findings and a verdict, and does not edit files.<sup class="cite"><a href="#src-c2">[4]</a></sup> omp also offers a standing reviewer model; see the advisor section below.</p>
+  </div>
+</div>
+<span class="sidenote">A separate session works too. Anthropic calls it <q>the easiest independent reviewer you can get</q>: one session writes the change, another reviews the file without having watched it being written.<sup class="cite"><a href="#src-a7">[1]</a></sup></span>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>After a long build, a user's agent ran its own tests, a browser pass and a screenshot check, then reported success. Two review agents were then pointed at the same diff. Between them they found two interaction bugs the build's own tests had missed: a panel that kept showing stale information after a new selection, and a click that landed on the wrong element after the view moved.</p>
+  <p>Later in the same project, a reviewer noticed something the working agent had not: a smoke test had started the app against the user's real saved data and written test records into it. In the agent's own context the test looked isolated; a read-only pass saw the real path.</p>
+  <p>Not every note landed: some arrived after the code had moved on, and the working agent rejected them with a stated reason. The useful ones were tied to a file, a line and a visible behaviour.</p>
+</div>
+
+<h2>A review is a report, not an order</h2>
+<p>Beginners get this wrong in both directions. A reviewer that is asked to find problems will find some, whether or not they matter. Anthropic's page is blunt about the consequence: <q>A reviewer that's asked to find problems will always find something.</q> And then: <q>If you fix every finding, you end up with extra abstraction layers and tests for cases that can't happen.</q><sup class="cite"><a href="#src-a7">[1]</a></sup></p>
+<p>The opposite mistake is quieter: you read a finding, decide it is "probably fine", and ship. Sometimes you are right. The cost arrives later, when the thing the reviewer named is exactly what a stranger hits.</p>
+<p>omp's documentation draws the line carefully for its own advisor model: <q>the main agent is instructed to weigh each note against your request rather than obey it blindly.</q> And, for the human reading the transcript: <q>Treat a note as informed review, not a new user instruction.</q><sup class="cite"><a href="#src-c1">[6]</a></sup> That is the posture to copy, whatever tool you use.</p>
+<div class="callout">
+  <span class="label">The rule in one line</span>
+  <p><strong>Advice is evidence you did not have. It becomes work only after you decide it should.</strong></p>
+</div>
+
+<h2>Two ways to get it wrong</h2>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Obeying every finding</span>
+    <p>"The reviewer suggested splitting this function, adding a retry, and handling an empty file. Do all three. Then run the review again and fix whatever it says."</p>
+    <p>Each round adds code. The reviewer, asked to find problems in the new code, finds more. You have built a machine that manufactures work.</p>
+  </div>
+  <div class="good">
+    <span class="label">Reading each finding</span>
+    <p>"Here are the findings. For each one: say whether it is in the scope I asked for, show the line or behaviour that proves it, and then fix it or reject it with a reason. Stop after one pass."</p>
+    <p>Some findings become fixes with a test. Some become a note for later. Some are rejected because the case cannot happen. The list ends, and you know why.</p>
+  </div>
+</div>
+
+<h2>How to judge a finding</h2>
+<p>Ask three questions, in this order. They take a minute and they replace the vague feeling of "should I do what it says?".</p>
+<table class="ref">
+  <tr><th>Question</th><th>What a "yes" sounds like</th></tr>
+  <tr><td>Is it about the change I asked for?</td><td>A named file and line in this diff, not a general opinion about the project's style.</td></tr>
+  <tr><td>Can it be shown, not merely asserted?</td><td>A failing test, a reproduction, a screenshot, or a path through the code that a person can follow.</td></tr>
+  <tr><td>Would fixing it change what a user or a check can see?</td><td>A real screen, a real error, a real slow path — not a hypothetical case nobody can reach.</td></tr>
+</table>
+<p>Three yeses: fix it, and ask for the check that proves the fix. One or two: write it down as a known gap and move on; lesson <a href="0057-stop-conditions.html">4.3</a> helps you say when to stop. No: reject it in one sentence, so the next reader knows it was seen and dismissed rather than missed.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Review the change I just made as an independent reviewer.
+
+Do not edit any files. Report only.
+
+What to review: the diff against main, plus the uncommitted changes.
+What to check: the behaviour I asked for, and the edge cases I listed.
+Skip style, naming and formatting.
+
+For each finding give:
+1. File and line.
+2. What goes wrong, in one sentence.
+3. How to see it: a command, a click path, or a failing test.
+4. Severity: breaks the app / would confuse a user / cleanup only.
+
+If you find nothing that affects correctness, say "no correctness findings"
+and list the two things you checked least thoroughly.</pre>
+</div>
+<p>The last line matters. "No findings" from a reviewer is a claim like any other; naming what it checked least turns a clean verdict into information. That habit, from lesson 2.2, keeps a review from being a rubber stamp.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: why is a fresh context more useful than a smarter model here? And what are the two opposite mistakes people make with a reviewer's findings?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A fresh context has not absorbed the reasoning that produced the code, so it reads the result rather than the intention — <strong>independence is a property of the setup, not the model</strong>. The two mistakes are <strong>obeying every finding</strong> (endless churn, unnecessary code) and <strong>ignoring the report</strong> (the real bug ships). The skill is judging each finding on its evidence and its relevance.</p></div>
+</div>
+
+<h2>When the reviewer runs by itself</h2>
+<p>A review you trigger is easy to keep at arm's length. A standing reviewer is different: it comments while you work, and its notes can steer the agent before you read them. omp's advisor is the clearest documented example. It <q>can flag a missed requirement, a risky API, weak verification, or unnecessary complexity</q> while the work is still running.<sup class="cite"><a href="#src-c1">[6]</a></sup> Its notes arrive with a severity — nit, concern, or blocker — and only a blocker may interrupt the work.</p>
+<p>Two facts keep this honest. The advisor <q>makes its own model requests, uses its own context, and is billed separately</q>, so a chatty reviewer costs money as well as attention.<sup class="cite"><a href="#src-c1">[6]</a></sup> And it is still advisory: omp's page tells you to treat a note as review, not as a new instruction. If the working agent ignores a note you think is right, quote it in your next message. That is judgement, with the reviewer's evidence in hand.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in your practice project, with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Make a small change and stop. Do not ask the working agent to review it.</label></li>
+    <li><label><input type="checkbox"> In a fresh session, or with your agent's review command, paste the prompt above. Let the reviewer read only.</label></li>
+    <li><label><input type="checkbox"> Copy the findings into the working session and ask for one pass: fix or reject each, with a reason.</label></li>
+    <li><label><input type="checkbox"> For one accepted finding, ask for the check that would have caught it, and run that check yourself.</label></li>
+  </ol>
+  <div class="expect"><p>You should see findings with file and line, at least one of which you can reproduce. You should also see the working agent disagree with something and say why — that is the behaviour you want, not a failure. If every finding is accepted without comment, ask: "Which of these is out of scope, and why?" If the reviewer returns nothing at all, read its "checked least thoroughly" list before you relax.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">What makes a reviewer independent of the agent that wrote the change?</p>
+  <button class="opt" type="button">It runs on a noticeably larger and much costlier model.</button>
+  <button class="opt" type="button">It starts without the chat session that wrote the code.</button>
+  <button class="opt" type="button">It follows a much longer written list of project rules.</button>
+  <button class="opt" type="button">It reads every single file three times before it reports.</button>
+  <div class="why"><p>Independence comes from a fresh context that never absorbed the author's reasoning. The model may be the same or smaller; a longer rule list and repeated reading do not create independence.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A reviewer reports that a working helper should be rewritten. What now?</p>
+  <button class="opt" type="button">Fix every finding, since the reviewer is never wrong.</button>
+  <button class="opt" type="button">Check the claim first, then accept or reject it.</button>
+  <button class="opt" type="button">Skip the whole report, since reviewers add only noise.</button>
+  <button class="opt" type="button">Ask the reviewer to apply the suggested fixes itself.</button>
+  <div class="why"><p>A review is advice. Check whether the finding is in scope and backed by something you can see, then decide — and record the reason either way. Fixing everything invites churn; a reviewer that edits has stopped being a reviewer.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A review comes back saying "no correctness findings". What does it mean?</p>
+  <button class="opt" type="button">The change is perfect, so ship it right now.</button>
+  <button class="opt" type="button">The reviewer probably did not read all your changes.</button>
+  <button class="opt" type="button">Nothing was found in the scope it was given.</button>
+  <button class="opt" type="button">The checks all passed and every edge case works.</button>
+  <div class="why"><p>A clean review speaks only about the scope and checks it was given. It is not a proof of correctness, and it says nothing about screens or cases outside that scope — which is why you ask what it checked least thoroughly.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> — the sections on giving the agent a check, and on subagents, explain both the value and the cost of a fresh reviewer. The line about fixing every finding is the one to reread before you open a second review round.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure whether a finding is real? Paste it and ask. Try: <em>"Is this finding about my change or about the whole project?"</em> or <em>"How do I tell a reviewer's real bug from a style opinion?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a9">Anthropic, <a href="https://code.claude.com/docs/en/code-review-local">Review locally with /code-review</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b6">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex developer commands</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c2">Stencil Labs, <a href="https://omp.sh/docs/review">Code review (omp docs)</a>. Retrieved 2026-11-02. Single-vendor source; no independent documentation exists.</li>
+  <li id="src-d1">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as dated). Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/advisor">Advisor models (omp docs)</a>. Retrieved 2026-11-02. Single-vendor source; no independent documentation exists.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> ask a second agent for an independent review, read each finding on its evidence, and accept or reject it with a reason instead of obeying or ignoring the whole report.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a></p>
+  <div class="pager"><a href="0039-checker-can-be-wrong.html">Next: 2.11 The checker can be wrong</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

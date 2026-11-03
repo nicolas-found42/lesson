@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Long runs you don't watch: checkpoints and progress logs</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 4 · Scope &amp; stopping · Lesson 4.9</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 4 · Lesson 4.9</p>
+  <h1>Long runs you don't watch: checkpoints and progress logs</h1>
+  <p class="lede">Some tasks take twenty minutes or two hours, and you cannot stare at the chat the whole time. Two habits make a long run safe: demand the first piece of evidence early, and make the run write down what it is doing as it goes.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0052-checkpoint-often.html">3.13 Checkpoint often</a></span><span>Win: you can start a long task and still learn within minutes whether it is going wrong</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Most of the time your agent spends on your app is not spent chatting. It is spent in long runs: a big build, a refactor across many files, a migration, a test suite. During those runs you are usually not watching. If the run fails at minute forty of forty, you have lost forty minutes and learned nothing about why. Anthropic's own best-practices page describes exactly this trap: in a run you leave unattended, <q>nobody tells it, and you find out the next morning that it spent the whole night building on the wrong assumption.</q><sup class="cite"><a href="#src-cc1">[1]</a></sup></p>
+<p>This lesson gives you two tools for that situation. An <span class="term" title="A small piece of checkable output that a long run must produce early, so you can see quickly whether it is on track.">evidence checkpoint</span> is the first real result you get to look at, on purpose, early. A <span class="term" title="A file that a running task appends one line to at a time, so its progress survives even if the task is stopped.">progress log</span> is the run's diary, written as it goes instead of at the end.</p>
+
+<h2>The failure shape</h2>
+<p>Picture a run that takes twenty minutes and produces one screenshot at the very end. If the screenshot is wrong, the whole run was wasted, and you cannot tell whether the mistake happened in minute one or minute nineteen.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to drive their app through a long automated check that took about twenty minutes. The first screenshot only appeared at minute fourteen, so when the user interrupted the run at minute two to ask what was happening, there was nothing to show. The fix was simple: the agent restarted the run so that a frame was captured every twenty seconds starting at the one-minute mark. After that, a bad run showed up in the first minute instead of the fourteenth.</p>
+</div>
+<p>The lesson: <em>when</em> evidence arrives matters as much as <em>whether</em> it arrives. Anthropic's advice for any session is to <q>watch the first minute</q> and step in the moment the agent drifts.<sup class="cite"><a href="#src-cc1">[1]</a></sup> For a run you plan to leave alone, you cannot watch it yourself, so you move that first look into the task: you tell the agent to produce a checkable artifact early and to keep going only if it looks right.</p>
+
+<h2>Checkpoint one: early evidence</h2>
+<p>An evidence checkpoint is a small, concrete thing you can inspect: a file that exists, a line of output, a test result, a screenshot, a diff. It is not a feeling and not a summary sentence. Anthropic's guidance on verification says to ask the agent for <q>the command it ran and its output, or the screenshot</q>, because for a session you were not watching, <q>it's also the only evidence you have.</q><sup class="cite"><a href="#src-cc1">[1]</a></sup></p>
+<p>So when you hand over a long task, put the checkpoint in the prompt: <em>"Within the first few minutes, show me one concrete result — the file, the output line, or the screenshot — before continuing."</em> If that first artifact is wrong, you have spent minutes, not hours.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the two protections this lesson gives you for a long unattended run, and what is the difference between them?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>An <strong>evidence checkpoint</strong> is the first concrete, inspectable result, demanded early, so a wrong run is caught in minutes. A <strong>progress log</strong> is a file the run appends to as it goes, so that even if the run dies or you stop it, you can read exactly where it stopped and why.</p></div>
+</div>
+
+<h2>Checkpoint two: the progress log</h2>
+<p>The agent's chat transcript is a summary written at the end. If the run crashes, is stopped, or your session is closed, that summary may never exist. A progress log is different: it is a plain file on disk that the run appends to, one line per step, as it happens. When something goes wrong, the last line of the log tells you where the run actually was.</p>
+<p>Here is what that looks like in practice. A five-step script was started and then stopped partway through; because each step appended its own line immediately, the log survived (run in a throwaway folder on this machine):</p>
+<pre><code>19:55:13 step 1/5 start  collect files
+19:55:15 step 1/5 done   collect files
+19:55:17 step 2/5 start  build page
+19:55:17 step 2/5 done   build page
+19:55:19 step 3/5 start  run tests
+19:55:19 step 3/5 done   run tests
+19:55:19 step 4/5 start  copy output
+[process stopped here — no "done" line, no final summary]</code></pre>
+<p>Read that log and you know immediately: step 4 started and never finished. Contrast that with a run that prints everything only at the end — when it is stopped, you have nothing at all. The rules that make a log useful are simple: write each line as the step happens, not in a batch at the end; include a final <code>ALL DONE</code> line so that its absence means something; and write failures into the log too, not only successes.</p>
+
+<h2>Ask for both, in the prompt</h2>
+<p>You do not need any special tool for this. It is a behaviour you request in plain words, and it works in any agent:</p>
+<div class="prompt">
+<pre>Run this task, but unsupervised-proof it:
+1. Within the first 5 minutes, produce one concrete checkpoint I can
+   inspect (a file, an output line, a test result, a screenshot).
+   Show it to me, then continue only if it looks right.
+2. Keep a progress log at progress.log in the project folder.
+   Append one line per step as you go: timestamp, step name, status.
+   Also log failures. End with a final line "ALL DONE".
+3. If you get stuck twice on the same step, stop and report instead
+   of retrying forever.</pre>
+<button class="copy" type="button">Copy</button>
+</div>
+<p>Item 3 is a stop condition, which lesson <a href="0057-stop-conditions.html">4.3</a> covers in depth; here it makes the run end honestly instead of silently grinding.</p>
+
+<h2>Where each tool shows you the running work</h2>
+<p>While a long command runs, each agent has its own place to peek at it without interrupting:</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Press <kbd>Ctrl+B</kbd> to move a running command to the background; its output <q>is written to a file and Claude can retrieve it using the Read tool</q>, and <code>/tasks</code> lists running shells and subagents.<sup class="cite"><a href="#src-cc2">[2]</a></sup> An interrupted command keeps the work done so far.<sup class="cite"><a href="#src-cc3">[3]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Type <code>/ps</code> to <q>show background terminals and their recent output</q> — each terminal shows its command <q>plus up to three recent, non-empty output lines so you can gauge progress at a glance</q> — and <code>/stop</code> to stop them.<sup class="cite"><a href="#src-cx1">[4]</a></sup> While Codex works, <kbd>Tab</kbd> queues a follow-up message for the next turn.<sup class="cite"><a href="#src-cx2">[5]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Type <code>/jobs</code>, which <q>shows running and recently settled background jobs</q>,<sup class="cite"><a href="#src-omp1">[6]</a></sup> and press <kbd>Escape</kbd> to interrupt the active turn; a steering message sent while it works reaches the next step.<sup class="cite"><a href="#src-omp2">[7]</a></sup> (omp's docs come only from its own authors, so treat details as single-vendor.)</p>
+  </div>
+</div>
+<span class="sidenote">Your choice of tab is remembered, so later lessons show your agent first.</span>
+
+<h2>What these checkpoints are not</h2>
+<div class="warn">
+  <span class="label">Three things this lesson does not replace</span>
+  <p>A progress log is not a commit. It records what a run did, not a save point you can return to — lesson <a href="0052-checkpoint-often.html">3.13</a> covers committing often during long work. An evidence checkpoint is not a budget; <q>until no issues remain</q> never ends, as lesson <a href="0058-budgets.html">4.4</a> explains. And neither one lets you turn off approval prompts — keep them on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</p>
+</div>
+
+<div class="doit">
+  <span class="label">Try it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Pick one task that takes the agent more than a few minutes (a build, a multi-file change, a test run).</label></li>
+    <li><label><input type="checkbox"> Paste the prompt block above, adapted to your task, and let the run start.</label></li>
+    <li><label><input type="checkbox"> After a few minutes, open <code>progress.log</code> in another window and read the last line.</label></li>
+    <li><label><input type="checkbox"> Ask the agent: "What is the current task and what is the state of it?" Compare the answer with the log.</label></li>
+    <li><label><input type="checkbox"> If anything looked wrong, interrupt and redirect; otherwise let it finish, then check the checkpoint artifact itself.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see <code>progress.log</code> growing while the run is still going, with one line per finished step, and a concrete checkpoint artifact (file, output, or screenshot) that appeared early. The agent's spoken answer should match the log. If the log is empty until the end, the run is not logging as it goes — tell the agent to append per step.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">A long run produces its first checkable output only at the very end. What is the main risk?</p>
+  <button class="opt" type="button">A wrong start burns the whole run before you notice</button>
+  <button class="opt" type="button">The agent will always finish before the time limit is</button>
+  <button class="opt" type="button">Nothing changes, since all runs fail at the very end</button>
+  <button class="opt" type="button">The output file grows too large for the disk now</button>
+  <div class="why"><p>With evidence only at the end, a mistake made in minute one costs the whole run, and you cannot tell where it went wrong. An early checkpoint exposes the problem while it is still cheap to fix.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which of these belongs in a progress log for a long run?</p>
+  <button class="opt" type="button">One summary written only after all of the work ends</button>
+  <button class="opt" type="button">A screenshot of the finished app at the very end</button>
+  <button class="opt" type="button">A line per step, written while the run is going</button>
+  <button class="opt" type="button">A full copy of every single file that was read</button>
+  <div class="why"><p>The point of the log is that it exists while the run is happening and survives a stop or crash. A summary written only at the end disappears with the run if it never finishes.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You start a long run and step away. A few minutes later you come back. What is the best first move?</p>
+  <button class="opt" type="button">Wait silently until the agent reports that it is done</button>
+  <button class="opt" type="button">Check the log after a few minutes and steer early</button>
+  <button class="opt" type="button">Restart the whole task again from the very beginning now</button>
+  <button class="opt" type="button">Delete the folder and start the whole app over now</button>
+  <div class="why"><p>The log and the early checkpoint exist precisely so you can see the state mid-run and steer. Waiting until "done" forfeits the whole advantage of having them.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Claude Code best practices</a> — Anthropic's section "Let Claude run without you" lists the five questions to ask before any unattended run, including "Can it check its own work?" and "What stops it?" Written for one tool, but the questions apply to all three.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me your progress.log from the last long task and explain each line"</em> or <em>"What would you have done differently if the first checkpoint had failed?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-cc1">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Claude Code best practices</a>. Retrieved 2026-11-02. Used for unattended-run risks, "watch the first minute", asking for evidence, and the five pre-run questions.</li>
+  <li id="src-cc2">Anthropic, <a href="https://code.claude.com/docs/en/interactive-mode">Claude Code interactive mode</a>. Retrieved 2026-11-02. Used for backgrounding commands with Ctrl+B, output written to a file, and /tasks.</li>
+  <li id="src-cc3">Anthropic, <a href="https://code.claude.com/docs/en/interactive-mode">Claude Code interactive mode</a> (Esc row). Retrieved 2026-11-02. Used for "keeps the work done so far" on interrupt.</li>
+  <li id="src-cx1">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex CLI developer commands</a>. Retrieved 2026-11-02. Used for /ps showing background terminals with recent output lines, and /stop.</li>
+  <li id="src-cx2">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex CLI developer commands</a> (interactive shortcuts). Retrieved 2026-11-02. Used for Tab queueing a follow-up while Codex works.</li>
+  <li id="src-omp1">Stencil Labs, <a href="https://omp.sh/docs/slash">omp docs: slash commands</a>. Retrieved 2026-11-02. Single-vendor source. Used for /jobs showing running and settled background jobs.</li>
+  <li id="src-omp2">Stencil Labs, <a href="https://omp.sh/docs/keybindings">omp docs: keybindings</a> and <a href="https://omp.sh/docs/using">using omp</a>. Retrieved 2026-11-02. Single-vendor source. Used for Escape interrupting the active turn and steering while it works.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> hand a long task to an agent with an early evidence checkpoint and a progress log, read the log mid-run to see where the run actually is, and steer before the whole run is wasted.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0062-vague-prompts-safe-only-when-repo.html">Previous: 4.8 Vague prompts</a> · <a href="0064-recovering-derail.html">Next: 4.10 Recovering a derail</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

@@ -31,17 +31,17 @@
 <h2>The file name depends on your agent</h2>
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
     <p>The file is <code>CLAUDE.md</code>, in the project root or in a <code>.claude/</code> folder inside it. Run <code>/init</code> and Claude <q>analyzes your codebase and creates a file with build commands, test instructions, and project conventions it discovers.</q><sup class="cite"><a href="#src-a5">[1]</a></sup> Check what loaded with <code>/context</code>, under "Memory files". If a project has an <code>AGENTS.md</code> and no <code>CLAUDE.md</code>, Claude reads that instead; if both exist, it reads the <code>CLAUDE.md</code> files only.<sup class="cite"><a href="#src-a5">[1]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
     <p>The project file is <code>AGENTS.md</code> at the repository root. Codex also reads a personal one in <code>~/.codex/AGENTS.md</code>, and files in subfolders, with the closer file overriding. <code>/init</code> in the CLI will <q>generate an AGENTS.md scaffold in the current directory.</q><sup class="cite"><a href="#src-b6">[4]</a></sup> Files that add up past <code>project_doc_max_bytes</code>, 32 KiB by default, are cut off.<sup class="cite"><a href="#src-b5">[2]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
     <p>The project file is <code>AGENTS.md</code> at the repository root. omp also reads a user-wide <code>~/.omp/agent/AGENTS.md</code> and a stricter <code>.omp/RULES.md</code> for rules that should always apply. Changes are picked up after <code>/new</code> or a restart, and <code>/extensions</code> shows which files loaded.<sup class="cite"><a href="#src-c5">[3]</a></sup> omp's documentation comes only from its own authors, so check anything surprising with your teacher.</p>
   </div>
 </div>
@@ -58,7 +58,7 @@
 <p>Write each line so that someone could check it. Anthropic's examples make the difference clear: <q>Use 2-space indentation</q> instead of <q>Format code properly</q>; <q>Run <code>npm test</code> before committing</q> instead of <q>Test your changes</q>.<sup class="cite"><a href="#src-a5">[1]</a></sup> A rule you cannot check is a mood, and the agent will treat it as one.</p>
 
 <h2>What does not belong inside</h2>
-<p>Length is not free. omp's page puts it best: <q>Keep it short and concrete: every loaded instruction consumes context.</q><sup class="cite"><a href="#src-c5">[3]</a></sup> Anthropic asks for <q>under 200 lines per CLAUDE.md file</q>, because longer files are followed less reliably.<sup class="cite"><a href="#src-a5">[1]</a></sup> Three things usually push a beginner's file over that line:</p>
+<p>Length is not free. omp's page puts it best: keep the file short and concrete, because every loaded instruction consumes context.<sup class="cite"><a href="#src-c5">[3]</a></sup> Anthropic asks for <q>under 200 lines per CLAUDE.md file</q>, because longer files are followed less reliably.<sup class="cite"><a href="#src-a5">[1]</a></sup> Three things usually push a beginner's file over that line:</p>
 <ul>
   <li><strong>A long procedure.</strong> If a rule needs ten steps, it is a job, not a standing fact. Claude's docs send multi-step procedures to a skill; lesson <a href="0026-skills-slash-commands-mentions.html">1.11</a> covers those.</li>
   <li><strong>Personal taste.</strong> Your own scratch URLs and test names are not the project's rules. Keep them in a personal file, such as <code>CLAUDE.local.md</code>, which the docs say to add to <code>.gitignore</code> so it stays out of version control.<sup class="cite"><a href="#src-a5">[1]</a></sup></li>

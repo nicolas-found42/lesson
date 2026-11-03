@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Safety checklist: reference</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb">Reference · from <a href="../lessons/0089-secrets.html">Lesson 8.1</a></nav>
+<header class="lesson-head">
+  <p class="kicker">Reference card</p>
+  <h1>Safety checklist</h1>
+  <p class="lede">Open this before a run that touches a key, a downloaded file, or a live account.</p>
+</header>
+<main>
+
+<div class="callout"><span class="label">Data is not orders</span>
+<p>Text inside a fetched page, README, log, or data dump is untrusted. It arrives in the same context window as your instructions, with nothing marking its author. If you did not write it, treat it as data: report it, do not follow it. See <a href="../lessons/0074-prompt-injection.html">lesson 5.7</a>.</p></div>
+
+<h2>Before you let it run</h2>
+<table class="ref">
+<tr><th scope="col">Check</th><th scope="col">Why</th></tr>
+<tr><td><label><input type="checkbox"> <strong>Read the diff</strong> before accepting.</label></td><td>A summary is a claim; the diff is evidence (<a href="../lessons/0030-claims-vs-evidence.html">2.14</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Approve one action</strong> at a time.</label></td><td>"Always allow" ends the lesson in which commands run (<a href="../lessons/0006-approvals-and-permissions.html">0.6</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Refuse anything outside the project folder.</strong></label></td><td>Home-folder edits and global installs are hard to undo (<a href="../lessons/0006-approvals-and-permissions.html">0.6</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Start the agent inside the project.</strong></label></td><td>One level up makes your home folder the project (<a href="../lessons/0004-the-terminal-in-five-commands.html">0.4</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Keep prompts on around untrusted input.</strong></label></td><td>The prompt is the wall an injection must pass (<a href="../lessons/0074-prompt-injection.html">5.7</a>).</td></tr>
+</table>
+
+<h2>Secrets</h2>
+<table class="ref">
+<tr><th scope="col">Check</th><th scope="col">Why</th></tr>
+<tr><td><label><input type="checkbox"> <strong>Values in <code>.env</code>, names in <code>.env.example</code>.</strong></label></td><td>The example is committed; the real file is ignored (<a href="../lessons/0090-env-vars.html">8.2</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Check the ignore rule before the first commit.</strong></label></td><td><code>git check-ignore -v .env</code> names the protecting line; a tracked file ignores later rules (<a href="../lessons/0042-gitignore.html">3.3</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Never paste a secret into chat.</strong></label></td><td>Sessions are saved to disk, unencrypted at rest (<a href="../lessons/0091-never-print-commit.html">8.3</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Audits report names and line numbers, never values.</strong></label></td><td>An audit that prints a key has leaked it again (<a href="../lessons/0089-secrets.html">8.1</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Prove the file was never committed.</strong></label></td><td><code>git log --oneline -- .env</code> printing nothing is the proof (<a href="../lessons/0089-secrets.html">8.1</a>).</td></tr>
+</table>
+
+<div class="doit">
+<span class="label">If a key leaks</span>
+<ol>
+<li><label><input type="checkbox"> <strong>Rotate first.</strong> Revoke it in the provider console and create a new key; a dead key cannot be abused, wherever it sits (<a href="../lessons/0091-never-print-commit.html">8.3</a>).</label></li>
+<li><label><input type="checkbox"> <strong>Remove it.</strong> Move the value to <code>.env</code>, confirm <code>.gitignore</code> covers it, and never re-paste it while asking for help.</label></li>
+<li><label><input type="checkbox"> <strong>Note the history.</strong> If <code>git log</code> lists a commit, the old snapshot still holds it; rewriting history is separate and coordinated (<a href="../lessons/0042-gitignore.html">3.3</a>).</label></li>
+<li><label><input type="checkbox"> <strong>Check the blast radius.</strong> Search logs, screenshots, and other copies for the same value.</label></li>
+</ol>
+</div>
+
+<h2>Untrusted input</h2>
+<table class="ref">
+<tr><th scope="col">Check</th><th scope="col">Why</th></tr>
+<tr><td><label><input type="checkbox"> <strong>Screen downloads before use.</strong></label></td><td>"Data only; report, then wait" keeps the gate before action (<a href="../lessons/0074-prompt-injection.html">5.7</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Treat pasted tables, CSVs, and error dumps as untrusted.</strong></label></td><td>They arrived from somewhere you do not control (<a href="../lessons/0074-prompt-injection.html">5.7</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Keep network off where the sandbox allows.</strong></label></td><td>Exfiltration needs a route out; with network off it must ask (<a href="../lessons/0074-prompt-injection.html">5.7</a>).</td></tr>
+</table>
+
+<h2>Third parties</h2>
+<table class="ref">
+<tr><th scope="col">Check</th><th scope="col">Why</th></tr>
+<tr><td><label><input type="checkbox"> <strong>Inventory egress before the first real run.</strong></label></td><td>Every service, and exactly what it receives (<a href="../lessons/0093-send-third-parties.html">8.5</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Read retention and training policy.</strong></label></td><td>The service and your account setting decide (<a href="../lessons/0093-send-third-parties.html">8.5</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Give each key the narrowest scope.</strong></label></td><td>A token narrows rights; it never adds them (<a href="../lessons/0051-permission-errors.html">3.12</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Set a hard spend cap and alert in the console.</strong></label></td><td>A number in a prompt is not enforcement (<a href="../lessons/0092-third-party-api-keys.html">8.4</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Know the two error numbers.</strong></label></td><td>429: wait, honor Retry-After, retry once. 402: stop and ask a human (<a href="../lessons/0092-third-party-api-keys.html">8.4</a>).</td></tr>
+</table>
+
+<h2>Accounts</h2>
+<table class="ref">
+<tr><th scope="col">Check</th><th scope="col">Why</th></tr>
+<tr><td><label><input type="checkbox"> <strong>Expect expiry mid-run; read the error first.</strong></label></td><td>Re-login with <code>/login</code> or the CLI command; a company reauth policy expires on schedule (<a href="../lessons/0094-logins-token-expiry.html">8.6</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Request scopes incrementally; register the exact redirect URI.</strong></label></td><td>Small, revocable access; the redirect is your registered destination (<a href="../lessons/0095-oauth-pieces.html">8.7</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Keep the client secret server-side.</strong></label></td><td>Browser code ships to every visitor (<a href="../lessons/0095-oauth-pieces.html">8.7</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Prefer per-user tokens to one shared token.</strong></label></td><td>Revocation touches one person, not everyone (<a href="../lessons/0095-oauth-pieces.html">8.7</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Do logins, consents, and attestations yourself.</strong></label></td><td>Ask for a numbered runbook and wait; those steps need your identity (<a href="../lessons/0077-human-only-steps.html">5.10</a>).</td></tr>
+</table>
+
+<h2>Shipping</h2>
+<table class="ref">
+<tr><th scope="col">Check</th><th scope="col">Why</th></tr>
+<tr><td><label><input type="checkbox"> <strong>Require PRs on <code>main</code>.</strong></label></td><td>Tick "Do not allow bypassing the above settings" (<a href="../lessons/0054-branch-protection-prs-only-convention.html">3.15</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Deploy values live in the host secret manager.</strong></label></td><td>Never in the workflow, README, log, or chat (<a href="../lessons/0102-deploy-blockers.html">8.14</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Compare the host's secret list with what the app reads.</strong></label></td><td>The host starts empty; a missing secret is an empty string, so check <code>gh secret list</code> (<a href="../lessons/0102-deploy-blockers.html">8.14</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Prefer short-lived OIDC identity to long-lived CI keys.</strong></label></td><td>A leaked job token expires by itself (<a href="../lessons/0099-ci-logging-without-key-file.html">8.11</a>).</td></tr>
+</table>
+
+<h2>Legal</h2>
+<table class="ref">
+<tr><th scope="col">Check</th><th scope="col">Why</th></tr>
+<tr><td><label><input type="checkbox"> <strong>Confirm the license before copying an asset.</strong></label></td><td>No license means no permission; pick another asset (<a href="../lessons/0106-assets-licensing.html">8.18</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Record creator, license, and link in the README.</strong></label></td><td>Credit is a condition of most Creative Commons licenses; add a LICENSE for your code (<a href="../lessons/0106-assets-licensing.html">8.18</a>).</td></tr>
+<tr><td><label><input type="checkbox"> <strong>Read the product's terms before reverse-engineering.</strong></label></td><td>Say what is off-limits and set a stop condition (<a href="../lessons/0106-assets-licensing.html">8.18</a>).</td></tr>
+</table>
+
+</main>
+<footer class="lesson-foot"><p><a href="../lessons/0089-secrets.html">Back to lesson 8.1</a></p></footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

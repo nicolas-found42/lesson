@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tools: what your agent can see and do</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 5 · How agents work · Lesson 5.3</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 5 · Lesson 5.3</p>
+  <h1>Tools: what your agent can see and do</h1>
+  <p class="lede">Your agent has no eyes and no memory of its own beyond the conversation. Everything it knows arrives through tool calls: read, edit, run. Knowing that is what lets you predict it.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0001-what-a-coding-agent-is.html">0.1 What a coding agent is</a></span><span>Win: you can predict what the agent can and cannot perceive from what a tool returns</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Lesson 0.1 showed the loop: gather, act, verify. This lesson opens the box and shows the only three kinds of hands the loop has. When something goes wrong in your app — a change that did not land, a command that "worked" but broke something — knowing the tools tells you where to look. The agent is not a person sitting at your keyboard. It is a model that can perceive the world only through what its tools hand back.</p>
+
+<h2>Three tool groups: read, edit, run</h2>
+<p>Across all three agents in this course, the tools fall into the same three groups. Anthropic's documentation sorts the built-in tools into five categories — file operations, search, execution, web, and code intelligence — but for your purposes they collapse into three: <strong>read</strong> (look at a file or search), <strong>edit</strong> (change a file), and <strong>run</strong> (execute a command).<sup class="cite"><a href="#src-2">[2]</a></sup> OpenAI describes the same deal for Codex: it can <q>inspect files, make edits, and run the tools already installed on your machine.</q><sup class="cite"><a href="#src-3">[3]</a></sup></p>
+<p>A vendor-neutral definition says agents are <q>typically just LLMs using tools based on environmental feedback in a loop.</q><sup class="cite"><a href="#src-6">[6]</a></sup> The feedback is the point: each tool returns text, and only that text reaches the model. As Anthropic puts it, the surrounding layer <q>provides the tools and manages the context the model sees.</q><sup class="cite"><a href="#src-2">[2]</a></sup></p>
+
+<h2>How each agent shows you the tool calls</h2>
+<p>You will watch these tools fire dozens of times per message, so it helps to know where your agent displays them.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Tool calls appear inline in the session as they happen, named Read, Edit, Bash and so on, each with its result. The tools reference lists them and their exact behavior.<sup class="cite"><a href="#src-1">[1]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Codex shows commands and diffs as they appear in the terminal, so you can inspect each edit and each command's output while the turn runs.<sup class="cite"><a href="#src-3">[3]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp shows a <em>tool card</em> per call: <q>A tool card shows what is pending, succeeded, failed, or was cancelled; edit cards include the affected path and a diff summary.</q><sup class="cite"><a href="#src-5">[5]</a></sup> Truncated command output can be expanded. (omp's docs are single-vendor, from its own authors.)</p>
+  </div>
+</div>
+
+<h2>Read: the agent sees only what it reads</h2>
+<p>The read tool takes one file and returns its contents. Two limits matter to you. First, <q>Read only reads files, not directories</q> — listing a folder is a run-tool job.<sup class="cite"><a href="#src-1">[1]</a></sup> Second, big files come back in pages: one read returns at most 25,000 tokens and a whole file over 256 KB is refused outright, so the agent gets a <q>PARTIAL view</q> notice and must page through with offsets.<sup class="cite"><a href="#src-1">[1]</a></sup> Binary files are refused too, and images come back downscaled. If the agent quotes a file at you, it read that text; it did not glance at the folder.</p>
+
+<h2>Edit: exact text, read first</h2>
+<p>The edit tool is deliberately dumb, and that is a safety feature: <q>The Edit tool performs exact string replacement. It takes an old_string and a new_string and replaces the first with the second.</q><sup class="cite"><a href="#src-1">[1]</a></sup> No fuzzy matching. The old text must appear exactly once, and the agent must have read the file in the current session first — that is the <em>read-before-edit</em> rule. So when an edit fails, the cause is almost always that the file on disk differs from what the agent last read, or the quoted text appears twice.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>During a long build, a user's agent hit a burst of edit errors saying the expected lines were not found. Each time, the agent re-read the file and tried again; the errors were trivial and self-corrected. The lesson: an edit failure is not a catastrophe, it is the read-before-edit rule doing its job.</p>
+</div>
+
+<h2>Run: commands in a sandbox, output as text</h2>
+<p>The run tool executes a shell command. <q>The Bash tool runs each command in a separate process,</q> and <q>environment variables don't persist</q> between commands.<sup class="cite"><a href="#src-1">[1]</a></sup> What comes back is text, capped: roughly the first 30,000 characters of output reach the agent inline before the rest is handed over as a file to page through.<sup class="cite"><a href="#src-1">[1]</a></sup> And the run is fenced: Codex's default sandbox has <q>network access turned off</q> and writes limited to the active workspace, enforced by the operating system (Seatbelt on macOS).<sup class="cite"><a href="#src-4">[4]</a></sup> Whether a given command needs your approval is the subject of lesson 0.6.</p>
+
+<h2>What the agent cannot see</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user's screen locked mid-task, and every screenshot the agent captured came back black. The agent noticed the blank captures, added a guard against them, switched to a rendering mode that did not need the screen, and finally asked the human to unlock the machine. It never "saw" the screen at all — only the pixels a tool returned.</p>
+</div>
+<p>So the blind spots are concrete: your screen and other apps (unless a tool returns a screenshot), files it has not read this session, changes made outside the session since it last looked, anything behind a sandbox fence, and — because each new session starts with a fresh context window<sup class="cite"><a href="#src-2">[2]</a></sup> — anything from a previous session it has not been shown. When the agent sounds confidently wrong about your project, one of these is usually why: its picture of the world is exactly as fresh as its last tool result.</p>
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>When in doubt, give the agent fresh eyes: ask it to re-read the file, re-run the command, or take a screenshot — and check the tool result yourself.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three tool groups, and one thing the agent cannot perceive unless a tool returns it.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Read</strong> (files, search), <strong>edit</strong> (exact text changes), <strong>run</strong> (shell commands). It cannot perceive your screen, unread files, or out-of-session changes on its own — only what a tool call returns.</p></div>
+</div>
+
+<h2>Try it: watch the tools work</h2>
+<div class="doit">
+  <span class="label">Do this in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent inside your project folder (the one from lesson 0.3).</label></li>
+    <li><label><input type="checkbox"> Ask: "What tools do you have access to? List them."</label></li>
+    <li><label><input type="checkbox"> Ask it to read one file in the project and show you the first lines.</label></li>
+    <li><label><input type="checkbox"> Ask it to run a harmless command, such as listing the folder, and show the output.</label></li>
+  </ol>
+  <div class="expect"><p>You should see a list of read/edit/run-style tools, then a tool call for the file read, then one for the command — each with its returned text visible in the session. That returned text is all the agent got.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">The agent wants to change one line in a file. What does its edit tool actually do?</p>
+  <button class="opt" type="button">It swaps an exact stretch of text for new text, character for character.</button>
+  <button class="opt" type="button">It rewrites the entire file from what the model remembers of earlier reads.</button>
+  <button class="opt" type="button">It hands the file to a human editor who makes the change elsewhere.</button>
+  <button class="opt" type="button">It appends the new line at the file bottom, keeping the old text.</button>
+  <div class="why"><p>Edits are exact string replacement of text the agent has read, matched once. Memory-based rewriting is not how the edit tool works.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">The agent wants to know what your screen looks like right now. Where can that come from?</p>
+  <button class="opt" type="button">From its memory of screens it once saw in an earlier session.</button>
+  <button class="opt" type="button">From the webcam, which the agent can quietly watch in the background.</button>
+  <button class="opt" type="button">Only from a tool result, such as a screenshot it could read.</button>
+  <button class="opt" type="button">From the terminal window, which it reads even when you type nothing.</button>
+  <div class="why"><p>The agent perceives the world only through tool results plus the conversation. Screens, webcams and windows are invisible unless a tool returns them.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">What happens when the agent runs a shell command for you?</p>
+  <button class="opt" type="button">The command runs in its own fresh process on your own machine.</button>
+  <button class="opt" type="button">It runs in a new process and its output returns as text.</button>
+  <button class="opt" type="button">It opens a visible window that only you can see and control.</button>
+  <button class="opt" type="button">It changes the file directly, with no command being run at all.</button>
+  <div class="why"><p>Each command runs in a separate process, possibly inside a sandbox, and only its output text comes back to the agent.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/tools-reference">Claude Code tools reference</a> — the exact behavior of the Read, Edit, Write and Bash tools, including read-before-edit and output limits. Written for one tool; the read/edit/run split applies to all three agents in this course.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me a tool call you just made and explain the result you got back"</em> or <em>"What can't you see right now?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-1">Anthropic, <a href="https://code.claude.com/docs/en/tools-reference">Claude Code tools reference</a>. Retrieved 2026-11-02.</li>
+  <li id="src-2">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02.</li>
+  <li id="src-3">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-4">OpenAI, <a href="https://learn.chatgpt.com/docs/agent-approvals-security">Codex agent approvals and security</a>. Retrieved 2026-11-02.</li>
+  <li id="src-5">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-6">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as outdated). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name the read/edit/run tool groups, predict what the agent can perceive from a tool result, and explain why edit failures and "confidently wrong" answers happen.</p>
+  <p>Quick reference: <a href="../reference/agent-loop.html">The agent loop (one page)</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Previous: <a href="0069-tokens-cost-caching.html">5.2 Tokens, cost, caching</a></span> · <span>Next: <a href="0071-subagents.html">5.4 Subagents</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

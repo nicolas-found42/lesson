@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real vs simulated: tests passed, screen wrong</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.7</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.7 · First-ship path ★</p>
+  <h1>Tests passed, but the screen was wrong</h1>
+  <p class="lede">A passing test can be honest and still say nothing about what a person sees. Before you ship, someone has to open the page in a real browser and look at it.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0029-run-yourself.html">2.1 Run it yourself</a></span><span>Win: you can tell a simulated check from a real one, and ask for the real one</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You are going to send a link to people who cannot fix what they find. If the page renders wrongly on their screen, nothing in your project's test output will save you. The tests were green; the visitor leaves. This lesson is about a gap that catches careful beginners: a check can be performed in a place where the failure you care about cannot happen, so it always passes.</p>
+<p>That place has a name. A <span class="term" title="A stand-in that behaves like part of a browser, or like a browser with no screen, so a program can inspect a page without showing it.">simulated environment</span> imitates enough of a browser for a program to read and change the page, but it does not put pixels on a screen. A <span class="term" title="An actual browser program, such as Chrome, showing the page in a window a person can look at.">real browser</span> does. Keep those two apart and most "but it passed" surprises stop happening.</p>
+
+<h2>The test that passed while the screen was broken</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user was building a small animated app and asked the agent to make its text easier to read. The agent changed the code, ran the app's automated checks, and reported success. The checks were honest: the text was correct in the page's structure, and the drawing code ran without an error. Then the user looked at the running app and sent a screenshot. Black rectangles sat on top of words in the middle of the picture. The checks could not have seen it, because they never draw anything; the rectangles appeared only when the real window painted its canvas and the text was drawn over the wrong layer.</p>
+  <p>The agent fixed it in one turn once it could reproduce the problem on a real display. Cost of the detour: one round trip that a single look would have avoided.</p>
+</div>
+
+<h2>What a simulated check really does</h2>
+<p>Most of your project's automated checks fall into this category. A test that loads your page into a JavaScript-only imitation of a browser can read elements, click buttons, and compare text. The most common library for this work describes its own limits plainly: <q>jsdom does not have the capability to render visual content</q>, and even with its "pretend to be visual" option on, <q>jsdom still does not do any layout or rendering</q>.<sup class="cite"><a href="#src-j1">[1]</a></sup></p>
+<p>Layout is where things overlap, overflow, hide behind a fixed header, or shrink to nothing on a phone. None of that is an error in the code. All of it is visible to a person. So a check that never lays anything out cannot report it.</p>
+<p>A browser can also run with no window at all. Chrome's documentation describes headless mode as a way to <q>run the browser in an unattended environment, without any visible UI</q>.<sup class="cite"><a href="#src-h1">[2]</a></sup> That is useful for automation, and it is still not the same as the browser a person uses: nothing is displayed, so nobody sees the result until a screenshot is taken and looked at.</p>
+
+<table class="ref">
+  <tr><th>Kind of check</th><th>What it can tell you</th><th>What it cannot</th></tr>
+  <tr><td>Unit test of page logic</td><td>A function returns the right value</td><td>Whether the result reaches the screen at all</td></tr>
+  <tr><td>Simulated page (no rendering)</td><td>The right elements exist, text matches, clicks fire</td><td>Overlap, overflow, cut-off text, wrong colours</td></tr>
+  <tr><td>Headless browser with screenshots</td><td>The page rendered somewhere, at one size</td><td>What you see, until someone opens the image</td></tr>
+  <tr><td>Real browser, opened by you</td><td>What a visitor actually gets</td><td>Other people's screens, browsers, and devices</td></tr>
+</table>
+<span class="sidenote">No single row is enough on its own. The lower rows are not "better tests"; they are a different kind of evidence, and the last row is the one your visitor will experience.</span>
+
+<h2>Who opens the browser</h2>
+<p>The good news: you usually do not have to describe the bug in words first. All three agents can be pointed at a running page, and one of them runs it in a browser window you can watch.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>With its Chrome integration, Claude Code connects to your own browser. The documentation says it is there to <q>test web apps, debug with console logs, automate form filling, and extract data</q>, and that <q>Browser actions run in a visible Chrome window in real time.</q><sup class="cite"><a href="#src-c1">[3]</a></sup> It needs the browser extension and a signed-in session, so the first attempt may show an install prompt; approve it and read what it asks for. The same page notes that Claude pauses and asks you to handle a login page or CAPTCHA by hand.<sup class="cite"><a href="#src-c1">[3]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>The built-in browser is part of the ChatGPT desktop app, not of the Codex command-line tool. OpenAI's page states: <q>Browser isn't available in Codex CLI or the Codex IDE extension.</q><sup class="cite"><a href="#src-b1">[4]</a></sup> In the desktop app it can <q>review a page you're building</q>.<sup class="cite"><a href="#src-b1">[4]</a></sup> If you work in the terminal, the simple fallback is to open the page yourself and paste a screenshot into the prompt.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp has a browser tool, and it is treated as an executable action: in the <code>write</code> approval mode it <q>prompts</q> for <q>Executable actions such as bash, eval, browser control, and task</q>.<sup class="cite"><a href="#src-o1">[5]</a></sup> Leave approvals on, read the prompt, and let it open the page. Because omp publishes only its own documentation, check anything surprising against what you see on screen.</p>
+  </div>
+</div>
+<p>Claude Code's own best-practices page makes the case for this step in one sentence. Its <code>/verify</code> command <q>has Claude build and run the app and look at the result</q>, and that <q>catches the kind of problem that tests and typechecks miss.</q><sup class="cite"><a href="#src-a7">[6]</a></sup></p>
+
+<h2>A run where the gap shows up</h2>
+<p>The exchange below is a typical pattern, not a transcript of one particular session. It shows the same code surviving two different questions.</p>
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>Make the heading larger and centre the price. Tell me when it is done.</span></div>
+  <div class="row"><span class="who">agent</span><span>Edited styles.css. Ran the checks: 12 passing. Done.</span></div>
+  <div class="row you"><span class="who">you</span><span>Open it in my browser and look at it before you say that.</span></div>
+  <div class="row tool"><span class="who">tool</span><span>started the local server on port 3000; opened the page in Chrome</span></div>
+  <div class="row flag"><span class="who">agent</span><span>The price is under the heading, but the heading now wraps onto two lines at this width and pushes the button off screen. Fixing.</span></div>
+  <div class="row"><span class="who">note">Same code. Different question. The checks asked "is the markup right?" The browser asked "what does a person see?"</span></div>
+</div>
+<p>Notice what changed in the second message. It did not add a new requirement. It named the place where the check had to happen. That is the whole move, and it works as a standing instruction.</p>
+
+<h2>Make it part of the definition of done</h2>
+<p>For anything with a visible surface, "tests pass" is an incomplete finish line. Write the real check into the task before the work starts, so the agent cannot stop at the simulated one:</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>When you think the change is finished:
+1. Start the app and open the page in a real browser window, not a simulated one.
+2. Look at it at a wide window and at a narrow phone-sized window.
+3. Tell me what you actually saw, including anything that overlaps, overflows, or is cut off.
+4. If something looks wrong, fix it and look again. Stop when both widths look clean, or when you have tried three times.
+Do not say "done" on the strength of tests alone.</pre></div>
+<div class="compare">
+  <div class="bad"><span class="label">Simulated only</span><p>"All 12 tests pass. The heading element has the correct class and the price sits after it in the markup."</p><p>True, and silent about the one thing the user will notice.</p></div>
+  <div class="good"><span class="label">Real browser</span><p>"Opened at 1280px and 390px wide. At 390px the heading wraps and the button leaves the screen; I reduced the heading size and it now fits. Here is a screenshot of each width."</p><p>Describes a screen someone can check, and names the evidence.</p></div>
+</div>
+<p>Two details make this instruction reliable. First, name the widths, because "looks fine" usually means "looks fine at whatever size the window happened to be". Second, require a report of what was seen, not a verdict. A verdict invites the same optimism that produced the false "done"; a description is something you can compare with your own eyes.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name one thing a simulated page check can prove, and one thing only a real browser can show you.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A simulated check can prove things about the page's structure and logic: the right elements exist, the text matches, a click runs the handler. It cannot show layout or painting, because it does not render. Only a real browser shows what a person sees: overlap, overflow, cut-off text, wrong colours, and whether the page is usable at a given window size.</p></div>
+</div>
+
+<div class="doit">
+  <span class="label">Do it now: catch the gap yourself</span>
+  <ol>
+    <li><label><input type="checkbox"> Ask your agent to open your project's page in a real browser and describe what it sees, at a wide window and at a narrow one.</label></li>
+    <li><label><input type="checkbox"> Open the same page yourself, at the same two widths. Use the browser's window edges or its device-width view.</label></li>
+    <li><label><input type="checkbox"> Compare the two descriptions. Note any difference in what was reported as fine.</label></li>
+    <li><label><input type="checkbox"> If they differ, tell the agent exactly what you see and where, then ask it to look again after the fix.</label></li>
+  </ol>
+  <div class="expect"><p>You should see the agent's description and your own view agree, or you should have found a real difference and had it fixed. Either result is a win: you now know which kind of check your project actually runs, and you can tell the difference next time.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">The agent reports that all page tests pass. What have you learned?</p>
+  <button class="opt" type="button">Someone opened it and looked at the page.</button>
+  <button class="opt" type="button">The page loads quickly on every visitor phone.</button>
+  <button class="opt" type="button">The page elements and the logic behaved fine.</button>
+  <button class="opt" type="button">The layout stayed readable at every window size.</button>
+  <div class="why"><p>Tests of page logic check structure and behaviour. They say nothing about what a person sees, because no layout or painting happens, so they cannot show overlap, cut-off text, or a broken width.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A screenshot from a headless browser shows your page. What is the next step?</p>
+  <button class="opt" type="button">Open the image and look at it yourself.</button>
+  <button class="opt" type="button">Treat it as proof for every visitor device.</button>
+  <button class="opt" type="button">Assume the layout matches what you had intended.</button>
+  <button class="opt" type="button">Delete page tests because the render covers them.</button>
+  <div class="why"><p>A headless browser does render, but nobody has seen the result yet and it is one size only. Look at the image, then open the page yourself; tests still check things a screenshot cannot.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Which instruction best closes the simulated-versus-real gap?</p>
+  <button class="opt" type="button">Run the checks again and tell me the count.</button>
+  <button class="opt" type="button">Open it in a real browser and describe it.</button>
+  <button class="opt" type="button">Read the stylesheet again and confirm it is right.</button>
+  <button class="opt" type="button">Add more tests until the failing checks all pass.</button>
+  <div class="why"><p>It names the place where the check must happen and asks for an observation instead of a verdict. Adding tests of the same kind cannot reveal a layout problem that only appears when something is drawn.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/chrome">Use Claude Code with Chrome</a> — Anthropic's page on connecting an agent to a real browser, including what it can do and where it stops and asks you to log in. Even if you use another agent, it shows what a real-browser check looks like in practice.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure whether your project's checks render anything? Ask: <em>"Which of my checks run in a simulated page, and which open a real browser?"</em> A useful follow-up is <em>"Show me the last real browser check you ran, and what you saw."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-j1">jsdom project, <a href="https://github.com/jsdom/jsdom">jsdom README</a>. Retrieved 2026-11-02.</li>
+  <li id="src-h1">Chrome for Developers, <a href="https://developer.chrome.com/docs/automation-and-testing/headless">Chrome Headless mode</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Anthropic, <a href="https://code.claude.com/docs/en/chrome">Use Claude Code with Chrome</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/browser">Browser</a>. Retrieved 2026-11-02.</li>
+  <li id="src-o1">Stencil Labs, <a href="https://omp.sh/docs/approvals">omp tool approvals</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> say which checks run in a simulated page and which in a real browser, and ask for the real check before anyone else sees the page.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="0036-screenshots-as-evidence.html">Next: 2.8 Screenshots as evidence</a></p>
+  <div class="pager"><span>Previous: <a href="0034-one-command-gate.html">2.6 One-command gate</a></span><span>Next: <a href="0036-screenshots-as-evidence.html">2.8 Screenshots as evidence</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

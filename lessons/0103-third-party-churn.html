@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Third-party churn: deprecations and dead documentation</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.15</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.15</p>
+  <h1>Third-party churn: deprecations and dead documentation</h1>
+  <p class="lede">The services your app calls are run by other people, and they change without asking. Features get deprecated, doc pages move or die, and a confident agent can quote a dead page as if it were fact. Learn to spot churn early and to verify every link before you build on it.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0075-stale-invented-claims.html">5.8 Stale or invented claims</a></span><span>Win: you can check a provider's deprecation notices yourself and make your agent prove a doc link is alive before using it</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your mission is a public app that does something useful. Useful usually means calling a service someone else runs: a map, a login, a payment check, an AI model. That service is not part of your project folder. The company behind it keeps changing it. <strong>Third-party churn</strong> is the name for that drift: features deprecated, endpoints removed, documentation moved or deleted. None of it is malice; it is ordinary maintenance on their side. Your app may depend on the old thing silently. Your users will be the first to notice when it breaks.</p>
+
+<h2>Deprecations: announced endings</h2>
+<p>A <strong>deprecation</strong> is a provider's public announcement that a feature, endpoint, or app type will stop working on a stated date. The healthy response is to read the provider's changelog or deprecation page <em>before</em> you build on something. Plan the switch <em>before</em> the cutoff, then test against the live service — not against the docs alone.</p>
+<p>When something is permanently removed, well-behaved servers say so with <strong>HTTP 410 Gone</strong>. The HTTP standard, RFC 9110, defines it precisely: the 410 status code <q>indicates that access to the target resource is no longer available at the origin server and that this condition is likely to be permanent.</q><sup class="cite"><a href="#src-rfc9110">[3]</a></sup> MDN adds the practical rule: <q>Clients should not repeat requests for resources that return a 410 response.</q><sup class="cite"><a href="#src-mdn410">[2]</a></sup> In plain words: a 410 means <em>gone for good — do not retry, migrate instead.</em></p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user had an agent integrate a sales-automation provider into their app. Mid-project, the provider's command-line tool refused the project the agent had created: the provider had deprecated its legacy app type and only accepted the new one. Nothing in the agent's memory mentioned this. The deprecation was announced after the agent's knowledge was last refreshed. The fix was to read the provider's current changelog, create the new app type, and migrate. Lesson: check the changelog first, not after the error.</p>
+</div>
+
+<h2>Docs that lie: the 404 page</h2>
+<p>The other half of churn is documentation. A doc page your tutorial followed last month may no longer exist. A <strong>404 Not Found</strong> means the server cannot find the requested page. MDN is precise: <q>A 404 status code only indicates that the resource is missing without indicating if this is temporary or permanent,</q> and <q>common causes of 404 responses are mistyped URLs or pages that are moved or deleted without redirection.</q><sup class="cite"><a href="#src-mdn404">[1]</a></sup> RFC 9110 says the same in standards language: 404 <q>does not indicate whether this lack of representation is temporary or permanent</q>; the 410 (Gone) code exists for the case where the server knows the resource is gone for good.<sup class="cite"><a href="#src-rfc9110">[3]</a></sup> Links that lead to 404 pages are called <strong>dead links</strong>, and their slow accumulation across the web is called <strong>link rot</strong>.<sup class="cite"><a href="#src-mdn404">[1]</a></sup></p>
+<p>Here is the trap that actually bites: a 404 response still delivers a complete, nicely formatted HTML page. An agent that scrapes a URL without checking its status code can read that error page as if it were the real documentation. It can then write a confident, specific-sounding claim into your project.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>In one session, an agent scraped a provider's setup page that had quietly become a 404. From that dead page it produced a confident false rule — that only one kind of API key was accepted — and wrote it into the project notes. A second reviewer caught it only because someone re-opened the actual URL and noticed the address was dead. The same session's lesson from <a href="0075-stale-invented-claims.html">lesson 5.8</a> applies. A claim is only as good as its source, and a dead page is no source at all.</p>
+</div>
+<p>Two more doc truths worth knowing: pages do move. A moved page usually answers with a redirect to the new address rather than a 404 — but if nothing redirects, the old link is dead.<sup class="cite"><a href="#src-mdn404">[1]</a></sup> And real doc pages usually show a <em>last modified</em> date; treat a page with no date, or a very old date, as a claim to verify, per lesson 5.8.</p>
+
+<h2>The habit: verify before you build on it</h2>
+<p>You cannot stop providers from changing, but you can stop being surprised. Keep a short list of every third-party service your app uses — in your README or your rules file — each with its docs, changelog, and status-page URL. Then:</p>
+<ul>
+<li>Before copying a setup guide or upgrading a library, open the linked page yourself. Confirm it loads (not a 404) and check its last-modified date.</li>
+<li>Ask your agent to fetch every doc URL in your notes and report the <strong>HTTP status code</strong> for each. A 200 means the page exists right now; anything else means do not build on it.</li>
+<li>When a deprecation notice touches something you use, plan the migration before the cutoff date. Then verify the result against the live service in a real browser — not only against the docs.</li>
+</ul>
+
+<h2>Weak prompt vs strong prompt</h2>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Weak — trusts a possibly dead page</span>
+    <p><q>Follow this setup guide and wire up the integration: https://example.com/docs/old-setup</q></p>
+  </div>
+  <div class="good">
+    <span class="label">Strong — verifies the source first</span>
+    <p><q>First fetch https://example.com/docs/old-setup and report its HTTP status code and last-modified date. If it is not 200, stop and tell me the link is dead instead of guessing. Then check the provider's changelog for deprecations affecting what we are about to use, and only then follow the current setup guide.</q></p>
+  </div>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what does a 410 response mean versus a 404, and what should you do when an agent quotes a doc page you suspect is dead?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>410 Gone</strong> means the resource is permanently removed — migrate, do not retry. <strong>404 Not Found</strong> means the server cannot find it right now — temporary or permanent, you cannot tell from the code. If a quoted doc page may be dead, have the agent re-fetch the URL and report the HTTP status code and last-modified date before using anything from it.</p></div>
+</div>
+
+<h2>Do it in your own project</h2>
+<div class="doit">
+  <span class="label">Do it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> List every third-party service your app uses (maps, login, payments, AI) in your README or rules file, each with its docs and changelog URL.</label></li>
+    <li><label><input type="checkbox"> Send the prompt below so your agent audits its own sources. Keep approval prompts on.</label></li>
+    <li><label><input type="checkbox"> For any link that fails, find the provider's current page (or changelog entry) and replace the dead link in your notes.</label></li>
+  </ol>
+  <div class="prompt">
+    <span class="label">Copy-paste prompt</span>
+    <button class="copy" type="button">Copy</button>
+    <pre>List every external documentation URL in my project notes (README, rules file, comments).
+For each one, fetch it and report the HTTP status code and last-modified date.
+Mark any non-200 link as DEAD and do not use its content.
+Then check the changelog or deprecation page of one service I use for anything deprecated that affects my app.
+Report what you found and what you did NOT verify. Use read-only checks; change nothing.</pre>
+  </div>
+  <div class="expect"><p>You should see a table of URLs with status codes, any dead links marked DEAD instead of quoted, and a short note on deprecations that affect your app — plus an explicit list of what the agent could not verify.</p></div>
+</div>
+
+<div class="warn">
+  <span class="label">The trap to avoid</span>
+  <p>Do not paste a URL into a prompt and ask the agent to <q>follow it anyway</q>. An agent will happily summarize a 404 page as if it were real documentation. Always check the status code first — that one number is the difference between a source and a rumor.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">A provider's doc page that your setup followed now returns 404. What does a 404 actually tell you?</p>
+  <button class="opt" type="button">The page was deleted and will never return.</button>
+  <button class="opt" type="button">The server cannot find it at this moment.</button>
+  <button class="opt" type="button">A broken link means the whole site died.</button>
+  <button class="opt" type="button">The provider has now shut down entirely today.</button>
+  <div class="why"><p>Per MDN and RFC 9110, 404 only means the server cannot find the resource right now; it does not say whether that is temporary or permanent. Permanent removal is signaled by 410 Gone.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">What is the difference between 404 and 410?</p>
+  <button class="opt" type="button">404 means missing now; 410 means gone for good.</button>
+  <button class="opt" type="button">404 is permanent; 410 means the page moved away.</button>
+  <button class="opt" type="button">Both mean the same thing and can be ignored.</button>
+  <button class="opt" type="button">410 is for images; 404 is for text pages.</button>
+  <div class="why"><p>404 says the resource is missing without saying for how long; 410 says access is no longer available and the condition is likely permanent, so clients should not retry — migrate instead.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Your agent quotes a doc page to justify a step, and you suspect the page is dead. Best next move?</p>
+  <button class="opt" type="button">Trust the quote because the agent read the page earlier today.</button>
+  <button class="opt" type="button">Delete the whole project and start over from a blank folder.</button>
+  <button class="opt" type="button">Have the agent re-open the URL and report the status code.</button>
+  <button class="opt" type="button">Ask a friend to open that page without explaining anything else.</button>
+  <div class="why"><p>A 404 page still looks like a full web page, so a quote from it proves nothing. Re-fetching the URL and checking the HTTP status code is the cheap, decisive test.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">A provider announces it will retire a legacy feature your app uses. What should you do first?</p>
+  <button class="opt" type="button">Ignore it until the cutoff date arrives, then panic.</button>
+  <button class="opt" type="button">Read the migration notes and plan the switch now.</button>
+  <button class="opt" type="button">Remove it now without reading any of the notes.</button>
+  <button class="opt" type="button">Keep using it and hope that nothing breaks soon.</button>
+  <div class="why"><p>Deprecations come with a cutoff date and usually migration notes. Planning the switch before the cutoff and testing against the live service is the reliable path.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>Every third-party dependency gets a docs URL, a changelog URL, and a status check before you build on it. 200 means alive; 404 means verify; 410 means migrate. Never let an agent quote a page nobody has confirmed exists.</p>
+</div>
+
+<div class="source-box">
+  <span class="label">Read this next (primary sources)</span>
+  <p><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/404">MDN: 404 Not Found</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/410">MDN: 410 Gone</a> — the plain-language definitions, including link rot and when 410 should be used. Pair with <a href="https://www.rfc-editor.org/rfc/rfc9110.html#name-404-not-found">RFC 9110, the HTTP standard</a>, for the authoritative wording of both status codes.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Check every doc link in my README and tell me which are dead"</em> or <em>"Where is my provider's deprecation page and what does it say about my app?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-mdn404">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/404">404 Not Found</a>. Retrieved 2026-11-02.</li>
+  <li id="src-mdn410">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/410">410 Gone</a>. Retrieved 2026-11-02.</li>
+  <li id="src-rfc9110">IETF, <a href="https://www.rfc-editor.org/rfc/rfc9110.html">RFC 9110: HTTP Semantics</a> (June 2022), sections 15.5.5 (404 Not Found) and 15.5.11 (410 Gone). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain 404 vs 410, check a provider's changelog for deprecations before building, and make your agent prove a doc link returns 200 before quoting it.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><a href="0102-deploy-blockers.html">← 8.14 Deploy blockers</a><a href="0104-llm-calls-as-dependency.html">8.16 LLM calls as a dependency →</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Screenshots as evidence</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.8</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.8</p>
+  <h1>Screenshots as evidence</h1>
+  <p class="lede">A picture is the closest you get to "I looked at it". But a file that ends in <code>.png</code> proves only that some program wrote a file. Here is how to tell a useful capture from a useless one, and why so many of them come back black.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0035-real-vs-simulated.html">2.7 Real versus simulated</a></span><span>Win: you can judge a screenshot before trusting it, and name why a capture failed</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p><a href="0035-real-vs-simulated.html">Lesson 2.7</a> ended with a rule: check the real thing in a real browser, not a simulation of it. When the agent does the checking, what it hands back is usually a picture — one standing in for your eyes. If it is black, stale, the wrong width, or the wrong window and nobody notices, the check was decoration.</p>
+<p>You do not need image analysis. You need one habit: open the file and ask what it would look like if the work had gone wrong.</p>
+
+<h2>What makes a capture count as evidence</h2>
+<p><a href="0030-claims-vs-evidence.html">Lesson 2.2</a> gave the test for any artifact: <em>would this look different if the work were wrong?</em> A screenshot passes only when the answer is yes and you can see why.</p>
+<p>Three things have to be settled before the picture means anything: <strong>which state</strong> it shows, <strong>which view</strong> it is, and <strong>whether it is fresh</strong>. A capture taken before the click describes a page that already worked. A full-page image of a long page says nothing about the first screen a visitor sees. A file with yesterday's timestamp says nothing about today's edit.</p>
+<table class="ref">
+  <tr><th>What the capture shows</th><th>What it actually settles</th></tr>
+  <tr><td>The page after you click "Save"</td><td>That this click produced this view, at that moment</td></tr>
+  <tr><td>The whole page, top to bottom</td><td>Layout of a very tall screen; not what fits on a laptop</td></tr>
+  <tr><td>One panel, cropped tight</td><td>That panel only; nothing about what surrounds it</td></tr>
+  <tr><td>Your desktop, with other windows</td><td>Nothing about the app, and a privacy problem</td></tr>
+</table>
+<p>Automated browser tools make the difference explicit. Playwright's screenshot page offers a full-page image, <q>as if you had a very tall screen and the page could fit it entirely</q>, and separately notes that <q>Sometimes it is useful to take a screenshot of a single element.</q><sup class="cite"><a href="#src-pw">[1]</a></sup> Those are two different claims. Say which one you want, or you get whichever the agent picked.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user left a long automated test of a desktop app running and came back to a report of forty screenshots captured across the run. Every one was a solid black rectangle. The machine had locked itself mid-run, and the capture tool had faithfully recorded an empty screen. The agent had not looked at a frame; it had counted files.</p>
+  <p>After the machine was unlocked, the same run produced normal frames, so the app had been fine. The agent added a guard: if a frame is one flat colour, stop and say so instead of collecting more. In a second project, the user kept typing in another window during a run; that run died twelve minutes in, with exit code zero and no frames. The likely cause was stray keys reaching the frontmost app — the report could not prove it.</p>
+</div>
+
+<p>Notice what failed: not the app, but the <em>evidence pipeline</em> — and the report described its output as if it described the app.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three things a screenshot must settle before it can count as evidence, and one reason a black frame is not proof that the app is broken.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>It must settle <strong>which state</strong> is shown, <strong>which view</strong> (full page, one panel, which window width), and <strong>whether it is fresh</strong>. A black frame can come from the capture failing — a locked screen, a missing screen-recording permission, the wrong window — so it says nothing yet about the app's code.</p></div>
+</div>
+
+<h2>Why a frame comes back black</h2>
+<p>Black has two opposite meanings, and the picture cannot tell you which.</p>
+<p><strong>The capture failed.</strong> The machine was locked, the screen slept, the tool lacked screen-recording permission, or it grabbed the wrong display. Anything an agent sees through your desktop needs that desktop visible and unlocked. Claude Code's computer-use page states the permission plainly: <q>Screen Recording: lets Claude see what’s on your screen</q>, granted once in macOS settings, sometimes needing a restart of the tool afterwards.<sup class="cite"><a href="#src-cu">[2]</a></sup> No permission, no picture — and a program that does not check will happily save the nothing it got.</p>
+<p><strong>The app really drew nothing.</strong> A blank window, a canvas that failed to initialise, text in the same colour as its background. That is a genuine bug, and a black frame is weak evidence of it: you cannot see whether the window or the capture is empty.</p>
+<p>Separate them with a <span class="term" title="A check you know should pass, run through the same pipeline, so a failure points at the pipeline rather than the thing under test.">negative control</span>: one capture of something you know works — the tool's own browser on a page you can see, or the desktop with a clock on it. If the control is also black, the pipeline is broken and the app is untested. If the control is fine and your page is black, you have a real bug. <a href="0039-checker-can-be-wrong.html">Lesson 2.11</a> takes this further.</p>
+
+<h2>Locked screens and focus stealing</h2>
+<p>When an agent drives your actual desktop, it needs your screen to itself. Claude Code hides other visible apps while it works, keeps only the terminal visible and <q>excluded from screenshots</q>, and lets you press <kbd>Esc</kbd> anywhere to abort.<sup class="cite"><a href="#src-cu">[2]</a></sup> It allows <q>one session at a time</q> on the computer, so a second session fails with an error naming the first.<sup class="cite"><a href="#src-cu">[2]</a></sup></p>
+<p>Two side effects matter for evidence. A locked screen stops everything: the session may keep running, and its captures turn black. And the app under test becomes the frontmost window, which receives your keystrokes. Type a message to a friend during a GUI run, and those characters can land in the app being tested, changing its state mid-run. That is what happened in the vignette.</p>
+<div class="warn">
+  <span class="label">The cheap rules</span>
+  <p>Before a GUI run: keep the machine unlocked and awake, and agree not to type until it ends. If you must keep working, ask for a capture path that never touches your desktop — a browser the agent drives itself. Claude Code's Chrome integration is one; its page shows the request <q>Take a screenshot of the checkout page and save it to disk</q> and notes that Claude <q>reports the file path</q>.<sup class="cite"><a href="#src-chrome">[3]</a></sup> Codex's built-in browser can likewise <q>open pages, click, type, inspect rendered state, take screenshots, and verify the result of its work in the page</q>, but that browser lives in the ChatGPT desktop app, not the CLI.<sup class="cite"><a href="#src-browser">[4]</a></sup></p>
+</div>
+
+<h2>Ask for a capture you can check</h2>
+<p>A request that ends at "take a screenshot" gives you a file with no claim attached: ask for the file, the path, and one line saying what should be visible, then open it yourself.</p>
+<div class="compare">
+  <div class="bad"><span class="label">Weak request</span><p>"Take a screenshot so I can see it worked."</p></div>
+  <div class="good"><span class="label">Request with a check</span><p>"Save one frame of the results panel after the search runs, at 1280 px wide, to <code>shots/after.png</code>. Tell me the path and one line naming what should be visible. If the frame is blank or one flat colour, stop and say so."</p></div>
+</div>
+<p>The second version can fail visibly. That is the point. It also lets the agent catch its own bad capture before reporting success — the same move as <a href="0030-claims-vs-evidence.html">lesson 2.2</a>'s "ask what you did not verify".</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Run the flow once more and save three screenshots:
+1. the page before the click,
+2. the page after the click,
+3. the same view at 1280 px wide.
+Save them as shots/before.png, shots/after.png, shots/narrow.png.
+Tell me each file path and one line saying what should be visible.
+If any frame is blank, one flat colour, or identical to the previous one,
+stop and tell me instead of continuing.
+Keep approval prompts on.</pre>
+</div>
+
+<h2>Where each tool takes the picture</h2>
+<p>The mechanics differ, and so does the answer to "whose screen is being captured".</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Two paths. For web pages, the Chrome integration captures inside the browser and can save files to disk.<sup class="cite"><a href="#src-chrome">[3]</a></sup> For native apps, computer use drives your real desktop; it is a macOS research preview, off by default, needs a paid plan and the two macOS permissions, and downscales every capture: a Retina capture of 3456×2234 becomes roughly 1372×887.<sup class="cite"><a href="#src-cu">[2]</a></sup> Small on-screen text can therefore be unreadable even when the app is fine. Ask for a larger font, not a bigger monitor.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>In the CLI, the agent does not drive your desktop; screenshots reach it as attachments you add, with <code>codex -i shot.png "…"</code> for one file.<sup class="cite"><a href="#src-img">[5]</a></sup> Its own browser work happens in the ChatGPT desktop app, where Computer Use can capture the page it is driving.<sup class="cite"><a href="#src-browser">[4]</a></sup> The documentation is explicit that <q>Browser isn't available in Codex CLI or the Codex IDE extension.</q><sup class="cite"><a href="#src-browser">[4]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Attach an image with <kbd>Ctrl</kbd>+<kbd>V</kbd>, by dragging it in, or by mentioning <code>@path/to/image.png</code>; a chip confirms the attachment.<sup class="cite"><a href="#src-omp">[6]</a></sup> Input is <q>normalized and resized by default</q>, and if the active model cannot read images, omp may ask a vision-capable model for a description instead — which means the picture you sent is no longer the thing being judged.<sup class="cite"><a href="#src-omp">[6]</a></sup> The pages read for this course describe attaching images, not controlling your desktop; if your build gains that, the same checks apply.</p>
+  </div>
+</div>
+<p>Two details apply everywhere. Saving a screenshot as a file beats pasting it into chat: a file has a path you can reopen tomorrow and compare. On macOS the manual shortcut is <kbd>Shift</kbd>+<kbd>Command</kbd>+<kbd>4</kbd> for a region, saved as <code>.png</code> named "Screenshot" plus the date and time.<sup class="cite"><a href="#src-apple">[7]</a></sup> That name is weak evidence of freshness; check the date before you trust it.</p>
+
+<div class="doit">
+  <span class="label">Do it now, in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Open the page you built in lesson 0.7 in your browser, and leave the machine unlocked.</label></li>
+    <li><label><input type="checkbox"> In your agent, paste the three-frame prompt above, adjusted to your page. Approve the steps as they come.</label></li>
+    <li><label><input type="checkbox"> Open each file yourself at the path it reported. Look for four things: is anything visible, is the text readable, is the width the one you asked for, is the date today?</label></li>
+    <li><label><input type="checkbox"> Take one capture by hand with <kbd>Shift</kbd>+<kbd>Command</kbd>+<kbd>4</kbd> and compare it with the agent's frame of the same view.</label></li>
+    <li><label><input type="checkbox"> Send one follow-up that names a defect in the capture process, not the app: "the narrow frame is unchanged from the wide one, retake it at 600 px".</label></li>
+  </ol>
+  <div class="expect"><p>You should end up with three files you can open, at least one of which looks different from the others. It is normal for a first attempt to produce a blank frame, a duplicate, or a capture at the wrong size; say which and ask again. If the agent answers that it cannot capture a screen at all, that is an honest answer — attach your own screenshot instead. Keep approval prompts on throughout.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">A report says twelve screenshots were captured. What should you check first?</p>
+  <button class="opt" type="button">The total size of the saved image folder</button>
+  <button class="opt" type="button">Whether each frame shows readable text or not</button>
+  <button class="opt" type="button">The file extension recorded on every saved image</button>
+  <button class="opt" type="button">The number of frames that the agent named</button>
+  <div class="why"><p>Counting files proves only that files exist. A run can produce twelve black frames. Open one and see whether it shows the state you asked about.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Every frame from an overnight run is solid black. What is the best first move?</p>
+  <button class="opt" type="button">Rewrite the whole drawing code from scratch</button>
+  <button class="opt" type="button">Report the app as broken and restart</button>
+  <button class="opt" type="button">Delete the frames and rerun that job</button>
+  <button class="opt" type="button">Capture something known good as a control</button>
+  <div class="why"><p>A black frame has two causes: capture failed, or the app drew nothing. A control capture separates them before you change any code. In the vignette the screen had locked.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">An app the agent drives jumps to the front while you type elsewhere. Why does this matter?</p>
+  <button class="opt" type="button">Your typing can land inside the tested app</button>
+  <button class="opt" type="button">The app will close itself after several seconds</button>
+  <button class="opt" type="button">The agent loses all of its approval prompts</button>
+  <button class="opt" type="button">The screenshot files become larger than usual ones</button>
+  <div class="why"><p>The frontmost window receives keystrokes. Text meant for another window can change the tested app mid-run, which is why a run can end with no usable frames and no error.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/computer-use">Let Claude use your computer from the CLI</a> — the section "How Claude works on your screen" is the clearest official description of what happens to your display during a GUI run: the lock, hidden apps, downscaled captures, and the Esc escape. It covers one tool, but the constraints are the operating system's, not that vendor's.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>A frame you cannot interpret is a good question. Try: <em>"This screenshot is grey in the middle — is that an empty list or a failed capture?"</em> or <em>"How do I take a screenshot without including my other windows?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-pw">Playwright project, <a href="https://playwright.dev/docs/screenshots">Screenshots</a> (Playwright documentation). Retrieved 2026-11-02.</li>
+  <li id="src-cu">Anthropic, <a href="https://code.claude.com/docs/en/computer-use">Let Claude use your computer from the CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-chrome">Anthropic, <a href="https://code.claude.com/docs/en/chrome">Claude Code with Chrome</a>. Retrieved 2026-11-02.</li>
+  <li id="src-browser">OpenAI, <a href="https://learn.chatgpt.com/docs/browser">Browser</a>. Retrieved 2026-11-02.</li>
+  <li id="src-img">OpenAI, <a href="https://learn.chatgpt.com/docs/image-inputs">Image inputs</a>. Retrieved 2026-11-02.</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source; no independent documentation exists.</li>
+  <li id="src-apple">Apple, <a href="https://support.apple.com/guide/mac-help/take-a-screenshot-mh26782/mac">Take screenshots or screen recordings on Mac</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> judge a screenshot by what it would look like if the work were wrong, ask for frames with a path and a stated check, and tell a failed capture from a broken app.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/agent-loop.html">The agent loop (one page)</a></p>
+  <div class="pager"><a href="0037-logs-telemetry.html">Next: 2.9 Logs and telemetry</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Third-party API keys, rate limits, and spend caps</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.4</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.4</p>
+  <h1>Third-party API keys, rate limits, and spend caps</h1>
+  <p class="lede">Your app will call services you don't run — maps, weather, AI. Their keys work like yours: they identify you, meter you, and can run out or hit a ceiling. Learn the two error numbers that mean "slow down" and "pay up".</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0090-env-vars.html">8.2 Env vars</a></span><span>Win: you can recognize 429 and 402, and put a real spending cap in the provider's console</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your mission is a public app that does something useful. Useful usually means calling a service someone else runs: a map, a translation, an AI model, a payment check. Those services are not free and not unlimited. They recognize your app by a <strong>third-party API key</strong> — a secret string you store exactly like the agent's own key: in an environment variable, never in code (lessons <a href="0089-secrets.html">8.1</a> and <a href="0090-env-vars.html">8.2</a>). This lesson is about what happens when that key meets the provider's limits: rate limits, credits, and spend caps.</p>
+
+<h2>A key is a meter, not merely a password</h2>
+<p>A provider hands you a key so it can do three things: know <em>who</em> is calling (so a leaked key is <em>your</em> problem — rotate it, lesson <a href="0091-never-print-commit.html">8.3</a>), count <em>how often</em> you call, and charge <em>what</em> you use. The counting and charging are not punishments; they are how the service stays up for everyone. Your job is to expect them, not be surprised by them.</p>
+
+<h2>Rate limits: the 429 "slow down"</h2>
+<p>Every provider caps how many requests you may send in a given window. Cross the cap and the call fails with <strong>HTTP 429 Too Many Requests</strong>. MDN's reference puts it plainly: 429 <q>indicates the client has sent too many requests in a given amount of time</q>. The practice of <q>asking the client to slow down the rate of requests</q> is commonly called <em>rate limiting</em>.<sup class="cite"><a href="#src-mdn429">[1]</a></sup> The response may carry a <code>Retry-After</code> header telling you how many seconds to wait.<sup class="cite"><a href="#src-mdn429">[1]</a></sup></p>
+<p>So a 429 is not a bug in your app and not a ban. It is the provider asking you to pause. The right behavior is to wait the stated time and try once more — and to <em>cache</em> results so you ask less often in the first place. The wrong behavior is an instant retry loop: every retry is another request, and it can keep you over the limit.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user let an agent run a long verification loop that called several live services. Partway through, news and AI endpoints started returning 429s while the loop kept hammering them. The fix was not more retries; it was fewer, spaced-out calls with the wait time respected. The lesson: when a run hits 429, the agent should back off and report, not retry in a tight loop.</p>
+</div>
+
+<h2>Credits: the 402 "pay up"</h2>
+<p>Many paid services run on <strong>credits</strong> — a prepaid balance that shrinks with every call. When the balance is gone, some providers answer with <strong>HTTP 402 Payment Required</strong>. MDN is careful here: 402 is a <q>nonstandard</q> status <q>reserved for future use</q> and <q>no standard use convention exists and different systems use it in different contexts</q> — but in practice providers use it for billing and credit problems.<sup class="cite"><a href="#src-mdn402">[2]</a></sup> Anthropic's own error reference maps it exactly: <q>402 - billing_error: There's an issue with your billing or payment information.</q><sup class="cite"><a href="#src-antherr">[3]</a></sup></p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>In another session, a paid judgment service returned 402 out of credits in the middle of a long unattended run. The agent did the right thing: it stopped and asked the human, who topped up the balance about an hour later. Lesson: a 402 means <em>a human decision is needed</em> — top up, switch plan, or stop — not "try again".</p>
+</div>
+<p>Contrast the two numbers: <strong>429 = wait and retry later</strong>; <strong>402 = stop and ask a human</strong>. Write that distinction into your prompts (below).</p>
+
+<h2>Spend caps: enforcement lives in the provider's console</h2>
+<p>Lesson <a href="0058-budgets.html">4.4</a> taught that a dollar figure in a prompt is an instruction, not enforcement. The enforced version of a cap is a <strong>spend limit</strong> set in the provider's own dashboard. OpenAI's documentation distinguishes the two controls. A <em>spend alert</em> <q>sends a notification; API traffic continues</q>, while a <em>hard spend limit</em> means <q>affected API requests return a 429 error</q> — an enforced monthly cap on the organization or project.<sup class="cite"><a href="#src-oalimits">[4]</a></sup> Anthropic similarly documents spend limits as <q>a maximum monthly cost an organization can incur for API usage</q>. While usage is paused for crossing one, <q>API requests return HTTP 429.</q><sup class="cite"><a href="#src-antrate">[5]</a></sup></p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>Two users each set a small dollar ceiling before letting an agent make paid calls. One agreed to a five-dollar cap for experiments, another set a one-dollar limit and the agent later reported spending about half of it. Both are the right habit: name the ceiling <em>before</em> the run, and check the provider's usage page afterward. The report is evidence of spend, not proof the cap was watched the whole time.</p>
+</div>
+
+<h2>Instruct the agent to stop, not hammer</h2>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Weak — retries everything blindly</span>
+    <p><q>Call the weather API for every city and keep trying until it works. Don't stop for errors.</q></p>
+  </div>
+  <div class="good">
+    <span class="label">Strong — named errors, named actions</span>
+    <p><q>Call the weather API once per city and cache the result. On 429, wait the Retry-After time and try once; on a second 429, stop and report. On 402, stop immediately and report — a human must decide. Spend at most $1; report usage from the provider dashboard.</q></p>
+  </div>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what does 429 tell you to do, what does 402 tell you to do, and where does a real spending cap have to be set to count?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>429</strong> means too many requests: wait (honor <code>Retry-After</code>), retry once, then stop and report. <strong>402</strong> means a billing or credits problem: stop and ask a human. A spending cap only counts if it is a spend limit set in the provider's own console — a number in a prompt is only an instruction.</p></div>
+</div>
+
+<h2>Do it in your own project</h2>
+<div class="doit">
+  <span class="label">Do it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Pick one third-party service your app will call. In the provider's console (a human-only step), create an API key and copy it — keep approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Add the key to your <code>.env</code> file as <code>THIRD_PARTY_API_KEY=PASTE_YOUR_KEY_HERE</code>. Confirm <code>.env</code> is in <code>.gitignore</code> (lesson <a href="0042-gitignore.html">3.3</a>).</label></li>
+    <li><label><input type="checkbox"> In the same console, find the spend-limits page and set a small hard cap plus an alert at a lower amount.</label></li>
+    <li><label><input type="checkbox"> Send the prompt below so the agent reads the key from the environment and knows the two error numbers.</label></li>
+  </ol>
+  <div class="prompt">
+    <button class="copy" type="button">Copy</button>
+    <pre>Add a feature that calls the third-party service using the key stored in .env as THIRD_PARTY_API_KEY. Read it from the environment only; never print, log, or commit it.
+
+If a call returns HTTP 429, wait the Retry-After seconds (or 60) and try once more; on a second 429, stop and report. Do not retry in a loop.
+If a call returns HTTP 402, stop immediately and report that credits or billing need a human decision. Do not retry.
+
+Budget: spend at most $1 on third-party calls for this task. When done, tell me the usage shown in the provider dashboard, and what you did NOT verify.</pre>
+  </div>
+  <div class="expect"><p>You should see code that reads the key from the environment, the key nowhere in your files or git history, a spend limit visible in the provider console, and — if you trigger an error — a stop-and-report message instead of a retry storm.</p></div>
+</div>
+
+<div class="warn">
+  <span class="label">The trap to avoid</span>
+  <p>Do not answer a 429 or 402 by raising the cap or adding retries without reading the report first. A 429 wants time, not money; a 402 wants a human decision, not more attempts. And keep the key out of the prompt itself — pass it through <code>.env</code>, or it ends up in session logs and git history.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your app's calls to a weather service start failing with HTTP 429. What does that mean?</p>
+  <button class="opt" type="button">The server's clock is wrong and needs a manual fix.</button>
+  <button class="opt" type="button">The service is asking you to slow down for now.</button>
+  <button class="opt" type="button">The key was deleted, so every future call will fail.</button>
+  <button class="opt" type="button">The city you asked about does not exist at all.</button>
+  <div class="why"><p>429 means too many requests in a given time window. MDN calls this rate limiting; the response may include Retry-After. Wait, retry once, then stop if it repeats.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A paid service answers one of your calls with HTTP 402. What is the most accurate reading?</p>
+  <button class="opt" type="button">It means your request body was formatted badly by you.</button>
+  <button class="opt" type="button">It means the server rejected your request as malformed input.</button>
+  <button class="opt" type="button">The code is reserved for future digital payment systems only.</button>
+  <button class="opt" type="button">It guarantees success if you retry the same request immediately.</button>
+  <div class="why"><p>402 is nonstandard and conventions vary, but providers use it for payment, billing, or credits problems. Anthropic maps it to billing_error. Stop and involve a human; do not retry.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You want a real guarantee that a provider never bills you above $10. Where does that guarantee come from?</p>
+  <button class="opt" type="button">From a sentence in your prompt to the coding agent.</button>
+  <button class="opt" type="button">From the agent recalling the exact number in your prompt.</button>
+  <button class="opt" type="button">From deleting the API key before the run even starts.</button>
+  <button class="opt" type="button">From a spend limit set in the provider's own console.</button>
+  <div class="why"><p>A number in a prompt is an instruction the agent may forget; enforcement is a spend limit in the provider's dashboard. A hard limit makes affected requests fail (often with 429) instead of silently billing you.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>Every third-party key gets three things before a run: a home in <code>.env</code> (never in code or prompts), a hard spend cap in the provider console, and a prompt rule — 429 means wait and retry once, 402 means stop and ask you.</p>
+</div>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429">MDN: 429 Too Many Requests</a> — the plain-language definition of rate limiting and the <code>Retry-After</code> header. Pair it with the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/402">402 page</a> to see why 402 has no single standard meaning.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me where my provider's spend limit page is and what a hard limit does"</em> or <em>"My agent hit a 429 — write the retry rule into my rules file."</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-mdn429">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429">429 Too Many Requests</a>. Retrieved 2026-11-02.</li>
+  <li id="src-mdn402">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/402">402 Payment Required</a>. Retrieved 2026-11-02.</li>
+  <li id="src-antherr">Anthropic, <a href="https://platform.claude.com/docs/en/api/errors">Claude API errors</a> (Claude Platform docs). Retrieved 2026-11-02.</li>
+  <li id="src-oalimits">OpenAI, <a href="https://developers.openai.com/api/docs/guides/rate-limits">Rate limits and spend limits</a>. Retrieved 2026-11-02.</li>
+  <li id="src-antrate">Anthropic, <a href="https://platform.claude.com/docs/en/api/rate-limits">Rate limits</a> (Claude Platform docs). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> store a third-party key safely in <code>.env</code>, read 429 as "slow down" and 402 as "ask a human", and set an enforced spend cap in the provider's console before a run.</p>
+  <p>Quick reference: <a href="../reference/safety-checklist.html">Safety checklist (secrets)</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><a href="0091-never-print-commit.html">← 8.3 Never print or commit a key</a><a href="0093-send-third-parties.html">8.5 What you send to third parties →</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

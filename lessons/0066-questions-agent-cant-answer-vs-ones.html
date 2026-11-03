@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which questions the agent can't answer — and which you can</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 4 · Scope &amp; stopping · Lesson 4.12</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 4 · Lesson 4.12</p>
+  <h1>Which questions the agent can't answer — and which you can</h1>
+  <p class="lede">Every question a run asks belongs to one of two places: the project folder, or your head. Answering from the wrong place wastes hours.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0025-steering-mid-run.html">1.10 Steering mid-run</a></span><span>Win: you can sort any question the agent asks in one second and answer it the fast way</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>A run pauses when the agent hits something it cannot resolve alone. What happens next depends on who can actually answer. If the answer lives in your project folder, the agent can find it itself, and a detour through you costs you minutes. If the answer lives only in your head — which account, which folder on your disk, what you actually want — then only you can answer, and a guess from the agent invents facts. Sorting the question correctly is the difference between a one-line reply and a twenty-minute detour.</p>
+
+<h2>The dividing line is the folder</h2>
+<p>An agent's whole view of your machine is the folder it runs in. Claude Code's documentation states the boundary plainly: <q>By default, Claude has access to files in the directory where you launched it.</q><sup class="cite"><a href="#src-ccperm">[1]</a></sup> Codex describes the same boundary from the other side: in its default sandbox, <q>the agent can read files, edit within the workspace, and run routine local commands inside that boundary</q>, and it <q>asks for approval to edit files outside the workspace.</q><sup class="cite"><a href="#src-cxsbx">[2]</a></sup> omp behaves the same way: <q>omp resolves context from the session's working directory.</q><sup class="cite"><a href="#src-ompctx">[3]</a></sup></p>
+<p>Everything inside that folder — every file, every line of code, every log — the agent can read, search, and run. Everything outside it — the rest of your disk, your accounts, your screen, your intentions — it can only ask about. That is the whole lesson in one sentence: <strong>if the answer is in the folder, the agent can find it; if it isn't, you have to supply it.</strong></p>
+
+<h2>Three sorts of questions, three owners</h2>
+<table class="ref">
+  <thead><tr><th>Question</th><th>Where the answer lives</th><th>Who answers</th></tr></thead>
+  <tbody>
+    <tr><td>"Where is the function that renders the page?"</td><td>In the project files</td><td>The agent, by searching. If it asks you, say "it's in this folder" and let it look.</td></tr>
+    <tr><td>"Where is the photos folder on my disk?"</td><td>Only you know</td><td>You, in one line: a path. The agent cannot see your disk outside the folder.</td></tr>
+    <tr><td>"Should the gallery open full-screen?"</td><td>Only you know — it is your product decision</td><td>You. Product intent is never in any folder.</td></tr>
+    <tr><td>"Will the free host accept a 200 MB video?"</td><td>Nowhere yet — it must be checked</td><td>Nobody. Turn it into a cheap test, not a question.</td></tr>
+  </tbody>
+</table>
+<p>The first row is the one beginners get backwards. When the agent asks <q>where is X?</q> and X is in the project, do not answer from memory and do not let it search your whole computer. Point it at the folder: <em>"Search the project for it."</em> If the file is outside the folder, the second row applies: give the exact path, because that is the one fact the agent cannot discover. The third row is a decision, and decisions are yours — the agent asking is actually doing the right thing by pausing, as the prompting guides put it, when <q>the parts you haven't pinned down</q> are yours to pin down.<sup class="cite"><a href="#src-ccbp">[4]</a></sup></p>
+
+<h2>Worked example: the missing input file</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to work on an app that needs a data file the user keeps on their own machine. The agent could not find it. It searched the project, then the version-control history, then ran a search across the entire disk — and only then asked the user. Seventeen minutes later the user typed one line: <em>"It's in the folder called game-files, inside the project."</em> The answer had been one folder away the whole time.</p>
+</div>
+<div class="transcript">
+  <div class="row tool"><span class="who">agent</span><span>run — find across the whole disk (still running)</span></div>
+  <div class="row you"><span class="who">you</span><span>Stop that. The file is in this folder: ./game-files/. Search there only.</span></div>
+  <div class="row tool"><span class="who">agent</span><span>read — found game-files/export.bin (1 file). Continuing.</span></div>
+  <div class="row note">The disk-wide search found nothing and cost 17 minutes; the folder search cost seconds. Same question, different owner.</div>
+</div>
+<p>In another session the pattern repeated inside the project: the agent asked twice where a needed file was, after spending about twenty-five minutes searching history and old archives. The user replied <em>"In this repo, find it"</em> — and the file was where it should have been. The lesson is not that asking is bad. The lesson is that <strong>"it's in this folder" is a complete answer</strong>, and it is faster than any search the agent can run on your behalf.</p>
+
+<h2>Make the answer permanent</h2>
+<p>If the agent had to ask where something lives, the next session will ask again. Write the answer down where the agent reads at startup. Project rules files exist for exactly this: <q>CLAUDE.md files are markdown files that give Claude persistent instructions for a project</q>, and Codex <q>reads AGENTS.md files before doing any work.</q><sup class="cite"><a href="#src-ccmem">[5]</a></sup><sup class="cite"><a href="#src-cxagents">[6]</a></sup> One line — <em>"Input files live in ./game-files/. If you can't find one there, ask me once and list what you searched."</em> — removes the question forever, for every future run.</p>
+
+<h2>When nobody can answer: make it a check</h2>
+<p>The fourth row of the table is the subtle one. <q>Will the free host accept this file?</q> has no answer in the folder and no answer in your head, because the host's limits are not written in either place. The wrong move is guessing (and building on the guess). The right move is to convert the question into a check the agent can run: upload the file, read the response, report what happened. A question that nobody can answer becomes evidence in one run. Lesson <a href="0030-claims-vs-evidence.html">2.2</a> builds the full habit; here you only need the reflex: <em>if there is no answer, make a test.</em></p>
+
+<h2>Don't answer what you don't know</h2>
+<p>The mirror-image mistake is answering a question you cannot answer — "I think it's in the old project?" — because the agent will treat your guess as fact and act on it. If you don't know, say so in one line and offer the way to find out: <em>"I don't know; it's either in ./a or ./b — check both and tell me what you found."</em> An honest "not sure" plus a pointer beats a confident wrong path.</p>
+
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Rule for this project: before you ask me where something is,
+search the project folder first and list what you searched.
+If it is not in the folder, ask me once with the exact path
+question, and I will give you the path. If neither of us knows
+the answer, do not guess — run a small check and report what
+happened. Never search my whole disk; that is slow and finds
+nothing you need.</pre>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what is the one-line test for whether the agent can answer its own question, and what are the two things you should supply when it can't?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The answer lives in the project folder, or it doesn't. If it's in the folder, the agent searches and finds it ("it's in this folder"). If it isn't, you supply the fact — a path, an account, a decision — in one line. And if nobody knows, you turn the question into a check instead of a guess.</p></div>
+</div>
+
+<div class="doit">
+  <span class="label">Do it now: route one real question</span>
+  <ol>
+    <li><label><input type="checkbox"> Start any small task in your project and let the agent run until it asks you something, or ask it directly: "What is still unclear about this project that you would ask me?"</label></li>
+    <li><label><input type="checkbox"> Sort the question: is the answer in the project folder, only in your head, or unknown to both?</label></li>
+    <li><label><input type="checkbox"> Answer the right way: "search the folder" for the first kind, a one-line path or decision for the second, a small test for the third.</label></li>
+    <li><label><input type="checkbox"> If the answer was a path or a fact, add one line about it to your project's rules file (or a README note) so the next session finds it alone.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see the agent resume immediately after a pointer answer, with no disk-wide search. When you add the line to the rules file, a fresh session should answer its own question without asking you at all — that is the win.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">The agent asks "where is the data file?" and the file is inside the project folder. What is the fastest correct reply?</p>
+  <button class="opt" type="button">Search the project folder; the file is there.</button>
+  <button class="opt" type="button">Let me describe the whole project to you.</button>
+  <button class="opt" type="button">I forget; search my entire computer right now.</button>
+  <button class="opt" type="button">Skip the file and remove the feature entirely.</button>
+  <div class="why"><p>The answer lives in the folder, so the agent can find it itself. A pointer is instant; a disk-wide search is slow and finds nothing extra; removing the feature throws away the task.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which of these questions can only you answer, not the agent?</p>
+  <button class="opt" type="button">Which file defines the main page component now?</button>
+  <button class="opt" type="button">Where in the repo is the stylesheet file?</button>
+  <button class="opt" type="button">What should the app really do for users?</button>
+  <button class="opt" type="button">What command runs the whole test suite here?</button>
+  <div class="why"><p>The first, second, and fourth answers are in the project files, so the agent can search them out. What the app should do is your product decision; no folder contains it.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">The agent says it cannot find a file, and you know the path. What makes your answer stick for future sessions?</p>
+  <button class="opt" type="button">Repeat the path in every single prompt you send.</button>
+  <button class="opt" type="button">Write it once in the project rules file now.</button>
+  <button class="opt" type="button">Tell the agent to search the disk again please.</button>
+  <button class="opt" type="button">Keep the path only in your memory from now.</button>
+  <div class="why"><p>Rules files load automatically at the start of every session, so one line there removes the question forever — no repetition, no disk search, no reliance on memory.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/permissions">Claude Code permissions — "Working directories"</a> — the exact statement of what the agent can see by default, and how to extend it with <code>--add-dir</code> when a needed file genuinely lives outside the folder.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Take one question your agent actually asked you this week. Which of the three owners was it — the folder, your head, or nobody yet? If it was the folder, what one line in the rules file would have let the agent answer it alone?</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-ccperm">Anthropic, <a href="https://code.claude.com/docs/en/permissions">Claude Code docs — Permissions: Working directories</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cxsbx">OpenAI, <a href="https://learn.chatgpt.com/docs/sandboxing">Codex docs — Sandboxing</a> and <a href="https://learn.chatgpt.com/docs/agent-approvals-security">Agent approvals &amp; security</a>. Retrieved 2026-11-02.</li>
+  <li id="src-ompctx">Stencil Labs, <a href="https://omp.sh/docs/context-files">omp docs — Context files</a> ("omp resolves context from the session's working directory"). Single-vendor source. Retrieved 2026-11-02.</li>
+  <li id="src-ccbp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> (the "interview me" pattern: questions about parts you haven't pinned down). Retrieved 2026-11-02.</li>
+  <li id="src-ccmem">Anthropic, <a href="https://code.claude.com/docs/en/memory">Claude Code docs — Memory (CLAUDE.md)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cxagents">OpenAI, <a href="https://learn.chatgpt.com/docs/agent-configuration/agents-md">Codex docs — AGENTS.md</a> ("Codex reads AGENTS.md files before doing any work"). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> sort any question the agent asks into "in the folder", "only you know", or "nobody knows yet", and answer each in the fast way — a pointer, a one-line fact, or a small check.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 4.13 Cutting scope on purpose (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

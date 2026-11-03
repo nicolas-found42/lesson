@@ -83,17 +83,17 @@ Do not describe a check you did not run. If you are unsure whether something wor
 <p>The three agents show evidence in different places, but all of them let you see the raw material rather than only the summary.</p>
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
     <p>Tool activity appears in the session as it runs, so you can read the commands rather than the summary. The best-practices page also documents a command for the end of a task: once the agent says it is done you can run <code>/verify</code>, which makes it <q>build and run the app and look at the result</q>.<sup class="cite"><a href="#src-a7">[1]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
     <p>Two commands in the CLI reference are useful here. <code>/diff</code> will <q>Show the Git diff, including files Git isn’t tracking yet.</q> And <code>/review</code> asks for a fresh review of your working tree; the reference suggests it <q>after Codex completes work</q>.<sup class="cite"><a href="#src-b6">[4]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
     <p>Each read, command or change appears as a card in the transcript; the docs tell you to <q>Expand tool cards and diffs</q> and to <q>Check the changed paths, command exit status, test result, and final explanation.</q> Press <kbd>Ctrl+O</kbd> to expand or collapse tool output.<sup class="cite"><a href="#src-c5">[3]</a></sup></p>
   </div>
 </div>

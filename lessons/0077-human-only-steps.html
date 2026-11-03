@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Human-only steps: logins, attestations, and runbooks</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 5 · How agents work · Lesson 5.10</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 5 · Lesson 5.10</p>
+  <h1>Human-only steps: logins, attestations, and runbooks</h1>
+  <p class="lede">Some steps of shipping your app are yours alone: typing a password, agreeing to terms, confirming which plan you are on. Your agent cannot do them — and a good agent will write you a numbered list, called a runbook, telling you exactly what to do and when.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Needs: <a href="0006-approvals-and-permissions.html">0.6 Approvals &amp; permissions</a></span><span>Win: you can ask for — and follow — a runbook of the steps only you can do</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>Putting your app on a public URL (the goal of Unit 6) usually touches at least one account: a hosting service, a code host, sometimes a payments page. Those accounts are tied to <em>you</em>. Your agent works inside your project folder and can read files, edit files, and run commands — but it cannot and should not stand in for you when a website asks who you are. Knowing which steps stay human keeps you safe, keeps you legally clean, and stops the agent from guessing its way into your accounts.</p>
+<p>Lesson 0.6 taught you to keep approval prompts on, so the agent asks before risky actions. This lesson is about a different boundary: actions no approval setting can hand over, because they need your identity or your consent.</p>
+
+<h2>What only a human can do</h2>
+<p>Three kinds of step belong to you:</p>
+<p><strong>Logins.</strong> Typing a password, a one-time code, or clicking a "sign in" button in a browser. Every one of the three agents in this course handles its own sign-in this way: Claude Code <q>prompts you to log in on first use</q><sup class="cite"><a href="#src-a2">[1]</a></sup>; Codex asks you to <q>choose Sign in with ChatGPT or another available sign-in method</q><sup class="cite"><a href="#src-b1">[2]</a></sup>; omp opens a first-run setup wizard, and <q>OAuth users can reopen sign-in with /login</q><sup class="cite"><a href="#src-c4">[4]</a></sup>. In each case the tool hands the moment to you rather than handling credentials itself.</p>
+<p><strong>Consents.</strong> Clicking "I agree" on terms of service, authorizing an app to connect to another service, or approving a permission request on a provider's website. These create legal obligations in your name, so they are yours.</p>
+<p><strong>Attestations.</strong> Statements only you can truthfully make, such as "this is a free account" or "I own this domain". The agent might read a settings page and guess — but a guess that quietly becomes an assumption in your project is exactly the kind of invented claim lesson 5.8 warns about. An attestation is different from a fact the agent can check: it is a fact about your situation, your ownership, or your intent.</p>
+<span class="sidenote">A useful test: <em>could the agent verify this by looking at something?</em> If yes, it is a task. If it needs your identity, your agreement, or your word, it is a human-only step.</span>
+
+<h2>What this looks like in a real run</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to put a small website on a hosting provider. The agent did everything inside the project — code, checks, the pull request, the merge. Then it stopped at one step: the hosting provider needed a login in a browser window, and a confirmation that the account was on the free plan. The agent could not do either. So it produced four numbered steps for the user: run the provider's login command in the terminal, complete the browser sign-in, confirm the plan choice, then say "done". The user did them in under two minutes, and the agent finished the deploy and verified the live URL. Everything automated was automated; everything human took one focused pause.</p>
+</div>
+<p>Notice the shape: the agent did not fail at the login step. It <em>recognized</em> the step as human-only, packaged it as a short numbered list, and waited. That list is a <strong>runbook</strong> — a numbered set of instructions for the human, written by the agent, with each step small enough to do without thinking.</p>
+
+<h2>Ask for the runbook two ways</h2>
+<p><strong>Up front.</strong> Before a big task, ask the agent to list every human-only step, so you can see the whole shape of the work:</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Before you start, list every step of this task that only a human
+can do — logins, agreeing to terms, plan or ownership checks, anything
+needing my password or my consent. Number them, one sentence each, and
+say at which point in the build each one is needed. Do not ask me for
+any password or secret key.</pre></div>
+<p><strong>As you go.</strong> For a longer task, set one rule and let the agent decide when to stop:</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Do the whole task. Only stop when you reach a step you absolutely
+cannot complete and need me to act. When you stop, give me the exact
+numbered steps to do, then wait for me to say when it is done.</pre></div>
+<p>The second phrasing — a stop rule rather than a script — works well because the agent discovers human-only steps as it goes, the same way it discovers which commands it needs. You can also write this preference once into your project's rules file, so every session inherits it (lesson 1.12).</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three kinds of human-only step, and say what the agent should hand you when it hits one.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Logins</strong> (passwords, sign-in buttons, one-time codes), <strong>consents</strong> (terms, authorizations), and <strong>attestations</strong> (facts only you can vouch for, like which plan you own). When the agent hits one, it should stop and hand you a numbered runbook, then wait.</p></div>
+</div>
+
+<h2>Keep secrets out of the handoff</h2>
+<p>A runbook should tell you <em>what</em> to do, not collect your credentials. Two cautions, both from real runs:</p>
+<div class="warn">
+  <span class="label">Two habits to keep</span>
+  <p>Never paste a password or key into the chat — your conversation can end up in logs, and a secret that appears in a screenshot or command output should be treated as leaked and replaced. And when you follow a step that prints anything secret-looking, say so; a good agent will redo the step a safer way. Secrets belong in files your project ignores, or better, entered only where the provider asks (Units 8 and 9 cover this properly).</p>
+</div>
+<p>Approval settings do not protect you here. A permission mode decides which <em>tool calls</em> run without asking — Codex's docs describe the boundary as <q>asks when it needs to go beyond that boundary</q><sup class="cite"><a href="#src-b4">[3]</a></sup>, and omp's docs note its modes describe what runs without a prompt but <q>do not make model output trustworthy</q><sup class="cite"><a href="#src-c6">[6]</a></sup>. Neither is a guarantee about what appears in your transcript. That judgement stays yours.</p>
+
+<h2>Your turn: get your first runbook</h2>
+<div class="doit">
+  <span class="label">Your turn — about 5 minutes</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your project folder and start your agent (<code>claude</code>, <code>codex</code>, or <code>omp</code>).</label></li>
+    <li><label><input type="checkbox"> Paste the first prompt above (the up-front runbook), but aim it at your next real goal, for example: <em>"putting this page online so my friends can open it."</em></label></li>
+    <li><label><input type="checkbox"> Read the list it returns. Every item should be something only you can do: a sign-in, an agreement, an ownership check. If any item asks for a password or a key, that is a red flag — tell the agent to redo it.</label></li>
+    <li><label><input type="checkbox"> Pick the easiest item and actually do it, then tell the agent "done" and watch it continue from where it stopped.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see a short numbered list (usually one to five items) with no passwords or keys requested, and after you complete one item and say "done", the agent picks the task back up without you re-explaining anything. If it re-asks questions you already answered, add "continue from the runbook" to your message.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+<p>One more thing worth checking in the runbook: does the agent plan to verify its own work afterward? If the list ends at "you log in" with no step for checking the live result, add "and after each of my steps, tell me how you will confirm the task still works" — that habit belongs to Unit 2.</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">The agent reaches a step that needs your password. What should it do?</p>
+  <button class="opt" type="button">Type the password in for you.</button>
+  <button class="opt" type="button">Skip the step and claim success.</button>
+  <button class="opt" type="button">Give you steps and then pause.</button>
+  <button class="opt" type="button">Save the password inside the code.</button>
+  <div class="why"><p>Credentials are yours alone. The right move is a short runbook of exact steps and a pause until you confirm you have done them.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">What is a runbook, in this lesson's sense?</p>
+  <button class="opt" type="button">Numbered human steps the agent wrote out.</button>
+  <button class="opt" type="button">A log of commands the agent ran.</button>
+  <button class="opt" type="button">A list of files the agent edits.</button>
+  <button class="opt" type="button">A saved transcript of your longest chats.</button>
+  <div class="why"><p>A runbook is written by the agent for you: small numbered steps for the parts that need your identity or consent, delivered when you reach them.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Which of these is an attestation the agent cannot check by itself?</p>
+  <button class="opt" type="button">Whether the project folder has a file inside.</button>
+  <button class="opt" type="button">Whether a command exited without an error code.</button>
+  <button class="opt" type="button">Whether the page loaded on localhost without failing.</button>
+  <button class="opt" type="button">Whether the hosting account is your free plan.</button>
+  <div class="why"><p>The first three are things the agent can verify with tools. Your plan, your ownership, and your agreements are facts only you can vouch for.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">Why keep passwords and keys out of the chat transcript?</p>
+  <button class="opt" type="button">Because typing secrets slows the agent's work.</button>
+  <button class="opt" type="button">Because transcripts and logs can keep copies.</button>
+  <button class="opt" type="button">Because keys must always be hand-written down.</button>
+  <button class="opt" type="button">Because agents refuse any messages containing numbers.</button>
+  <div class="why"><p>What enters the conversation can persist in session logs, screenshots, or command output. Enter secrets only where the provider asks, and treat an exposed key as leaked.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a> — Anthropic's page on what an agent may do without asking. Skim the mode table only; this lesson's point is the boundary those modes cannot cross: your logins and your consent.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Try: <em>"Why can't the agent just store my password securely like a password manager?"</em> or <em>"Show me which steps of shipping my page are human-only."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a2">Anthropic, <a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b4">OpenAI, <a href="https://learn.chatgpt.com/docs/agent-approvals-security">Agent approvals &amp; security</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c4">Stencil Labs, <a href="https://omp.sh/docs/quickstart">omp quickstart</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-c5">Stencil Labs, <a href="https://omp.sh/docs/secrets">omp secrets</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-c6">Stencil Labs, <a href="https://omp.sh/docs/approvals">omp tool approvals</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-a4">Anthropic, <a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name the three kinds of human-only step, ask for a runbook up front or just in time, and keep secrets out of the handoff.</p>
+  <p>Quick reference: <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Next: 5.11 Desktop-app features vs CLI (<a href="0078-desktop-app-features.html">coming</a>)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

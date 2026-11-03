@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rollback: main is not the live site</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.9</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 6 · Lesson 6.9</p>
+  <h1>Rollback: main is not the live site</h1>
+  <p class="lede">A friend reports your app is broken. The fastest way back is not "undo everything" — it is knowing which of two separate records you need to fix: the branch called main, or the copy your host is serving.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0014-deploy-merge-live.html">6.6 Merged is not live</a></span><span>Win: you can say whether main or the live site is ahead, and pick the matching way back</span></div>
+</header>
+<main>
+
+<h2>Why rolling back matters for shipping</h2>
+<p>Your mission is a public app. A public app can break in public: a bad change merges, the site misbehaves, and the people you built it for are looking at the mess. The skill that turns that from a crisis into a chore is rollback — returning the site to a version that worked. Doing it badly costs time; doing it while confused about which thing you are rolling back can cost work you thought was safe.</p>
+<p>Lesson <a href="0014-deploy-merge-live.html">6.6</a> showed that merged, deployed and live are three separate states. Rollback is the same three states travelled in reverse, and the reverse trip has the same rule: each step is separate, and each can fail on its own.</p>
+
+<h2>Two ledgers, kept by different clerks</h2>
+<p><span class="term" title="The main branch: the project's shared line of history in your repository.">Main</span> is a record of commits inside your repository. It changes when you merge or push. It has no connection to the internet; a repository nobody deploys can have a thousand commits and no site at all.</p>
+<p>The <span class="term" title="The live site: whatever your host is serving at the public URL right now.">live site</span> is a record kept by your host. It changes only when a deployment finishes, and it shows whatever was in the last successful deployment — which is not necessarily the newest thing on main.</p>
+
+<table class="ref">
+  <thead><tr><th></th><th>Main (the branch)</th><th>Live (the URL)</th></tr></thead>
+  <tbody>
+    <tr><td><strong>What it is</strong></td><td>History of commits in the repository.</td><td>Whatever the host last published.</td></tr>
+    <tr><td><strong>Changes when</strong></td><td>A merge or push lands.</td><td>A deployment run finishes.</td></tr>
+    <tr><td><strong>How you check it</strong></td><td><code>git log --oneline -5</code>.</td><td>Open the URL in a private window.</td></tr>
+    <tr><td><strong>"Rolling it back"</strong></td><td>A new commit that reverses an old one.</td><td>Pointing the address at an earlier deployment.</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <span class="label">The one-line habit</span>
+  <p>Before any rollback, ask: <em>which ledger is ahead — main or the live site?</em> Answer it with evidence, not memory: the log tells you about main, the URL tells you about live.</p>
+</div>
+
+<h2>Two ways back, and what each one changes</h2>
+<p><strong>Way 1: roll the code back.</strong> In Git, you do not rewind history. The <span class="term" title="Revert: new commits that reverse the changes of an earlier commit.">revert</span> command moves you forward by adding an opposite: it will <q>revert the changes that the related patches introduce, and record some new commits that record them</q>.<sup class="cite"><a href="#src-revert">[1]</a></sup> On a shared branch like main, that reversal goes through review like any other change: <q>Reverting a merged pull request creates a new pull request that reverts the original merge commit.</q><sup class="cite"><a href="#src-ghrevert">[2]</a></sup> You merge that pull request, a fresh deployment runs, and a few minutes later the site is back. Slow-ish — but at the end, main and live agree again, and the history honestly records both the mistake and the fix.</p>
+<p><strong>Way 2: roll the host back.</strong> Some hosts keep earlier deployments on hand and can repoint your address at one without touching your repository. Cloudflare Pages, for example, documents: <q>Rollbacks allow you to instantly revert your project to a previous production deployment.</q><sup class="cite"><a href="#src-cf">[3]</a></sup> That is seconds instead of minutes — but notice what it does <em>not</em> do. Main still contains the broken change. The moment another deployment runs from main, the bug returns.</p>
+<p>Neither way is wrong. They answer different questions. Way 1 fixes the code. Way 2 buys you time. Confusing them is how people "roll back" a site and then watch the bug come back with the next push.</p>
+
+<h2>Which way applies to your Pages site?</h2>
+<p>With the workflow you set up in <a href="0081-actions-workflow.html">lesson 6.5</a>, publishing is a workflow run: <q>Your GitHub Pages site will always be deployed with a GitHub Actions workflow run</q>.<sup class="cite"><a href="#src-publish">[4]</a></sup> Each run builds and publishes whatever main has. So the dependable path back on this setup is Way 1: revert the bad merge, merge the revert pull request, and let a new run publish the corrected copy. Expect the usual publish lag — <q>it can take up to 10 minutes for changes to your site to publish after you push the changes to GitHub</q><sup class="cite"><a href="#src-quick">[5]</a></sup> — and verify the URL as lesson 6.6 taught, in a private window, looking for text only the old version has.</p>
+<p>If you later move to a host with a rollback button (lesson <a href="0083-other-hosts.html">6.8</a> surveys some), you gain Way 2 as well — with the agreement above: after a host-side rollback, main and live disagree until you also fix the code.</p>
+
+<h2>A pattern from real sessions</h2>
+<div class="vignette">
+  <span class="label">From the author's own agent sessions (anonymized)</span>
+  <p>A user ran a small web app that teammates relied on. Late in a long session, something went wrong with a deployment, and the user asked how to get back to a good state. The agent answered confidently that main was "the rollback point." It was wrong. The live site had never received the last eleven commits — the deploys had not succeeded — so "going back to main" would actually have moved <em>forward</em>, onto the newer code. Only when the agent fetched the real URLs, saw them answering with 404s, and compared that against the commit log did it notice the direction was backwards. It retracted its own advice out loud and started over from evidence.</p>
+  <p>The lesson is not that the agent was careless. It is that "main is the safe state" is an assumption, and rollback decisions are exactly the wrong place for assumptions.</p>
+</div>
+
+<h2>Ask which is ahead, then choose</h2>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Confused</span>
+    <p>"Roll back the app to main." Assumes main is older than the site, contains only good work, and is what a visitor needs. Any of the three can be false.</p>
+  </div>
+  <div class="good">
+    <span class="label">Evidence first</span>
+    <p>"Show me the last five commits on main, then fetch the live URL and tell me what it serves. Which one is behind? Propose the shortest way to a working site and wait for my go."</p>
+  </div>
+</div>
+
+<h2>Compare your two ledgers in about a minute</h2>
+<div class="doit">
+  <span class="label">Do it now — on your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> In your project folder, run <code>git log --oneline -5</code>. Write down the newest commit message you see. This is main's side of the story.</label></li>
+    <li><label><input type="checkbox"> Open your public URL in a private window and find one piece of text on the page. This is live's side of the story.</label></li>
+    <li><label><input type="checkbox"> Ask your agent: <em>"Fetch my public URL, report the status and the page heading, and compare that with the last five commits on main. Which is ahead?"</em></label></li>
+    <li><label><input type="checkbox"> If main is ahead: the site is behind, and a rollback would move it <em>backwards</em>. If the site is ahead of main: your newest work has not published yet — see lesson 6.6.</label></li>
+    <li><label><input type="checkbox"> Write one sentence: "Right now, [main / the live site] is ahead, so the fastest safe way back would be ___." Keep it for a real incident.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should end with two checked facts (a commit message and a page heading) and one decision sentence. You have not changed anything — that is correct. Knowing which ledger is ahead is the whole prerequisite for a safe rollback; the reversal itself is one revert away.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>One prompt that works in any agent</h2>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>The live site is broken. Do not edit any files yet.
+
+First, report:
+1. the last five commits on main;
+2. what the public URL serves right now — fetch it and give
+   the status code and one line of text from the page;
+3. which is ahead: main, or the live site.
+
+Then propose the shortest way to a working site — revert PR,
+host rollback, or something else — and wait for my go.
+Keep approval prompts on. Make no unrelated edits.</pre></div>
+<p>The last line does real work. A panicked "fix the site" prompt invites an agent to start editing files in every direction at once. Asking for a proposal and a wait keeps you the decision-maker; <a href="0022-plan-then-human-go.html">lesson 1.7</a> calls this the confirmation gate, and <a href="0057-stop-conditions.html">lesson 4.3</a> explains why "stop before acting" needs to be said out loud.</p>
+
+<div class="warn">
+  <span class="label">Do not rewind main by force</span>
+  <p>A tempting shortcut is to move main itself backwards — erase the bad commits from history with a forced push. On a shared branch this is the destructive move lesson <a href="0050-undo.html">3.11</a> warns about: Git's manual says pushing with force <q>can cause the remote repository to lose commits; use it with care.</q><sup class="cite"><a href="#src-push">[6]</a></sup> A revert commit reaches the same result by moving forward, which is why it is the default on main.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what two facts must you gather before deciding how to roll back, and which tool or window gives you each one? Write it in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Fact one: what main contains right now — from <code>git log --oneline -5</code> or your agent reading the repository. Fact two: what the live URL actually serves — from opening it in a private window or having the agent fetch it and quote a status and a line of text. Comparing the two tells you which ledger is ahead, and that decides whether a revert (roll the code forward to good) or a host rollback (point the address at an earlier deployment) is the right move.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">A broken change is merged on main and the live site shows the bug. What does a host's rollback button change?</p>
+  <button class="opt" type="button">It removes the broken commits from the main branch.</button>
+  <button class="opt" type="button">It repoints the address at an earlier built package.</button>
+  <button class="opt" type="button">It deletes the failed workflow run from the history.</button>
+  <div class="why"><p>A host rollback changes only what the address serves; your repository keeps the bad commits, so the bug returns with the next deployment unless you also revert the code.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You merge a revert on a Pages site set up as in lesson 6.5. What brings the old content back?</p>
+  <button class="opt" type="button">Nothing; a merge always updates the site in seconds.</button>
+  <button class="opt" type="button">An old workflow run re-runs itself without being asked.</button>
+  <button class="opt" type="button">A new workflow run must build and publish it.</button>
+  <div class="why"><p>Publishing is always a fresh workflow run, and it can take up to ten minutes. The revert changes what main contains; the new run is what changes the site.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">The live site looks fine, but main is eleven commits ahead with a broken feature merged. What must you decide first?</p>
+  <button class="opt" type="button">Which side has to move: the site or the code.</button>
+  <button class="opt" type="button">How many commits the main branch is ahead by now.</button>
+  <button class="opt" type="button">Which teammate of yours wrote the commit that broke it.</button>
+  <div class="why"><p>The counts and the blame are interesting but not decisive. The decision is direction: the site is behind, so rolling it "back" to main would actually move it forward onto untested code.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/reverting-a-pull-request">Reverting a pull request</a> — GitHub's steps for the safest way to undo a merge on a shared branch. Read it once now, so that during a real incident the path is a known procedure instead of a scramble.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Try: <em>"Here are the last five commits on main and what my public URL shows. Which is ahead, and what is the shortest safe way back?"</em> or <em>"If I used a host rollback button and then pushed to main again, what would happen to the site?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-revert">Git project, <a href="https://git-scm.com/docs/git-revert">git-revert</a> (revert records new commits that reverse earlier ones). Retrieved 2026-11-02.</li>
+  <li id="src-ghrevert">GitHub, <a href="https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/reverting-a-pull-request">Reverting a pull request</a> (a revert of a merged PR is a new PR; write permissions required). Retrieved 2026-11-02.</li>
+  <li id="src-cf">Cloudflare, <a href="https://developers.cloudflare.com/pages/configuration/rollbacks/">Rollbacks · Cloudflare Pages docs</a> (instant host-side rollback to a previous production deployment). Retrieved 2026-11-02.</li>
+  <li id="src-publish">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">Configuring a publishing source for your GitHub Pages site</a> (publishing is always a workflow run). Retrieved 2026-11-02.</li>
+  <li id="src-quick">GitHub, <a href="https://docs.github.com/en/pages/quickstart">Quickstart for GitHub Pages</a> (publish delay of up to 10 minutes after a push). Retrieved 2026-11-02.</li>
+  <li id="src-push">Git project, <a href="https://git-scm.com/docs/git-push">git-push</a> (force-push warning). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> compare what main contains with what the live URL serves, and choose between a revert (fix the code) and a host rollback (buy time) — instead of guessing which record to rewind.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0083-other-hosts.html">Previous: Other hosts</a> · <a href="0085-custom-domains.html">Next: Custom domains</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

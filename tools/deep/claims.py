@@ -25,8 +25,15 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 def extract_quotes_and_claims(html_content: str) -> list[dict[str, str]]:
     """Extracts <q> quotations and citations from a lesson."""
     items = []
-    # Verbatim quotations
+    # Verbatim quotations: a <q> only claims an external source when the
+    # surrounding text cites one. Uncited <q> marks an example prompt or a
+    # phrase reused from the lesson's own prose.
     for m in re.finditer(r'<q>(.*?)</q>', html_content, re.S):
+        tail = html_content[m.end():]
+        boundary = re.search(r'<q>|</p>|</li>|</span>|</div>|</td>|</th>', tail)
+        window = tail[:boundary.start()] if boundary else tail[:400]
+        if 'class="cite"' not in window:
+            continue
         clean_q = re.sub(r'<[^>]+>', '', m.group(1)).strip()
         if len(clean_q) > 10:
             items.append({

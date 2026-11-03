@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Handoff docs: carrying a long session forward</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 9 · Working at scale · Lesson 9.7</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 9 · Lesson 9.7</p>
+  <h1>Handoff docs: carrying a long session forward</h1>
+  <p class="lede">A session ends; the project does not. A short handoff doc in the project folder is how you make hours of work survive the session that produced them — and start the next one already oriented.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0068-context-window.html">5.1 The context window</a></span><span>Win: you can end a long session with a handoff doc and start the next one from it</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your mission is to take an idea to a live app, and the real building happens in long sessions: hours of prompting, fixing, and checking. But every session is temporary. It ends when you close the window, when the context fills and compacts, or when you stop for the day. The project folder is permanent. A <span class="term" title="A short file in the project folder that records a session's state so a fresh session can continue the work.">handoff doc</span> is the bridge between the two: a few paragraphs the agent writes at the end of a long run, saved next to the code, read at the start of the next run.</p>
+
+<h2>When one session gets too long</h2>
+<p>Lesson 5.1 showed why long sessions degrade: the <span class="term" title="The space holding everything the agent can currently pay attention to.">context window</span> fills, older turns are replaced by a summary, and early instructions can be lost. Resuming the session brings the history back — <em>and</em> brings the crowd back with it. Anthropic is blunt that each new session starts clean: <q>Sessions are independent. Each new session starts with a fresh context window.</q><sup class="cite"><a href="#src-hcw">[1]</a></sup> Sometimes the strongest move is not to resume, but to hand off: write down the state, then start fresh from that note on a tidy desk.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user spent about twenty hours in one session on an existing web app used by their team, with a break overnight. Partway through, a deployment was blocked on setup steps only the user could do — signing in and creating keys. At that point the agent wrote a handoff note into the project folder: the phases already finished, the exact blocker, what only the user could do, and the next three steps. The next session began by reading that note and continued from the blocked step, instead of re-discovering the whole day.</p>
+</div>
+
+<h2>What a handoff doc is — and where it lives</h2>
+<p>A handoff doc is a plain text file in the project folder, usually called <code>HANDOFF.md</code>. It is not the rules file (that holds standing instructions; lesson 1.12), and it is not the chat transcript (that is the whole crowded desk). It is a short, current account of the work. Because it lives in the project folder, git can commit it, you can read it without opening the agent, and a teammate can pick it up too. omp even records sessions locally by default so they can be shared: <q>Sessions are saved locally by default. Resume earlier work … or share a session when someone else needs the context.</q><sup class="cite"><a href="#src-ompdocs">[5]</a></sup></p>
+
+<h2>What goes in it</h2>
+<p>Keep it short enough that a fresh session can hold it in mind. Seven sections earn their place:</p>
+<table class="ref">
+  <tr><th>Section</th><th>What goes in</th></tr>
+  <tr><td>Goal</td><td>The whole task in one line, so the next session knows what "done" means.</td></tr>
+  <tr><td>Done and verified</td><td>What is finished <em>and how you checked it</em> — not merely what the agent believes.</td></tr>
+  <tr><td>In progress</td><td>What was underway and exactly where it stopped.</td></tr>
+  <tr><td>Decisions and why</td><td>Choices made along the way, so they are not re-litigated or silently reversed.</td></tr>
+  <tr><td>Standing rules</td><td>A pointer to the rules file, not a copy — compaction-proof rules live there.</td></tr>
+  <tr><td>Blockers</td><td>Anything only you can do: logins, one-time setup, approvals (lesson 5.10).</td></tr>
+  <tr><td>Next steps</td><td>The next three steps at most, each with how to verify it.</td></tr>
+</table>
+<p>Never put secrets in the doc — no keys, tokens, or passwords, ever (lesson 8.1).</p>
+
+<div class="prompt"><button class="copy" type="button" data-copy>Copy</button><pre>Write HANDOFF.md in the project folder for a fresh session of this project.
+Include: the goal in one line; what is done and how it was verified; what is
+in progress and where it stopped; decisions made and why; a pointer to the
+rules file for standing rules; anything only I can do (logins, one-time
+setup); and the next three steps with how to verify each. No secrets.
+Save the file, then stop and wait for me.</pre></div>
+
+<h2>Start the next session from the doc</h2>
+<p>Open a new session in the same project folder and begin with the doc, not with memory:</p>
+<div class="prompt"><button class="copy" type="button" data-copy>Copy</button><pre>Read HANDOFF.md in this project folder. Summarize the state of the work in
+three lines, then continue from the next step. If anything in the note
+conflicts with the files on disk, trust the files and tell me.</pre></div>
+<p>How each tool starts fresh versus resumes:</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Start fresh by typing <code>claude</code> in the project folder; <code>claude -c</code> continues the most recent session, and <code>/resume</code> opens a picker inside a session. Anthropic documents that <q>claude --continue or claude --resume reopens it under the same session ID</q>.<sup class="cite"><a href="#src-hcw">[1]</a></sup> There is no built-in handoff command — use the prompt above.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Start fresh by typing <code>codex</code> in the project folder; inside a session, <code>/resume</code> opens saved ones — the docs put it as <q>Continue an interactive session by ID or resume the most recent chat.</q><sup class="cite"><a href="#src-cx">[4]</a></sup> No built-in handoff command — use the prompt above.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Start fresh with <code>omp</code>; <q>-c continues this terminal's last session in the current directory</q> and <code>omp -r</code> opens a picker.<sup class="cite"><a href="#src-sess">[3]</a></sup> omp also has a built-in: <code>/handoff</code> <q>Generates a handoff document and commits it as a compaction entry in the same session.</q><sup class="cite"><a href="#src-slash">[2]</a></sup> omp is documented only by its own authors, so check surprises with your teacher.</p>
+  </div>
+</div>
+
+<div class="warn">
+  <span class="label">Common trap</span>
+  <p>The handoff doc is the agent's account of the work, not the work. Files on disk and the git history are the source of truth — check the doc's claims against them (lesson 5.8). Update the doc at each checkpoint and commit it, so the note never drifts from reality.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the sections a handoff doc should contain, and say why the doc lives in the project folder instead of only in the chat.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The sections are: goal, done and verified, in progress, decisions and why, a pointer to the rules file, blockers only you can do, and the next three steps. The doc lives in the project folder because the folder persists while sessions end — and because git can commit it and teammates can read it.</p></div>
+</div>
+
+<h2>Try it in your own agent</h2>
+<p>Use a practice project folder — anything small you made earlier. Keep approval prompts on, as always.</p>
+<div class="doit">
+  <span class="label">Do it now</span>
+  <ol>
+    <li><input type="checkbox" aria-label="step 1"> <div class="step">Start your agent in the project folder and paste the first prompt above to write <code>HANDOFF.md</code>.
+      <div class="expect"><p>A new file <code>HANDOFF.md</code> appears in the project folder, with the seven sections filled in.</p></div></div></li>
+    <li><input type="checkbox" aria-label="step 2"> <div class="step">Open <code>HANDOFF.md</code> yourself. Check it answers: what is the goal, what is done, what is next.
+      <div class="expect"><p>You can state the next step from the doc alone, without scrolling the chat.</p></div></div></li>
+    <li><input type="checkbox" aria-label="step 3"> <div class="step">Commit the doc: <code>git add HANDOFF.md &amp;&amp; git commit -m "checkpoint: handoff note"</code>.
+      <div class="expect"><p><code>git status</code> afterwards shows a clean working tree — the note is now a save point in history.</p></div></div></li>
+    <li><input type="checkbox" aria-label="step 4"> <div class="step">Start a new session in the same folder and paste the second prompt above.
+      <div class="expect"><p>The agent summarizes the state from the doc in a few lines and names the next step, without you re-explaining anything.</p></div></div></li>
+  </ol>
+  <p class="progress">Tick each step as you finish it.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">One session has run for hours and its context window is nearly full. Best move?</p>
+  <button class="opt" type="button">Keep chatting there and repeat every early rule from memory.</button>
+  <button class="opt" type="button">Write a handoff doc, commit it, then start fresh now.</button>
+  <button class="opt" type="button">Delete the project folder and rebuild the app from scratch.</button>
+  <button class="opt" type="button">Ask the agent to summarize, then keep working in place.</button>
+  <div class="why"><p>A handoff doc plus a fresh session gives the next run a small, accurate desk. Repeating rules inside a full window is exactly what compaction loses (lesson 5.1).</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which line belongs in a handoff doc?</p>
+  <button class="opt" type="button">Blocked: I still need to create the account keys myself.</button>
+  <button class="opt" type="button">The chat shows we covered many topics in great detail.</button>
+  <button class="opt" type="button">Overall the agent felt sure about every single step taken.</button>
+  <button class="opt" type="button">Please always be careful and try your best each time.</button>
+  <div class="why"><p>A handoff doc records concrete state — blockers, finished work, next steps. Vague reassurance wastes the little room a fresh session has.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A new session reads HANDOFF.md. What should you still do?</p>
+  <button class="opt" type="button">Trust the doc fully because the agent wrote it carefully.</button>
+  <button class="opt" type="button">Delete the doc so the session can start truly fresh.</button>
+  <button class="opt" type="button">Ask the agent to rewrite the doc before doing anything.</button>
+  <button class="opt" type="button">Check the doc's claims against the files and git history.</button>
+  <div class="why"><p>The doc is the agent's account of the work, not the work itself. Files on disk and the git history are the source of truth (lesson 5.8).</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://omp.sh/docs/slash">omp slash commands — /handoff</a> — the one built-in handoff command among the three tools, with its exact behaviour. Single-vendor source (omp's own docs); the prompts in this lesson work the same in all three agents.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Draft the HANDOFF.md my project needs right now"</em> or <em>"Should I resume my old session or start fresh from the doc?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-hcw">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a> (sessions, context window, resume). Retrieved 2026-11-02.</li>
+  <li id="src-slash">Stencil Labs, <a href="https://omp.sh/docs/slash">omp slash commands</a> (/handoff). Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-sess">Stencil Labs, <a href="https://omp.sh/docs/sessions">omp sessions</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex developer commands</a> (resume). Retrieved 2026-11-02.</li>
+  <li id="src-ompdocs">Stencil Labs, <a href="https://omp.sh/docs">omp documentation overview</a> (sessions saved locally, sharing). Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> write a handoff doc at the end of a long session, commit it, and start the next session from it — while checking its claims against the files and git history.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/agent-loop.html">The agent loop (one page)</a></p>
+  <div class="pager"><span>Prev: <a href="0114-agent-as-scheduler.html">9.6 Agent as scheduler</a></span><span>Next: <a href="0116-triage-prompt.html">9.8 Triage prompt</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

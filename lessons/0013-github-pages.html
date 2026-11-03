@@ -22,7 +22,7 @@
 
 <h2>Two kinds of Pages site</h2>
 <p>GitHub documents exactly two shapes. A <strong>user site</strong> lives in a repository named after your account, <code>YOUR_USERNAME.github.io</code>, and appears at <code>http(s)://YOUR_USERNAME.github.io</code>. A <strong>project site</strong> lives in any other repository and appears at <code>http(s)://YOUR_USERNAME.github.io/REPOSITORY</code>.<sup class="cite"><a href="#src-g1">[1]</a></sup></p>
-<span class="sidenote">Your username and repository name are case-insensitive in GitHub's URLs in practice, but the path to a <em>file</em> on a Pages site is not: the docs warn that <code>Index.html</code> will not be found.<sup class="cite"><a href="#src-g3">[3]</a></sup> Match your file names exactly.</span>
+<span class="sidenote">File names on a Pages site are matched exactly: GitHub's troubleshooting page warns that <code>Index.html</code> will not be found, and that the file <q>should be index.html, not index.HTML</q>.<sup class="cite"><a href="#src-g3">[3]</a></sup></span>
 
 <table class="ref">
   <caption class="sidenote" style="caption-side:bottom;text-align:left">Shapes quoted from GitHub's "What is GitHub Pages?" page.<sup class="cite"><a href="#src-g1">[1]</a></sup></caption>
@@ -93,12 +93,12 @@
 <div class="doit">
   <span class="label">Do it now</span>
   <ol>
-    <li><label><input type="checkbox"> Open your site's public address in a browser. Read the address bar and write down the part between the domain and your first page. That is your subpath.</label></li>
-    <li><label><input type="checkbox"> Click through to a second page or a menu item, then look at the address bar again. If the address lost that subpath, a link is written with a leading slash or with a full <code>github.io</code> URL.</label></li>
-    <li><label><input type="checkbox"> Ask your agent to find candidates: <em>"Search the files I publish for links and asset paths that start with a slash or with https://YOUR_USERNAME.github.io. List each one with its file and line. Do not change anything yet."</em></label></li>
-    <li><label><input type="checkbox"> Have it rewrite only the links between your own pages as relative paths, then reload the live page and repeat step 2.</label></li>
+    <li><label><input type="checkbox"> Find the folder you intend to publish and note your repository's name. On paper, write the public address you expect for your entry page and for one page in a subfolder, using the <code>https://YOUR_USERNAME.github.io/REPOSITORY/…</code> shape.</label></li>
+    <li><label><input type="checkbox"> Ask your agent to audit without editing: <em>"List every link and asset path in the folder I publish, with its file and line. Mark each one as relative, domain-relative (starts with /), or absolute."</em></label></li>
+    <li><label><input type="checkbox"> Have it rewrite only the links that point between your own pages, so they are relative, then run step 2 again.</label></li>
+    <li><label><input type="checkbox"> Once the site is live, open your predicted address and then click one internal link. Compare the two addresses with what you wrote.</label></li>
   </ol>
-  <div class="expect"><p>Every internal link keeps the repository segment in the address bar, and the styling still loads on a page you reached by clicking rather than by typing. If a page is missing entirely, check that its file name matches the link exactly, including capital letters, and that <code>index.html</code> sits at the top of the publishing folder.<sup class="cite"><a href="#src-g3">[3]</a></sup></p></div>
+  <div class="expect"><p>The second audit lists no domain-relative or absolute links that point inside your own site, and the predicted addresses match the ones in the browser's address bar after publishing. If a page is missing, check that its file name matches the link exactly, including capital letters, and that <code>index.html</code> sits at the top of the publishing folder.<sup class="cite"><a href="#src-g3">[3]</a></sup></p></div>
   <p class="progress"></p>
 </div>
 
@@ -107,17 +107,17 @@
 
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
-    <p>Start it with <code>claude</code> inside your project folder, then paste the request from step 3 as a normal message. Approvals stay on, so you see each edit before it happens; lesson 0.6 explains the modes and how to keep them.<sup class="cite"><a href="#src-a1">[5]</a></sup></p>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Start it with <code>claude</code> inside your project folder, then paste the request from step 3 as a normal message.<sup class="cite"><a href="#src-a1">[5]</a></sup> Claude Code's starting permission mode differs by version, so before you rely on seeing each edit, check which mode your session is in. Lesson 0.6 shows how to move to a mode that asks.</p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
     <p>Start it with <code>codex</code> inside your project folder. It can <q>inspect code, make changes, run commands, and automate repeatable work without leaving your terminal</q>, which covers both the search and the rewrite.<sup class="cite"><a href="#src-b1">[6]</a></sup> Keep the approval prompts as they are; lesson 0.6 covers them.</p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
     <p>Start it with <code>omp</code> inside your project folder. Its documentation comes only from its own authors, so treat anything surprising there as worth double-checking; the prompts in this lesson work the same way in all three agents.<sup class="cite"><a href="#src-c1">[7]</a></sup></p>
   </div>
 </div>

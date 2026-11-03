@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM calls as a dependency: limits, timeouts, retries, JSON</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.16</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.16</p>
+  <h1>LLM calls as a dependency: limits, timeouts, retries, JSON</h1>
+  <p class="lede">When your app calls an AI model at runtime, that model is a dependency like any other service — it can be slow, capped, overloaded, and it does not guarantee well-formed output. Learn the four ways those calls fail and the rules that make them safe.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0092-third-party-api-keys.html">8.4 Third-party API keys</a></span><span>Win: you can write retry, timeout, and output-shape rules your agent will actually follow</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Until now, your agent was the only thing that called an AI. That changes when your app calls a model at runtime. Maybe it summarizes a page, sorts a support ticket, or writes a draft reply for a user. From that moment, the model is a <strong>dependency</strong>. A dependency is something your app needs but does not control.</p>
+<p>Dependencies fail. A payment API goes down. A database times out. An AI provider gets busy, runs out of your credits, caps its answer, or replies in prose when you asked for JSON. If your app treats every answer as guaranteed, one bad call can take the whole feature down.</p>
+
+<h2>Four ways an LLM call fails</h2>
+<p>Think of an LLM call as having four failure shapes, each with a different fix:</p>
+<table class="ref">
+<tr><th>Failure</th><th>What it looks like</th><th>Right response</th></tr>
+<tr><td>Timeout</td><td>The request hangs, then fails</td><td>Set a time limit; stream long requests</td></tr>
+<tr><td>Output limit</td><td>Answer cut off mid-sentence</td><td>Raise the cap; check for truncation</td></tr>
+<tr><td>Overload / rate limit</td><td>429 or 529 error codes</td><td>Back off, honor Retry-After, retry a few times</td></tr>
+<tr><td>Bad shape</td><td>Prose, or broken JSON</td><td>Ask for JSON only; validate before using</td></tr>
+</table>
+
+<h2>Timeouts: the call can hang</h2>
+<p>A model call is not instant. A long one can hang until the connection gives up. Anthropic's API error reference lists <strong>504 timeout_error</strong>: <q>The request timed out while processing. Consider using the streaming Messages API for long-running requests.</q><sup class="cite"><a href="#src-antherr">[1]</a></sup> The same page warns about requests <q>especially those over 10 minutes.</q><sup class="cite"><a href="#src-antherr">[1]</a></sup></p>
+<p>The rule is short. Give every call in your app its own time limit. Long answers should stream. Streaming means the reply arrives in chunks as the model writes it. A streamed answer shows progress, so a slow model does not look like a dead one.</p>
+
+<h2>Output limits: the answer can be cut off</h2>
+<p>Each provider caps how much a model may write in one reply. That cap is set by the <code>max_tokens</code> parameter.<sup class="cite"><a href="#src-antrate">[2]</a></sup> When the cap is hit, the answer stops. It can stop mid-sentence, mid-word, or inside a JSON object. Anthropic's own guidance says to give the model enough tokens to "think" before it <q>writes itself into a corner</q>.<sup class="cite"><a href="#src-bea">[3]</a></sup> So set the cap high for your task. Then check every reply for truncation. A cut-off sentence can still look finished, so read for a missing ending.</p>
+<p>A cut-off JSON answer is the most common way "the model replied" turns into "the app crashed". Treat a short reply as a question, not an answer. Ask whether the reply ended where your format says it should.</p>
+
+<h2>Retries: overload is temporary, but back off</h2>
+<p>Providers get busy. Anthropic's error reference lists <strong>529 overloaded_error</strong>: <q>The API is temporarily overloaded,</q> and <strong>500 api_error</strong> with the advice <q>retry the request with exponential backoff.</q><sup class="cite"><a href="#src-antherr">[1]</a></sup> Rate limits (429) act the same way. MDN notes that a 429 may carry a <code>Retry-After</code> header. That header says <q>how long a client should wait before making the request again.</q><sup class="cite"><a href="#src-mdn429">[4]</a></sup></p>
+<p>Anthropic's SDKs make this concrete. They retry short-lived failures <q>with exponential backoff, twice by default, honoring the retry-after header when present.</q><sup class="cite"><a href="#src-antherr">[1]</a></sup> Exponential backoff means each wait gets longer: 1 second, then 2, then 4. The growing gap stops you from hammering a busy service. It also gives the provider time to recover.</p>
+<p>Not every error deserves a retry. A <strong>400 invalid_request_error</strong> means your request is wrong.<sup class="cite"><a href="#src-antherr">[1]</a></sup> Sending the same request again changes nothing. Fix the request instead.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user had an agent run a long check loop. The loop called a live AI service to grade its own output. Three things went wrong. The loop hit a model timeout of about three minutes. An output cap cut answers short. The grader sent back malformed JSON. The run ground through fix cycles for hours, because each failure looked like a new bug. In fact, these were four known failure shapes of an outside dependency. The run needed a timeout, a retry budget, a truncation check, and JSON validation from the start. The same user later ran out of credits mid-run. The agent stopped and asked a human. That was the right move.</p>
+</div>
+
+<h2>JSON shape: the model does not promise a format</h2>
+<p>If your app needs structured data, you must ask for it and then check it. Anthropic's agent-design essay is blunt about formats: <q>you can return code inside markdown or inside JSON,</q> and writing JSON <q>requires extra escaping of newlines and quotes</q>. That escaping is where models slip under pressure.<sup class="cite"><a href="#src-bea">[3]</a></sup></p>
+<p>The safe pattern has three steps. Ask for <em>JSON only</em> in the prompt. <em>Parse</em> the reply in code. A parse error tells you the shape was wrong; it does not mean the app should crash. Then keep a <em>fallback</em> for the case where parsing fails. A fallback is a plain default, such as a short apology or a queued retry. Never pass model output straight into your app. Validate it first.</p>
+
+<div class="recall">
+  <span class="label">Recall before you reveal</span>
+  <p>Without scrolling up: name the four ways an LLM call can fail, and the correct response to each.</p>
+  <textarea placeholder="Type your answer here…"></textarea>
+  <button type="button" class="btn reveal">Reveal</button>
+  <div class="answer">Timeout → set a time limit and stream long requests. Output limit → raise the cap and check for truncation. Overload/rate limit (429, 529, 5xx) → back off exponentially, honor Retry-After, retry only a few times. Bad shape → ask for JSON only, parse and validate, keep a fallback. Errors like 400 are not retryable.</div>
+</div>
+
+<h2>Write the rules once, in your rules file</h2>
+<p>These four habits belong in your project's rules file (lesson <a href="0027-project-rules-file.html">1.12</a>). Put them there once. Then the agent applies them to every feature, instead of relying on memory.</p>
+<div class="prompt"><button type="button" class="copy">Copy</button><pre>Rules for every feature that calls an AI model at runtime:
+1. Every model call gets an explicit timeout, and long generations stream.
+2. Retry transient failures (429, 529, 5xx, timeouts) at most 3 times with
+   exponential backoff, honoring any Retry-After header. Never retry 4xx
+   errors like 400 — fix the request instead.
+3. Ask the model for JSON only when the app needs structured output, then
+   parse and validate it before use; on invalid JSON, use the fallback, do not crash.
+4. After each call, check the reply was not truncated by the output limit.
+5. Set a spend cap with the provider before any long run (lesson 8.4).</pre></div>
+
+<h2>Try it with your agent</h2>
+<div class="doit">
+  <ol>
+    <li><label><input type="checkbox"> Open your project folder and start your agent.</label></li>
+    <li><label><input type="checkbox"> Paste the rules block above and say: "Add these to my rules file."</label></li>
+    <li><label><input type="checkbox"> Ask: "Pick one place in this app that would call an AI model. Does it follow all five rules? If not, fix it."</label></li>
+    <li><label><input type="checkbox"> Ask the agent to show you the code that parses and validates the model's JSON reply.</label></li>
+  </ol>
+  <div class="expect"><strong>What you should see:</strong> the rules file now contains the five rules; the agent points to a concrete call site (or adds one) with a timeout, a small retry-with-backoff helper, and a parse-and-validate step with a fallback.</div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <p class="q">Your app calls an AI provider and gets HTTP 529. What does that mean?</p>
+  <button type="button" class="opt">The model output hit its maximum token cap</button>
+  <button type="button" class="opt">The provider is busy; wait and retry later</button>
+  <button type="button" class="opt">Your API key was rejected as not valid</button>
+  <button type="button" class="opt">The request body exceeded the allowed size limit</button>
+  <p class="why">529 means "temporarily overloaded" — the provider is busy right now. A token cap, an invalid key, and an oversized body are different errors (output truncation, 401, and 413), each with its own fix.</p>
+</div>
+<div class="quiz" data-correct="0">
+  <p class="q">The model was asked for JSON but returned prose around it. What is the right fix?</p>
+  <button type="button" class="opt">Always parse and validate the reply as JSON first</button>
+  <button type="button" class="opt">Ask the model for JSON only, then parse it</button>
+  <button type="button" class="opt">Raise the timeout so the model can finish replying</button>
+  <button type="button" class="opt">Retry in a loop until valid JSON arrives back</button>
+  <p class="why">Models do not guarantee a format, so the app must parse and validate every reply, and the prompt should request JSON only. A longer timeout does not fix prose, and a tight retry loop hammers the provider.</p>
+</div>
+<div class="quiz" data-correct="2">
+  <p class="q">Which failure should your app NOT fix by retrying?</p>
+  <button type="button" class="opt">An HTTP 429 rate limit with a Retry-After header</button>
+  <button type="button" class="opt">An HTTP 504 error where the request timed out</button>
+  <button type="button" class="opt">An HTTP 400 invalid request that cannot be fixed</button>
+  <button type="button" class="opt">An HTTP 529 error from an overloaded busy provider</button>
+  <p class="why">429, 504, and 529 are transient — back off and retry. A 400 means the request itself is malformed; retrying the identical request changes nothing, so fix the request instead.</p>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary sources)</span>
+  <p><a href="https://platform.claude.com/docs/en/api/errors">Anthropic: Claude API errors</a> — the full list of status codes (400, 401, 402, 413, 429, 500, 504, 529) and which are retryable. Pair it with <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429">MDN's 429 page</a> for the plain-language meaning of rate limiting and <code>Retry-After</code>.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me in my app where a model call could time out, and add the timeout"</em> or <em>"What happens to my app if the model returns broken JSON today?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-antherr">Anthropic, <a href="https://platform.claude.com/docs/en/api/errors">Claude API errors</a> (Claude Platform docs). Retrieved 2026-11-02.</li>
+  <li id="src-antrate">Anthropic, <a href="https://platform.claude.com/docs/en/api/rate-limits">Rate limits</a> (Claude Platform docs; <code>max_tokens</code> and output-token metering). Retrieved 2026-11-02.</li>
+  <li id="src-bea">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (essay; token headroom and JSON format guidance). Retrieved 2026-11-02.</li>
+  <li id="src-mdn429">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429">429 Too Many Requests</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name the four failure shapes of an LLM call (timeout, output limit, overload/rate limit, bad JSON shape) and write retry, truncation, and validation rules into your rules file so your agent handles them every time.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><a href="0103-third-party-churn.html">← 8.15 Third-party churn</a><a href="0105-data-dont-own.html">8.17 Data you don't own →</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

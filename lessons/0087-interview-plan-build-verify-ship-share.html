@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The capstone path: interview, plan, build, verify, ship, share</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 7 · Capstone · Lesson 7.2</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 7 · Lesson 7.2 · First-ship path ★</p>
+  <h1>The capstone path: interview, plan, build, verify, ship, share</h1>
+  <p class="lede">You already shipped a hello world page. Now you ship the app you actually chose. Six steps, in order, each one already practised on its own — this lesson is about running them as one continuous run.</p>
+  <div class="meta"><span>About 15 minutes of reading, then your capstone run</span><span>Builds on: <a href="0086-choose-idea.html">7.1 Choose an idea</a> and every ★ lesson before it</span><span>Win: a public link to your app, plus a plan you can reuse for the next one</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your mission is to take an idea to a public app by directing a coding agent. The steps in this lesson are not new machinery. You have met the interview, the plan gate, the run-yourself loop, commits, push, publish, and the live check in earlier lessons. What changes now is that you run them back to back, on one real idea, without stopping to read about each one. The order is the lesson: each step exists because the step before it made something checkable.</p>
+
+<h2>The six steps at a glance</h2>
+<table class="ref">
+  <thead><tr><th>Step</th><th>What happens</th><th>You have seen it in</th></tr></thead>
+  <tbody>
+    <tr><td><strong>1. Interview</strong></td><td>The agent asks numbered questions with a recommended answer; you answer by number.</td><td><a href="0019-interview.html">1.4 The interview</a>, <a href="0020-yes-all.html">1.5 Yes to all</a></td></tr>
+    <tr><td><strong>2. Plan</strong></td><td>The agent writes the steps it will take and you give a human "go".</td><td><a href="0022-plan-then-human-go.html">1.7 Plan, then a human go</a></td></tr>
+    <tr><td><strong>3. Build</strong></td><td>The agent edits files and runs things, with commits along the way.</td><td><a href="0029-run-yourself.html">2.1 Run it yourself</a>, <a href="0052-checkpoint-often.html">3.13 Checkpoint often</a></td></tr>
+    <tr><td><strong>4. Verify</strong></td><td>You open the real thing yourself; "done" stays a claim until you look.</td><td><a href="0030-claims-vs-evidence.html">2.2 Claims vs evidence</a>, <a href="0035-real-vs-simulated.html">2.7 Real vs simulated</a>, <a href="0040-be-first-time-user.html">2.13 Be a first-time user</a></td></tr>
+    <tr><td><strong>5. Ship</strong></td><td>Push, let the host publish, and confirm the public address answers.</td><td><a href="0013-github-pages.html">6.3 GitHub Pages</a>, <a href="0014-deploy-merge-live.html">6.6 Deploy, merge, live</a></td></tr>
+    <tr><td><strong>6. Share</strong></td><td>Put the link where your intended users will actually find it.</td><td><a href="0082-readme-repo-description.html">6.7 README and repo description</a></td></tr>
+  </tbody>
+</table>
+<p>The steps form a chain of evidence. The interview produces decisions. The plan turns decisions into actions. The build produces files. Verification produces an observation. Shipping produces a public address. Sharing puts that address in front of a person. If a link in the chain is skipped, the later steps inherit the doubt.</p>
+
+<h2>A capstone run, end to end</h2>
+<p>Here is the shape of a real capstone session, rewritten without names or project details. The person had chosen a small idea in lesson 7.1: a site where their hobby club tracks who brings what to each meet.</p>
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>Interview me about the potluck tracker until you could write the spec. Ask numbered questions, each with a recommendation. Cap it at eight questions.</span></div>
+  <div class="row"><span class="who">agent</span><span>Q1..Q8 covering who may edit, what an entry needs, and what "done" looks like. Recommendations attached to each.</span></div>
+  <div class="row you"><span class="who">you</span><span>1. anyone with the link. 2. your rec. 3. your rec, but show the date. … 8. your rec.</span></div>
+  <div class="row you"><span class="who">you</span><span>Write the plan: files to create, what you will not touch, how you will check. Wait for my go.</span></div>
+  <div class="row"><span class="who">agent</span><span>Plan: create index.html, one CSS file, one JS file; no build step; check = open localhost and click through. Go?</span></div>
+  <div class="row you"><span class="who">you</span><span>Go.</span></div>
+  <div class="row tool"><span class="who">tool</span><span>write the three files; start a local server; open localhost; confirm the list renders</span></div>
+  <div class="row tool"><span class="who">tool</span><span>commit "first working version"; you look at localhost yourself and confirm</span></div>
+  <div class="row tool"><span class="who">tool</span><span>push; enable Pages on the main branch; wait for the build</span></div>
+  <div class="row tool flag"><span class="who">tool</span><span>open the public URL → the page loaded but was blank; missing script path was absolute, host serves from a subpath</span></div>
+  <div class="row tool"><span class="who">tool</span><span>switch to relative links; commit; push; wait; open the public URL in a private window → renders correctly</span></div>
+  <div class="row tool"><span class="who">tool</span><span>write the public link at the top of the README; commit; push</span></div>
+  <div class="row"><span class="who">agent</span><span>Live at the URL in the README. I verified it in a private window after the publish finished, not at merge time.</span></div>
+  <div class="row"><span class="note">Anonymized from a real capstone session. The blank page was a relative-path bug that only the public address could reveal.</span></div>
+</div>
+<p>Notice what did not happen. There was no long unsupervised run, no trust in "done", and no publish believed before an address answered. The six steps each did one job.</p>
+
+<h2>The one prompt that starts the run</h2>
+<p>You do not need a special tool or skill for this. One plain message starts the whole chain, because it names the steps as the definition of done:</p>
+<div class="prompt">
+<button class="copy" type="button">Copy</button>
+<pre>Build my capstone app: [one sentence describing the idea and who it is for].
+
+Work in this order and stop at each gate:
+1. Interview me first: numbered questions, each with a recommended
+   answer. Cap it at 8 questions. Wait for my answers.
+2. Write the plan (files to create, what you will not touch, how you
+   will check it). Wait for my "go".
+3. Build it, committing at least once per working feature.
+4. Verify: run it, open it yourself in a real browser, and tell me
+   what you did NOT verify.
+5. Push, publish, and confirm the public URL loads in a fresh
+   window before you call it shipped.
+6. Put the link at the top of the README so visitors find it.
+
+Keep approval prompts on. Do not disable any safety settings.
+Done when: I can open the public link and use the app myself.</pre>
+</div>
+<p>The prompt is agent-agnostic by design: it names behaviours, not menu items. OpenAI's prompting guidance frames a good prompt as <q>Goal, Context, Constraints, Done when</q><sup class="cite"><a href="#src-b7">[2]</a></sup>, and this block is exactly those four parts with the gates inserted. If your agent offers a plan mode or a rules file, you may use them, but nothing here depends on them — see <a href="0027-project-rules-file.html">1.12 The rules file</a> for when writing the procedure once starts to pay off.</p>
+
+<h2>Build with checkpoints, verify with your own eyes</h2>
+<p>During the build, ask for a commit after each working feature, not at the end. Pro Git describes a commit as a snapshot you can revert to or compare later<sup class="cite"><a href="#src-g2">[3]</a></sup>, and the whole point of the capstone is that your run stays recoverable — lesson <a href="0052-checkpoint-often.html">3.13</a> covers why long unsaved runs are risky. During verification, the rule from lesson 2.2 stands: <em>done</em> is a claim. Open the local page, then the public page, yourself. Claude Code's best-practices page puts the failure plainly: the agent <q>said it was done and it wasn't quite, usually because it had no way to check its own work</q><sup class="cite"><a href="#src-a7">[4]</a></sup> — so give it a way (run the checks, open the browser) and still look yourself. For the ship step, remember the five states from the milestone: committed, pushed, published, live are four different things, and only the public address is <em>live</em> (<a href="0015-ship-a-hello-world-page.html">M.1</a>, <a href="0014-deploy-merge-live.html">6.6</a>). GitHub's Pages docs note that changes can take <q>up to 10 minutes</q> to publish after a push<sup class="cite"><a href="#src-p1">[5]</a></sup>, so waiting and re-opening the URL is part of the step, not a delay in it.</p>
+
+<h2>Share is a step, not an afterthought</h2>
+<p>Shipping gives you an address. Sharing gives your users the address. Put the link at the top of the README and in the repository's description field, because that is where people look before they click anything (<a href="0082-readme-repo-description.html">6.7</a>). Then do the first-time-user walk from lesson 2.13: open the live app as if you had never seen it, or hand the link to a friend and read their screenshot. If the first thing a new user does is get confused, that is a finding, and you are still in the loop — fix, commit, push, re-verify the public URL.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the six steps in order, and say which step catches a wrong guess most cheaply. Write it in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Interview → plan → build → verify → ship → share.</strong> The interview catches a wrong guess most cheaply, because no files have been changed yet — every later step inherits whatever the earlier steps decided.</p></div>
+</div>
+
+<h2>Do it: your capstone run</h2>
+<div class="doit">
+  <span class="label">Capstone checklist — tick each as you finish it</span>
+  <ol>
+    <li><input type="checkbox" id="d1"><label for="d1">Paste the capstone prompt above (with your idea filled in) and let the agent interview you. Answer by number.</label></li>
+    <li><input type="checkbox" id="d2"><label for="d2">Read the plan it writes. Give the "go" — or send one line back and go again.</label></li>
+    <li><input type="checkbox" id="d3"><label for="d3">Watch the build; expect a commit after each working feature.</label></li>
+    <li><input type="checkbox" id="d4"><label for="d4">Open localhost yourself and click through the app once.</label></li>
+    <li><input type="checkbox" id="d5"><label for="d5">Push, publish, and open the public URL in a private window. Wait for the build if it is still running.</label></li>
+    <li><input type="checkbox" id="d6"><label for="d6">Confirm the link sits at the top of the README, then send the link to one real person.</label></li>
+  </ol>
+  <div class="expect"><p><strong>What you should see:</strong> a public link that loads your app in a window that has never seen the project, and a README whose first line is that link. If the public page is wrong while localhost was right, you have found a relative-path or subpath bug — exactly the one in the transcript above.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">In the six-step path, where are wrong guesses caught most cheaply?</p>
+  <button class="opt" type="button">During the ship, once the link is already public.</button>
+  <button class="opt" type="button">During the build, when the agent first compiles code.</button>
+  <button class="opt" type="button">In the interview, before any files have been changed.</button>
+  <button class="opt" type="button">Only after a friend reports the problem to you.</button>
+  <div class="why"><p>The interview runs before any file exists, so a wrong assumption costs one line to correct. Every later step inherits the decisions made earlier.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">Why does the plan step get a human "go" before building?</p>
+  <button class="opt" type="button">So a wrong guess becomes visible before it touches files.</button>
+  <button class="opt" type="button">Agents cannot edit any files until you approve the plan.</button>
+  <button class="opt" type="button">Building is always slower than planning, that is by design.</button>
+  <button class="opt" type="button">So the plan gets read aloud in the team's meeting.</button>
+  <div class="why"><p>The plan is words until you approve it; the "go" is the moment a wrong assumption would otherwise become edits. Lesson 1.7 covers the gate itself.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">After the agent says the app is live, what proves it?</p>
+  <button class="opt" type="button">Opening the public link yourself in a private window.</button>
+  <button class="opt" type="button">Seeing a green checkmark on the repository page itself.</button>
+  <button class="opt" type="button">Asking the agent whether it is sure it worked.</button>
+  <button class="opt" type="button">Reading the success message in the agent's chat reply.</button>
+  <div class="why"><p>Deploy, merge, and live are different states. Only a request to the public address proves the live one — lesson 6.6.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">What does "share" add that "ship" does not?</p>
+  <button class="opt" type="button">A link placed where the intended users actually look.</button>
+  <button class="opt" type="button">A whole second deploy onto a different hosting provider.</button>
+  <button class="opt" type="button">A longer README with more technical detail inside it.</button>
+  <button class="opt" type="button">A private password gate added to every single page.</button>
+  <div class="why"><p>Ship produces an address; share puts it in front of a person. The README top and the repo description are where visitors look first — lesson 6.7.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="warn">
+  <span class="label">Keep approvals on</span>
+  <p>Run the whole capstone with approval prompts enabled. The prompt above says so explicitly, and nothing in this lesson requires a weaker setting. If the agent proposes disabling them, decline — lesson 0.6 explains what the modes mean and why a beginner keeps prompts on.</p>
+</div>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> — Anthropic's own list of beginner habits: give the agent a way to verify, interrupt early, and check results yourself. Written for one tool; the habits transfer to all three. Pair it with the <a href="../reference/deploy-checklist.html">deploy checklist</a> before your ship step.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck mid-run? Ask the agent: <em>"What is the task and its state right now?"</em> or <em>"Which of the six steps are we in, and what proves we finished the last one?"</em> Then ask yourself the same question.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a3">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a> — the gather / act / verify loop. Retrieved 2026-11-02.</li>
+  <li id="src-b7">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a> — the Goal, Context, Constraints, Done-when prompt shape. Retrieved 2026-11-02.</li>
+  <li id="src-g2">Chacon &amp; Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, Recording Changes</a> — commits as snapshots. Retrieved 2026-11-02.</li>
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> — "done" is a claim without a way to check. Retrieved 2026-11-02.</li>
+  <li id="src-p1">GitHub Docs, <a href="https://docs.github.com/en/pages/quickstart">GitHub Pages quickstart</a> — publishing can take up to 10 minutes after a push. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> run the full capstone path — interview, plan, build, verify, ship, share — as one continuous run, and name which step catches which kind of mistake.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns (one page)</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Previous: <a href="0086-choose-idea.html">7.1 Choose an idea</a></span><span>Next: <a href="0088-retrospective.html">7.3 Retrospective</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git cheat sheet: reference</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb">Reference · from <a href="../lessons/0009-why-save-points-exist.html">Lesson 3.1</a></nav>
+<header class="lesson-head">
+  <p class="kicker">Reference card</p>
+  <h1>Git cheat sheet</h1>
+  <p class="lede">What each git command does, and what to do when one goes wrong.</p>
+</header>
+<main>
+
+<h2>See what is there</h2>
+<table class="ref">
+  <tr><th>Command</th><th>Plain English</th><th>Taught in</th></tr>
+  <tr><td><code>git status</code></td><td>Current branch and what is modified, untracked, or staged.</td><td><a href="../lessons/0010-repo-working-tree-uncommitted-change.html">3.2</a></td></tr>
+  <tr><td><code>git status --short</code></td><td>The same list in two compact columns; <code>??</code> means untracked.</td><td><a href="../lessons/0010-repo-working-tree-uncommitted-change.html">3.2</a></td></tr>
+  <tr><td><code>git diff</code></td><td>Line changes not yet staged; untracked files are invisible.</td><td><a href="../lessons/0010-repo-working-tree-uncommitted-change.html">3.2</a></td></tr>
+  <tr><td><code>git diff --staged</code></td><td>What the next commit would actually record.</td><td><a href="../lessons/0043-commit-messages.html">3.4</a></td></tr>
+  <tr><td><code>git log --oneline</code></td><td>The history, newest first: short id then message.</td><td><a href="../lessons/0009-why-save-points-exist.html">3.1</a></td></tr>
+</table>
+
+<h2>Save a checkpoint</h2>
+<table class="ref">
+  <tr><th>Command</th><th>Plain English</th><th>Taught in</th></tr>
+  <tr><td><code>git add &lt;file&gt;</code></td><td>Pick that file's current content for the next commit.</td><td><a href="../lessons/0043-commit-messages.html">3.4</a></td></tr>
+  <tr><td><code>git commit -m "..."</code></td><td>Record staged changes as a snapshot with one message line.</td><td><a href="../lessons/0043-commit-messages.html">3.4</a></td></tr>
+  <tr><td><code>git commit -a</code></td><td>Stage every changed tracked file, then commit; new files are skipped.</td><td><a href="../lessons/0043-commit-messages.html">3.4</a></td></tr>
+  <tr><td><code>git add -A</code></td><td>Stage everything, including files git has never seen.</td><td><a href="../lessons/0043-commit-messages.html">3.4</a></td></tr>
+</table>
+<div class="callout"><span class="label">Careful</span><p><code>git commit -a</code> and <code>git add -A</code> sweep in work you did not choose: unfinished edits, scratch files, a settings file holding a key. Check <code>git status --short</code> and <code>git diff --staged</code> first.</p></div>
+
+<h2>Branches</h2>
+<table class="ref">
+  <tr><th>Command</th><th>Plain English</th><th>Taught in</th></tr>
+  <tr><td><code>git branch</code></td><td>List local branches; the asterisk marks the one checked out.</td><td><a href="../lessons/0044-branch.html">3.5</a></td></tr>
+  <tr><td><code>git switch -c add-search</code></td><td>Create a branch and move to it in one step.</td><td><a href="../lessons/0044-branch.html">3.5</a></td></tr>
+  <tr><td><code>git switch main</code></td><td>Change the files in the folder to main's snapshot.</td><td><a href="../lessons/0044-branch.html">3.5</a></td></tr>
+  <tr><td><code>git branch -d add-search</code></td><td>Delete a branch git believes is already merged.</td><td><a href="../lessons/0053-default-branch-rename.html">3.14</a></td></tr>
+  <tr><td><code>git branch -m master main</code></td><td>Rename the current local branch; the server is unchanged.</td><td><a href="../lessons/0053-default-branch-rename.html">3.14</a></td></tr>
+</table>
+<p><code>-D</code> deletes even when git says the branch is not merged — usual after a squash merge. Confirm the work is on main first.</p>
+
+<h2>Combine work</h2>
+<table class="ref">
+  <tr><th>Command</th><th>Plain English</th><th>Taught in</th></tr>
+  <tr><td><code>git merge add-search</code></td><td>Join that branch into the current one with a merge commit.</td><td><a href="../lessons/0047-merge-vs-squash.html">3.8</a></td></tr>
+  <tr><td><code>git merge --squash add-search</code></td><td>Apply its changes without committing; you commit the result.</td><td><a href="../lessons/0047-merge-vs-squash.html">3.8</a></td></tr>
+  <tr><td><code>git pull</code></td><td>Fetch the remote's commits, then merge them into your branch.</td><td><a href="../lessons/0011-remote-origin-push.html">3.6</a></td></tr>
+  <tr><td><code>git fetch --prune</code></td><td>Update remote-tracking names; drop names for branches deleted on the server.</td><td><a href="../lessons/0050-undo.html">3.11</a></td></tr>
+  <tr><td><code>git merge --abort</code></td><td>Back out of a conflicted merge; restore the pre-merge state.</td><td><a href="../lessons/0048-merge-conflicts.html">3.9</a></td></tr>
+</table>
+<p>A conflict leaves markers in the file: edit to the text you want, delete them, <code>git add</code> the file, then <code>git commit</code> or <code>git merge --continue</code>. A squash merge does not make git consider the old branch merged.</p>
+
+<h2>Undo</h2>
+<table class="ref">
+  <tr><th>Command</th><th>Plain English</th><th>Taught in</th></tr>
+  <tr><td><code>git restore --staged &lt;file&gt;</code></td><td>Unpick a file for the next commit; the edit on disk stays.</td><td><a href="../lessons/0043-commit-messages.html">3.4</a></td></tr>
+  <tr><td><code>git revert --no-edit HEAD</code></td><td>Add a new commit that cancels the last one; history keeps both.</td><td><a href="../lessons/0050-undo.html">3.11</a></td></tr>
+  <tr><td><code>git reset --hard HEAD~1</code></td><td>Move the branch back one commit; overwrite files to match.</td><td><a href="../lessons/0050-undo.html">3.11</a></td></tr>
+  <tr><td><code>git reflog</code></td><td>Where this repository's branch tips used to point.</td><td><a href="../lessons/0050-undo.html">3.11</a></td></tr>
+  <tr><td><code>git push --force-with-lease</code></td><td>Replace the remote branch only if it is where you last saw it.</td><td><a href="../lessons/0050-undo.html">3.11</a></td></tr>
+</table>
+<div class="callout"><span class="label">Danger</span><p><code>git reset --hard</code> destroys uncommitted edits for good, because no commit recorded them. <code>git push --force</code> can make the server lose commits other people hold; <code>--force-with-lease</code> is narrower but still rewrites history. Keep both off shared branches unless you mean it.</p></div>
+
+<h2>Two checkouts at once</h2>
+<table class="ref">
+  <tr><th>Command</th><th>Plain English</th><th>Taught in</th></tr>
+  <tr><td><code>git worktree add ../my-app-experiment -b experiment</code></td><td>Make a second folder for a new branch, sharing one history.</td><td><a href="../lessons/0049-worktrees.html">3.10</a></td></tr>
+  <tr><td><code>git worktree list</code></td><td>Which folders are checked out, and on which branch.</td><td><a href="../lessons/0049-worktrees.html">3.10</a></td></tr>
+  <tr><td><code>git worktree remove &lt;path&gt;</code></td><td>Remove a clean worktree; the branch and its commits survive.</td><td><a href="../lessons/0049-worktrees.html">3.10</a></td></tr>
+</table>
+<p>One branch, one worktree. Run <code>git worktree list</code> before blaming a missing edit; the agent may have used the other folder.</p>
+
+<h2>Ignore files</h2>
+<table class="ref">
+  <tr><th>Command</th><th>Plain English</th><th>Taught in</th></tr>
+  <tr><td><code>.gitignore</code></td><td>One pattern per line: <code>.env</code>, <code>node_modules/</code>, build output, big files.</td><td><a href="../lessons/0042-gitignore.html">3.3</a></td></tr>
+  <tr><td><code>git check-ignore -v &lt;path&gt;</code></td><td>Which pattern excludes that path, and on which line.</td><td><a href="../lessons/0042-gitignore.html">3.3</a></td></tr>
+  <tr><td><code>git rm --cached .env</code></td><td>Untrack a file but keep it on disk; then ignore it.</td><td><a href="../lessons/0042-gitignore.html">3.3</a></td></tr>
+</table>
+<p>An ignore rule does not affect already-tracked files, and the old commit still holds the secret. Rotate a leaked key first, then untrack it.</p>
+
+<h2>Remote and push</h2>
+<table class="ref">
+  <tr><th>Command</th><th>Plain English</th><th>Taught in</th></tr>
+  <tr><td><code>git remote -v</code></td><td>The remote names and URLs this folder has.</td><td><a href="../lessons/0011-remote-origin-push.html">3.6</a></td></tr>
+  <tr><td><code>git remote add origin REMOTE-URL</code></td><td>Save a name for another copy of the repository.</td><td><a href="../lessons/0011-remote-origin-push.html">3.6</a></td></tr>
+  <tr><td><code>git push -u origin main</code></td><td>Send main and make later pushes need no arguments.</td><td><a href="../lessons/0011-remote-origin-push.html">3.6</a></td></tr>
+  <tr><td><code>git status -sb</code></td><td>Shows <code>ahead</code> or <code>behind</code>: is a push pending?</td><td><a href="../lessons/0011-remote-origin-push.html">3.6</a></td></tr>
+  <tr><td><code>git push origin --delete feature</code></td><td>Delete that branch on the server.</td><td><a href="../lessons/0053-default-branch-rename.html">3.14</a></td></tr>
+</table>
+<p>A push copies commits, never uncommitted edits. <code>403</code> means refused; <code>404</code> may mean the repository is missing <em>or</em> that you lack access (<a href="../lessons/0051-permission-errors.html">3.12</a>).</p>
+
+<h2>After a mistake</h2>
+<ul>
+  <li><strong>Ask one question first:</strong> have these commits been pushed or merged? If yes, <code>git revert</code>. If they never left your machine, a reset is private and allowed — with the danger above in mind.</li>
+  <li><strong>A branch "still exists" is a memory</strong> until you fetch. Run <code>git fetch --prune</code>, then <code>git branch -r</code>; names of deleted server branches disappear.</li>
+  <li><strong>Recover a dropped commit</strong> with <code>git reflog</code>, then <code>git reset --hard HEAD@{1}</code>. It cannot restore an edit you never committed.</li>
+</ul>
+<div class="callout"><span class="label">Remember</span><p>An agent's "done" is a claim. Read <code>git status --short</code> and the log yourself, and compare the live result (<a href="../lessons/0030-claims-vs-evidence.html">2.2</a>).</p></div>
+</main>
+<footer class="lesson-foot"><p><a href="../lessons/0009-why-save-points-exist.html">Back to lesson 3.1</a></p></footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

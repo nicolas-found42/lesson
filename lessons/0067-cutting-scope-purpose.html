@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cutting scope on purpose: ship the smaller thing</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 4 · Scope &amp; stopping · Lesson 4.13</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 4 · Lesson 4.13</p>
+  <h1>Cutting scope on purpose: ship the smaller thing</h1>
+  <p class="lede">Every app has more ideas than time. The skill is choosing what to leave out, saying so out loud, and writing it down — so "not finished" becomes "finished for now".</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0056-scope-creep-scope-ladder.html">4.2 Scope creep</a></span><span>Win: you can shrink a task on purpose and keep a written list of what you left out</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your app reaches the public as a series of small, finished things, not as one big reveal. Anthropic's essay on building with LLMs puts the rule plainly: <q>we recommend finding the simplest solution possible, and only increasing complexity when needed.</q><sup class="cite"><a href="#src-bea">[1]</a></sup> Cutting scope is not giving up — it is how a beginner ships this week instead of someday. A shipped page with three working features beats an unfinished page with nine half-built ones.</p>
+<p>Lesson <a href="0056-scope-creep-scope-ladder.html">4.2</a> showed the opposite failure: scope growing because each "yes" invites the next step. This lesson is the deliberate move in the other direction. The difference between the two is not the size of the ask. It is whether the cut is a decision you made, or an accident you noticed later.</p>
+
+<h2>"Not done" is two different things</h2>
+<p>When a task ends with something missing, ask which of these it is. Only one of them is under your control.</p>
+<table class="ref">
+  <thead><tr><th></th><th>Forgotten</th><th>Cut on purpose</th></tr></thead>
+  <tbody>
+    <tr><td>What it is</td><td>Something you wanted, that nobody decided to drop</td><td>Something you decided to drop, for now</td></tr>
+    <tr><td>How you know</td><td>You only notice when it hurts</td><td>It is written down somewhere you will look</td></tr>
+    <tr><td>What happens next</td><td>It comes back as a bug report from your first user</td><td>It comes back on your list, when you choose</td></tr>
+    <tr><td>Example</td><td>"Why is the save button missing?"</td><td>"Save button: cut in v1, trigger = after first ship"</td></tr>
+  </tbody>
+</table>
+<p>A cut you did not write down is a forgotten item wearing a nicer name. The writing is the whole trick.</p>
+
+<h2>The deferral note</h2>
+<p>Every cut gets a small written record — call it a <span class="term" title="The written record of a scope cut: what was left out, why, and when it comes back">deferral note</span>. Three parts, one line each:</p>
+<ul>
+  <li><strong>Name:</strong> what exactly is not being done ("the settings page", "the second menu flow").</li>
+  <li><strong>Reason:</strong> one honest line ("too big for this session", "needs a decision from my friend").</li>
+  <li><strong>Trigger:</strong> the condition that brings it back ("after the first ship", "next session", "when the user asks").</li>
+</ul>
+<p>A trigger earns its place only if you could point at the moment it fires. "When I have more time" is a mood; "after the first ship" is an event you will recognise. Look at the table above: one example names a real moment, the other names a feeling. If you cannot picture the moment an item comes back, write a cheaper trigger such as "next session" and let the list carry it.</p>
+<p>Put the notes in a file in your project folder — <code>LATER.md</code> is a fine name — or in the plan the agent wrote, or in the pull request description. Any of those works, because all of them survive the session. A sentence you only said in chat does not: the next session starts without it.</p>
+
+<h2>A real pattern, anonymized</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to map every menu flow of their app, one flow at a time, using automated runs that took twenty minutes each. After several runs — two of them lost entirely when the screen locked — the user stopped mid-task and wrote: "leave the last flow unmapped, I'll complete it later." The agent accepted the cut, the map shipped with five of six flows done, and the sixth sat on the written list until the user picked it up again. Nothing was silently dropped, and nothing burned another evening.</p>
+</div>
+<p>Notice what made this a cut rather than a failure: the user said it in words, the agent heard it, and the leftover went on a list. Three small acts, all deliberate.</p>
+
+<h2>Say the cut to the agent, not only to yourself</h2>
+<p>The agent cannot see what you were hoping for. Anthropic's best-practices page notes that an agent <q>tends to read a request conservatively and build the smallest thing that satisfies it, since it can't see how much you were hoping for.</q><sup class="cite"><a href="#src-ccbp">[2]</a></sup> That works in your favour here: ask for less and you get less. But the moment a half-built thing exists, the agent will happily keep improving it — so name the cut explicitly, or the leftover will grow on its own. Codex's prompting guide makes the same point from the other side: a prompt with clear constraints <q>helps Codex stay scoped, make fewer assumptions, and produce work that's easier to review.</q><sup class="cite"><a href="#src-cxbp">[3]</a></sup></p>
+<p>The same page sets the rule for the opposite direction: <q>When you want the fuller version, with the edge cases handled and the natural follow-on included, say so</q>.<sup class="cite"><a href="#src-ccbp">[2]</a></sup> The agent will not guess that either. Cutting and asking for more are the same discipline pointed two ways: you state the shape of the work instead of letting the agent infer it.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Task: [the one thing you want done now, in one or two sentences].
+
+Out of scope for this task: [name the items you are cutting].
+Do not build, fix, or improve them. If you find a problem in
+one of them, add one line to LATER.md and move on.
+
+Done when: [the observable state — page live at the URL,
+check command passing, screenshot showing X].
+
+When done, tell me what is on the LATER.md list.</pre>
+</div>
+<p>The last line closes the loop: the cut is confirmed in the agent's report, not only in your head. Lesson <a href="0057-stop-conditions.html">4.3</a> covers the sentence that ends the whole run; this one ends only the parts you chose to drop.</p>
+
+<h2>What you may cut, and what you may not</h2>
+<p>You may cut features. You may cut polish, extra pages, edge cases, nice-to-haves — anything a user could live without on day one. What you may not cut is the <em>evidence</em> that the remaining part works: the check command, the live URL you opened, the screenshot you looked at. Lesson <a href="0030-claims-vs-evidence.html">2.2</a> showed that "done" is a claim until you check it, and a smaller task with a real check beats a bigger task with none. After you cut, restate your definition of done for the smaller task (lesson <a href="0055-definition-done-acceptance-criteria.html">4.1</a>), so "done" is not still being graded against the old, bigger plan.</p>
+<div class="callout">
+  <span class="label">The one rule</span>
+  <p>Cut the feature, never the check. A smaller app you verified ships; a bigger app you didn't verify doesn't.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the three parts of a deferral note, and why must a scope cut be said to the agent in words rather than left out of the prompt? Write it in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Name (what is left out), reason (why), trigger (when it comes back). The cut must be said out loud because the agent builds whatever the conversation implies — a silent omission reads as "not asked yet", and half-built leftovers tend to get improved; a named cut is a boundary the agent can see.</p></div>
+</div>
+
+<div class="doit">
+  <span class="label">Do it now: make one cut and write it down</span>
+  <ol>
+    <li><label><input type="checkbox"> Take the task you are working on right now. List three things in it that could be left out.</label></li>
+    <li><label><input type="checkbox"> Pick one. Write its deferral note — name, reason, trigger — in a <code>LATER.md</code> file in your project folder (create the file if it doesn't exist).</label></li>
+    <li><label><input type="checkbox"> Send the agent the "Out of scope" prompt block from this lesson with your chosen item in it, and ask it to repeat the cut back in one line.</label></li>
+    <li><label><input type="checkbox"> Let the task finish at the smaller size, and check the remaining work yourself (open the page, run the check).</label></li>
+    <li><label><input type="checkbox"> Confirm the agent's final report names the LATER.md item, so the cut is on record in both places.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see the agent restate the cut ("settings page is out of scope, it goes on LATER.md"), leave that part untouched, and name the item in its final report. <code>LATER.md</code> should contain one line with a name, a reason, and a trigger. If the agent still works on the cut item, your boundary sentence was buried — put it as its own paragraph, last thing in the prompt, and send it again as a steering message mid-run (lesson <a href="0025-steering-mid-run.html">1.10</a>).</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">A task ends with a feature missing. What makes this a purposeful cut rather than a forgotten one?</p>
+  <button class="opt" type="button">The cut is written down with its reason and trigger.</button>
+  <button class="opt" type="button">You mentioned the piece only once inside one long prompt.</button>
+  <button class="opt" type="button">The agent promised in its reply to do it later.</button>
+  <button class="opt" type="button">You decided the missing piece was not all that important.</button>
+  <div class="why"><p>Only a written deferral note — name, reason, trigger — separates a decision from an accident. A mention in a prompt or a promise in a report is not a record; it vanishes with the session.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Why tell the agent in words what is out of scope, instead of not asking for it at all?</p>
+  <button class="opt" type="button">Telling the agent saves tokens on your very next prompt.</button>
+  <button class="opt" type="button">Boundaries are only needed for tasks that run many hours.</button>
+  <button class="opt" type="button">An agent keeps improving nearby work unless told to stop.</button>
+  <button class="opt" type="button">It makes the agent refuse all further questions from you.</button>
+  <div class="why"><p>The agent acts on what the conversation implies. A silent omission reads as "not asked yet", and half-built leftovers tend to get polished; a named cut is a visible boundary. Token savings and hour counts are not the point.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Which is safe to cut from a task, and which is not?</p>
+  <button class="opt" type="button">Cut a feature, but keep the check the rest needs.</button>
+  <button class="opt" type="button">Cut the check, but keep the feature you asked for.</button>
+  <button class="opt" type="button">Cut the slowest item so you save the most time.</button>
+  <button class="opt" type="button">Cut nothing at all because cutting always breaks the app.</button>
+  <div class="why"><p>Features can be deferred; the evidence that what remains actually works cannot. Cutting the check turns a smaller task into an unverified claim, and cutting nothing defeats the point of the lesson.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a> — the four-part prompt (Goal, Context, Constraints, Done when). Write your cuts into the Constraints line, and the smaller definition of done into "Done when". Written for one tool, but the structure works in any agent.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure what to cut? Ask the agent that gave you this course: <em>"Here is my current task. List three things I could leave out for the first version, with a reason for each, and tell me which one you would cut first."</em> Then write the winner into LATER.md yourself — the decision is yours.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-bea">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as outdated). Retrieved 2026-11-02.</li>
+  <li id="src-ccbp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cxbp">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> cut a task down on purpose, write a deferral note (name, reason, trigger), tell the agent the cut in words, and ship the smaller verified thing.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 5.1 The context window (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

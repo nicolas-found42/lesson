@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Put the link where people look</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.7</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 6 · Lesson 6.7 · First-ship path ★</p>
+  <h1>Put the link where people look</h1>
+  <p class="lede">Your app is live, but most people will not arrive through the link you send them. They will find your repository on GitHub first — so the link has to live on the repository page itself, in the two places eyes go first.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0014-deploy-merge-live.html">6.6 Merged is not live</a></span><span>Win: your repository page points to the live site, and you have checked it yourself</span></div>
+</header>
+<main>
+
+<h2>People open the repo before they open your link</h2>
+<p>Shipping your app means giving people an address. But when someone hears about your app, searches for it, or sees it in a profile, they usually land on the <span class="term" title="The project's home page on GitHub: the file list, the About box, and the rendered README.">repository page</span> — not on your site. GitHub itself says a README <q>is often the first item a visitor will see when visiting your repository</q>.<sup class="cite"><a href="#src-readme">[1]</a></sup> If the link to your live app is only in a chat message, the repository page sends visitors nowhere.</p>
+<p>This lesson is about the two spots on that page where a link earns its keep: the README and the About box. You set both in about two minutes, and lesson 6.6's rule still applies — only put in a link you have verified is actually live.</p>
+
+<h2>The two places people look</h2>
+<p>GitHub renders a file named <code>README.md</code> in the root (or <code>.github</code> or <code>docs</code>) folder below the file list: GitHub will <q>recognize and automatically surface your README to repository visitors</q>.<sup class="cite"><a href="#src-readme">[1]</a></sup> On the right of the same page sits the About box: a one-line description, a Website link, and topics. Topics <q>appear on the main page of a repository</q> and help people find your project.<sup class="cite"><a href="#src-topics">[3]</a></sup></p>
+
+<table class="ref">
+  <thead><tr><th>Place on the repo page</th><th>What it is</th><th>What belongs there</th></tr></thead>
+  <tbody>
+    <tr><td><strong>README, top</strong></td><td>The rendered file shown below the file list.</td><td>The live link as the first line, then what the app does and how to open it.</td></tr>
+    <tr><td><strong>About: description</strong></td><td>One short line under the repo name.</td><td>One sentence saying what the app is, in plain words.</td></tr>
+    <tr><td><strong>About: Website</strong></td><td>A clickable link shown in the sidebar.</td><td>The exact live URL, including the <code>/repository-name/</code> part.</td></tr>
+    <tr><td><strong>About: topics</strong></td><td>Small labels under the Website field.</td><td>Two or three words about the subject, like <code>static-site</code>.</td></tr>
+  </tbody>
+</table>
+
+<h2>What goes in the README, top to bottom</h2>
+<p>A README for a small static app does not need chapters. Four short blocks are enough, and the order matters: a visitor reads from the top and stops as soon as they have what they need.</p>
+<table class="ref">
+  <thead><tr><th>Block</th><th>Content</th><th>Why it sits there</th></tr></thead>
+  <tbody>
+    <tr><td><strong>1. The link</strong></td><td><code>Live site: https://YOUR_USERNAME.github.io/my-app/</code></td><td>It is the one thing most visitors came for.</td></tr>
+    <tr><td><strong>2. What it is</strong></td><td>One or two sentences about what the app does and who it is for.</td><td>Confirms the visitor is in the right place.</td></tr>
+    <tr><td><strong>3. How to open it</strong></td><td>The same URL as a clickable link, plus anything needed to use the app.</td><td>Some readers copy an address; others click a link.</td></tr>
+    <tr><td><strong>4. How it is made</strong></td><td>One line naming the files, such as "Plain HTML, CSS and JavaScript in <code>index.html</code>."</td><td>Helps the next person who edits it.</td></tr>
+  </tbody>
+</table>
+<p>Here is that README for the example app used through this unit, in full:</p>
+<pre>Live site: https://YOUR_USERNAME.github.io/my-app/
+
+A small static app that runs in the browser.
+Open the live site and use the first button you see.
+
+Files: index.html, style.css, app.js.</pre>
+<p>Six lines, counting the blank ones. Nothing in it needs a framework, and nothing in it goes stale the moment you change a colour. The link comes first because a visitor who reads only one line should still get the thing you built.</p>
+<p>Length is not the risk here. GitHub truncates a rendered README past 500 KiB, and a useful one is a few hundred bytes. If your README keeps growing, the extra text probably belongs in a separate file that the README links to.</p>
+
+<h2>The About box in one minute</h2>
+<p>The About box is the sidebar beside the file list: a description, a Website field, and topics. You edit it from the repository's main page, and the same three fields are what <code>gh repo edit</code> changes from a terminal. The description is the sentence a visitor reads while deciding whether to click. Keep it to one line and say what the app is: "Coffee shop notes, rated by visitors" does that job; "A journey into modern web development" does not.</p>
+<p>Topics are discovery labels, not sentences. Use two or three lowercase words joined by hyphens, such as <code>static-site</code>, <code>coffee</code>, or <code>github-pages</code>. GitHub accepts up to 20 topics of 50 characters each, so the limit you reach first is a reader's patience. Three precise topics beat ten vague ones.</p>
+
+<p>The command-line way to set the same fields is <code>gh repo edit</code>, whose own help lists <code>-d, --description</code> as <q>Description of the repository</q> and <code>--homepage</code> as <q>Repository home page URL</q>.<sup class="cite"><a href="#src-ghedit">[2]</a></sup> The web form and the command change the same fields; use whichever you are comfortable with.</p>
+
+<h2>A pattern from real sessions</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to put a small showcase online <em>for friends who are not technical and would not know how to use a repository</em> — and in the same message asked for the link to be written into the README and the repo description. Naming the audience is what made the agent choose the right deliverable: a link in the places non-technical visitors actually look, not instructions about branches.</p>
+  <p>The agent deployed, verified the live URL in a real browser, and only then edited the README and set the description and Website fields. Bundling the follow-up into the same prompt mattered: the agent knew from the start that <em>done</em> included the link in both places, so nothing was left half-finished.</p>
+</div>
+
+<h2>Do it on your own repo</h2>
+<div class="doit">
+  <span class="label">Do it now — on your own live site</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your repository page on GitHub: <code>https://github.com/YOUR_USERNAME/my-app</code>.</label></li>
+    <li><label><input type="checkbox"> Edit <code>README.md</code> and put the live link on the very first line, for example <code>Live site: https://YOUR_USERNAME.github.io/my-app/</code>.</label></li>
+    <li><label><input type="checkbox"> Click the edit icon beside the About box, type a one-sentence description, and paste the same live URL into the Website field.</label></li>
+    <li><label><input type="checkbox"> Add two or three topics, then click Save changes.</label></li>
+    <li><label><input type="checkbox"> Or from a terminal instead: <code>gh repo edit YOUR_USERNAME/my-app --description "One sentence about the app" --homepage "https://YOUR_USERNAME.github.io/my-app/" --add-topic static-site</code>.</label></li>
+    <li><label><input type="checkbox"> Reload the repository page in a private window and click the Website link. It must open your live site, not a 404.</label></li>
+  </ol>
+  <div class="expect">
+    <p>In a private window, the repository page shows your description and a clickable Website link in the About box, the README's first line is the live link, and clicking that link opens the page you verified in lesson 6.6. If the Website link 404s, the address is missing the <code>/repository-name/</code> part — fix the field, not the app.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Or hand it to your agent as one small task</h2>
+<p>The same edit is a good one-message job for your agent. This prompt works in any of the three agents; it names the audience, the two places, and what not to touch.</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>My live site is https://YOUR_USERNAME.github.io/my-app/ and I have already verified that URL opens it.
+
+Update the repository so people find the app from the repo page:
+1. Put "Live site: https://YOUR_USERNAME.github.io/my-app/" as the very first line of README.md.
+2. Set the repository description to one plain sentence about what the app does.
+3. Set the Website (homepage) field to the live URL — you can use `gh repo edit` with --description, --homepage and --add-topic.
+
+Do not change any app files. When done, show me the top of the README and the About box as they now appear. Keep approval prompts on.</pre></div>
+<span class="sidenote">The agent may use the <code>gh</code> command, which needs your GitHub sign-in — approve the prompt when it appears, and never share a password with the agent.</span>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the two places on a repository page where the live link belongs, and say what goes in each. Write it in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The <strong>README</strong> (rendered below the file list) gets the live link as its first line plus a sentence about the app; the <strong>About box</strong> gets a one-line description, the live URL in the Website field, and a few topics. Both are on the repository page — the place many visitors see before ever clicking your link.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">A friend opens your repository page on GitHub. What appears below the file list?</p>
+  <button class="opt" type="button">The rendered README file, if the repo has one.</button>
+  <button class="opt" type="button">Nothing at all when no README file exists there.</button>
+  <button class="opt" type="button">The full commit history of the default main branch.</button>
+  <button class="opt" type="button">Only the star count shown beside the repo name.</button>
+  <div class="why"><p>GitHub surfaces a README from the root, .github or docs folder below the file list. With no README, that area stays empty; commits and stars live elsewhere on the page.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">What belongs in the About box's description and Website fields?</p>
+  <button class="opt" type="button">The repo name, today's date, and the branch name.</button>
+  <button class="opt" type="button">A one-line summary plus the live link as Website.</button>
+  <button class="opt" type="button">A full copy of the entire README pasted again.</button>
+  <button class="opt" type="button">The build log and the last commit message shown.</button>
+  <div class="why"><p>The description is one plain sentence; the Website field is the exact live URL, shown as a clickable link. Pasting the whole README or build logs there defeats the purpose.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">The agent says it updated the README and the repo description. What should you do before sharing the repo with friends?</p>
+  <button class="opt" type="button">Trust the agent and send the repo link immediately.</button>
+  <button class="opt" type="button">Open the repo page and click the Website link.</button>
+  <button class="opt" type="button">Ask the agent to update it twice more, always.</button>
+  <button class="opt" type="button">Open the repo page, then check both spots now.</button>
+  <div class="why"><p>"Done" is a claim. Open the repository page yourself, see the link in the README and the About box, and click the Website link to confirm it reaches the live site.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes">About READMEs</a> — GitHub's own page on what a README is for and where GitHub looks for it. Skim the first section now; the rest can wait.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure which sentence belongs in the description? Ask the agent that gave you this course. Try: <em>"Write a one-line description of my app for the GitHub About box, for friends who are not technical."</em> or <em>"My repo page shows no README — where should the file live?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-readme">GitHub, <a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes">About READMEs</a>. Retrieved 2026-11-02.</li>
+  <li id="src-ghedit">GitHub, <a href="https://cli.github.com/manual/gh_repo_edit">gh repo edit</a> (manual page; flags also confirmed locally with <code>gh repo edit --help</code>, gh 2.102.0). Retrieved 2026-11-02.</li>
+  <li id="src-topics">GitHub, <a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/classifying-your-repository-with-topics">Classifying your repository with topics</a>. Retrieved 2026-11-02.</li>
+  <li id="src-quick">GitHub, <a href="https://docs.github.com/en/pages/quickstart">Quickstart for GitHub Pages</a> (new repos get a README via the "Add README" toggle). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> put the live link in the README and the About box of your repository page, and check both yourself before sharing.</p>
+  <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0081-actions-workflow.html">Previous: Actions workflow</a> · <a href="0083-other-hosts.html">Next: Other hosts</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

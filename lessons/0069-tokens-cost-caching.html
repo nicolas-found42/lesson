@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tokens, cost, and caching: why long sessions get expensive</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 5 · How agents work · Lesson 5.2</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 5 · Lesson 5.2</p>
+  <h1>Tokens, cost, and caching: why long sessions get expensive</h1>
+  <p class="lede">Everything an agent reads or writes is counted in small units called tokens, and you pay for them. A cache keeps repeated reads cheap — until something invalidates it.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0068-context-window.html">5.1 Context window</a></span><span>Win: you can explain why a one-line question in a long session still costs tokens, and what the cache does about it</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your app gets shipped through sessions, and sessions cost. Not always money out of your pocket — a subscription has a usage limit instead — but always attention to something that runs out. The expensive surprise for beginners is a session that ran for hours and ate a whole day's worth of usage, or a one-line question that was billed like a novel. This lesson gives you the mental model to spot both: what a token is, why every turn re-sends everything, and how caching softens the bill.</p>
+
+<h2>What a token is</h2>
+<p>The model does not read words; it reads <span class="term" title="A small chunk of text that the model reads, counts, and bills — roughly a word or part of a word">tokens</span>. A token is a small chunk of text — on the order of a word or a piece of one. Your messages, the files the agent reads, the tool results, and the agent's own answers are all chopped into tokens. Anthropic's cost page states the billing rule plainly: <q>Claude Code charges by API token consumption.</q><sup class="cite"><a href="#src-costs">[1]</a></sup> Lesson <a href="0068-context-window.html">5.1</a> showed that all of this fits into the context window; tokens are the unit that window is measured in, and the unit the bill is measured in.</p>
+
+<h2>Every turn re-sends everything</h2>
+<p>Here is the fact that explains most surprise costs. The model remembers nothing between requests. So on every turn, the agent re-sends the whole conversation: the instructions, your project rules, every message, every tool result, and your new line. Anthropic's caching page describes it exactly: <q>The model doesn't remember anything between requests, so Claude Code re-sends the full context.</q><sup class="cite"><a href="#src-cache">[2]</a></sup> A one-line question in a day-long session still carries the whole day with it. The best-practices page warns that this is <q>discounted while the cache is warm</q> and <q>full price once it expires.</q><sup class="cite"><a href="#src-bp">[3]</a></sup></p>
+
+<h2>The cache: paying once for the unchanged part</h2>
+<p><span class="term" title="Server-side storage of the already-processed start of a request, re-read at a cheaper rate while it stays warm">Prompt caching</span> is the fix, and your agent handles it automatically. Because new content is appended at the end of each request, most of every request is identical to the one before. The API matches the <em>start</em> of the request — the <em>prefix</em> — against what it recently processed, re-reads that part cheaply, and fully processes only what changed: <q>bills the re-read at the cached token rate, and fully processes only what changed.</q><sup class="cite"><a href="#src-cache">[2]</a></sup> The match is exact: <q>a change anywhere in the prefix recomputes everything after it.</q><sup class="cite"><a href="#src-cache">[2]</a></sup></p>
+<p>Two things to know about how the cache behaves. First, it expires after a period of inactivity — the API offers a five-minute lifetime and a one-hour one; each request that hits the cache resets the timer.<sup class="cite"><a href="#src-cache">[2]</a></sup> After a long break, the first turn back reprocesses everything and feels slower. Second, some actions invalidate it mid-session: switching models is the big one, because <q>each model has its own cache.</q><sup class="cite"><a href="#src-cache">[2]</a></sup> So pick your model at the start of a task and leave it there.</p>
+
+<h2>Why the start of a session matters most</h2>
+<p>The cache matches a prefix, so the oldest part of your context is the part most likely to be re-read cheaply. The order of a request works in your favour here. The system prompt and your project rules sit at the very start and rarely change, while your new question arrives at the end. A turn that only appends new text is a turn where almost everything can come from the cache.</p>
+<p>This is also why a large file you read once stays on the bill. Its tokens join the prefix, and every later turn re-sends them: at the cached rate while warm, at full price once the cache expires. Reading a big file you did not need is a cost you keep paying for the rest of the session.</p>
+<p>The same rule explains the cost of a break. Cached prefixes expire after a period of inactivity, and each hit resets the timer. Come back after lunch and the next turn has to process the whole history again. That is why the first turn back can feel slow, and why an idle session is not free to resume. If a task is nearly finished, one sitting is cheaper than leaving it and returning.</p>
+
+<h2>A real pattern, anonymized</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked a one-line question: why did some models in a 3D viewer show no wheels? The agent found the cause in about 90 seconds. The follow-up — "now fix it exactly the way the original software does" — turned into a roughly 20-hour run that consumed about 423 million tokens, of which 99% were served from the cache, with over a thousand tool calls. The cache kept the run cheap per turn, but nothing stopped the run itself. The user's real need had been met in the first two minutes; the cost was in the hours nobody had bounded. Lesson <a href="0058-budgets.html">4.4</a> covers the budget habit that prevents this.</p>
+</div>
+
+<h2>What you can do</h2>
+<p>You do not manage the cache by hand — you manage the things that break it and the habits that grow it:</p>
+<ul>
+  <li><strong>Check usage before assuming.</strong> Ask your agent how much the session has used. In Claude Code, <code>/usage</code> shows token counts and a prompt-cache line reporting the share of input served from cache.<sup class="cite"><a href="#src-costs">[1]</a></sup></li>
+  <li><strong>Start fresh between unrelated tasks.</strong> Anthropic recommends <q>Use /clear to start fresh when switching to unrelated work. Stale context wastes tokens on every subsequent message.</q><sup class="cite"><a href="#src-costs">[1]</a></sup></li>
+  <li><strong>Keep model and effort stable mid-task.</strong> Switching either invalidates the cache and makes the next turn slow and full-price.<sup class="cite"><a href="#src-cache">[2]</a></sup></li>
+  <li><strong>Set a budget in dollars or time.</strong> Lesson <a href="0058-budgets.html">4.4</a> shows how to cap a run so "keep going" cannot become 20 hours.</li>
+</ul>
+
+<div class="doit">
+  <span class="label">Do it in your own session</span>
+  <ol>
+    <li><label><input type="checkbox"> Open (or continue) a session with your agent in your project folder.</label></li>
+    <li><label><input type="checkbox"> Ask: "How many tokens has this session used so far, and what share was served from the cache?"</label></li>
+    <li><label><input type="checkbox"> If your tool has a usage command (Claude Code: type <code>/usage</code>), run it and find the prompt-cache line.</label></li>
+  </ol>
+  <div class="expect"><p><strong>What you should see:</strong> a token count for the session and a cache share, for example "91% of input tokens from cache" — or an honest "my tool does not report this", which is itself useful to learn now.</p></div>
+  <p class="progress"></p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: why does a one-line question in a long session still use many tokens, and what does the cache change about that?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Every turn re-sends the full conversation because the model remembers nothing between requests, so the whole history is counted each time. The cache re-reads the unchanged prefix at a cheaper rate, so only the new part is processed in full — until the cache expires or something like a model switch invalidates it.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">What is a token, in plain words?</p>
+  <button class="opt" type="button">A complete file stored in your project folder</button>
+  <button class="opt" type="button">A small chunk of text the model reads</button>
+  <button class="opt" type="button">One full message you send to the agent</button>
+  <button class="opt" type="button">A command the agent runs in your terminal</button>
+  <div class="why"><p>Tokens are small chunks of text — roughly a word or part of one. Files, messages, and commands are all chopped into tokens before the model reads them, and billing counts tokens.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Why can a one-line question in a long session still cost a lot?</p>
+  <button class="opt" type="button">The agent re-sends the whole conversation on every turn</button>
+  <button class="opt" type="button">Because typing one line takes a long time indeed</button>
+  <button class="opt" type="button">Each answer gets translated into some other language first</button>
+  <button class="opt" type="button">Because long sessions get billed a flat hourly fee</button>
+  <div class="why"><p>The model remembers nothing between requests, so each turn re-sends the full context. Prompt caching re-reads the unchanged prefix cheaply, but only while the cache is warm.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">What usually makes the first turn after a long break slower and pricier?</p>
+  <button class="opt" type="button">The cache expired, so the history is reprocessed in full</button>
+  <button class="opt" type="button">The agent forgot your name and asks again for it</button>
+  <button class="opt" type="button">The terminal window got smaller while you were away now</button>
+  <button class="opt" type="button">Nothing does; a break always makes the later turns cheaper</button>
+  <div class="why"><p>Cached prefixes expire after a period of inactivity. After the lifetime passes, the next request recomputes the full input, which is slower and billed at full price, then the cache rebuilds.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/costs">Manage costs effectively</a> — Anthropic's page on tracking token usage with <code>/usage</code> and reducing it. Written for one tool, but the ideas apply to all three.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Curious what your sessions actually cost? Ask the agent that gave you this course: <em>"Show me this session's token usage and cache hit rate, and explain the biggest number."</em> Then ask: <em>"What would make the next turn a cache miss?"</em></p>
+</div>
+
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-costs">Anthropic, <a href="https://code.claude.com/docs/en/costs">Manage costs effectively (Claude Code docs)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cache">Anthropic, <a href="https://code.claude.com/docs/en/prompt-caching">How Claude Code uses prompt caching</a>. Retrieved 2026-11-02.</li>
+  <li id="src-bp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-api">Anthropic, <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-caching">Prompt caching (API reference)</a> — the underlying mechanism the agent docs point to. Linked 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain what a token is, why every turn re-sends the whole session, how prompt caching makes repeated reads cheap, and what expires or invalidates it.</p>
+  <p>Quick reference: <a href="../reference/agent-loop.html">The agent loop (one page)</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 5.3 Tools (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

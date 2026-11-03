@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup and sign-in: reference</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb">Reference · from <a href="../lessons/0005-install-and-sign-in.html">Lesson 0.5</a></nav>
+<header class="lesson-head">
+  <p class="kicker">Reference card</p>
+  <h1>Setup and sign-in</h1>
+  <p class="lede">Install an agent, sign in, start it in the right folder, and get a page on screen.</p>
+</header>
+<main>
+
+<h2>The order that avoids trouble</h2>
+<ol>
+  <li>Install the program (any folder is fine).</li>
+  <li>Open a <em>new</em> terminal window; the old one keeps the search list it started with.</li>
+  <li>Check the version. That is the only proof the install worked.</li>
+  <li>Start the agent inside a project folder and finish the browser sign-in.</li>
+</ol>
+<div class="callout"><span class="label">Two separate jobs</span><p><strong>Installing</strong> puts the program on disk. <strong>Signing in</strong> links work to your account and stores a credential on that machine. Install and sign-in fail differently: <q>command not found</q> is a PATH problem, not a login problem. See <a href="../lessons/0005-install-and-sign-in.html">lesson 0.5</a>.</p></div>
+
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p><strong>Install</strong> (macOS/Linux, Anthropic's native installer):</p>
+    <pre><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+    <p><strong>Check</strong> in a new window: <code>claude --version</code>. It prints a version plus <code>(Claude Code)</code>.</p>
+    <p><strong>Sign in:</strong> run <code>claude</code> and finish the browser login it opens. Credentials are stored, so later sessions skip the browser. Use <code>/login</code> to switch accounts, <code>/logout</code> to remove the stored credential.</p>
+    <p><strong>Start in a project folder:</strong> <code>cd ~/my-app</code>, then <code>claude</code>. The session's working folder should be the one you meant.</p>
+    <p><strong>First prompt:</strong> use the walkthrough prompt below; approve the write, then the server command.</p>
+    <p><strong>Approval mode:</strong> <code>claude --permission-mode manual</code> stops before edits and commands. <kbd>Shift</kbd>+<kbd>Tab</kbd> cycles modes during a session; the name shows in the status area. Auto mode is the default from v2.1.283, so check it.</p>
+    <p><strong>Settings:</strong> <code>~/.claude/settings.json</code> holds the machine default under <code>permissions</code>; the project rules file is <code>CLAUDE.md</code>.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p><strong>Install</strong> (macOS/Linux):</p>
+    <pre><code>curl -fsSL https://chatgpt.com/codex/install.sh | sh</code></pre>
+    <p><strong>Check:</strong> <code>codex --version</code> prints a line beginning <code>codex-cli</code> and a version number.</p>
+    <p><strong>Sign in:</strong> the first run asks you to choose <em>Sign in with ChatGPT</em> or another listed method. Follow the prompts. <code>codex logout</code> removes the stored credential.</p>
+    <p><strong>Start in a project folder:</strong> <code>cd ~/my-app</code>, then <code>codex</code>. The CLI starts in the folder you launched it from.</p>
+    <p><strong>First prompt:</strong> paste the walkthrough prompt below; approve the write and the server command.</p>
+    <p><strong>Approval mode:</strong> in a version-controlled folder the default pairs the <code>workspace-write</code> sandbox with <code>on-request</code> approvals; network access is off by default. <code>/permissions</code> shows and changes the settings inside a session. OpenAI's own advice for newcomers is to start with the default permissions.</p>
+    <p><strong>Settings:</strong> the project rules file is <code>AGENTS.md</code> at the repository root. The machine-wide config file location is not covered by this course — check the vendor page.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p><strong>Install</strong> (its own shell installer):</p>
+    <pre><code>curl -fsSL https://omp.sh/install | sh</code></pre>
+    <p><strong>Check:</strong> <code>omp --version</code>. If the shell cannot find <code>omp</code>, follow the PATH line the installer printed, open a new terminal, and try again.</p>
+    <p><strong>Sign in:</strong> the first launch opens a setup wizard. Keep the <em>Sign in</em> tab, choose your provider, press Enter, and finish in the browser; then pick a model. <code>/login</code> reopens sign-in for OAuth users; <code>/logout</code> signs out. The local database is not encrypted at rest.</p>
+    <p><strong>Start in a project folder:</strong> <code>cd my-project</code>, then <code>omp</code>. Bare <code>omp</code> opens the interactive terminal UI.</p>
+    <p><strong>First prompt:</strong> paste the walkthrough prompt below; watch the approvals.</p>
+    <p><strong>Approval mode:</strong> change it, because the built-in default is <code>yolo</code>. Use <code>omp --approval-mode write</code> for one session, or set it permanently (next line). Check with <code>omp config get tools.approvalMode</code>.</p>
+    <p><strong>Settings:</strong> <code>~/.omp/agent/config.yml</code>, with <code>tools: approvalMode: write</code>. The project rules file is <code>AGENTS.md</code> at the repository root; user-wide rules can live in <code>~/.omp/agent/AGENTS.md</code>.</p>
+  </div>
+</div>
+<span class="sidenote">Your tab choice is remembered; the names differ, the loop does not. See <a href="../lessons/0002-the-three-agents.html">lesson 0.2</a>.</span>
+
+<h2>The terminal in five commands</h2>
+<table class="ref">
+  <thead><tr><th>You want to</th><th>Type</th><th>What comes back</th></tr></thead>
+  <tbody>
+    <tr><td>Know where you are</td><td><code>pwd</code></td><td>The full path of this folder</td></tr>
+    <tr><td>See what is here</td><td><code>ls</code></td><td>A list of names; <code>ls -a</code> adds dotfiles</td></tr>
+    <tr><td>Move into a folder</td><td><code>cd my-app</code></td><td>Nothing; the prompt changes. <code>cd ..</code> goes up one level</td></tr>
+    <tr><td>Open this folder</td><td><code>open .</code></td><td>A Finder window (macOS)</td></tr>
+    <tr><td>Start a program</td><td>its name, then Enter</td><td>Output, and no prompt until it ends</td></tr>
+  </tbody>
+</table>
+<pre><code>my-app % pwd
+/…/code/my-app
+my-app % ls
+index.html    style.css
+my-app % cd ..
+code % </code></pre>
+<p>No prompt while a server runs is normal, not a freeze; <kbd>Ctrl</kbd>+<kbd>C</kbd> stops it. A returning prompt proves the program ended, not that it worked. Full lesson: <a href="../lessons/0004-the-terminal-in-five-commands.html">0.4</a>.</p>
+
+<h2>First page in sixty seconds</h2>
+<ol>
+  <li><strong>Make a folder and enter it:</strong> <code>mkdir ~/my-first-page &amp;&amp; cd ~/my-first-page</code>. Run <code>pwd</code> to confirm.</li>
+  <li><strong>Start your agent</strong> from inside that folder: <code>claude</code>, <code>codex</code> or <code>omp</code>.</li>
+  <li><strong>Paste this prompt:</strong>
+<pre><code>Build a single web page in this folder. It should show a big heading that says "Hello from my first page" and one sentence under it saying today's date. Keep it to one HTML file with no frameworks or build step.
+
+Then start it on a local server and open it in my browser so I can see it. Tell me the exact address you opened.</code></pre></li>
+  <li><strong>Approve two things:</strong> writing one file, then running one command. Read each prompt; deny anything that reaches outside this folder.</li>
+  <li><strong>Read the address it prints</strong>, usually <code>http://localhost:8000</code>. <strong>localhost</strong> means this computer, so only you can open it; <strong>8000</strong> is the <strong>port</strong>, a numbered doorway on that computer. Your number may differ — trust the printed address.</li>
+  <li><strong>Change one visible thing:</strong> ask it to change the heading, then reload the tab. Stop the server with <kbd>Ctrl</kbd>+<kbd>C</kbd>; the address then stops answering, which is expected.</li>
+</ol>
+<div class="callout"><span class="label">Why serve it?</span><p>Double-clicking gives a <code>file://</code> address and can block linked files. A served page behaves like the one you will publish. See <a href="../lessons/0007-first-prompt-to-a-page.html">lesson 0.7</a> and <a href="../lessons/0008-anatomy-of-a-web-page.html">0.8</a>.</p></div>
+
+<h2>Setup checklist</h2>
+<ul>
+  <li>The version command prints a number in a <em>new</em> window.</li>
+  <li>Sign-in finished in the browser.</li>
+  <li>The agent's first message names the same folder as <code>pwd</code>.</li>
+  <li>Approvals are on; you can name the mode.</li>
+  <li>A page loads at a <code>localhost</code> address you can read.</li>
+  <li>On a shared machine, sign out.</li>
+</ul>
+
+</main>
+<footer class="lesson-foot"><p><a href="../lessons/0005-install-and-sign-in.html">Back to lesson 0.5</a></p></footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

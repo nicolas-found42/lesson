@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swarm research and one reconciled answer</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 9 · Working at scale · Lesson 9.5</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 9 · Lesson 9.5</p>
+  <h1>Fan out the research, reconcile the reports</h1>
+  <p class="lede">Some questions are too big for one pass: which free host fits your app, what an API really returns on error, whether the docs match the code. You can send a swarm of helper agents at the question. The win is not the speed — it is ending with one answer you can defend, contradictions resolved against sources.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0071-subagents.html">5.4 Subagents</a></span><span>Win: you can run a research swarm and turn contradictory reports into one defensible answer</span></div>
+</header>
+<main>
+
+<h2>Why one pass is not enough</h2>
+<p>Before you ship your app you will hit questions no single sitting answers well: "which hosting option actually fits a small free site?", "what does this service return when the request fails?", "do the official docs match what the code does?" One agent searching serially can answer these, but the raw output fills its context window. Anthropic's docs describe the fix: use a subagent <q>when a side task would flood your main conversation with search results, logs, or file contents you won't reference again.</q><sup class="cite"><a href="#src-a1">[1]</a></sup> Each helper works in its own context and returns only a summary, so your main conversation stays readable.<sup class="cite"><a href="#src-a1">[1]</a></sup></p>
+<p>Codex puts the cost on the table: subagent workflows <q>consume more tokens than comparable single-agent runs</q>.<sup class="cite"><a href="#src-b1">[2]</a></sup> So a swarm is a trade — more tokens spent, in exchange for coverage and a clean main session. Spend it on questions that matter, not on trivia.</p>
+<h2>Fanning out: disjoint slices, read-only, with a done-condition</h2>
+<p>The trick is to make the helpers' jobs <em>disjoint</em>: each gets one slice of the question, not the whole question. "How does saving work" and "how do points work" can run in parallel; two helpers reading the same files cannot. Give every helper the same three rules: stay read-only, cite the evidence for every claim (file and line, or URL and date), and end with a list of what you did <em>not</em> check. Then give the swarm a stop condition — a time budget and a definition of done — so "keep looking" cannot become an open-ended run (lesson <a href="0058-budgets.html">4.4 Budgets</a> covers why "until no questions remain" never ends).</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Research this question with a swarm of read-only helpers: [YOUR QUESTION, e.g. "which free hosting option fits my small static app?"]
+Split it into independent slices and give each helper one slice. Rules for every helper: do not edit or create any file; cite file+line or URL+date for every claim; end your report with "NOT verified:" and what you did not check. You have [TIME BUDGET, e.g. 10 minutes]. When all reports are back, do not average or vote — reconcile against the primary sources and give me one answer.</pre></div>
+
+<h2>How each agent runs the swarm</h2>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Claude Code <q>can spawn subagents</q> on its own when a task needs exploring, and you can ask for it in plain words ("use subagents for this research"). Built-in helpers such as <em>Explore</em> are read-only. You can also define custom helpers in <code>.claude/agents/</code> files.<sup class="cite"><a href="#src-a1">[1]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Codex <q>can run subagent workflows by spawning specialized agents in parallel and then collecting their results in one response</q> — ask for delegation directly in your prompt. In the CLI, <code>/subagents</code> shows the running agent threads.<sup class="cite"><a href="#src-b1">[2]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp delegates in ordinary language — state the outcome, what may run in parallel, and the boundaries — and ships bundled read-only specialists such as <em>scout</em>. Completed results are delivered back into the main conversation.<sup class="cite"><a href="#src-c1">[3]</a></sup> Single-vendor documentation; check anything surprising with your teacher.</p>
+  </div>
+</div>
+
+<h2>Worked example</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user sent one short message: "explain exactly how this app's career mode works — use a team of helpers." The parent agent split the question into four slices (menu flow, progression, rewards, saving), launched four read-only helpers, and while they ran, checked a few numbers itself with a small throwaway program. Over the next half hour the reports contradicted each other in several places: two helpers disagreed on where a progress bar ends (450 versus 500), and one claimed a feature paid no rewards while the code clearly did. The parent did the arithmetic, found both numbers were partly right (one was the gate, the other the display), found the rewards code, and sent the helpers about ten targeted corrections. The final answer was a structured explanation plus a "problems found" list and an honest closing line: no full playthrough of the running app was performed. One user message in, one defensible answer out.</p>
+</div>
+<p>Notice the shape: the user named the outcome and the method, the parent reconciled, and the answer said plainly what was still unverified.</p>
+
+<h2>Reconciling contradictory reports</h2>
+<p>Contradictions between helpers are normal, not a failure — they are a signal. The protocol has four steps:</p>
+<ol>
+  <li><strong>Sort the claims.</strong> Group every claim in the reports: agreed by all helpers, contradicted by at least two, or single-source. Also separate what the <em>code</em> says, what the <em>docs</em> say, and what remains <em>unknown</em> — docs go stale, and code is usually the source of truth for behavior.</li>
+  <li><strong>Go to the source for each contradiction.</strong> Open the file on disk, run the command, or read the primary page. Quote the exact line. Never average two numbers, never take a vote, never trust the first answer because it was fastest.</li>
+  <li><strong>Correct the wrong reports.</strong> Send each helper a targeted message: "your claim X is wrong, here is the source, fix your report." This keeps the reports themselves honest for the final synthesis.</li>
+  <li><strong>Answer with the disagreement visible.</strong> State what is agreed, what was contradicted and how it was resolved, and what remains unverified. Claude Code's own best-practices page admits the underlying failure: an agent <q>said it was done and it wasn't quite, usually because it had no way to check its own work.</q><sup class="cite"><a href="#src-a7">[4]</a></sup></li>
+</ol>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Your helpers' reports contradict each other on some claims. For EACH contradiction: open the primary source yourself (file+line, real command output, or the official doc page+date), quote the exact evidence, and say which report was wrong and why. Do NOT average numbers, do NOT vote, do NOT trust the fastest report. Then give me the final answer in three parts: AGREED by all helpers / RESOLVED by source (with the evidence) / STILL UNVERIFIED.</pre></div>
+<span class="sidenote">Even your reconciliation check can be wrong. If the stakes are high, run a deliberate negative control — break one claim on purpose and confirm your check catches it (lesson <a href="0039-checker-can-be-wrong.html">2.11</a>).</span>
+
+<h2>Guardrails</h2>
+<div class="warn">
+  <span class="label">Three ways swarms go wrong</span>
+  <p><strong>Time:</strong> the slowest helper sets the pace; give the swarm a budget and be ready to say "deliver now, no more searching." <strong>Files:</strong> if helpers save report files into your project folder, your next commit sweeps them in — have them report in chat, or into a scratch folder you delete. <strong>Drift:</strong> a research question can quietly turn into a build ("while you're in there…"). When it does, stop and restate the goal in one sentence before the next message (lesson <a href="0056-scope-creep-scope-ladder.html">4.2</a>). Keep approval prompts on throughout.</p>
+</div>
+
+<h2>Try it yourself</h2>
+<div class="doit">
+  <span class="label">Try it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Pick one real research question about your app — for example "which free host fits a small static site, and what are its limits?".</label></li>
+    <li><label><input type="checkbox"> Paste the swarm prompt above, fill in the question and a 10-minute budget, and send it.</label></li>
+    <li><label><input type="checkbox"> Watch the agent start several helpers and return short reports, not raw search output.</label></li>
+    <li><label><input type="checkbox"> Paste the reconciliation prompt and ask for the AGREED / RESOLVED / STILL UNVERIFIED breakdown.</label></li>
+    <li><label><input type="checkbox"> Check that no project file changed during the research (your version-control status should be clean).</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see the agent fan out to several read-only helpers, then come back with one answer that cites sources, names any contradictions it found and how it resolved them against the primary source, and ends with a STILL UNVERIFIED list. Your project files should be unchanged.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the four steps of reconciling contradictory reports, and why is averaging two conflicting numbers never the answer?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Sort claims (agreed / contradicted / single-source, and code vs docs vs unknown), check each contradiction against the primary source with an exact quote, send targeted corrections to the wrong helpers, and answer with AGREED / RESOLVED / STILL UNVERIFIED. Averaging invents a number nobody observed; the source decides.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">Four helpers research the same question; three report X, one reports Y. What should you do?</p>
+  <button class="opt" type="button">Take a majority vote between the helpers and move on</button>
+  <button class="opt" type="button">Go back to the source and let the evidence decide</button>
+  <button class="opt" type="button">Trust the first helper that answered, since it was fastest</button>
+  <button class="opt" type="button">Ask the helpers to debate until one of them concedes</button>
+  <div class="why"><p>Majority, speed, and debate do not find the truth. The file on disk, a command's real output, or the primary doc page does — then the wrong report gets corrected.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">Besides its findings, what must every helper's report include?</p>
+  <button class="opt" type="button">What it did NOT check, listed plainly at end</button>
+  <button class="opt" type="button">The full raw log of every search it performed</button>
+  <button class="opt" type="button">A confidence score from zero up to one hundred</button>
+  <button class="opt" type="button">A promise that every claim in it is true</button>
+  <div class="why"><p>The "NOT verified" list is what makes the final answer honest — it tells you where the swarm did not actually look, instead of a promise that means nothing.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">When reports contradict, what should the final answer state?</p>
+  <button class="opt" type="button">Only the winning claim, hidden from the user completely</button>
+  <button class="opt" type="button">An average of all reported numbers with no explanation</button>
+  <button class="opt" type="button">Which claims agree, which clash, and what is unverified</button>
+  <button class="opt" type="button">Whatever the fastest helper reported, since speed means truth</button>
+  <div class="why"><p>A defensible answer shows its work: what all helpers agreed on, what was contradicted and how the source resolved it, and what is still unverified.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">When is a research swarm the wrong tool?</p>
+  <button class="opt" type="button">When every slice is fully independent and only reads files</button>
+  <button class="opt" type="button">When one quick search would answer the whole question alone</button>
+  <button class="opt" type="button">When helpers would need to write to shared report files</button>
+  <button class="opt" type="button">When steps must edit the same file one after another</button>
+  <div class="why"><p>Sequential edits to one file gain nothing from parallel helpers and risk collisions; small questions cost more tokens than they save. Independent read-only slices are exactly what a swarm is for.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/sub-agents">Subagents</a> — Anthropic's page on how helpers get their own context window, their own tool limits, and return only a summary. Written for one tool, but the fan-out idea applies to all three agents in this course.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me a swarm research run on my project"</em> or <em>"What would you do if two of my helpers disagree about a limit?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/agents">Create custom subagents</a> and <a href="https://code.claude.com/docs/en/sub-agents">Subagents</a> (Claude Code docs). Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/subagents">Subagents</a> (Codex docs). Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/subagents">Subagents &amp; Agent Hub</a> (omp docs). Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> fan a big research question out to a swarm of read-only helpers, and reconcile contradictory reports into one answer that shows what is agreed, resolved, and still unverified.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: <a href="0114-agent-as-scheduler.html">9.6 Agent as scheduler (coming)</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

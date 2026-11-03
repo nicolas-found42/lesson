@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accessibility basics: targets, keyboard, reduced motion</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.20</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.20</p>
+  <h1>Accessibility basics: targets, keyboard, reduced motion</h1>
+  <p class="lede">Your app will be used by people with shaky hands, sore eyes, and a dislike of spinning screens. The agent will not fix any of this on its own — but it can, in one prompt, if you know the three things to ask for.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="../lessons/0008-anatomy-of-a-web-page.html">0.8 Anatomy of a web page</a></span><span>Win: you can ask the agent to check your app for the three beginner accessibility basics — and check one yourself in ten seconds</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>You are building an app for real people, and real people are more varied than you might picture. Some cannot press a small button accurately because of tremors. Some cannot use a mouse at all and rely on the keyboard. Some get dizzy or nauseous when things slide and pulse across the screen. If your app ignores them, they leave. None of the agent's own checks will notice, because its tests click the way a careful machine clicks, not the way a human hand does.</p>
+<p>The good news: the three most common basics are cheap, they are concrete, and an agent can verify most of them itself. You only need to know what to ask for.</p>
+
+<span class="term">Accessibility</span> means your app works for people who see, move, or hear differently than you. This lesson covers three beginnings: <em>target size</em>, <em>keyboard operation</em>, and <em>reduced motion</em>. There is much more — labels, contrast, screen readers — and lesson neighbours and the glossary point onward. Master these three first.
+
+<h2>Targets: buttons big enough to press</h2>
+<p>A <em>target</em> is anything a pointer can press: a button, a link, an icon, a checkbox. If two targets are small and sit close together, a person with limited fine motor control presses the wrong one, over and over. This is not an edge case in your own testing — it shows up the first time a real user tries your app on a phone with one thumb.</p>
+<p>The web standard WCAG, the Web Content Accessibility Guidelines, sets a floor. Its "Target Size (Minimum)" rule sets a floor. A target's hit area <q>for pointer inputs is at least 24 by 24 CSS pixels,</q> or the small targets must be spaced so their hit areas do not overlap.<sup class="cite"><a href="#src-wcag">[1]</a></sup> A CSS pixel is the browser's own unit of screen distance — roughly one pixel of a typical laptop screen. The rule also explains why: <q>Some people with physical impairments cannot click small buttons that are close together.</q><sup class="cite"><a href="#src-wcag">[1]</a></sup></p>
+<div class="recall">
+  <span class="label">Before you read on</span>
+  <p>Without scrolling back: name the three accessibility basics this lesson covers. Say each one out loud, then continue.</p>
+</div>
+<p>Agents love tiny icons packed edge to edge, because they look tidy. That is exactly the pattern this rule exists to catch.</p>
+
+<h2>Keyboard: everything works without a mouse</h2>
+<p>Some users never touch your mouse-friendly layout at all. WebAIM's guide is blunt: <q>Ensure that all content can be accessed with the keyboard alone.</q> It lists who: people with tremors or little use of their hands, blind users who navigate by keyboard, and plenty of people who prefer it.<sup class="cite"><a href="#src-webaim">[3]</a></sup></p>
+<p>The keyboard test is mechanical, which makes it perfect for an agent. Press <strong>Tab</strong> to move through the controls in order. Every control must be reachable, in a sensible order, and it must be obvious where you are. That obviousness is the <em>focus indicator</em> — usually an outline drawn around the current control. Browsers draw one for you, and a recurring agent mistake is deleting it for a cleaner look. WebAIM's warning: <q>Avoid <code>outline:0</code> or <code>outline:none</code> or other styles that remove or limit visibility of keyboard focus indicators.</q><sup class="cite"><a href="#src-webaim">[3]</a></sup> Native HTML elements like <code>&lt;button&gt;</code> and <code>&lt;a href&gt;</code> already work with the keyboard; hand-rolled clickable <code>&lt;div&gt;</code>s often do not — a detail from lesson 0.8 that suddenly earns its keep.</p>
+
+<h2>Reduced motion: respect the system setting</h2>
+<p>Operating systems have a switch that asks every app to calm its animations. The reason is physical: <q>animations such as scaling or panning large objects can be vestibular motion triggers</q> — they can genuinely make people dizzy or sick.<sup class="cite"><a href="#src-mdn">[2]</a></sup> On a Mac, look under System Settings, Accessibility, then <em>Reduce motion</em>. Every major platform has an equivalent.<sup class="cite"><a href="#src-mdn">[2]</a></sup></p>
+<p>A web page can honour that request with one CSS media feature, <code>prefers-reduced-motion</code>. MDN says it detects <q>if a user has enabled a setting on their device to minimize the amount of non-essential motion,</q> and a page that honors it <q>removes, reduces, or replaces motion-based animations</q>.<sup class="cite"><a href="#src-mdn">[2]</a></sup> Note the shape: the user sets one switch on their device, and every well-built page responds. Your job is to make sure your page is well-built.</p>
+<div class="compare">
+  <div class="bad">
+    <span class="label">What the agent ships by default</span>
+    <p>Everything slides, scales, and pulses because it demos well. Targets are 18-pixel icons in a tight row. Click handlers live on plain divs, so Tab skips half the controls, and the one focus outline was removed to keep the design "clean".</p>
+  </div>
+  <div class="good">
+    <span class="label">What you asked for</span>
+    <p>Buttons are 24-by-24 CSS pixels or larger. Tab reaches every control with a visible outline. Animations tone down when the system asks for reduced motion. It looks nearly identical — and a whole group of people can now actually use it.</p>
+  </div>
+</div>
+
+<h2>One prompt covers all three</h2>
+<p>You do not need to know CSS to ask for this. Paste this into your agent with your app's folder open:</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Check my app against three accessibility basics and fix what fails:
+
+1. Targets: every clickable control is at least 24 by 24 CSS pixels, or has
+   enough spacing that its hit area does not overlap another control.
+2. Keyboard: every control is reachable with the Tab key, in a sensible
+   order, with a visible focus indicator. Do not remove focus outlines.
+3. Reduced motion: when the system prefers-reduced-motion setting is on,
+   large or repeating animations tone down or stop.
+
+After changing anything, tell me how you checked each point, and name
+anything you could not verify without a human trying it.</pre></div>
+<p>The last line matters. Lesson 2.2 taught you that "done" is a claim. Here the agent can verify sizes and code automatically. Whether it <em>feels</em> usable still needs your hands on it. That is the split to keep in mind.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to build a dashboard with many live panels. The user wanted it usable by a relative with low motor skills. The agent ran an accessibility pass. It enlarged the small controls, made every panel reachable by keyboard, and added confirmation dialogs before destructive actions. The user then pasted a screenshot of a glitch the agent's own tests had not caught. Automated checks cover the mechanics; a human catches what the screen actually shows.</p>
+</div>
+<span class="sidenote">In another session, a user refining a visual app was asked, as one design question among many, how motion should behave. The user accepted the recommended default — honour the system's reduced-motion setting — without needing to know any CSS. Asking beats knowing.</span>
+
+<h2>Try it in your own app</h2>
+<div class="doit">
+  <span class="label">Your turn — about 10 minutes</span>
+  <ol>
+    <li><label><input type="checkbox"> Start your agent in your app's folder, keeping approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Paste the prompt above. Approve its reads; approve edits one by one and watch what it changes.</label></li>
+    <li><label><input type="checkbox"> Open your app. Press Tab repeatedly from the top of the page. Watch the focus outline hop from control to control.</label></li>
+    <li><label><input type="checkbox"> Ask the agent to turn the page's animations on and to play a short animation — then turn on Reduce motion in System Settings (Accessibility, then Motion on a Mac) and reload. The animation should tone down or stop.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see the outline move to every control in a stable, sensible order, and the big animations gone or gentle after the Reduce motion switch flips. If Tab skips a control or lands somewhere invisible, say exactly that to the agent — you now speak its language: "Tab from the top skips the settings button, and nothing shows where focus is."</p>
+  </div>
+  <p class="progress"></p>
+</div>
+<div class="warn">
+  <span class="label">Do not stop checking after the agent says "fixed"</span>
+  <p>Size rules can be checked automatically; "a real hand can hit this" cannot. Ten seconds of Tabbing yourself is the cheapest verification in this whole course. Lesson 2.7 covers why a real browser beats simulated checks.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">The WCAG minimum for a pressable target's size is which of these?</p>
+  <button class="opt" type="button">At least 6 by 6 CSS pixels for every single target.</button>
+  <button class="opt" type="button">At least 60 by 60 CSS pixels for every single target.</button>
+  <button class="opt" type="button">At least 24 by 24 CSS pixels for every single target.</button>
+  <button class="opt" type="button">At least 12 by 12 CSS pixels for every single target.</button>
+  <div class="why"><p>The minimum is 24 by 24 CSS pixels, unless small targets are spaced so their hit areas never overlap. Six and twelve are far too small; sixty is a stricter goal, not the minimum.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">Why should your app work using only the keyboard?</p>
+  <button class="opt" type="button">Many users with motor disabilities rely on a keyboard.</button>
+  <button class="opt" type="button">Keyboards are always faster than any mouse could be.</button>
+  <button class="opt" type="button">Browsers refuse to load any pages without keyboard support.</button>
+  <button class="opt" type="button">Mouse support is optional in every modern browser today.</button>
+  <div class="why"><p>WebAIM lists tremors, little or no use of the hands, blind users, and simple preference. The other options are invented consequences, not reasons.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">A visitor turns on their system's Reduce motion switch. What happens on a well-built page?</p>
+  <button class="opt" type="button">The page reloads and every animation plays twice as fast.</button>
+  <button class="opt" type="button">Nothing at all, because that switch only affects native apps.</button>
+  <button class="opt" type="button">The visitor must install a browser extension to calm animations.</button>
+  <button class="opt" type="button">Large or repeating animations tone down or get fully replaced.</button>
+  <div class="why"><p>The <code>prefers-reduced-motion</code> media feature lets your CSS answer the device setting, so motion is removed, reduced, or replaced. The switch works for the web; the page just has to listen.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">Your agent says it made the app accessible. Best next move?</p>
+  <button class="opt" type="button">Trust the claim, because such rules are all machine checkable.</button>
+  <button class="opt" type="button">Tab through the app yourself and watch the focus outline.</button>
+  <button class="opt" type="button">Delete your keyboard and check the app using a mouse.</button>
+  <button class="opt" type="button">Ask the agent to rerun every check until all passes.</button>
+  <div class="why"><p>The agent can check sizes and code, but a human hand proves the feel. Tabbing for ten seconds finds skipped controls and invisible focus faster than re-running any automated check.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html">Understanding SC 2.5.8: Target Size (Minimum)</a> — the official W3C explanation of the 24-pixel rule, with illustrations of when small buttons pass or fail. Skim the pictures; the "why it's important" paragraph is short.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Try: <em>"Why does a fast animation make some people dizzy?"</em> or <em>"Show me a button that fails the 24-pixel rule"</em>. Your agent can draw the failing case; that is often clearer than the rule.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-wcag">W3C Web Accessibility Initiative, <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html">Understanding SC 2.5.8: Target Size (Minimum)</a>, WCAG 2.2. Retrieved 2026-11-02.</li>
+  <li id="src-mdn">MDN, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion">prefers-reduced-motion CSS media feature</a>. Retrieved 2026-11-02.</li>
+  <li id="src-webaim">WebAIM, <a href="https://webaim.org/techniques/keyboard/">Keyboard Accessibility</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name the three basics, ask the agent to check targets, keyboard and reduced motion in one prompt, and verify the keyboard part yourself in ten seconds.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 9.1 Spec, tickets, dependency graph (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

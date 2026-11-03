@@ -21,7 +21,7 @@
 
 <h2>A plan is not an edit</h2>
 <p>A <strong>plan</strong> is a proposal written in words: the steps the agent intends to take, the files it expects to touch, and how it will know the result worked. It changes nothing on disk. An <strong>edit</strong> is a tool call that rewrites a file. The distinction is not philosophical. It is the difference between reading a menu and eating the meal.</p>
-<p>All three agents can hold at that line. Claude Code's plan mode <q>tells Claude to research and propose changes without making them</q>, and <q>edits stay blocked until you approve the plan</q>.<sup class="cite"><a href="#src-cc-pm">[1]</a></sup> Codex documents the same move as a command whose purpose is to <q>propose an execution plan before implementation work starts</q>.<sup class="cite"><a href="#src-cx-cmd">[2]</a></sup> In omp, once planning starts, <q>the next turn explores and drafts rather than implements</q>.<sup class="cite"><a href="#src-omp-plan">[3]</a></sup> The names differ; the shape is identical.</p>
+<p>All three agents can hold at that line. Claude Code's plan mode <q>tells Claude to research and propose changes without making them</q>, and <q>edits stay blocked until you approve the plan</q> — the one exception being a session where you have already switched bypass permissions on.<sup class="cite"><a href="#src-cc-pm">[1]</a></sup> Codex documents the same move as a command whose purpose is to <q>propose an execution plan before implementation work starts</q>.<sup class="cite"><a href="#src-cx-cmd">[2]</a></sup> In omp, once planning starts, <q>the next turn explores and drafts rather than implements</q>.<sup class="cite"><a href="#src-omp-plan">[3]</a></sup> The names differ; the shape is identical.</p>
 
 <p>You can also get the same effect without any special mode, by asking for a plan and saying "do not edit anything yet". That works in every version of every tool, including ones released after this course was written. The modes exist to make the pause harder to lose by accident, not because the pause needs machinery.</p>
 
@@ -98,17 +98,17 @@ questions" line at the end of the plan instead of guessing.</pre>
 
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
     <p>Plan mode is a permission mode: press <kbd>Shift</kbd>+<kbd>Tab</kbd> until the status bar reads <code>⏸ plan mode on</code>, or start with <code>claude --permission-mode plan</code>.<sup class="cite"><a href="#src-cc-pm">[1]</a></sup> Its own workflow guide summarises the deal: Claude <q>reads files and proposes a plan but makes no edits until you approve</q>.<sup class="cite"><a href="#src-cc-cw">[4]</a></sup> When the plan is ready you choose how to proceed. Pick <em>Yes, manually approve edits</em> so you keep reviewing each change; the other option hands editing to a mode that no longer asks. <kbd>Ctrl</kbd>+<kbd>G</kbd> opens the plan in your text editor if you would rather rewrite it directly.<sup class="cite"><a href="#src-cc-pm">[1]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
     <p>Type <code>/plan</code> and press Enter to switch the active chat into plan mode; you may add the request after it on the same line.<sup class="cite"><a href="#src-cx-cmd">[2]</a></sup> The command is unavailable while Codex is already working, so use it before the turn that would start editing. Your approval settings from lesson 0.6 are untouched by planning.</p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
     <p>Type <code>/plan</code> with the request, or on its own and then describe the task; the default chord is <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>.<sup class="cite"><a href="#src-omp-plan">[3]</a></sup> The draft opens in a review screen where you can annotate sections or delete them, and <code>/plan-review</code> reopens the latest draft. Approval starts implementation immediately, and <em>Save and quit</em> writes the plan to a file and executes nothing.<sup class="cite"><a href="#src-omp-plan">[3]</a></sup></p>
   </div>
 </div>

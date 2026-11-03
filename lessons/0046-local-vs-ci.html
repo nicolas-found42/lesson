@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local vs CI: skipped locally, failed in the cloud</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.12</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.12</p>
+  <h1>Local vs CI: skipped locally, failed in the cloud</h1>
+  <p class="lede">Your checks passed on your laptop. Then the pull request went red. Nothing is broken in your code and nothing is lying to you: two different computers ran two different sets of checks.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0031-test.html">2.3 What a test is</a> · <a href="0045-pull-request.html">3.7 The pull request</a></span><span>Win: you can tell a real pass from a skipped one, and read a CI failure</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You have a pull request open. On the pull request page, GitHub shows a list of checks, and those checks decide whether the merge button is available.<sup class="cite"><a href="#src-sc">[1]</a></sup> They do not run on your laptop. They run on a machine that GitHub builds for your change, and that machine has never seen your laptop.</p>
+<p>Sooner or later you will meet the confusing case: everything passed at home, and the pull request is red. Beginners read that as "the tool is broken". It is usually the opposite. The cloud run caught something your local run could not, because it was never really running the same checks. This lesson teaches you to see the difference and to close it.</p>
+
+<h2>Two computers, one repository</h2>
+<p><strong>Continuous integration</strong> (CI) is the practice of running the project's checks automatically every time code is pushed to a shared repository. GitHub's documentation describes it as <q>a software practice that requires frequently committing code to a shared repository.</q><sup class="cite"><a href="#src-ci">[2]</a></sup> It also names the split you are about to feel: <q>Building and testing your code requires a server. You can build and test updates locally before pushing code to a repository, or you can use a CI server that checks for new code commits in a repository.</q><sup class="cite"><a href="#src-ci">[2]</a></sup></p>
+<p>On GitHub, those servers are called runners, and the fresh start is deliberate: <q>If you use a GitHub-hosted runner, each job runs in a fresh instance of a runner image specified by runs-on.</q><sup class="cite"><a href="#src-wf">[3]</a></sup> Read that sentence as a list of what the cloud run does <em>not</em> have. It does not have the tool you installed by hand last week. It does not have the file you forgot to commit. It does not have the test database left over from your third attempt yesterday.</p>
+
+<div class="compare">
+  <div class="bad">
+    <span class="label">On your laptop</span>
+    <p>Your whole folder, including untracked and ignored files. Every tool you ever installed. Whatever a previous run left behind: caches, a local database, downloaded packages.</p>
+    <p>Checks can silently skip when something is missing. The run still ends green.</p>
+  </div>
+  <div class="good">
+    <span class="label">On the CI machine</span>
+    <p>Only the files in the commit, on a fresh machine image, with the software that image happens to include. Nothing you added by hand travels with a push.</p>
+    <p>Every job starts clean, every time, for every push.<sup class="cite"><a href="#src-wf">[3]</a></sup></p>
+  </div>
+</div>
+
+<p>Neither side is wrong. The cloud run is a second opinion, and it is stricter because it is emptier. When the two disagree, the disagreement itself is information: something exists on one side and not the other. Your job is to find which.</p>
+
+<h2>Skipped is not passed</h2>
+<p>This is the part that catches almost everyone. A skipped test did not run. Node's test runner says it plainly: individual tests can be skipped with <q>the skip option</q>, and in its example the skipped body is marked <q>This code is never executed.</q><sup class="cite"><a href="#src-node">[4]</a></sup> Yet the run still finishes successfully. Node's own rule: <q>If any tests fail, the process exit code is set to 1.</q><sup class="cite"><a href="#src-node">[4]</a></sup> A skip is not a failure, so the exit code stays 0 and the gate looks green.</p>
+<p>GitHub reproduces the same courtesy one level up: <q>A job that is skipped will report its status as "Success".</q><sup class="cite"><a href="#src-sc">[1]</a></sup> The documentation adds that a skipped job <q>will not prevent a pull request from merging, even if it is a required check.</q><sup class="cite"><a href="#src-sc">[1]</a></sup> So a check that quietly declines to run counts as passed, in the summary, in the merge button, and in the sentence the agent reports back to you.</p>
+
+<div class="callout">
+  <span class="label">The one line to look for</span>
+  <p>A pass is not one word. A real pass has counts: how many checks ran, how many passed, how many failed, how many were skipped. If the summary says "skipped" anywhere, you have not yet learned whether that check works.</p>
+</div>
+
+<h2>A worked example, run for this lesson</h2>
+<p>A small site with two tests. The second test runs an HTML checker if the checker is installed, and skips itself otherwise. That guard is a common, reasonable-looking habit. Here is the same code on both machines (output shortened; the real run was executed in a throwaway folder for this lesson).</p>
+
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>python3 -m unittest -v&nbsp;&nbsp;<span class="note">(your laptop)</span></span></div>
+  <div class="row tool"><span class="who">tool</span><span>test_html_is_valid ... skipped 'htmlcheck is not installed'<br>test_title_present ... ok<br>Ran 2 tests &nbsp; OK (skipped=1)</span></div>
+  <div class="row note"><span class="note">Exit code 0. Every check that ran, passed. One check never ran.</span></div>
+  <div class="row you"><span class="who">you</span><span>same command&nbsp;&nbsp;<span class="note">(the CI machine, checker installed)</span></span></div>
+  <div class="row tool"><span class="who">tool</span><span>test_html_is_valid ... FAIL<br>AssertionError: 1 != 0 : index.html: &lt;img&gt; is missing an alt attribute<br>FAILED (failures=1)</span></div>
+  <div class="row note"><span class="note">Exit code 1. The test that had never run locally failed immediately.</span></div>
+</div>
+
+<p>Nothing changed in the code between those two runs. The only difference was a small checker tool that happened to exist on the CI machine and not on the laptop. The skip guard turned "I cannot check this" into "nothing to report", and that is how a green laptop run hides a real defect.</p>
+<p>Notice also whose fault the red check is: not the cloud's. The bug was always there. The local run had no opinion about it.</p>
+
+<h2>Reading the failure without guessing</h2>
+<p>Open the pull request and click the failing check. GitHub keeps a log for every job, and each step in it. The useful lines are near the first error, not at the end: the last lines are usually a summary that repeats the count.</p>
+<p>You can also read it from the terminal, which is handy when your agent is the one looking. GitHub's own instructions for the command-line tool are: <q>To view the full log for a job, use the --log flag.</q><sup class="cite"><a href="#src-run">[5]</a></sup> The same page shows <q>gh run view --job JOB_ID --log</q> and the <code>--exit-status</code> flag, documented as <q>exit with a non-zero status if the run failed</q>.<sup class="cite"><a href="#src-run">[5]</a></sup> The installed command-line tool also offers <code>--log-failed</code>, which shows only the failed steps, and <code>gh pr checks</code> for the checks on a pull request, with a separate exit code 8 while checks are still pending (checked on this Mac, version 2.102.0).</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user's change touched only documentation. The pull request still turned red, because one browser test timed out on the cloud machine and passed on the laptop. The agent did the right things: it reran the job, then repeated the test locally many times without a single failure, then said plainly that it could not prove the cause. That honest sentence is worth more than a green tick. A check that fails on one machine and passes on another, on the same commit, is called <strong>flaky</strong>, and it is a different problem from the one in this lesson — <a href="0039-checker-can-be-wrong.html">2.11</a> covers it.</p>
+</div>
+
+<h2>The habit: find the difference, then re-run the same check</h2>
+<p>When local passed and CI failed, do not ask the agent to "fix CI". Ask it to explain the gap. Three questions, in this order, resolve almost every case:</p>
+<ol>
+  <li><strong>Did this check run on my machine at all?</strong> If the answer is "it was skipped", you have found the gap. Remove the skip guard, or install what it was waiting for, and run again.</li>
+  <li><strong>What does the CI machine have that mine does not, or the reverse?</strong> A tool, a version, a file that was never committed, an environment value. The fresh runner makes this list short and readable.</li>
+  <li><strong>What is the first error line?</strong> Not the summary. The first line that names a file, a test, or a missing thing is where the work starts.</li>
+</ol>
+<p>Then run the <em>same</em> command locally, and compare the counts. A check that skips in both places is still unverified, even after the pull request is green.</p>
+
+<div class="prompt">
+<span class="label">Prompt to paste into your agent</span>
+<p>Read the failing check on this pull request. Before changing any code, tell me four things: which job failed; the first error line in its log; whether that same check ran on my machine or was skipped; and what exists on the CI machine that I am missing locally. Quote the log lines you used. Then propose the smallest change that makes the check run the same way on both.</p>
+</div>
+
+<p>That wording matters because of a habit you already met in <a href="0030-claims-vs-evidence.html">2.2</a>: "the tests pass" is a claim, and a claim with counts and a command attached is evidence. If the agent cannot produce the counts, it does not know.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: why can a run that says <code>OK (skipped=1)</code> still be hiding a broken check? And why does GitHub treat a skipped required check as a pass?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Because a skip means the test body never executed, and neither the test runner nor GitHub counts "did not run" as a failure. The runner exits with code 0 when nothing failed; the skipped job reports its status as "Success". Both summaries describe the checks that ran, not the checks that did not.</p></div>
+</div>
+
+<h2>Do this with your own project</h2>
+<div class="doit">
+  <ol>
+    <li><label><input type="checkbox"> In your project folder, ask your agent: <em>"Run our checks and show me the full summary line, including any skipped count."</em> Keep the output.</label></li>
+    <li><label><input type="checkbox"> Push a branch and open a pull request, as in <a href="0045-pull-request.html">3.7</a>. Wait for the checks to finish. You want the finished list, not a spinner.</label></li>
+    <li><label><input type="checkbox"> Compare the two lists side by side. Write down every name that appears on only one side, and every item marked skipped.</label></li>
+    <li><label><input type="checkbox"> For each skipped item, ask: <em>"Why did this skip, and what would it check if it ran?"</em> Do not accept "it is optional" as the answer.</label></li>
+    <li><label><input type="checkbox"> If a check is missing on your machine only, install what it needs or delete the guard that skips it, then run again. The goal is the same check in both places.</label></li>
+  </ol>
+  <div class="expect"><p>You should end with a short table: check name, ran locally, ran in CI, skipped anywhere. At least one row will surprise you. That row is the lesson. A typical first result looks like "3 checks in CI, 2 on my laptop, 1 skipped in both", which is exactly the gap this lesson is about.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your checks pass locally, but the pull request shows a failing check. What is the most likely cause?</p>
+  <button class="opt" type="button">The cloud machine is a fresh computer with different tools</button>
+  <button class="opt" type="button">The cloud machine keeps an older copy of your app</button>
+  <button class="opt" type="button">The pull request is merged, so its checks all stopped</button>
+  <button class="opt" type="button">Your local run ignored a file the cloud machine sees</button>
+  <div class="why"><p>CI runs on a fresh machine image with only your committed files and whatever software that image includes. Your hand-installed tools and untracked files do not travel with the push, so the two runs are not the same run.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A test summary reads <code>OK (skipped=1)</code>. What does that tell you?</p>
+  <button class="opt" type="button">One test failed quietly but was dropped from the final count</button>
+  <button class="opt" type="button">All of the tests ran, although one took far too long</button>
+  <button class="opt" type="button">The run is incomplete and must be started again from scratch</button>
+  <button class="opt" type="button">One test never executed, yet the run still came back green</button>
+  <div class="why"><p>A skip means the test body was not executed, and a skip is not a failure, so the process exit code stays 0. The summary reports a green gate over a check you have not actually run.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">CI failed on a check your laptop passed. What is the best next request to your agent?</p>
+  <button class="opt" type="button">Rerun the failing job until it happens to turn green</button>
+  <button class="opt" type="button">Delete the failing check so the pull request can merge</button>
+  <button class="opt" type="button">Explain the gap, then make both machines run the check</button>
+  <button class="opt" type="button">Push the same commit again and assume it was unlucky</button>
+  <div class="why"><p>The disagreement is the information. Ask which check ran where, what differs between the machines, and what the first error line says; then make the check run identically in both places. Rerunning first hides a real defect.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/actions/get-started/continuous-integration">Continuous integration, GitHub Docs</a> — two screens of plain description of what CI is and where it runs. Read the section "About continuous integration using GitHub Actions"; skip the template suggestions at the end. Then, when a check goes red, use the shorter <a href="https://docs.github.com/en/actions/how-tos/monitor-workflows/view-workflow-run-history">run history page</a> as a lookup for the log commands.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me the exact difference between my last local run and the last CI run, check by check"</em> or <em>"Find every place in this project where a check can skip itself."</em> The second question usually finds one nobody meant to leave in.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-sc">GitHub, <a href="https://docs.github.com/en/pull-requests/reference/status-checks">Status checks</a>. Retrieved 2026-11-02. Used for what status checks are and the skipped-job rule.</li>
+  <li id="src-ci">GitHub, <a href="https://docs.github.com/en/actions/get-started/continuous-integration">Continuous integration</a>. Retrieved 2026-11-02. Used for the definition of CI and the local-versus-server split.</li>
+  <li id="src-wf">GitHub, <a href="https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax">Workflow syntax for GitHub Actions</a>. Retrieved 2026-11-02. Used only for the fresh-runner sentence.</li>
+  <li id="src-node">OpenJS Foundation, <a href="https://nodejs.org/api/test.html">Test runner (Node.js documentation)</a>. Retrieved 2026-11-02. Used for skipping and for the failure exit code.</li>
+  <li id="src-run">GitHub, <a href="https://docs.github.com/en/actions/how-tos/monitor-workflows/view-workflow-run-history">Viewing workflow run history</a>. Retrieved 2026-11-02. Used for the log-viewing commands. Command flags also checked locally with <code>gh run view --help</code> and <code>gh pr checks --help</code>, version 2.102.0.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain why a green laptop run and a red pull request can both be true, read a skip as "not checked", and find the first error line in a CI log.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure modes (one page)</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a></p>
+  <div class="pager"><span>Next: <a href="0040-be-first-time-user.html">2.13 Be a first-time user</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

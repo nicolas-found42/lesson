@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vague prompts are safe only when the repo defines "works"</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 4 · Scope &amp; stopping · Lesson 4.8</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 4 · Lesson 4.8</p>
+  <h1>Vague prompts are safe only when the repo defines "works"</h1>
+  <p class="lede">A short request like "does the project work?" can be the cheapest message you ever send — or the start of a twelve-hour run with no finish line. The difference is not in the wording. It is in what your repository already says about the word "works".</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0027-project-rules-file.html">1.12 The project rules file</a> · <a href="0034-one-command-gate.html">2.6 One-command gate</a></span><span>Win: you can tell when a four-word prompt is safe, and what to add when it is not</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You are not going to write a careful paragraph every time you talk to the agent. Some days you want to type four words and read the answer. That is a reasonable way to work, because earlier lessons gave you the two pieces that make it reasonable: a rules file carrying your standing instructions, and one command that returns pass or fail. This lesson is about the bargain between those pieces and the prompt.</p>
+<p>The bargain is simple to state. <strong>A vague prompt is safe when the repository, not the agent, decides what "works" means.</strong> When the repository is silent, the agent fills the silence with its own idea of done — and you see that idea only after the work is already done.</p>
+
+<h2>The four-word prompt that worked</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user opened a long-running project and typed only: "does the project work?" That was the entire message. The agent ran the project's documented checks — formatting, type checking, linting, the test suite — then started the app, then started it again in a container to confirm the data survived a restart. Eight minutes, a few dozen tool calls, and an answer of yes, delivered with a table of what passed. The answer also listed what had <em>not</em> been exercised: real credentials, live providers, slower tests.</p>
+</div>
+<p>Nothing in those four words named a test, a command, or a definition. The definition was already in the project: a rules file that told the agent which command decides, and a gate that answered pass or fail. The prompt was vague; the repository was not.</p>
+
+<h2>Where the missing words live</h2>
+<p>Compare the same prompt sent into two projects. The words are identical. The work is not.</p>
+<div class="compare">
+  <div class="bad"><span class="label">Vague prompt, silent repository</span><p>"does the project work?" The agent decides for itself what working means. It may open a file, read a little, start the app, see a page appear, and report success. That is not a lie; it is the best available reading of a request with no bar attached.</p></div>
+  <div class="good"><span class="label">Vague prompt, repository defines it</span><p>"does the project work?" The rules file names one command. The command runs the checks and ends in an exit code. The agent runs it, reads the number, and reports the number plus the checks it could not run. You can rerun the same command and get the same verdict.</p></div>
+</div>
+<p>This is why the lesson sits in this order. Lesson <a href="0034-one-command-gate.html">2.6</a> built the gate: one command, pass or fail. Lesson <a href="0027-project-rules-file.html">1.12</a> put the gate's name where every session reads it. Without those two, "does it work?" is a question for the agent's taste. With them, it is a question for the repository.</p>
+
+<h2>The prompt is a pointer, not a specification</h2>
+<p>Anthropic's guide describes the mechanism from the agent's side: <q>Claude stops when the work looks done.</q> With nothing to run, <q>"looks done" is all it has to go on</q>.<sup class="cite"><a href="#src-a7">[1]</a></sup> A vague prompt works only when it points at something that can tell the agent it is wrong.</p>
+<p>OpenAI's guide says the same of its own agent: <q>Codex can do this loop for you, but only if it knows what "good" looks like</q>, and that knowledge may live in <q>either the prompt or AGENTS.md</q>.<sup class="cite"><a href="#src-b7">[2]</a></sup> Both guides treat a vague prompt as a normal thing to send, provided the standard is written down somewhere the agent reads.</p>
+<p>Claude's guide even names the exception: a loose request is fine <q>when you're exploring rather than fixing something specific</q>, and <q>You'll correct a bit more as you go</q>.<sup class="cite"><a href="#src-a7">[1]</a></sup> Exploring is the exception that proves the rule. You accept the extra corrections because there is no bar to meet yet. The moment the output has to be accepted — committed, merged, shipped — the bar has to exist.</p>
+<div class="callout">
+  <span class="label">The test to apply before you press send</span>
+  <p>Ask yourself: if the agent answered "done" to this, what would I check, and could the agent have checked it too? If the answer is "run the gate", you may be as vague as you like. If the answer is "I would have to look and judge", the definition is still in your head, not in the repo.</p>
+</div>
+
+<h2>What the repository has to contain</h2>
+<p>Three things, all from earlier lessons. Together they turn a four-word prompt into a bounded task.</p>
+<ol>
+  <li><strong>A command that returns pass or fail.</strong> The gate from lesson <a href="0034-one-command-gate.html">2.6</a>. Node's test runner, for example, reports failure through the exit code: <q>If any tests fail, the process exit code is set to 1</q>, so the shell — and the agent — can read the result without opinion.<sup class="cite"><a href="#src-n1">[3]</a></sup></li>
+  <li><strong>A rules file that names it.</strong> Claude Code treats these files as <q>persistent instructions for a project</q>, though <q>as context, not enforced configuration</q>.<sup class="cite"><a href="#src-a5">[4]</a></sup> Codex <q>reads AGENTS.md files before doing any work</q>.<sup class="cite"><a href="#src-b5">[5]</a></sup> omp <q>loads it automatically and applies it throughout the session</q>.<sup class="cite"><a href="#src-c5">[6]</a></sup></li>
+  <li><strong>A written sentence about when the work counts as finished.</strong> Codex's prompting guidance calls this element "Done when" — <q>what should be true before the task is complete</q>, such as tests passing or a bug no longer reproducing.<sup class="cite"><a href="#src-b7">[2]</a></sup> The idea is older than coding agents; the Scrum Guide says a definition of done <q>creates transparency by providing everyone a shared understanding of what work was completed</q>.<sup class="cite"><a href="#src-sg">[7]</a></sup></li>
+</ol>
+<p>The rules file can hold the second and third together: it names the gate, and states in plain words what passing it means. "Green gate, and the home page lists every product with a price" is a definition. "Good quality" is not.</p>
+
+<h2>The other kind of vague: "until it is good"</h2>
+<p>Not every vague request delegates to a check. Some delegate the judgement itself. That is where the bargain breaks, and it breaks quietly, because the sentence sounds like a standard.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to improve a research app, then added: "run several tests until no issues remain." The thing grading each run was itself a model, and each fix exposed a new class of complaint — output too long, a quote that did not match, a fact gone stale. The agent kept finding issues because the bar kept moving. Twelve hours and roughly fourteen hundred shell commands later, the user returned and interrupted a branch that had never been merged.</p>
+</div>
+<p>That request had no exit condition, and no file could have supplied one, because "no issues remain" means "until the judge is satisfied" — and the judge was a second model with its own opinions. Notice the contrast with the first vignette. There, "does it work?" was answered by a command that cannot change its mind. Here, "is it good?" was answered by a critic that could.</p>
+<p>The fix is not a longer prompt but the same three pieces as before: a named check, a named judge, a stopping point — plus a budget. Lesson <a href="0057-stop-conditions.html">4.3</a> covers stop conditions and lesson <a href="0058-budgets.html">4.4</a> covers caps. A one-dollar cap was in fact enough to bound the follow-up work in the first case; the second case had neither cap nor exit.</p>
+
+<div class="warn">
+  <span class="label">Watch for these wordings</span>
+  <p>"Until no issues remain", "make it polished", "improve it", "fix whatever is broken". Each one hands the definition to the agent and then asks it to keep going until it is satisfied with its own work. If you want that exploration, say so and set a limit. If you want a result, point at the gate instead.</p>
+</div>
+
+<h2>The same request, rewritten as a pointer</h2>
+<p>You do not have to become precise to be safe. You have to be precise about <em>where the standard lives</em>:</p>
+<pre><code>vague, repo carries the bar
+  you    "does the project work?"
+  agent  runs `npm run check`, reads the exit code,
+         reports the number and the gaps
+
+vague, nothing carries the bar
+  you    "make it feel finished"
+  agent  picks its own idea of finished, works until
+         that idea is satisfied, and tells you it is done</code></pre>
+<p>The second message is not wrong because it is short. It is wrong because no sentence in the project can contradict the agent's idea of "finished". Add one sentence to the rules file — what must be true, and which command shows it — and the same short message becomes checkable.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: a short prompt is safe in one situation and unsafe in another. Name the situation, and name the two things in the repository that create it.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Safe when the repository, not the agent, decides what "works" means. That takes a gate — one command returning pass or fail — and a rules file that names the command and states in plain words what passing it means. Without them, the agent supplies its own definition, and you only discover it after the work is done.</p></div>
+</div>
+
+<h2>Try it on your own project</h2>
+<p>This exercise is a probe, not a build. You are testing whether your repository can answer a question you did not spell out.</p>
+<div class="doit">
+  <span class="label">Do it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in your project folder, approvals on.</label></li>
+    <li><label><input type="checkbox"> Send exactly: "Does this project work? Before you change anything, tell me which command you will use to decide, and what that command covers."</label></li>
+    <li><label><input type="checkbox"> Watch the first tool call. Did the agent run a command that already existed in the project, or did it start judging by reading files?</label></li>
+    <li><label><input type="checkbox"> Then ask: "What does 'works' mean in this repository? Quote the file and line that says so."</label></li>
+    <li><label><input type="checkbox"> If it could not quote a file, add the gate (lesson 2.6) and the sentence naming it (lesson 1.12), then send the same first message again.</label></li>
+  </ol>
+  <div class="expect"><p>In a project whose repository defines "works", the agent answers step 2 in one or two lines — the command, and what it covers — then runs it. In step 4 it quotes your rules file. If instead it explains what "working" ought to mean, or lists criteria you never wrote, that is the signal: the definition lives in the agent's head, and every short prompt will inherit it.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Which condition makes a vague request like "does the project work?" safe to send?</p>
+  <button class="opt" type="button">The repository holds a gate that returns pass or fail.</button>
+  <button class="opt" type="button">The agent says that it feels confident about the work.</button>
+  <button class="opt" type="button">The prompt itself names every file that must change today.</button>
+  <button class="opt" type="button">You watch the screen for a minute and then decide.</button>
+  <div class="why"><p>The repository supplies the bar, and a gate turns it into a number the agent can act on. Confidence is a claim, a file list is not a standard, and your glance is exactly the manual checking a gate replaces.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which request most needs the repository to define the word "works"?</p>
+  <button class="opt" type="button">Fix the bug where the save button silently does nothing.</button>
+  <button class="opt" type="button">Make the whole app feel more polished and much clearer.</button>
+  <button class="opt" type="button">Add a contact page that lists one working email address.</button>
+  <button class="opt" type="button">Run the project checks and paste the last twenty lines.</button>
+  <div class="why"><p>"Polished" is a judgement no command can settle, so the agent must invent the bar. The other three name an observable result: a button that responds, a page carrying an address, a command whose output you read.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">The agent answers "does this project work?" with yes, then lists what it did not test. What is the best next move?</p>
+  <button class="opt" type="button">Assume the answer is correct and merge the branch now.</button>
+  <button class="opt" type="button">Send the same question again and compare the two answers.</button>
+  <button class="opt" type="button">Make that honest gap the next task, with a budget.</button>
+  <button class="opt" type="button">Ask it to keep testing until all the issues vanish.</button>
+  <div class="why"><p>The gap list is the valuable part, so turn it into a bounded task with a cap. Repeating the question adds nothing, merging on a yes trusts a claim, and "until issues vanish" removes the finish line entirely.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>, sections "Give Claude a check to run" and "Keep CLAUDE.md short". The first explains why an agent with nothing to run stops at "looks done"; the second lists what belongs in the file that holds your bar. Written for one vendor's tool, but the mechanism is the same in all three.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure whether your project can answer "does it work?" without you? Ask the agent that gave you this course: <em>"Here is my rules file and my check command. If I typed only 'does the project work?', what would you run, and what would you still be guessing?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b7">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Best practices</a> (Codex). Retrieved 2026-11-02.</li>
+  <li id="src-n1">Node.js, <a href="https://nodejs.org/api/test.html">Test runner</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a5">Anthropic, <a href="https://code.claude.com/docs/en/memory">How Claude remembers your project</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b5">OpenAI, <a href="https://learn.chatgpt.com/docs/agent-configuration/agents-md">Custom instructions with AGENTS.md</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c5">Stencil Labs, <a href="https://omp.sh/docs/context-files">Context files</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-sg">Ken Schwaber and Jeff Sutherland, <a href="https://scrumguides.org/scrum-guide.html">The Scrum Guide</a> (2020). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> tell whether a short prompt is backed by the repository, and add the missing definition of "works" instead of writing a longer prompt.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns (one page)</a> · <a href="../reference/failure-modes.html">Failure modes</a></p>
+  <div class="pager"><span>Previous: 4.7 → <a href="0061-reward-hacking-goodhart.html">When the metric gets gamed</a></span><span>Next: 4.9 → <a href="0063-long-unsupervised-runs.html">Long runs need checkpoints</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

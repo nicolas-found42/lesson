@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading a real user's screenshot</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.14</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.14</p>
+  <h1>Reading a real user's screenshot</h1>
+  <p class="lede">A screenshot is a photograph of a symptom. It is not a description of the cause, and it never contains what happened one second earlier. Reading one well is what turns "it's broken" into something you can fix.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0040-be-first-time-user.html">2.13 Be a first-time user</a></span><span>Win: you can turn a vague report into a reproducible one</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>The last lesson put you in a stranger's seat: you walked your own app as if you had never seen it. Soon the real strangers arrive. One of them sends a picture of a screen and four words, and everything you learn about your app for the next hour comes from that picture. If you read it as a verdict you will fix the wrong thing; if you read it as a clue with gaps, you will ask for the facts that were always missing.</p>
+<p>This lesson is about the second reading. It is the moment where <span class="term" title="A user of your app who is not you and does not know how it was built.">a real user</span> becomes a source of evidence, and where most beginners mistake a photograph for a diagnosis.</p>
+
+<h2>What a screenshot proves</h2>
+<p>A screenshot is strong evidence of exactly one kind: appearance. It shows what was on that screen, at that size, at that moment, on that machine. That is not nothing. It rules out a whole family of explanations, including "you are imagining it" and "the text was never there".</p>
+<p>It is also, by construction, silent about everything else. Look at what the image cannot contain:</p>
+<table class="ref">
+  <thead><tr><th>Hidden by the crop</th><th>What it would have told you</th></tr></thead>
+  <tbody>
+    <tr><td>What the user did immediately before</td><td>The sequence that led to the screen, and where it started to go wrong</td></tr>
+    <tr><td>Which account and which browser</td><td>Whether the problem follows the person or the app</td></tr>
+    <tr><td>Requests that failed quietly</td><td>Whether something the page needed never arrived</td></tr>
+    <tr><td>Whether it happened before</td><td>Constant fault, occasional fault, or a one-off</td></tr>
+  </tbody>
+</table>
+<p>Browsers record part of this for you. Every modern browser ships developer tools that show <q>which assets the page has requested and how long they took to load</q>.<sup class="cite"><a href="#src-m1">[1]</a></sup> One of those panels, the Console, <q>reports the errors encountered as the browser tries to execute your code</q>.<sup class="cite"><a href="#src-m1">[1]</a></sup> The Network panel is the other half: it records every request the page made, so a request that failed appears as a row rather than as a silent absence.<sup class="cite"><a href="#src-c1">[2]</a></sup> None of that fits in a screenshot of the page itself, which is why the picture is a starting point and not the whole report.</p>
+
+<h2>The four facts every report is missing</h2>
+<p>A useful report answers four questions. They are the same four in every tool, because they describe the fault rather than the software.</p>
+<ol>
+  <li><strong>Steps, in order, from a fresh load.</strong> Not "I clicked around", but the exact clicks and the page each one landed on.</li>
+  <li><strong>Expected against seen.</strong> "I expected the list to show my three saved items; I saw an empty box."</li>
+  <li><strong>When, and how often.</strong> Their local clock time, their time zone, and whether repeating the steps reproduces it. A timestamp without a zone cannot be matched against a log line from another machine.</li>
+  <li><strong>Where.</strong> Device, browser, whether they were signed in, and whether a second browser shows the same thing.</li>
+</ol>
+<p>People do not send these because nobody asked. They send the picture because it is what upset them. Ask for the rest without making them feel interrogated, and ask once, in one message.</p>
+
+<h2>A real pattern, anonymized</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A small internal app passed every automated check its author had written. Then a teammate tried to connect the app to an outside service by pressing a button, and nothing happened. She sent two screenshots and a small diagnostics file the app could export: the button, the empty panel after pressing it, and a text file of timestamps. Her message arrived mid-afternoon, roughly an hour and a half before anyone acted on it.</p>
+  <p>The screenshots showed the symptom precisely, and none of it explained the cause. The missing piece was a request the page made to the app's server, which the server refused to answer for the browser. Every test had spoken to the server directly and passed; only a real browser, with a real signed-in account, made the request in the way that failed. The clue that pointed at it was not in the picture at all. It was in the gap between "the button does nothing" and a network panel that would have shown a request leaving and no answer coming back.</p>
+</div>
+<p>The report was usable anyway. It had a who, a what, and a when, plus a file the app itself produced. That is better than most. The remaining work was to spot the question it did not answer, and answer that one before touching code.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Cover the table above. Name two things a screenshot of your app's page proves, and two things it cannot tell you. Then say which one of the four missing facts you would ask for first, and why.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>It proves <strong>appearance</strong> — this text or this blank box was on that screen, at that window size, at that moment — and it proves the user was there. It cannot show <strong>the steps that led to it</strong>, the account or browser, failed requests, or whether the fault repeats. Ask for the steps first: without them you cannot reproduce anything, and reproduction is what separates a fix from a guess.</p></div>
+</div>
+
+<h2>Give the agent the report, not your theory</h2>
+<p>When you hand this to your agent, the temptation is to compress: "the connect button is broken, probably the login". That sentence throws away the only good material you have. Paste the report as it arrived — the words, the screenshot, the diagnostics file — and state what you do not know.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Here is a report from a real user, pasted verbatim, with their screenshot attached.
+
+1. Do not change any code yet. First restate the report as: steps, expected, seen, when, where.
+2. List what the report does not tell us, and which of those missing facts could change the diagnosis.
+3. Tell me the smallest thing I can ask the user that would settle the biggest unknown.
+4. Then try to reproduce it yourself in a browser, and tell me what you saw.
+
+Ask me for anything you need. Do not fill a gap with a guess.</pre>
+</div>
+<p>Step 1 is the discipline. Rewriting the report in a fixed shape exposes the holes immediately: usually there is no "expected", and the "steps" are a guess at what the user did. Step 4 matters because an agent that reproduces the fault in a real browser has evidence, while an agent that reads a screenshot has only the same picture you do.</p>
+<p>Attaching the picture differs slightly across the three agents, so learn where the button is before a user is waiting.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>You can paste a screenshot straight into the prompt, or drag the image file into the terminal. Anthropic's guidance lists <q>An image: paste the screenshot of the design or the error into the prompt.</q><sup class="cite"><a href="#src-a1">[3]</a></sup> Say what the picture is for; a screenshot with no sentence around it is context without a question.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Codex takes a picture with the first prompt through a flag, and later ones by pasting into the composer: <q>Pass an error screenshot, architecture diagram, or design reference with the first prompt, or paste an image into the interactive composer.</q><sup class="cite"><a href="#src-b1">[4]</a></sup> Attach the user's screenshot, not a description of it.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Paste the image with <kbd>Ctrl</kbd>+<kbd>V</kbd>, or drag it in, and a chip in the composer confirms the attachment. You can also mention the file by path, which omp reads with the turn.<sup class="cite"><a href="#src-c2">[5]</a></sup> Its documentation notes that <q>Image input is normalized and resized by default</q>, so small text may become unreadable; type out any error message that matters.<sup class="cite"><a href="#src-c2">[5]</a></sup></p>
+  </div>
+</div>
+
+<h2>Do not fix the first theory</h2>
+<p>A report that arrives with a symptom invites a story. The story feels like progress and costs a day. In one long session, a user reported that a sign-in kept expiring after roughly fifteen hours. The agent produced three plausible causes and a remedy that deleted files. One short test of the failing call showed that none of the three was it: a company-wide policy forced a fresh sign-in on a schedule. The wrong answer had been confident, specific, and two turns long.</p>
+<p>The habit that prevents this is cheap. Before editing anything, write down the one test that would separate your theory from its alternatives, and run it. If the report says "sometimes", the test has to run more than once. Anthropic's workflow page gives the same three pieces of input for a bug: <q>the command to reproduce the issue</q>, <q>steps to reproduce the error</q>, and whether it is <q>intermittent or consistent</q>.<sup class="cite"><a href="#src-a2">[6]</a></sup> Those are exactly the facts a screenshot cannot carry.</p>
+<div class="callout">
+  <span class="label">One sentence to keep</span>
+  <p><strong>A screenshot tells you what the user saw. Only a reproduction tells you why.</strong></p>
+</div>
+<p>When the report is thin and the user is gone, do not guess. Send one precise question and do something else meanwhile. Lesson <a href="0116-triage-prompt.html">9.8</a> turns this into a standing triage prompt; lesson <a href="0039-checker-can-be-wrong.html">2.11</a> covers the case where your own checks were green and the user was still right.</p>
+
+<h2>The user's screenshot is their private life</h2>
+<p>A phone screenshot of your app usually contains more than your app. There may be a name in the corner, an email address, another tab with a document open, a notification from a colleague. Treat the picture as belonging to the person who sent it. Crop to the part that matters. Do not paste it into a public issue or a shared chat without asking. When you need to show it to your agent, that is fine — the agent works in your project — but say plainly that the file is private, and do not commit it into the repository.</p>
+<p>This is lesson <a href="0036-screenshots-as-evidence.html">2.8</a>'s rule from the other side. There, the screenshot was evidence the agent produced for you. Here it is evidence a person produced, and it carries their details along with the fault.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your app in a browser and break something small on purpose: remove one word from a heading, or point an image at a file that does not exist.</label></li>
+    <li><label><input type="checkbox"> Take a screenshot of the visible page only. Do not open the developer tools.</label></li>
+    <li><label><input type="checkbox"> Start a fresh session with your agent and paste the screenshot with the prompt above, changing nothing except the report. Watch what it says is missing.</label></li>
+    <li><label><input type="checkbox"> Now open the developer tools in that browser and add to the report: any Console message, and the Network row for the broken file. Send the same prompt again.</label></li>
+    <li><label><input type="checkbox"> Compare the two answers. Note which one names a cause it could test.</label></li>
+  </ol>
+  <div class="expect"><p>In most browsers the tools open with <kbd>F12</kbd>, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>, or on a Mac <kbd>⌘</kbd>+<kbd>⌥</kbd>+<kbd>I</kbd>; the Console is a tab inside them.<sup class="cite"><a href="#src-m1">[1]</a></sup> The second answer should cite a specific failed request or error line, and the first should contain a list of questions rather than a diagnosis. If the first answer jumps to a fix, that is the failure this lesson is about.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">A first user sends a screenshot of an error and says "it's broken". What does the picture prove by itself?</p>
+  <button class="opt" type="button">That every visitor will see this same message.</button>
+  <button class="opt" type="button">That this message appeared on that screen once.</button>
+  <button class="opt" type="button">That the server rejected the request as invalid.</button>
+  <button class="opt" type="button">That the bug started after your latest edit.</button>
+  <div class="why"><p>A screenshot proves appearance at one moment: this text was on that screen. Everything about the cause, the account, the sequence and the repetition is outside the frame.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You cannot reproduce the fault from the report. Which request adds the most?</p>
+  <button class="opt" type="button">What exactly did you click, in what order, from a fresh load?</button>
+  <button class="opt" type="button">How many minutes in total did you spend looking at the page?</button>
+  <button class="opt" type="button">Which colour scheme do you prefer for the header and the buttons?</button>
+  <button class="opt" type="button">Would a short video of your screen help me to understand it?</button>
+  <div class="why"><p>Steps turn a symptom into something you can repeat. Duration and taste do not change the diagnosis, and a video is a nicer version of the same missing information.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Your agent proposes a fix after reading one screenshot. What is the safer first step?</p>
+  <button class="opt" type="button">Change the code first, then ask the user again.</button>
+  <button class="opt" type="button">Trust the screenshot and rewrite the whole login page.</button>
+  <button class="opt" type="button">Reproduce the report yourself before you change any code.</button>
+  <button class="opt" type="button">Ask the agent whether that screenshot is enough evidence.</button>
+  <div class="why"><p>A theory without a reproduction is a guess with good manners. Reproducing first is what turns the report into a test that can fail, and a test that can fail is what a fix needs.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/What_are_browser_developer_tools">What are browser developer tools?</a> — MDN's beginner tour of the panel you are asking your users to open. Read the section on the JavaScript console, and try the shortcut on your own app once. You do not need the rest of the page for this lesson.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a report you cannot read? Paste the user's words and your screenshot into the chat that gave you this course, and ask: <em>"Which fact is missing here, and what is the smallest question I could ask?"</em> Reading a report is a skill, and it is learned by doing it in company.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-m1">MDN Web Docs (Mozilla), <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/What_are_browser_developer_tools">What are browser developer tools?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Chrome for Developers, <a href="https://developer.chrome.com/docs/devtools/network">Inspect network activity</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c2">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-a2">Anthropic, <a href="https://code.claude.com/docs/en/common-workflows">Common workflows</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> say what a user's screenshot does and does not prove, ask for the four missing facts in one message, and refuse a fix until the fault is reproduced.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure modes (one page)</a> · <a href="../RESOURCES.md">Resources</a></p>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

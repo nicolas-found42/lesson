@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Definition of done: deciding what "finished" means</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 4 · Scope &amp; stopping · Lesson 4.1</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 4 · Lesson 4.1 · First-ship path ★</p>
+  <h1>Definition of done: deciding what "finished" means</h1>
+  <p class="lede">A goal tells the agent which direction to walk. A definition of done tells it where to stop. Without one, the agent picks a finish line of its own, and it is rarely the one in your head.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0016-goal-audience-not-method.html">1.1 Goal and audience</a></span><span>Win: you can write three checks that end a task</span></div>
+</header>
+<main>
+
+<h2>Why a goal is not a finish line</h2>
+<p>In lesson 1.1 you learned to state the goal and the audience rather than the method: "a page where my friends can see my photos", not "make a grid with CSS". That gets the agent moving in the right direction. It does not tell anyone when the work is over.</p>
+<p>The agent will not wait for you to supply that part. Claude Code's best-practices page describes the default: <q>Claude stops when the work looks done.</q><sup class="cite"><a href="#src-ccbp">[1]</a></sup> "Looks done" is a judgement the agent makes alone, from whatever it happens to know.</p>
+<p>So you need two small pieces of writing, and they work at different sizes:</p>
+<ul>
+  <li>The <strong>definition of done</strong> is the standing bar for the whole project: what must be true of anything you would call shippable. "It loads on a phone, every link goes somewhere real, and the live URL opens without an error."</li>
+  <li><strong>Acceptance criteria</strong> are the checks for one change, written before the work starts. "The contact form shows my email address and the Send button opens a mail draft."</li>
+</ul>
+<p>Same idea at two scales. The project bar keeps you from shipping something embarrassing. The per-task criteria keep a single request from turning into an expedition.</p>
+<p>This is not a coding-course ritual. Anthropic's essay on building agent systems singles out the tasks where agents add most value as those that <q>have clear success criteria, enable feedback loops, and integrate meaningful human oversight.</q><sup class="cite"><a href="#src-bea">[4]</a></sup> Clear criteria are one of the three, and it is the one you own.</p>
+
+<h2>Two sessions, one missing sentence</h2>
+<p>Here is what the gap looks like in practice. Both examples are patterns from real sessions, anonymised.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymised</span>
+  <p>A user asked a one-line question about a 3D model viewer: why were some parts of a model invisible? The agent found the cause in about ninety seconds. The user then said, roughly, "do it the way the original did it, not with a workaround." Nothing in that sentence said how close was close enough, so each answer defined the next question. The session ran for twenty-two hours, made about fifteen hundred tool calls, and ended only when the user typed "stop here, commit and open a pull request".</p>
+</div>
+<p>The second session began with a clearer goal and an unclear finish line: a dashboard that summarised public records. Partway in, the user added "run tests until no issues remain". That sounds strict. It is actually open-ended, because "issues" was never defined and the thing judging the output was itself an AI that kept finding new classes of problem. The loop ran about twelve hours and roughly fourteen hundred commands before the user interrupted it.</p>
+<p>Neither user was careless. Each had a goal. Neither had written down what would make the work <em>done</em>.</p>
+
+<h2>What a usable criterion looks like</h2>
+<p>A criterion is usable when you can answer it by looking, without an argument. Four tests:</p>
+<ol>
+  <li><strong>Observable from outside.</strong> Someone who did not write the code can check it: open the page, click the button, read the file.</li>
+  <li><strong>Pass or fail.</strong> Not a matter of taste. "The menu opens when tapped" passes or fails; "the design feels modern" does not.</li>
+  <li><strong>Written before the work.</strong> A criterion invented afterwards describes whatever the agent built, which is the same as having none.</li>
+  <li><strong>Checkable in a minute.</strong> Three to five of them, each something you can verify in one look or one command.</li>
+</ol>
+<p>The usual failure is a wish wearing the clothes of a criterion. Compare:</p>
+<table class="ref">
+  <thead><tr><th>Wish</th><th>Criterion you can check</th></tr></thead>
+  <tbody>
+    <tr><td>"The gallery looks good."</td><td>"At phone width, all six photos appear in one column and none is cut off."</td></tr>
+    <tr><td>"The site is fast."</td><td>"The page shows its first photo within two seconds on my connection."</td></tr>
+    <tr><td>"The form works."</td><td>"Filling all fields and pressing Send shows a confirmation line and clears the fields."</td></tr>
+    <tr><td>"Clean up the code."</td><td>"The project's check command exits with no errors."</td></tr>
+  </tbody>
+</table>
+<p>The right-hand column is not more technical. It is more <em>specific about the observation</em>. That is the whole trick.</p>
+<div class="callout">
+  <span class="label">Add one line about what is not included</span>
+  <p>A definition of done is also a definition of <em>enough</em>. Write one exclusion next to your criteria: "No login, no comments, no image uploads this round." It costs a sentence and removes a whole category of "while we are here" work. The next lesson takes that idea further.</p>
+</div>
+
+<h2>Say the finish line in the prompt</h2>
+<p>You do not need a special format, but a labelled block is easy to write and easy for the agent to follow. Codex's prompting guide recommends four parts, the last of which is <q>Done when: What should be true before the task is complete, such as tests passing, behavior changing, or a bug no longer reproducing?</q><sup class="cite"><a href="#src-cxbp">[2]</a></sup></p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Change: add a contact section to my one-page site, under the photos.
+
+Done when all of these are true:
+1. The section shows my email address as text a visitor can read.
+2. Pressing the "Email me" button opens a new mail draft addressed to me.
+3. At phone width the section does not overflow sideways.
+4. The page still opens from the local server with no error in the browser console.
+
+Not included this round: a contact form, a mailing list, or any server code.
+
+Before you edit anything, restate these four checks in your own words and tell me if any is impossible to verify. If one is unclear, ask me one question and wait. Then do the work. When you report back, give one line per check: what you ran or looked at, and what you saw. If a check fails, say so plainly instead of calling the task done.</pre></div>
+<p>The last paragraph is the part people skip. It turns your list into something the agent has to answer, not something you have to remember to ask about. Claude Code's guide puts the same point as a question to ask before leaving an agent alone: <q>Does it know what done looks like? A goal condition, a spec file, or a failing test it has to turn green.</q><sup class="cite"><a href="#src-ccbp">[1]</a></sup></p>
+<p>It also helps to give the agent something runnable, because then "done" stops being an opinion: <q>If you give it something that comes back pass or fail, Claude can close that loop itself.</q><sup class="cite"><a href="#src-ccbp">[1]</a></sup> A test, a build that succeeds, or a screenshot you compare against a sketch all count. Unit 2 covers building those checks; here, the point is that each criterion should point at one.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the four tests of a usable acceptance criterion, and what is the difference between a definition of done and acceptance criteria? Write both in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Observable from outside, pass or fail, written before the work, and checkable in about a minute. The <strong>definition of done</strong> is the standing bar for the whole project; <strong>acceptance criteria</strong> are the checks for one specific change. The project bar stops you shipping something broken; the per-task list stops one request from expanding forever.</p></div>
+</div>
+
+<h2>Where the tools differ</h2>
+<p>The idea is identical in all three agents. Only the wording in their own documentation changes.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Its best-practices page lists "Does it know what done looks like?" as the first question before an unattended run.<sup class="cite"><a href="#src-ccbp">[1]</a></sup> You can state the finish line in the prompt, and for longer runs you can also set it as a goal that a separate model checks after every turn; that feature is covered in lesson 5.5.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Its guide recommends the four-part prompt: Goal, Context, Constraints, and <q>Done when</q>.<sup class="cite"><a href="#src-cxbp">[2]</a></sup> Writing the fourth part is the whole of this lesson; the other three come from lesson 1.1 and 1.4.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Its "Using omp" page describes a reliable task as: <q>State the outcome and boundaries. Name the bug or feature, important paths, anything that must not change, and the check that should pass.</q><sup class="cite"><a href="#src-omp">[3]</a></sup> It then asks you to <q>Review evidence. Expand tool cards and diffs. Check the changed paths, command exit status, test result, and final explanation.</q><sup class="cite"><a href="#src-omp">[3]</a></sup> The criteria tell you which cards to open. omp's documentation comes only from its own authors.</p>
+  </div>
+</div>
+<p>No agent needs a magic phrase. What each one needs is a sentence it can compare reality against.</p>
+
+<h2>Write three checks for your own app</h2>
+<p>This is worth doing once on a real project, because the habit sticks only after you see the difference in one session.</p>
+<div class="doit">
+  <span class="label">Your turn — about 5 minutes</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your project from the first-ship milestone and start your agent in it, with approval prompts still on.</label></li>
+    <li><label><input type="checkbox"> Write three criteria for one small change you actually want. Keep each to one observable fact, and add one "not included" line.</label></li>
+    <li><label><input type="checkbox"> Put them in a prompt like the one above, including the sentence that asks the agent to restate them first.</label></li>
+    <li><label><input type="checkbox"> Before approving any edit, read the restatement. If a check is vague or impossible to verify, say which one and rewrite it now.</label></li>
+    <li><label><input type="checkbox"> When it reports back, count the lines. There should be one per criterion, each with what was run or looked at.</label></li>
+    <li><label><input type="checkbox"> Check the weakest one yourself: open the page or run the command. If the report and reality disagree, you have found the exact thing this lesson prevents.</label></li>
+  </ol>
+  <div class="expect">
+    <p>The agent replies first with a numbered restatement of your checks, not with a diff. It may ask one question about a check that cannot be verified — that is a good sign, not a delay. Its final message names each criterion and what it observed. One line may say "not verified" or "failed"; treat that as useful information rather than a failure of the exercise. You end with a small list you can paste into the next request, and later into a pull request description.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Which line is an acceptance criterion rather than a wish?</p>
+  <button class="opt" type="button">The page opens and shows the six photos I picked.</button>
+  <button class="opt" type="button">The gallery feels calm and modern to most new visitors.</button>
+  <button class="opt" type="button">The code is tidy and easy for beginners to extend.</button>
+  <button class="opt" type="button">The app works well on phones and laptops people own.</button>
+  <div class="why"><p>It names something you can look at and answer yes or no. The others describe taste, code quality, or a vague range of devices, so two people could disagree without either being wrong.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You tell the agent "keep fixing until no issues remain". What usually happens?</p>
+  <button class="opt" type="button">The agent stops straight away, because no issues could remain.</button>
+  <button class="opt" type="button">The agent keeps finding new problems for many more hours.</button>
+  <button class="opt" type="button">The agent asks one question and then finishes the work.</button>
+  <button class="opt" type="button">The agent runs the checks exactly one time and stops.</button>
+  <div class="why"><p>"No issues" has no boundary: every fix can reveal another class of problem, and a model judging the output can always find something. Name the cases, the number of runs, and the pass bar instead.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Which of these is evidence that your criteria were actually met?</p>
+  <button class="opt" type="button">A chat summary that restates every change that was made.</button>
+  <button class="opt" type="button">A firm promise that the agent has checked everything twice.</button>
+  <button class="opt" type="button">A command that you can rerun and read results from.</button>
+  <button class="opt" type="button">A screenshot of the chat showing the final agent message.</button>
+  <div class="why"><p>Evidence is something that comes back pass or fail and that you could repeat yourself. A summary, a promise, and a picture of the conversation all report what the agent believes.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>, section "Let Claude run without you". It is written for one tool, but the five questions before an unattended run apply to any agent. The first two are the ones this lesson is about: does it know what done looks like, and can it check its own work.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on turning a wish into a check? Ask: <em>"Here is what I want: 'the site feels friendly'. Give me three acceptance criteria I can verify by looking, and explain why each one qualifies."</em> Then try the same rewrite yourself on the next one.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-ccbp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cxbp">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-bea">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as outdated). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> write a definition of done and three observable acceptance criteria, put them in a prompt, and check the agent's report against each one.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 4.2 Scope creep and the scope ladder (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

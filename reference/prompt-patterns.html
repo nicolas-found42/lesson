@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt patterns: reference</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb">Reference · from <a href="../lessons/0016-goal-audience-not-method.html">Lesson 1.1</a></nav>
+<header class="lesson-head">
+  <p class="kicker">Reference card</p>
+  <h1>Prompt patterns</h1>
+  <p class="lede">Copy the shape, replace the brackets, delete what you do not need.</p>
+</header>
+<main>
+<p>Grouped by the job they do. Each pattern ends with the lesson that explains it.</p>
+
+<h2>Ask well</h2>
+
+<h3>1. Goal, audience, one check</h3>
+<p><em>When:</em> you know the result but not the steps. <a href="../lessons/0016-goal-audience-not-method.html">Lesson 1.1</a>.</p>
+<pre><code>I want [one result] for [who], who [what they cannot do].
+Done when I can [one check]. Do not [one boundary].
+Pick the simplest option and say why.</code></pre>
+
+<h3>2. Orient first</h3>
+<p><em>When:</em> before changing an unfamiliar part. <a href="../lessons/0017-orient-first.html">Lesson 1.2</a>.</p>
+<pre><code>Before changing anything, read the project and answer:
+1. Which files would I touch to change [thing]?
+2. How does it work today, in three sentences?
+Do not edit. Report only.</code></pre>
+
+<h3>3. Ask what a word means</h3>
+<p><em>When:</em> a term is doing work you cannot check. <a href="../lessons/0018-ask-word-means.html">Lesson 1.3</a>.</p>
+<pre><code>I don't know "[term]" from your last message.
+Explain it in two sentences, in plain words, with one example from my project.</code></pre>
+
+<h3>4. Interview, then a batch yes</h3>
+<p><em>When:</em> several decisions are open. <a href="../lessons/0019-interview.html">Lesson 1.4</a>, <a href="../lessons/0020-yes-all.html">1.5</a>, <a href="../lessons/0021-when-override-recommendation.html">1.6</a>; cap in <a href="../lessons/0065-over-asking.html">4.11</a>.</p>
+<pre><code>Before coding, interview me: numbered questions, one decision each,
+your recommendation and a one-line reason. Max 6 per round, 2 rounds.
+Stop when you could write a spec; show it and wait.
+Then: "Yes to all, except 7: [change], 12: [change]. Change no files."
+Override 9 with [choice] because [reason].</code></pre>
+
+<h3>5. Outcome-sized prompt</h3>
+<p><em>When:</em> one sitting's work, not a whole project. <a href="../lessons/0028-outcome-sized-prompts-vs-micro-managing.html">Lesson 1.13</a>.</p>
+<pre><code>Outcome: [one result I can look at], for [who].
+Done means: [one check I can run]. Do not [boundary] or start [next thing].
+Work out the steps; ask once if a choice changes what I see.</code></pre>
+
+<h2>Stay in control</h2>
+
+<h3>6. Plan, then a human go</h3>
+<p><em>When:</em> a wrong first step would be expensive. <a href="../lessons/0022-plan-then-human-go.html">Lesson 1.7</a>.</p>
+<pre><code>Before changing anything, write a plan: steps, files, what you will leave alone,
+and how you will check it. Half a page. Do not edit. Stop and wait for my go.</code></pre>
+
+<h3>7. Reference as spec; v1 as the bar</h3>
+<p><em>When:</em> "like this" is the real request. <a href="../lessons/0023-reference-as-spec.html">Lesson 1.8</a>.</p>
+<pre><code>Use [screen] as the reference. Copy [parts]; skip [parts]; keep my words.
+Treat the current page as v1: keep it, and say where the new one is worse.</code></pre>
+
+<h3>8. Show, don't tell</h3>
+<p><em>When:</em> a bug is easier to point at than describe. <a href="../lessons/0024-show-dont-tell.html">Lesson 1.9</a>.</p>
+<pre><code>This screenshot shows [page, size]. The problem is [exact thing, where].
+I expected [result]. Fix only that, then screenshot again at the same size.</code></pre>
+
+<h3>9. Steer a running agent</h3>
+<p><em>When:</em> a run drifts: queue a note, Esc to interrupt, ask for state. <a href="../lessons/0025-steering-mid-run.html">Lesson 1.10</a>.</p>
+<pre><code>What is the task, and what is its state? Four parts: task in one sentence;
+done; in progress; blocked. Do not start new work until I reply.</code></pre>
+
+<h3>10. Project rules file</h3>
+<p><em>When:</em> you have corrected the same thing twice. <a href="../lessons/0027-project-rules-file.html">Lesson 1.12</a>; a repeated procedure can become a skill (<a href="../lessons/0026-skills-slash-commands-mentions.html">1.11</a>).</p>
+<pre><code>Read the project, then draft [CLAUDE.md or AGENTS.md] in the root.
+Include only the start command, the check command, and rules I corrected twice.
+Show it before writing.</code></pre>
+
+<h3>11. Definition of done</h3>
+<p><em>When:</em> agree what "finished" means before work starts. <a href="../lessons/0055-definition-done-acceptance-criteria.html">Lesson 4.1</a>.</p>
+<pre><code>Change: [one change]. Done when all are true:
+1. [visible result] 2. [action works] 3. [phone width fits] 4. [check passes].
+Not included: [cuts].</code></pre>
+
+<h3>12. Bounded run: stop, budget, objective</h3>
+<p><em>When:</em> a run could continue past the point that helps. <a href="../lessons/0057-stop-conditions.html">Lesson 4.3</a>, <a href="../lessons/0058-budgets.html">4.4</a>; goal mode is <a href="../lessons/0072-goal-mode-persistent-objectives.html">5.5</a>.</p>
+<pre><code>Objective: [bounded result]. Keep [what must not change].
+Done when: [observable state]. Stop there: no next task, no refactor.
+Limit: 3 attempts or 15 minutes, whichever comes first. Then report.</code></pre>
+
+<h3>13. Cut scope on purpose</h3>
+<p><em>When:</em> ship the smaller thing now, not the ladder. <a href="../lessons/0067-cutting-scope-purpose.html">Lesson 4.13</a>.</p>
+<pre><code>Task: [one thing]. Out of scope: [items]. Do not build or fix them.
+If you find a problem there, add a line to LATER.md and move on.
+Done when: [observable state].</code></pre>
+
+<h3>14. Human-only runbook</h3>
+<p><em>When:</em> the task will hit a login or consent only you can give. <a href="../lessons/0077-human-only-steps.html">Lesson 5.10</a>.</p>
+<pre><code>Before you start, list every human-only step: logins, terms, ownership checks,
+anything needing my consent. Number them, say when each is needed.
+Never ask me for a password or key.</code></pre>
+
+<h2>Check the work</h2>
+
+<h3>15. Independent reviewer</h3>
+<p><em>When:</em> the author's own report is not enough. <a href="../lessons/0038-independent-reviewer.html">Lesson 2.10</a>.</p>
+<pre><code>Review my change as an independent reviewer. Do not edit; report only.
+Check [behaviour and edge cases], skip style. Per finding: file and line,
+what goes wrong, how to see it, severity.</code></pre>
+
+<h3>16. Evidence checkpoint</h3>
+<p><em>When:</em> the agent says "done" and you need proof. <a href="../lessons/0030-claims-vs-evidence.html">Lesson 2.2</a>; long runs, <a href="../lessons/0063-long-unsupervised-runs.html">4.9</a>.</p>
+<pre><code>Before you say done: exact commands and full output, files changed,
+what you did not verify, and the smallest check for each gap.
+Long run: one checkpoint in 5 minutes, plus progress.log.</code></pre>
+
+<h3>17. Root cause before fix</h3>
+<p><em>When:</em> a symptom is easy to hide but the cause is unknown. <a href="../lessons/0059-root-cause-vs-workaround.html">Lesson 4.5</a>.</p>
+<pre><code>Something is wrong: [symptom and steps]. Before changing anything:
+reproduce it with output; name the cause in one sentence; if you cannot, stop.
+Fix the cause, not the symptom. No skipped or weakened checks.</code></pre>
+<p>For speed, ask for a benchmark and the bottleneck before any fix.</p>
+
+<h3>18. Surface conflicting requirements</h3>
+<p><em>When:</em> two "musts" may contradict. <a href="../lessons/0060-conflicting-requirements.html">Lesson 4.6</a>.</p>
+<pre><code>Do not edit. Check my requirements for conflicts: name both, why they clash,
+evidence versus assumption. Offer two choices and recommend one.
+Wait for my answer, then restate the criteria.</code></pre>
+
+<h3>19. Triage first</h3>
+<p><em>When:</em> the project is messy and you do not know where to start. <a href="../lessons/0116-triage-prompt.html">Lesson 9.8</a>.</p>
+<pre><code>Triage this project. Read only: no edit, commit, push or merge.
+Report state, each problem with evidence, recommendations safest first,
+and the one next step you would take.</code></pre>
+
+<h2>Recover</h2>
+
+<h3>20. Park, then restart fresh</h3>
+<p><em>When:</em> a run has derailed and steering will not save it. <a href="../lessons/0064-recovering-derail.html">Lesson 4.10</a>.</p>
+<pre><code>New task, fresh start; ignore earlier attempts. Goal: [one sentence].
+Do not: [what derailed it]. New branch from main; commit per step.
+Stop when [condition]; after [N] attempts, stop and report.</code></pre>
+
+<h3>21. Spec, tickets, frontier</h3>
+<p><em>When:</em> one spec is too large for a single run. <a href="../lessons/0109-spec-tickets-dependency-graph.html">Lesson 9.1</a>.</p>
+<pre><code>Read SPEC.md; split it into one-run tickets. For each: title, goal,
+depends on, done when. Draw the graph and list the frontier.
+Do not start yet. Then work only the frontier ticket "[title]".</code></pre>
+
+<h3>22. Meta-prompt: critique my prompting</h3>
+<p><em>When:</em> a session felt clumsy and you want one habit to change. <a href="../lessons/0114-agent-as-scheduler.html">Lesson 9.6</a>.</p>
+<pre><code>Look at this session. Critique how I have been prompting: which messages
+were step-by-step instructions for one bigger outcome, and which were too vague?
+Give three concrete changes and quote my own words. Do not change files.</code></pre>
+
+<div class="callout"><span class="label">Use them together</span><p>A goal-sized prompt with a finish line, a stop condition and an evidence request covers most of the page.</p></div>
+</main>
+<footer class="lesson-foot"><p><a href="../lessons/0016-goal-audience-not-method.html">Back to lesson 1.1</a></p></footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

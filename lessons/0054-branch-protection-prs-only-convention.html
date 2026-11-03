@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Branch protection: making "PRs only" a rule</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control as the safety net · Lesson 3.15</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.15</p>
+  <h1>Branch protection: making "PRs only" a rule</h1>
+  <p class="lede">A convention lives in your head and in a rules file. A branch protection rule lives in GitHub, where a tired agent at midnight cannot talk its way past it.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0045-pull-request.html">3.7 The pull request</a></span><span>Win: you can turn "changes go through a pull request" into a setting that enforces itself</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your app is published from the default branch of your repository, usually <code>main</code>. Every commit that lands there can reach your live site. You have already learned the safe path: work on a branch, open a pull request, let the checks run, merge when it is ready. Lesson <a href="0045-pull-request.html">3.7</a> covered that path.</p>
+<p>The safe path has one weakness. It depends on somebody choosing it every time. That somebody includes an agent working at speed while you are making coffee. <span class="term" title="A repository setting that refuses pushes to a branch unless the configured requirements are met">Branch protection</span> moves the choice out of the moment and into the repository's settings. After this lesson you can set it up in a few clicks, and you will know exactly what it does and does not stop.</p>
+
+<h2>A habit is not a gate</h2>
+<p>GitHub draws the distinction itself. Its branch reference describes protected branches as a way for maintainers to <q>enforce rules on important branches</q>, and says such a branch <q>can block force pushes or deletion, require status checks, require reviews, require code owner approval, or require signed commits before changes can merge</q>.<sup class="cite"><a href="#src-branches">[1]</a></sup> Every one of those is a thing GitHub checks before it accepts the change. None of them is a suggestion.</p>
+<p>This matters more with an agent in the loop than without one. An agent follows your project rules file because it read the file and decided to comply. That is ordinary, fallible behaviour. Protection is different: the server receives a push, compares it against a stored rule, and answers yes or no. The agent can be confused, over-eager, or working from a stale plan and the answer is still no.</p>
+<div class="callout">
+  <span class="label">The one-sentence version</span>
+  <p>Branch protection is how you write "pull requests only" somewhere other than your own memory.</p>
+</div>
+
+<h2>What a rule actually does</h2>
+<p>GitHub's documentation lists the settings a rule can carry. Four of them cover almost everything a beginner needs.<sup class="cite"><a href="#src-about">[2]</a></sup></p>
+<table class="ref">
+  <thead><tr><th>Setting</th><th>What it stops</th></tr></thead>
+  <tbody>
+    <tr><td>Require a pull request before merging</td><td>A commit pushed straight to the branch, bypassing review and checks</td></tr>
+    <tr><td>Require status checks to pass before merging</td><td>A merge while tests, a build or a linter is failing or still running</td></tr>
+    <tr><td>Do not allow bypassing the above settings</td><td>You, or anyone with admin rights, quietly ignoring the rule</td></tr>
+    <tr><td>Allow force pushes / Allow deletions (off)</td><td>Rewriting history or deleting the branch by accident</td></tr>
+  </tbody>
+</table>
+<p>Two of those are on by default the moment you create a rule. GitHub states that <q>by default, each branch protection rule disables force pushes to the matching branches and prevents the matching branches from being deleted</q>.<sup class="cite"><a href="#src-about">[2]</a></sup> Requiring a pull request is a checkbox you add. For a beginner's repository that checkbox is the whole point.</p>
+<p>A rule applies to a branch name or a pattern, so one rule on <code>main</code> covers every future change to your app. The pattern does not need to match a branch that exists yet. GitHub notes that <q>when you create a branch rule, the branch you specify doesn't have to exist yet in the repository</q>.<sup class="cite"><a href="#src-manage">[3]</a></sup></p>
+
+<h2>What it feels like when it fires</h2>
+<p>Protection is not silent. A direct push is rejected at the remote, and the message names the rule it broke. GitHub's own page shows the shape of that refusal:</p>
+<pre><code>remote: error: GH006: Protected branch update failed for refs/heads/main.</code></pre>
+<p>That line is useful, not mysterious. It means the commits are fine and the route was wrong. The fix is the workflow you already know: put the commits on a branch, push the branch, open a pull request.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to merge a finished redesign. The agent first read the repository's rules file, which said to wait for the automated checks and then confirm the deployed site. It found one of its own check jobs failing, fixed it, waited for a green run, and only then merged. An hour later a second change merged first, and the next pull request was reported as behind the main branch. The agent brought the branch up to date and ran the checks again rather than reaching for an administrator override. Two merges, two extra waits, no broken live page.</p>
+</div>
+<p>Notice what the setting did there. It did not make the agent careful; the agent was already trying to be careful. It removed the option of being careless at the moment when that costs most: right before a merge.</p>
+
+<h2>The administrator hole</h2>
+<p>Here is the part almost everyone misses on the first pass. A protection rule does not bind administrators unless you tell it to. GitHub's wording is precise: <q>by default, the restrictions of a branch protection rule don't apply to people with admin permissions to the repository</q>, and you can <q>optionally apply the restrictions to administrators</q>.<sup class="cite"><a href="#src-about">[2]</a></sup></p>
+<p>On a repository you created, you are the administrator. So a rule without that checkbox protects you from your agent, and from a collaborator, but not from yourself. The checkbox is labelled <strong>Do not allow bypassing the above settings</strong>.<sup class="cite"><a href="#src-manage">[3]</a></sup> Tick it if you want the rule to mean what it says.</p>
+<span class="sidenote">The same idea appears inside the tools. Claude Code's permission documentation lists <q>Merging a pull request no human has approved</q> among the actions its safety classifier blocks by default.<sup class="cite"><a href="#src-cc">[4]</a></sup> A repository setting and a tool guardrail are separate layers; neither replaces the other.</span>
+<p>There is a cost, and you should accept it knowingly. With bypass disabled, a genuinely urgent fix still goes through a branch and a pull request. That is a few extra minutes. In exchange, the answer to "how did this reach the live site?" is always the same. It came through a reviewed, checked pull request.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name two things a protection rule stops by default, and the one checkbox that decides whether it applies to you as the repository's administrator.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>By default a rule <strong>blocks force pushes</strong> and <strong>prevents deletion</strong> of the matching branch. Requiring a pull request and requiring status checks are separate checkboxes. The administrator exception is closed by <strong>Do not allow bypassing the above settings</strong>; without it, admins keep their override.</p></div>
+</div>
+
+<h2>Set it up on your own repository</h2>
+<p>This is a web-interface task, identical in all three agents, so there are no tool tabs here. Do it once on the repository that publishes your app.</p>
+<div class="doit">
+  <ol>
+    <li><label><input type="checkbox"> Open your repository on GitHub and click <strong>Settings</strong>.</label></li>
+    <li><label><input type="checkbox"> In the sidebar section "Code, planning, and automation", click <strong>Branches</strong>.</label></li>
+    <li><label><input type="checkbox"> Under "Branch protection rules", click <strong>Add classic branch protection rule</strong>.</label></li>
+    <li><label><input type="checkbox"> In "Branch name pattern", type <code>main</code>.</label></li>
+    <li><label><input type="checkbox"> Tick <strong>Require a pull request before merging</strong>. Leave the approval count at zero unless someone other than you reviews your work.</label></li>
+    <li><label><input type="checkbox"> If your repository already runs automated checks, tick <strong>Require status checks to pass before merging</strong> and pick them. If it does not, skip this for now; lesson <a href="0046-local-vs-ci.html">2.12 Local vs CI</a> explains what those checks are.</label></li>
+    <li><label><input type="checkbox"> Tick <strong>Do not allow bypassing the above settings</strong>.</label></li>
+    <li><label><input type="checkbox"> Click <strong>Create</strong>.</label></li>
+  </ol>
+  <div class="expect"><p>Settings → Branches now lists a rule for <code>main</code>. Ask your agent to commit a one-line change on <code>main</code> and push it: the push is refused with a message containing <code>GH006</code> and <code>Protected branch update failed</code>. Then have it move that same commit to a branch and open a pull request — that route still works, and the pull request's merge box names the requirement it is waiting on.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Rulesets are the same idea, newer</h2>
+<p>GitHub now also offers <em>rulesets</em>. GitHub describes them as <q>an alternative to branch protection rules</q> with <q>better discoverability without requiring admin access</q>.<sup class="cite"><a href="#src-merge">[5]</a></sup> You can apply several at once. The concept from this lesson carries over unchanged: a stored rule, evaluated by GitHub, that a push must satisfy. This course uses the classic page because it is the one most tutorials and most repositories still show. If your repository has rulesets instead, look for the same checkboxes and the same bypass setting.</p>
+<p>Whatever the mechanism, the test is the same. Try to push to <code>main</code> and see what GitHub says. If it accepts the push, nothing is protected, no matter what the settings page appears to claim.</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">What does a branch protection rule on <code>main</code> actually add?</p>
+  <button class="opt" type="button">A reminder inside your agent chat window</button>
+  <button class="opt" type="button">A hidden copy of every commit pushed</button>
+  <button class="opt" type="button">A server check refusing the direct push</button>
+  <button class="opt" type="button">A faster merge button skipping each wait</button>
+  <div class="why"><p>GitHub evaluates the rule when it receives the push. Your agent's goodwill, your rules file and your memory are not part of the decision.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A push to <code>main</code> comes back with <code>GH006: Protected branch update failed</code>. What is the right response?</p>
+  <button class="opt" type="button">Move those commits onto a branch and open a PR</button>
+  <button class="opt" type="button">Turn off the rule, push, then switch it back on</button>
+  <button class="opt" type="button">Force push the same commits until the server gives way</button>
+  <button class="opt" type="button">Rename the branch to one the rule does not match</button>
+  <div class="why"><p>The refusal is about the route, not the code. A branch plus a pull request is the supported path; the other options are the bypass habits protection exists to stop.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Why tick <strong>Do not allow bypassing the above settings</strong>?</p>
+  <button class="opt" type="button">Because rules expire after a fixed number of days</button>
+  <button class="opt" type="button">Because admins are exempt from the rule by default</button>
+  <button class="opt" type="button">Because checks otherwise never run on your own branch</button>
+  <button class="opt" type="button">Because it makes every check on a pull faster</button>
+  <div class="why"><p>Without that setting, people with admin permissions — on your own repository, that is you — can still merge without meeting the requirements. The rule binds everyone else and leaves you an override.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches">About protected branches</a> — GitHub's own account of every setting a rule can carry. Read the introduction and the two sections on required pull requests and required status checks; the merge queue and signed-commit material belongs to larger teams.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Unsure whether protection is on? Ask your agent: <em>"Check whether main is protected in this repository, and show me the evidence rather than telling me it is fine."</em> Then confirm in Settings yourself — the setting page is the source of truth.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-branches">GitHub, <a href="https://docs.github.com/en/pull-requests/reference/branches">Branches (reference)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-about">GitHub, <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches">About protected branches</a>. Retrieved 2026-11-02.</li>
+  <li id="src-manage">GitHub, <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule">Managing a branch protection rule</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cc">Anthropic, <a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a> (section "What the classifier blocks by default"). Retrieved 2026-11-02.</li>
+  <li id="src-merge">GitHub, <a href="https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/merging-a-pull-request">Merging a pull request</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain what a branch protection rule enforces and what it leaves open, create one on <code>main</code>, and recognise a <code>GH006</code> rejection as the rule working rather than the tool breaking.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/safety-checklist.html">Safety checklist</a></p>
+  <div class="pager"><span>Next: 4.1 Definition of done (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

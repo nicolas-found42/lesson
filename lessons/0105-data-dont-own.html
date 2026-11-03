@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data you don't own</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.17</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.17</p>
+  <h1>Data you don't own: provenance, units, evidence status</h1>
+  <p class="lede">Your app will show numbers that came from somewhere else — a website, a list, a sensor, another service. Before you ship, each of those numbers needs three labels: where it came from, what unit it is in, and how well it is actually supported.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0075-stale-invented-claims.html">5.8 Stale or invented claims</a></span><span>Win: you can label any outside number as measured, sourced, estimated, or unknown</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Almost no app is made of data you created yourself. Menus, prices, opening hours, transit times, weather, review counts — most of it arrives from outside: a page you copied, a file you were given, an API another company runs. When one of those numbers is wrong, your users do not blame the source. They blame your app. So the habit this lesson builds is simple: never ship a number you cannot describe.</p>
+
+<h2>Provenance: where did this number come from?</h2>
+<p><em>Provenance</em> is the record of a piece of data's origin — which page, file, or measurement produced it, and when. Last lesson (<a href="0075-stale-invented-claims.html">5.8</a>) was about the agent's own memory being unreliable. The same rule applies to data: a number without a source is a guess wearing a number's clothes. Anthropic's best-practices page puts the verification habit plainly: <q>Claude said it was done and it wasn't quite, usually because it had no way to check its own work.</q><sup class="cite"><a href="#src-a7">[3]</a></sup> The fix it recommends is the same one you should apply to data: give everything a way to be checked.</p>
+<p>When your agent puts an outside number into your app, ask one cheap question: <em>"What is the source, and when did you read it?"</em> A good answer names a page or file and a date. <q>It was in the docs somewhere</q> is not provenance.</p>
+<p>Sources differ in strength. A specification page published by the manufacturer is primary; a blog post that repeats it is secondary, and the retelling can drift from the original. Both count as provenance, but if a number matters to a user — a price, a safety limit — record the primary source when you can reach it, and say so when you cannot.</p>
+
+<h2>Units: the same number, a different meaning</h2>
+<p>The most famous data failure in history was a units mix-up. In 1999, NASA lost the Mars Climate Orbiter — a spacecraft worth hundreds of millions of dollars — because one team's software reported thruster impulse in pound-force seconds while the navigation software expected newton-seconds. NASA's own mishap board defined both units in its report: <q>lbf-s = pounds (force)-second</q> and <q>N-s = Newton-seconds</q><sup class="cite"><a href="#src-nasa">[1]</a></sup>, and the public summary attributes the loss to <q>a measurement mismatch between two measurement systems: SI units (metric) by NASA and US customary units by spacecraft builder Lockheed Martin.</q><sup class="cite"><a href="#src-wiki">[2]</a></sup> One pound-force second is about 4.45 newton-seconds, so every small correction was off by that factor, and the craft flew too low into the Martian atmosphere.</p>
+<p>Your app will never fly to Mars, but it will show numbers with units: km/h or mph, kg or lb, °C or °F, euros or dollars. A bare <code>210</code> means nothing until you write <code>210 km/h</code>. Whenever you see a number in outside data, ask <em>"210 what?"</em></p>
+<p>Staleness is the same failure in a different costume. <code>210 km/h</code> read from a page last week is a different fact from <code>210 km/h</code> released yesterday. That is why the source record includes a date: value and unit can both be right while the number is out of date. Prices, schedules, and opening hours change often, so they need a date more urgently than a physical constant does.</p>
+
+<h2>Evidence status: how well is this number supported?</h2>
+<p>Even with a source and a unit, a number can be shaky. Label each one with its <em>evidence status</em> — one of four words:</p>
+<div class="callout">
+  <span class="label">The four labels</span>
+  <p><strong>Measured</strong> — we checked it ourselves (we ran the code, counted the rows).<br>
+  <strong>Sourced</strong> — a named page or file states it, and we recorded which.<br>
+  <strong>Estimated</strong> — a reasoned guess, labelled as such.<br>
+  <strong>Unknown</strong> — nobody knows; we left it blank rather than invent it.</p>
+</div>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to tune a game using a public list of about 1,400 real vehicles. The list had gaps: power figures were missing for many entries, some top speeds did not say which unit they used, and a few automatic matches were plainly wrong — one rally car inheriting a family car's figures. The fix was not to guess. The agent recorded, for every single number, where it came from and its evidence status. Missing stayed <em>unknown</em>; copied stayed <em>sourced</em>; derived stayed <em>estimated</em>. Reviewers could then see exactly what was solid and what was not.</p>
+</div>
+<p>The rule that makes this work: <strong>label instead of silently guessing.</strong> An agent that fills gaps with plausible-looking numbers is inventing data — exactly the failure from lesson 5.8, but now wearing your app's name.</p>
+<p>Here is the discipline on one ordinary number. A bus app shows <code>7 min</code>. Provenance: the transit operator's live feed, read at 08:12. Unit: minutes until arrival, not a clock time. Evidence status: <em>sourced</em>. If the feed is down and a neighbour says "about ten minutes", the honest entry is <code>10 min</code>, status <em>estimated</em>, source "neighbour, 08:12". The rider sees a weaker claim and can plan around it.</p>
+
+<h2>Ask for the labels in one prompt</h2>
+<p>You do not need to remember the four words; you can paste them into any agent:</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>For every number this app shows that came from outside (a page, a file, an API, a copy-paste), record four things: the value, the unit, the source (a link or file, or the word "unknown"), and the evidence status: measured, sourced, estimated, or unknown. If two sources disagree, keep both values, say so, and mark the conflict. Never fill a gap with a guessed number.</pre></div>
+<p>That instruction about disagreement is the part people skip. When two sources give different values, deleting one is a guess about which is right. Keeping both, with their dates and statuses, lets a reviewer decide and shows you which source still needs chasing.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three labels every outside number needs, and the four evidence statuses. What is the one thing you must never do with a missing number?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Every outside number needs <strong>provenance</strong> (where it came from), a <strong>unit</strong> (what it is measured in), and an <strong>evidence status</strong> (measured, sourced, estimated, or unknown). Never fill a gap with a silently guessed number — label it <em>unknown</em> instead.</p></div>
+</div>
+
+<h2>Try it on your own app</h2>
+<div class="doit">
+  <span class="label">Your turn</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your project folder and start your agent.</label></li>
+    <li><label><input type="checkbox"> Paste the prompt block above, then add: <em>"List every outside number currently in this app."</em></label></li>
+    <li><label><input type="checkbox"> Read the answer. Check that each entry has a value, a unit, a source, and one of the four status words.</label></li>
+    <li><label><input type="checkbox"> Pick any number marked <em>unknown</em> or <em>estimated</em> and ask the agent: <em>"Where could we get a real value for this?"</em></label></li>
+  </ol>
+  <div class="expect">
+    <p><strong>What you should see:</strong> a list (or small table) where every number carries all four labels, and gaps are honestly marked <em>unknown</em> rather than filled with invented values. If the agent writes a number with no unit or no source, that is the lesson working — ask it to fix the label.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">Your app shows opening hours copied from a website. What should you record with them?</p>
+  <button class="opt" type="button">The hours alone, since the website is the source.</button>
+  <button class="opt" type="button">The hours, the date, the link, and a note.</button>
+  <button class="opt" type="button">Nothing extra; pages on the web never ever change.</button>
+  <button class="opt" type="button">A screenshot of the page and nothing else needed.</button>
+  <div class="why"><p>Provenance means recording where the data came from and when — the link and the date — so you can re-check it later. A bare copy can go stale silently.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">Two sources give different prices for the same item. What is the best move?</p>
+  <button class="opt" type="button">Pick the cheaper one, because lower is always right.</button>
+  <button class="opt" type="button">Delete the old value, keep only the newest price.</button>
+  <button class="opt" type="button">Average the two prices so the number looks fair.</button>
+  <button class="opt" type="button">Keep both, note the conflict, and label each source.</button>
+  <div class="why"><p>Conflicting data should stay visible, not be averaged or silently overwritten. Keeping both values with their sources lets you — or the agent — resolve the conflict with evidence.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">A downloaded list gives a vehicle's top speed as just "210". What is missing?</p>
+  <button class="opt" type="button">The unit, so 210 km/h and 210 mph look identical.</button>
+  <button class="opt" type="button">Nothing at all; bare numbers are always complete and safe.</button>
+  <button class="opt" type="button">The source; a number with no origin is just guesswork.</button>
+  <button class="opt" type="button">The year it was measured, and nothing else at all.</button>
+  <div class="why"><p>Both unit and source matter, but the question asks what makes "210" ambiguous on its face: the unit. 210 km/h and 210 mph are wildly different speeds, and the Mars Climate Orbiter shows what unit mix-ups cost.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">Which evidence status means "we checked this ourselves"?</p>
+  <button class="opt" type="button">Measured, since we verified it directly with our own check.</button>
+  <button class="opt" type="button">Sourced, because a named outside page clearly states the value.</button>
+  <button class="opt" type="button">Estimated, because it is only a guess and not verified.</button>
+  <button class="opt" type="button">Unknown, because nothing at all supports this value right now.</button>
+  <div class="why"><p><em>Measured</em> means the value was verified by running or counting something yourself. <em>Sourced</em> leans on a named external source; <em>estimated</em> and <em>unknown</em> say the number is not solid.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://llis.nasa.gov/llis_lib/pdf/1009464main1_0641-mr.pdf">Mars Climate Orbiter Mishap Investigation Board, Phase I Report</a> — NASA's own report on the units failure. Search inside the PDF for "lbf-s" and "root cause". Written for engineers, but the summary pages are readable.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Give me three examples of data in my app that I don't own, and label each one"</em> or <em>"What happens if I ship a number marked 'estimated' without telling users?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-nasa">NASA, <a href="https://llis.nasa.gov/llis_lib/pdf/1009464main1_0641-mr.pdf">Mars Climate Orbiter Mishap Investigation Board Phase I Report</a> (1999). Retrieved 2026-11-02.</li>
+  <li id="src-wiki">Wikipedia, <a href="https://en.wikipedia.org/wiki/Mars_Climate_Orbiter">Mars Climate Orbiter</a>. Retrieved 2026-11-02. Secondary source used only for the one-sentence failure summary; the report above is primary.</li>
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-d1">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as outdated). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> label any outside number with its provenance, its unit, and its evidence status — and refuse to ship silent guesses.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 8.18 Assets &amp; licensing (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

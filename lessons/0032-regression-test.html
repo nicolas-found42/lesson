@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prove the bug before you fix it</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.4</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.4</p>
+  <h1>Prove the bug before you fix it</h1>
+  <p class="lede">A test written after a fix can only agree with the fix. A test that fails first is evidence that the bug was real, that the test exercises it, and that the repair changed something.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0031-test.html">2.3 What a test is</a></span><span>Win: you can tell a proven fix from a plausible one</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Every change to a working app is a chance to break something that already worked. When you ship, people keep using the parts you are not touching. A fix you cannot prove is a guess that happens to look right today, and the same bug can come back next month unnoticed. This lesson turns each bug into a small, permanent guard, and it stops the agent from "fixing" a problem it never reproduced.</p>
+
+<h2>What a regression is</h2>
+<p>A <span class="term" title="A feature that used to work and stopped working after a change.">regression</span> is a thing that used to work and now does not, because of a change. The name is the plain English sense: the software went backwards. Wikipedia defines the testing that catches it as <q>re-running functional and non-functional tests to ensure that previously developed and tested software still performs as expected after a change.</q><sup class="cite"><a href="#src-w1">[1]</a></sup></p>
+<p>A <strong>regression test</strong> is one test added when you learn about a bug. It must fail on the broken version, pass on the fixed one, and keep passing from then on. It is a guard placed exactly where the fence was missing.</p>
+<div class="callout">
+  <span class="label">The one-sentence version</span>
+  <p>You do not have a fix until you have a test that failed before it and passes after it.</p>
+</div>
+
+<h2>The trap: a test written after the fix</h2>
+<p>Agents are quick to write a test that passes. If the code has already changed, a test that goes green on its first run teaches you little. It may check the behaviour you wanted, or it may merely describe what the code now does, bug included. You cannot tell those apart from a green tick.</p>
+<p>Here is the trap in miniature. A cart total should take ten percent off a forty-unit order, but the code subtracts ten units instead of ten percent, so it returns thirty instead of thirty-six.</p>
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>add a test for the discount bug</span></div>
+  <div class="row tool"><span class="who">agent</span><span>writes: expect the total to be 30, and it passes</span></div>
+  <div class="row flag"><span class="who">note</span><span class="note">The test agrees with the broken code. It has locked the bug in, and it will now fight anyone who fixes it.</span></div>
+</div>
+<p>The agent was not dishonest. It added a test and the suite went green. The instruction was wrong, not the agent. Ask for the failing run and the ambiguity disappears.</p>
+
+<h2>Failing first, on purpose</h2>
+<p>The failure is the part that carries information, but only if it fails for the right reason. A test that cannot even start, because a file name is misspelled, also reports red. It has proved nothing about the bug. Read the message that comes with the failure.</p>
+<div class="compare">
+  <div class="bad"><span class="label">Fails for the wrong reason</span><p><code>Error: Cannot find module './pricing.js'</code>. The test never reached the code under test. Fix the setup and run again; do not touch the app.</p></div>
+  <div class="good"><span class="label">Fails for the right reason</span><p><code>Expected values to be strictly equal: 30 !== 36</code>. The test ran, called the real function, and got the number the bug produces.</p></div>
+</div>
+<p>The second message does three jobs: it shows the bug exists, shows the test can see it, and names the number you expect after the repair. "Fixed" stops being an opinion.</p>
+<p>Claude Code's own best-practices page recommends exactly this shape for a bug report: <q>write a failing test that reproduces it, then fix it</q>.<sup class="cite"><a href="#src-a7">[3]</a></sup> Its guidance for unattended runs asks whether the agent has <q>a failing test it has to turn green</q>.<sup class="cite"><a href="#src-a7">[3]</a></sup> Codex's guidance is less specific about order but names the same goal: ask it to <q>create tests when needed, run the relevant checks, confirm the result</q> before you accept the work.<sup class="cite"><a href="#src-b7">[4]</a></sup></p>
+
+<h2>A worked example, run for real</h2>
+<p>A small shop-cart file was run in a throwaway folder with Node's built-in test runner, which needs no install. The runner starts with <code>node --test</code> and, in the documentation's words, <q>If any tests fail, the process exit code is set to 1</q>.<sup class="cite"><a href="#src-n1">[2]</a></sup> The transcript below is one pass of that cycle; the numbers are the ones the runner printed.</p>
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>the cart takes 10 percent off a 40.00 order, but it charges 30.00. Write a test that fails first.</span></div>
+  <div class="row tool"><span class="who">agent</span><span>test: ten percent off a 40.00 cart leaves 36.00</span></div>
+  <div class="row you"><span class="who">you</span><span>node --test</span></div>
+  <div class="row flag"><span class="who">red</span><span>fail 1 &nbsp; 30 !== 36 &nbsp; (exit code 1)</span></div>
+  <div class="row you"><span class="who">you</span><span>now fix the cause, then run it again</span></div>
+  <div class="row tool"><span class="who">agent</span><span>subtracts a percentage instead of a flat amount</span></div>
+  <div class="row you"><span class="who">you</span><span>node --test</span></div>
+  <div class="row tool"><span class="who">green</span><span>pass 1 &nbsp; fail 0 &nbsp; (exit code 0)</span></div>
+</div>
+<p>Two runs, two results, one changed line. That pair, kept in the session or your notes, is the evidence. A single green run is not.</p>
+
+<h2>What a good regression test looks like</h2>
+<ul>
+  <li><strong>One behaviour.</strong> The test name reads like a sentence about the app: "ten percent off a 40.00 cart leaves 36.00". Not "test discount 2".</li>
+  <li><strong>The bug's own numbers.</strong> Use the value the user actually saw and the value they expected. Those two numbers are the whole test.</li>
+  <li><strong>No network, no clock, no shared folder.</strong> Keep it repeatable on any machine. A test that depends on the time of day will pass today and lie tomorrow.</li>
+  <li><strong>Left behind.</strong> The test stays in the suite after the fix. That is what makes it a guard rather than a one-off check.</li>
+</ul>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>An app's own suite was green: dozens of tests, all passing. An outside review then found three real bugs the suite could not see. For each, the agent was asked to reproduce before repairing. It wrote a test that called the app's own lookup, watched it fail with the wrong value in the message, and only then changed the code. Without that failing run, nobody could say whether the change fixed the bug or moved it.</p>
+</div>
+<p>Green tests are not proof the app is correct, only that the behaviours you thought to check still hold. Each bug tells you about a check you were missing; the regression test buys that check once and keeps it.</p>
+
+<h2>Ask for the failing run</h2>
+<p>You do not need to write the test yourself. You need the order to be non-negotiable. This prompt works in all three agents:</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Users report [the symptom, with the numbers you saw].
+Before changing any code, write ONE test that reproduces it.
+Run it and show me the failing output, including the expected and actual values.
+If it fails because of a setup mistake rather than the bug, fix the setup and run it again.
+Only after I have seen it fail on the real bug, fix the cause.
+Then run that test, then the whole suite, and show me both results.</pre>
+</div>
+<p>The order matters more than the wording. "Write a test and fix it" lets the agent choose, and the cheap order is fix first. "Show me the failing output" removes the choice.</p>
+<p>You can also run the test yourself without leaving the session. All three tools accept a leading <code>!</code> for a shell command:</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>A <code>!</code> at the start of the line puts the input box in shell mode: <q>Run a command directly, add its output to the session, and have Claude respond to it</q>.<sup class="cite"><a href="#src-a6">[5]</a></sup> So <code>! node --test</code> runs the suite and the agent sees the same red you do.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>The CLI documents the same prefix: <q>Prefix a line with ! to run a local shell command under the current approval and sandbox settings.</q><sup class="cite"><a href="#src-b6">[6]</a></sup> Approval prompts stay on; you are only saving a window switch.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp uses <code>!</code> to <q>Run the command in your user shell, stream the result in the TUI, and include it in conversation context.</q><sup class="cite"><a href="#src-c4">[7]</a></sup> A double <code>!!</code> runs the command but keeps the output out of the model's context.<sup class="cite"><a href="#src-c4">[7]</a></sup></p>
+  </div>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: why is a test that passes on its first run weak evidence, and what should you look at in a failing run before you accept that the bug is real?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A test written after the fix may only describe the code as it now stands, bug included, so its first green run proves nothing about the bug. In a failing run, read the message: it should name the behaviour and show the expected and actual values, not a setup error such as a missing file. Only a failure on the real bug, followed by a pass after the repair, is evidence.</p></div>
+</div>
+
+<h2>Practise the cycle</h2>
+<p>Put the four steps in order before you try them on your own app.</p>
+<div class="order">
+  <span class="label">Put the steps in order</span>
+  <button class="item" type="button" data-pos="3">Fix the cause in the app code.</button>
+  <button class="item" type="button" data-pos="1">Reproduce the bug once by hand.</button>
+  <button class="item" type="button" data-pos="4">Run the new test, then the whole suite.</button>
+  <button class="item" type="button" data-pos="2">Write one test that fails on the bug.</button>
+  <p class="status"></p>
+</div>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Pick one real bug you have seen in your app, or one small thing that is wrong on purpose. Write down what you saw and what you expected, with numbers if you have them.</label></li>
+    <li><label><input type="checkbox"> Open your agent in the project folder with approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>), and paste the prompt above with your symptom filled in.</label></li>
+    <li><label><input type="checkbox"> Before approving the fix, read the failing output. Check that it shows the bug's own numbers, not a missing file or a typo.</label></li>
+    <li><label><input type="checkbox"> After the fix, run it yourself with <code>!</code> and the project's test command (lesson <a href="0029-run-yourself.html">2.1</a>), and read the pass count.</label></li>
+  </ol>
+  <div class="expect"><p>You should see two runs of the same test: one red with the expected and actual values from your bug, then one green. The suite total should go up by one, and the new test should stay in the folder. If the first run was already green, stop and say so: either the bug is not reproduced or the test is checking something else. Do not accept the fix until you have seen red.</p></div>
+  <p class="progress"></p>
+</div>
+<p class="sidenote">When a test passes on one run and fails on the next with unchanged code, it is flaky rather than proof of a bug. That is its own problem, covered in lesson <a href="0039-checker-can-be-wrong.html">2.11 The checker can be wrong</a>.</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Which test deserves to be called a regression test?</p>
+  <button class="opt" type="button">A test that runs faster than every other test.</button>
+  <button class="opt" type="button">A test that failed before the fix now passes.</button>
+  <button class="opt" type="button">A test the agent writes after it repairs code.</button>
+  <button class="opt" type="button">A test that needs no project folder to run.</button>
+  <div class="why"><p>A regression test is defined by its history: it failed on the broken version and passes on the fixed one, and it stays behind as a guard.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which step gives you the strongest evidence that the bug was real?</p>
+  <button class="opt" type="button">Read the agent's own summary of the change.</button>
+  <button class="opt" type="button">Run the whole test suite once after repair.</button>
+  <button class="opt" type="button">Commit the change before you run any tests.</button>
+  <button class="opt" type="button">See the new test fail before the fix.</button>
+  <div class="why"><p>A failure on the bug itself shows the bug exists and that the test can see it. A green suite afterwards then means the fix changed the behaviour, not the test.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">The new test fails with "Cannot find module". What is the right reading?</p>
+  <button class="opt" type="button">Repair the test's own setup, then rerun it.</button>
+  <button class="opt" type="button">Rewrite the app's own code, then rerun all.</button>
+  <button class="opt" type="button">Delete the new test, then carry on working.</button>
+  <button class="opt" type="button">Reinstall the project first, then run it all.</button>
+  <div class="why"><p>That message means the test never reached the code under test, so it says nothing about the bug. Fix the import or path and get a failure that names the real behaviour.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>, section "Give Claude a check to run". It is written for one agent, but the reasoning about what counts as a check applies to all three. Read the two short sections on specific prompts and on checks, then stop.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on reading a failure? Paste the whole output, not the last line, and ask: <em>"Which line tells me the test reached the real bug?"</em> If the agent's test looks like it is describing the bug rather than catching it, say so and ask for the failing run.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-w1">Wikipedia, <a href="https://en.wikipedia.org/wiki/Regression_testing">Regression testing</a>. Page last modified 2026-10-12; retrieved 2026-11-02.</li>
+  <li id="src-n1">Node.js, <a href="https://nodejs.org/api/test.html">Test runner</a> (v26.13.0 documentation). Retrieved 2026-11-02. Used for the <code>node --test</code> demo and the exit-code quote.</li>
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b7">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Best practices</a> (Codex). Retrieved 2026-11-02.</li>
+  <li id="src-a6">Anthropic, <a href="https://code.claude.com/docs/en/interactive-mode">Interactive mode</a> (shell mode with <code>!</code>). Retrieved 2026-11-02.</li>
+  <li id="src-b6">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Developer commands</a> (Codex CLI). Retrieved 2026-11-02.</li>
+  <li id="src-c4">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> ask for a test that fails on the bug before any fix, read the failure to check it is the right failure, and keep the test as a guard.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 2.5 Linters, formatters and type checkers (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

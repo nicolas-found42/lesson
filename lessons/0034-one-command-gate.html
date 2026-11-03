@@ -43,7 +43,7 @@ check:
 <p>The <code>&amp;&amp;</code> matters. It means "run the next command only if this one succeeded", so the gate stops at the first failure instead of burying it under later noise. With several checks, the order should be cheapest first: a syntax check takes a second, the tests take longer.</p>
 
 <h2>A real run, failing then passing</h2>
-<p>I ran this in a throwaway folder with a small discount function and one test that says ten percent off 50 is 45. First, the function was wrong.</p>
+<p>Here is a real run in a throwaway folder: a small discount function and one test that says ten percent off 50 is 45. First, the function was wrong.</p>
 <div class="transcript">
   <div class="row you"><span class="who">you</span><span>make check</span></div>
   <div class="row tool"><span class="who">tool</span><span>✖ 10 percent off 50 is 45<br>AssertionError: Expected values to be strictly equal:<br>40 !== 45<br>make: *** [check] Error 1</span></div>
@@ -72,17 +72,17 @@ check:
 <p>Lesson <a href="0027-project-rules-file.html">1.12</a> taught the rules file: a small text file at the top of the project that the agent reads at the start of every session. It is the natural place to record the gate, because the gate is a procedure you do not want to repeat in every prompt. Claude Code's guide calls this <q>the single most useful line in your CLAUDE.md</q> when the repo already has checks.<sup class="cite"><a href="#src-a7">[1]</a></sup></p>
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
     <p>Put the line in <code>CLAUDE.md</code>, which Claude Code loads as <q>persistent instructions for a project</q>.<sup class="cite"><a href="#src-a5">[7]</a></sup> The page is careful about what that buys you: Claude treats these files <q>as context, not enforced configuration</q>.<sup class="cite"><a href="#src-a5">[7]</a></sup> So the line tells Claude what to run; it does not force it to run.</p>
   </div>
-  <div class="tabpanel" data-panel="codex" hidden>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
     <p>Put the line in <code>AGENTS.md</code>. Codex <q>reads AGENTS.md files before doing any work</q>.<sup class="cite"><a href="#src-b5">[8]</a></sup> The same caveat applies: this is guidance the model reads, not a lock on its behaviour.</p>
   </div>
-  <div class="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
     <p>Put the line in <code>AGENTS.md</code> at the repository root, which omp loads and applies <q>throughout the session</q>.<sup class="cite"><a href="#src-c5">[9]</a></sup> Keep it to the command and one sentence about when to run it.</p>
   </div>
 </div>
@@ -94,7 +94,7 @@ Before you report a task as done, run `make check` from the repository root.
 It must exit with code 0. If it fails, read the output, fix the cause, and run it again.
 Paste the last ten lines of its output in your final message, including any counts.</pre>
 </div>
-<p>The last line is the part beginners skip. A gate produces evidence, and evidence is what turns "done" into something you can check without redoing the work. Lesson <a href="0030-claims-vs-evidence.html">2.2</a> covers that habit; here you are just arranging for the evidence to exist.</p>
+<p>The last line is the part beginners skip. A gate produces evidence, and evidence is what turns "done" into something you can check without redoing the work. Lesson <a href="0030-claims-vs-evidence.html">2.2</a> covers that habit; here your job is to arrange for the evidence to exist.</p>
 
 <h2>Where a gate stops short</h2>
 <p>A gate is only as honest as the checks inside it, and it can only see what it runs.</p>

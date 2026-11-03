@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merge or squash: what "merged" actually means</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control as the safety net · Lesson 3.8</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.8</p>
+  <h1>Merge or squash, and what "merged" means</h1>
+  <p class="lede">The merge button has more than one setting, and they leave different history behind. Pick once, on purpose, and you will know what to do when a review comment arrives too late.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0045-pull-request.html">3.7 Pull request</a></span><span>Win: you can choose a merge method and explain what happens to your branch afterwards</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>A pull request is a proposal. Merging is the moment the proposal becomes part of your app's real code. That moment is where beginners lose work: they merge, keep editing the old branch, and cannot understand why the live site does not change, or why Git refuses to delete a branch that looks finished.</p>
+<p>Lesson 3.7 covered the proposal. This lesson covers the acceptance: the two usual ways to land it, what the word "merged" is actually a claim about, and the small rule that decides what you do when feedback arrives after the fact.</p>
+
+<h2>"Merged" is about reachability, not about a button</h2>
+<p>GitHub's own reference defines it precisely: a pull request <q>can be marked as merged if its head branch commits become reachable from the base branch outside that pull request</q>.<sup class="cite"><a href="#src-merges">[1]</a></sup> In plain words, "merged" means your base branch now contains your work, by whatever route.</p>
+<p>That definition has a surprising consequence. A pull request can show as merged even if nobody clicked its merge button, because the same commits arrived another way. GitHub calls these indirect merges and warns they <q>can affect automation and branch protection expectations</q>.<sup class="cite"><a href="#src-merges">[1]</a></sup> You do not need to manage that case as a beginner. You do need the habit behind it: check what is in the base branch, not what a badge says.</p>
+<p>For your course work the practical question is smaller. Once your work is merged, the pull request is a closed record of a decision. Comments still land on it, but it is no longer a place where new work happens.</p>
+
+<h2>Two ways to land the same work</h2>
+<p>On GitHub, the merge box offers up to three choices. The names you will see are <strong>Merge pull request</strong>, <strong>Squash and merge</strong>, and <strong>Rebase and merge</strong>.<sup class="cite"><a href="#src-merging">[2]</a></sup> The first two matter for this lesson.</p>
+<div class="compare">
+  <div class="good">
+    <span class="label">Merge commit</span>
+    <p><q>Preserves every commit from the pull request branch and adds an explicit merge point.</q><sup class="cite"><a href="#src-merges">[1]</a></sup></p>
+    <p>Your branch's history stays visible, including the "oops" commits. Main gets one extra commit that joins the two lines together.</p>
+  </div>
+  <div class="good">
+    <span class="label">Squash and merge</span>
+    <p><q>Combines all commits in the pull request into a single commit on the base branch.</q><sup class="cite"><a href="#src-merges">[1]</a></sup></p>
+    <p>Main gets one tidy commit with all the changes and none of the intermediate steps.</p>
+  </div>
+</div>
+<p>Pro Git explains why a merge commit exists at all: when the two branches have both moved, Git <q>creates a new snapshot that results from this three-way merge and automatically creates a new commit that points to it</q>.<sup class="cite"><a href="#src-progit">[4]</a></sup> That commit has two parents, one from each branch.</p>
+<p>Here is a real run in a throwaway repository. A small branch made three commits, the last of which fixes the wording of the first. Merged with a merge commit:</p>
+<pre><code>*   28baf1d (HEAD -&gt; main) Merge pull request #1 from add-search
+|\
+| * 3f847ad Fix wording
+| * 89fcb48 Oops, add empty message
+| * 84b0d08 Add search box (first try)
+|/
+* 30d3dad Add home page</code></pre>
+<p>And the same three commits, squashed. Main has one line, and the branch's commits are not in it:</p>
+<pre><code>* be750f0 (HEAD -&gt; main) Add search box (#1)
+* 227c628 Add home page</code></pre>
+<p>Both results contain the same files. Only the history differs. If you want to inspect this yourself, <code>git log --oneline --graph</code> draws exactly those shapes.</p>
+
+<h2>Which one should you pick?</h2>
+<p>GitHub's reference gives a rule of thumb for each. Choose a merge commit when <q>your team values complete history</q>; choose squash <q>when a pull request represents one logical change, especially if the branch includes many small fixup commits</q>.<sup class="cite"><a href="#src-merges">[1]</a></sup></p>
+<p>Working with a coding agent produces fixup commits. The agent adds a feature, you ask for a spacing change, it commits again, then a review fixes a typo. On main, nobody needs that sequence. They need one commit that says what changed and why. That is the case squash was built for.</p>
+<p>For a small app built with an agent, squash is usually the easier choice to live with: main stays scannable, and each line in the history maps to one pull request.</p>
+<span class="sidenote">A merge commit is not "better history". It is more history. Whether that is an asset or clutter depends on who reads it.</span>
+<p>If you are unsure, ask before merging. A sentence to your agent is enough: <em>"This repo allows merge commits and squash. Which do the existing commits look like, and which should I use?"</em> The agent can read the log; you make the call.</p>
+
+<h2>What squash changes about your branch</h2>
+<p>Squash is more than a cosmetic setting. Git documents what <code>git merge --squash</code> really does: it produces <q>the working tree and index state as if a real merge happened (except for the merge information), but do not actually make a commit</q>.<sup class="cite"><a href="#src-gitmerge">[3]</a></sup> Something has to make that commit afterwards. On GitHub, the merge button does it for you. On your laptop, you commit yourself.</p>
+<p>Two practical effects follow, and both surprise people.</p>
+<p>First, Git does not think the branch is merged. In my demo, right after the squash landed, deleting the branch failed:</p>
+<pre><code>$ git branch -d add-search
+error: the branch 'add-search' is not fully merged</code></pre>
+<p>The content is identical — <code>git diff main add-search</code> printed nothing — but the commits are not the same objects. Git compares commits, not file contents, so it cannot see that the work already arrived. GitHub lets you delete the branch after a squash merge anyway, because it tracks the pull request rather than the commit graph. On your laptop you would need <code>-D</code>, and that is a small red flag worth understanding before you type it.</p>
+<p>Second, the old branch becomes a bad place to continue. GitHub's reference is direct: <q>Squash merging works best for short-lived branches.</q> Keep committing on the same head branch and <q>later pull requests can include commits that were already squashed into the base branch</q>.<sup class="cite"><a href="#src-merges">[1]</a></sup> The result is duplicated work and avoidable conflicts.</p>
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>After any merge, treat the branch as spent. Start the next piece of work from an updated default branch, on a new branch.</p>
+</div>
+
+<h2>Late review comments need a new pull request</h2>
+<p>Reviews do not stop when you merge. A reviewer opens the page the next morning, a bot re-runs a check, or a friend notices that the button is off-centre. The comment lands on a pull request that is already closed as merged.</p>
+<p>A merged pull request is a finished record: its branch has already landed, and pushing more commits to it would not change main. GitHub's own instructions for changing merged work follow that shape — <q>Reverting a merged pull request creates a new pull request</q>.<sup class="cite"><a href="#src-revert">[5]</a></sup> Fixing forward follows the same rule.</p>
+<p>So the sequence is: new branch from the current default branch, make the fix, push, open a new pull request, and in its description point at the old one ("follow-up to #12, which merged before this review arrived"). The reviewer's comment stays attached to the original for the record.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user was shipping a small browser game with an agent. The pull request looked fine and the local checks passed, so they said "merge" while the hosted check was still running. It landed as a merge commit. Minutes later a review bot commented on that merged pull request with a genuine bug: one score value was written where another was read, and the display showed a number that never changed.</p>
+  <p>The agent did not try to reopen anything. It opened a fresh branch from the updated default branch, made the one-line fix, wrote a test that failed before the fix, and opened a second pull request that referenced the first. The user merged that one once the hosted check had finished. A merge ends one conversation; a comment after it starts a new one.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without looking back: after a squash merge, what does your default branch contain, and is the old branch "merged" as far as Git is concerned?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Main contains <strong>one new commit</strong> holding all of the pull request's changes, with the individual commits discarded. Git does not consider the old branch merged, because its commits were never recorded on main, so a plain <code>git branch -d</code> refuses. GitHub still marks the pull request merged and lets you delete the branch there.</p></div>
+</div>
+
+<h2>Try it on your own pull request</h2>
+<p>You need a repository with an open pull request, and your permission prompts left on. Stop at any step you do not understand and ask your agent to explain it first.</p>
+<div class="doit">
+  <span class="label">Do it now: land one pull request deliberately</span>
+  <ol>
+    <li><label><input type="checkbox"> Open the pull request on GitHub and scroll to the merge box at the bottom. Note which merge options your repository actually offers; the list depends on repository settings.</label></li>
+    <li><label><input type="checkbox"> Click the arrow next to the green button. Read the three labels before clicking anything.</label></li>
+    <li><label><input type="checkbox"> Choose <strong>Squash and merge</strong> for this exercise, and read the commit message GitHub prefilled. GitHub composes it from the pull request title and other details, depending on repository settings.</label></li>
+    <li><label><input type="checkbox"> Confirm, then delete the branch when GitHub offers it.</label></li>
+    <li><label><input type="checkbox"> In your terminal, run <code>git switch main</code> and <code>git pull</code>. Then run <code>git log --oneline -5</code>.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see one new commit on main whose message matches the pull request title, and no intermediate commits from the branch. If your agent is running, ask it: <em>"Show me the last five commits on main and tell me whether the pull request looks squashed or merged."</em> A squash shows one line per pull request; a merge commit shows a line with two parents.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+<p>If you prefer the terminal, the GitHub CLI exposes the same choice. In <code>gh</code> 2.102.0, <code>gh pr merge --help</code> lists <code>-s, --squash</code> as "Squash the commits into one commit and merge it into the base branch".<sup class="cite"><a href="#src-gh">[6]</a></sup> The decision is still yours; only the clicking moves.</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">What lands on main when you choose Squash and merge?</p>
+  <button class="opt" type="button">One new commit holding all the branch's changes</button>
+  <button class="opt" type="button">Every original commit plus one extra merge commit</button>
+  <button class="opt" type="button">The branch name saved inside a commit message</button>
+  <button class="opt" type="button">Nothing at all until the reviewer clicks approve</button>
+  <div class="why"><p>The pull request's commits are combined into a single commit on the base branch. The individual commits stay only in the pull request's record, not on main.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A merged pull request gets a valid review note the next day. What now?</p>
+  <button class="opt" type="button">Reopen the old pull request and keep pushing there</button>
+  <button class="opt" type="button">Open a fresh branch and a fresh pull request</button>
+  <button class="opt" type="button">Push the new commits onto the main default branch</button>
+  <button class="opt" type="button">Edit the merged description and note the fix there</button>
+  <div class="why"><p>A merged pull request is a closed record; its branch no longer represents what main should become. New work starts on a new branch and gets its own pull request, which can reference the old one.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">After a squash merge, why does <code>git branch -d</code> refuse?</p>
+  <button class="opt" type="button">Git still sees uncommitted edits in your project folder</button>
+  <button class="opt" type="button">The remote copy of that branch was never fetched</button>
+  <button class="opt" type="button">Git sees commits on it that main never recorded</button>
+  <button class="opt" type="button">Git treats squashed branches as something it cannot merge</button>
+  <div class="why"><p>Git compares commits, not file contents. A squash creates a different commit with the same effect, so the branch's original commits are not in main's history and the safety check fires.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Before we merge this pull request: tell me which merge method this repository is set up for. Then explain in two sentences what main will look like after a merge commit versus a squash, and which one fits this branch's commits. Do not merge anything yet.</pre></div>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/pull-requests/reference/pull-request-merges">Pull request merges</a> — GitHub's own comparison of the three strategies, with the trade-offs in a table. Short, and it is the page that decides what the buttons do. For the underlying Git behaviour, read <a href="https://git-scm.com/docs/git-merge">git-merge</a> only as far as <code>--squash</code>.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Unsure which method your project uses? Ask the agent that gave you this course: <em>"What happens if I squash-merge here, and will that break anything we planned?"</em> Or try: <em>"Explain merge commits with a diagram I can draw on paper."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-merges">GitHub, <a href="https://docs.github.com/en/pull-requests/reference/pull-request-merges">Pull request merges</a>. Retrieved 2026-11-02.</li>
+  <li id="src-merging">GitHub, <a href="https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/merging-a-pull-request">Merging a pull request</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gitmerge">Git project, <a href="https://git-scm.com/docs/git-merge">git-merge(1)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-progit">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging">Pro Git, ch. 3.2: Basic Branching and Merging</a>. Retrieved 2026-11-02.</li>
+  <li id="src-revert">GitHub, <a href="https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/reverting-a-pull-request">Reverting a pull request</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gh">GitHub CLI, <code>gh pr merge --help</code> (version 2.102.0), run locally. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name the difference between a merge commit and a squash, say what "merged" means, and start a new pull request when feedback arrives after the merge.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Previous: <a href="0046-local-vs-ci.html">2.12 Local vs CI</a></span> · <span>Next: <a href="0048-merge-conflicts.html">3.9 Merge conflicts</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

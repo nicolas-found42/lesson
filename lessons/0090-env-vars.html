@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Environment variables: settings that stay out of your code</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Secrets and configuration · Lesson 8.2</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.2</p>
+  <h1>Environment variables: settings that stay out of your code</h1>
+  <p class="lede">Your app will need values it must not carry inside its files — a key, a password, an address. Environment variables are the place those values live, and a <code>.env</code> file is how you keep them on your own machine without committing them.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0089-secrets.html">8.1 Secrets: what they are and why not in code</a></span><span>Win: you can give your app a secret safely and explain the difference between <code>.env</code> and <code>.env.example</code></span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your mission is to take an idea to a public app. The moment your app talks to any outside service — a map, a payment provider, an email sender, even a login — it needs a credential. Lesson 8.1 covered why that credential must never sit inside your code. This lesson covers the practical half of that rule: <em>where</em> the value lives instead, and how you keep it out of git while still telling teammates what to set up.</p>
+
+<h2>What an environment variable is</h2>
+<p>Every program you run gets a small list of named values from the shell around it, called its <strong>environment</strong>. An <strong>environment variable</strong> is one entry in that list: a name, an equals sign, and a value, like <code>MY_APP_KEY=abc123</code>. The running program can read these values without them being written anywhere in its files. The Twelve-Factor App methodology — a widely used standard for building apps — puts the rule plainly: <q>Store config in the environment</q> and keep <q>strict separation of config from code</q>, because config <q>varies substantially across deploys, code does not.</q><sup class="cite"><a href="#src-12f">[1]</a></sup> Agents themselves work this way: Claude Code's quickstart notes that if the <code>ANTHROPIC_API_KEY</code> environment variable is set and approved, login is skipped.<sup class="cite"><a href="#src-cc">[2]</a></sup></p>
+<p>You can see the idea in your own terminal. Typing <code>printenv</code> lists every variable your shell currently holds — on an ordinary machine, well over a hundred.</p>
+<p>Scope matters here. A value loaded in one terminal is not visible in another one. So if your agent reports that a variable is unset, check which shell started it. omp's docs give a short rule for what belongs in the environment at all: use one when a value <q>belongs to the machine or process rather than the project</q> — a secret, a cloud key, a proxy address, or a setting for one machine only.<sup class="cite"><a href="#src-omp">[3]</a></sup></p>
+
+<h2>A real pattern: keys from the shell, not from files</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user told their agent to use the API keys already present in their shell environment rather than pasting them into any file. During live testing the agent discovered that one test had sent a made-up contact address to a real external service — the kind of value that must come from configuration. The fix was to read the value from an environment variable and skip that test cleanly when the variable was unset. No key ever appeared in a file, a log, or a commit.</p>
+</div>
+<p>The lesson of that pattern: the app asks the environment for the value at runtime. The value itself never becomes part of the project.</p>
+
+<h2>The <code>.env</code> file, and its companion <code>.env.example</code></h2>
+<p>Typing <code>export MY_KEY=...</code> by hand every time you open a terminal is tedious and error-prone. The common convention is a file named <code>.env</code> in your project folder, holding one <code>NAME=value</code> per line. The agent tool itself loads it: omp's documentation lists <q><code>$PWD/.env</code> in the launch directory</q> among the places it reads environment values from, and describes the <code>.env</code> syntax as lines of names and values with <q>Blank lines and <code>#</code> comments are allowed</q>.<sup class="cite"><a href="#src-omp">[3]</a></sup> (Single-vendor source: this is omp's own documentation.)</p>
+<p>The syntax is plain text. A name may hold letters, digits, and underscores. It may not start with a digit. A comment line starts with <code>#</code>, and a blank line is fine. The word <code>export</code> is optional. So a working file can be short and easy to read:</p>
+<pre><code># real values — never commit this file
+MY_APP_KEY=PASTE_YOUR_KEY_HERE
+MAP_TOKEN=PASTE_YOUR_KEY_HERE
+</code></pre>
+<p>But <code>.env</code> holds real secrets, so it must never be committed — lesson <a href="0042-gitignore.html">3.3 .gitignore</a> covers how to exclude it, and the next lesson covers what happens when that fails. Instead, you commit a second file, <code>.env.example</code>, with the same names and empty or placeholder values. It is a template: it tells anyone cloning your project which variables to create, without containing a single real value.</p>
+<table class="ref">
+  <thead><tr><th>File</th><th>Contains</th><th>Committed?</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>.env</code></td><td>Real values, e.g. <code>MY_APP_KEY=PASTE_YOUR_KEY_HERE</code></td><td><strong>No</strong> — listed in <code>.gitignore</code></td><td>Feeds the running app on your machine</td></tr>
+    <tr><td><code>.env.example</code></td><td>Same names, empty or placeholder values</td><td><strong>Yes</strong></td><td>Documents which variables the app expects</td></tr>
+  </tbody>
+</table>
+<div class="warn">
+  <span class="label">Two habits that save you</span>
+  <p>First, omp's docs are explicit: <q>Keep credential-bearing <code>.env</code> files out of version control.</q><sup class="cite"><a href="#src-omp">[3]</a></sup> Second, environment changes are not picked up by a running session — omp says <q>Restart omp after changing a <code>.env</code> file. Environment changes are not hot-reloaded.</q><sup class="cite"><a href="#src-omp">[3]</a></sup> After editing <code>.env</code>, start a fresh agent session (and restart your app) so the new values are read. omp also asks you to <q>restrict their permissions</q>, for example with <code>chmod 600 ~/.omp/.env</code>, so nobody else on the machine can read the file.<sup class="cite"><a href="#src-omp">[3]</a></sup> A value that reaches a log is as exposed as one in a commit. That is why the prompts below ask the agent to say whether a key is set, and never to print it.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: which of the two files — <code>.env</code> or <code>.env.example</code> — do you commit to the repository, and what goes inside it? Write your answer in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>You commit <strong>.env.example</strong>, containing the variable names with empty or placeholder values and no real secrets. <strong>.env</strong> holds the real values, is listed in <code>.gitignore</code>, and is never committed.</p></div>
+</div>
+
+<h2>Set it up in your own project</h2>
+<p>This is a doing lesson, so do it in the project folder of your app — or in any throwaway folder if you are not mid-project. Keep your agent's approval prompts on; creating two small text files is exactly the kind of change you should see and approve.</p>
+<div class="doit">
+  <ol>
+    <li><label><input type="checkbox"> In your project folder, create a file named <code>.env</code> containing one line: <code>MY_APP_KEY=PASTE_YOUR_KEY_HERE</code></label></li>
+    <li><label><input type="checkbox"> Create <code>.env.example</code> with the same line but an empty value: <code>MY_APP_KEY=</code></label></li>
+    <li><label><input type="checkbox"> Make sure <code>.env</code> is listed in your <code>.gitignore</code> (add the line if it is not)</label></li>
+    <li><label><input type="checkbox"> Run <code>git status</code> and confirm <code>.env</code> does <em>not</em> appear, but <code>.env.example</code> does</label></li>
+    <li><label><input type="checkbox"> Ask your agent: <em>"Read MY_APP_KEY from the environment and tell me whether it is set — do not print the value."</em></label></li>
+  </ol>
+  <div class="expect"><p>You should see: <code>git status</code> lists <code>.env.example</code> as a new file to commit but never mentions <code>.env</code>; and the agent replies that <code>MY_APP_KEY</code> is set, without echoing the placeholder value. (A fresh agent session may be needed if you edited <code>.env</code> while one was already running.)</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>One prompt that does the whole setup</h2>
+<p>You do not need a special skill for this. One plain message works in any agent:</p>
+<div class="prompt">
+<button class="copy" type="button">Copy</button>
+<pre>My app needs a secret called MY_APP_KEY. Create a .env file in the project
+folder with MY_APP_KEY=PASTE_YOUR_KEY_HERE, create a .env.example with the
+same key and an empty value, and add .env to .gitignore. From now on, read
+MY_APP_KEY from the environment variable — never hardcode it in a file, and
+never print its value back to me.</pre>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">What is an environment variable?</p>
+  <button class="opt" type="button">A named value the running program can read</button>
+  <button class="opt" type="button">A file where the agent keeps its notes</button>
+  <button class="opt" type="button">A password saved inside your own project folder</button>
+  <button class="opt" type="button">A type of commit message in git history</button>
+  <div class="why"><p>It is a name-and-value pair in the program's environment, readable at runtime and stored nowhere in the code. Files and commits are separate things.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A teammate clones your project and needs the same settings. Which file do you commit, and what does it contain?</p>
+  <button class="opt" type="button">committing your .env, because the agent needs the real values</button>
+  <button class="opt" type="button">.gitignore so the secrets stay in the repository right now</button>
+  <button class="opt" type="button">The .env.example file with placeholder values and no real key</button>
+  <button class="opt" type="button">README only, since settings never need real values at all</button>
+  <div class="why"><p>.env.example is the committed template: same variable names, empty or placeholder values, no real secrets. .env stays local and ignored.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You edited .env, but the running agent still sees the old value. What is the best move?</p>
+  <button class="opt" type="button">Delete the file and retype everything again later</button>
+  <button class="opt" type="button">Start a fresh session so the agent reloads</button>
+  <button class="opt" type="button">Commit the change so the value becomes permanent</button>
+  <button class="opt" type="button">Wait until the agent polls for file updates</button>
+  <div class="why"><p>Environment changes are not hot-reloaded: a fresh session re-reads the environment (omp's docs say to restart after changing a .env file). Committing would also leak the value.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://12factor.net/config">The Twelve-Factor App — Config</a> — the short, readable statement of why config belongs in the environment and out of the code. Read section III only.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me the environment variables my agent can see right now, but hide the values"</em> or <em>"Why is .env.example useful even though it is empty?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-12f">Adam Wiggins, <a href="https://12factor.net/config">The Twelve-Factor App: III. Config</a> — "Store config in the environment"; "strict separation of config from code". Retrieved 2026-11-02.</li>
+  <li id="src-cc">Anthropic, <a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a> — "If ANTHROPIC_API_KEY is set and approved, login is skipped." See also <a href="https://code.claude.com/docs/en/env-vars">Environment variables reference</a>. Retrieved 2026-11-02.</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/env">omp docs: Environment variables</a> — .env loading and syntax; "Keep credential-bearing .env files out of version control"; "Restart omp after changing a .env file. Environment changes are not hot-reloaded." Single-vendor source. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain what an environment variable is, keep a real secret in a git-ignored <code>.env</code>, ship a placeholder <code>.env.example</code> to teammates, and restart a session after changing <code>.env</code>.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Previous: <a href="0089-secrets.html">8.1 Secrets</a></span><span>Next: <a href="0091-never-print-commit.html">8.3 Never print or commit a secret</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

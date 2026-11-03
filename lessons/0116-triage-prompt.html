@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Triage first: diagnose before you act</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 9 · Working at scale · Lesson 9.8</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 9 · Lesson 9.8</p>
+  <h1>Triage first: diagnose before you act</h1>
+  <p class="lede">When a project has grown several branches and open questions, the expensive mistake is acting on a guess. A read-only triage pass turns "something is off" into a ranked list you approve before anything changes.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0044-branch.html">3.5 Branch</a></span><span>Win: you can run a triage pass and approve a plan before letting the agent touch anything</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>By now your project folder is a <em>repository</em> with branches (lesson <a href="0044-branch.html">3.5</a>): parallel lines of work that you merge, or abandon, one at a time. Late in a project you can easily end up with several branches, some already merged, some stale, and a vague feeling that "something needs cleaning up". If you ask the agent to "fix it" in one sentence, it will pick a branch, pick a fix, and start editing — and you will own a change you did not choose, in a place you cannot yet name. The triage habit separates <em>understanding the mess</em> from <em>changing the mess</em>, so the second step happens only after you have seen the first.</p>
+
+<h2>The mess you are triaging</h2>
+<p>A typical late-project state: a main branch, a few feature branches, one of which was merged days ago and is now only a name, one with uncommitted work, and maybe an open pull request nobody remembers. None of this is visible from the folder alone; it lives in git's state. That is exactly what an agent is good at reading. Anthropic's own best-practices page puts the underlying habit in one line for side-effecting work: <q>Make sure you're on main with a clean tree. If not, stop and ask.</q><sup class="cite"><a href="#src-1">[1]</a></sup></p>
+
+<h2>The two-step ask</h2>
+<p>The pattern has two messages, and keeping them separate is the whole point.</p>
+<p><strong>Step one — triage, read-only.</strong> You send a saved prompt that forbids changes and asks for a report. The agent reads branches, status, logs, and files, and answers with a diagnosis and recommendations. Nothing on disk changes.</p>
+<p><strong>Step two — approve, then act.</strong> You read the report, adjust anything that looks wrong, and send one short message: "carry out your recommendations". Only now does the agent edit, commit, or merge.</p>
+<p>Why keep the two messages apart? A diagnosis written before any change can be checked against reality: you can run <code>git branch</code> and confirm the branch list yourself. A diagnosis that shows up only inside an edit cannot be checked, because the edit has already happened. The split also keeps the agent's context small: the report is the summary, and your second message points at it instead of re-describing the mess.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user with several live branches and open tickets sent one saved "triage" prompt. The agent inspected the branches read-only and reported that three could not be merged as they stood, which one should go first, and which were already contained in main. The user then replied "complete all of your recommendations" and approved the result in a single sentence — the diagnosis stayed a diagnosis until a human had seen it.</p>
+</div>
+
+<h2>The triage prompt</h2>
+<p>Copy this into a text file you can reuse; it works in any of the three agents because it relies only on reading and reporting:</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Triage this project. Do not create, edit, delete, commit, push, merge, or close anything — read only.
+Report four things:
+1. State: which branches exist, which are already merged into main, which are stale, and what is uncommitted right now.
+2. Diagnosis: each problem you find, with the evidence you used (command output, file and line).
+3. Recommendations: ranked safest first, each with the exact command or prompt I should run next.
+4. Stop there. Wait for my approval before doing anything from step 3.</pre>
+</div>
+<p>The last line is not politeness. Lesson <a href="0017-orient-first.html">1.2</a> shows why "do not edit" must be said out loud, and how each agent enforces a read-only turn; lesson <a href="0022-plan-then-human-go.html">1.7</a> turns the report into an approved plan.</p>
+
+<h2>What a good triage report looks like</h2>
+<table class="ref">
+  <tr><th>Part</th><th>Looks like</th><th>Red flag</th></tr>
+  <tr><td>State</td><td>"main is clean; branch A is merged; branch B has 2 unpushed commits."</td><td>Vague words like "some branches look old" with no evidence.</td></tr>
+  <tr><td>Diagnosis</td><td>"Branch B cannot merge because it conflicts with the login change in main (file X, line Y)."</td><td>A fix proposed before the cause is named.</td></tr>
+  <tr><td>Recommendations</td><td>Ranked list, safest first, each with an exact command or prompt.</td><td>"You should probably clean things up" with no order and no command.</td></tr>
+  <tr><td>Stop</td><td>The turn ends with a report, zero edits.</td><td>Files changed during a "read-only" triage.</td></tr>
+</table>
+<p>Read the ranking as a budget, not a schedule. The first item should remove the most uncertainty for the least risk — usually committing work you forgot was uncommitted, or deleting a branch already merged into main. Merges come last, because they are the hardest step to undo.</p>
+<div class="warn">
+  <span class="label">If the triage edited something</span>
+  <p>The promise was broken, not merely bent. Check <code>git status</code> yourself, and if the working tree changed, undo it (lesson <a href="0050-undo.html">3.11</a>) before trusting anything else in that session. Keep approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>) so a stray edit asks first.</p>
+</div>
+
+<h2>The second message: approve in one sentence</h2>
+<p>When the report is good, your reply can be very short: <em>"Carry out recommendations 1 and 2, then stop."</em> Naming a subset keeps you in charge of scope. Two habits from real sessions are worth copying: ask for the <em>exact command or prompt</em> for each step (so step two is copy-paste, not interpretation), and keep the merge decision yourself — lesson <a href="0112-pr-babysitting-auto-fix.html">9.4</a> shows what happens when "merge" is left to automation. The report itself is still a claim: spot-check one piece of its evidence, as lesson <a href="0030-claims-vs-evidence.html">2.2</a> teaches.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the two messages of a triage pass, what must the first one forbid, and what should its report contain?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Message one is a read-only triage prompt that forbids creating, editing, committing, pushing, or merging, and reports state, evidence-backed diagnosis, and ranked recommendations with exact commands. Message two is a one-sentence approval, possibly naming only some recommendations, after which the agent acts.</p></div>
+</div>
+
+<h2>When to skip the triage</h2>
+<p>Triage is a tool, not a ritual. Skip it when the mess is one file you can name, or the change is a single word you wrote this morning — asking for a full report there is over-asking (lesson <a href="0065-over-asking.html">4.11</a>). Use it when the state is genuinely unknown: many branches, unclear what is merged, or a bug you have not diagnosed. A good middle size is "triage only the branches" rather than "triage everything".</p>
+
+<h2>Do it in your own agent</h2>
+<div class="doit">
+  <span class="label">Practice on your own repo</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in your project folder from the earlier lessons, with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Run <code>git branch</code> yourself first, so you know the real branch list to compare against.</label></li>
+    <li><label><input type="checkbox"> Paste the triage prompt above and send it. Do not send anything else yet.</label></li>
+    <li><label><input type="checkbox"> Check <code>git status</code> — the tree must be unchanged after the report.</label></li>
+    <li><label><input type="checkbox"> If the report is sensible, reply "carry out the first recommendation only, then stop" and watch what happens.</label></li>
+  </ol>
+  <div class="expect"><p>You should see a report listing your real branches, which are merged or stale, plus ranked recommendations with exact commands — and no edits during step 3. After step 5, exactly one recommended action has been performed and the agent stops and waits.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">You have several branches and do not know which are stale. What is the best first message?</p>
+  <button class="opt" type="button">Delete every branch that looks old to me.</button>
+  <button class="opt" type="button">Inspect the branches and report, no edits now.</button>
+  <button class="opt" type="button">Merge every branch into the main line today.</button>
+  <button class="opt" type="button">Rename all branches to match the current date.</button>
+  <div class="why"><p>Acting on a guess (delete, merge, rename) can destroy work. The triage message only reads, so it cannot break anything, and its report makes your next message exact.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">Which of these does NOT belong in a triage report?</p>
+  <button class="opt" type="button">List every single branch already merged into the main.</button>
+  <button class="opt" type="button">Rank all the fixes from safest to most risky.</button>
+  <button class="opt" type="button">Give exact commands for each one of the fixes.</button>
+  <button class="opt" type="button">Edit files while reading the diagnosis and the report.</button>
+  <div class="why"><p>State, ranking, and exact commands are the report. Editing during triage breaks the read-only boundary and is the failure this lesson exists to prevent.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">After a good triage report arrives, your second message is...</p>
+  <button class="opt" type="button">Do the recommendations, then stop and wait for me now.</button>
+  <button class="opt" type="button">Explain why this entire project is really very hard today.</button>
+  <button class="opt" type="button">Start over in a brand new empty folder from scratch.</button>
+  <button class="opt" type="button">Delete the whole report and ask it all over again.</button>
+  <div class="why"><p>The second message approves action — ideally naming a subset, as in "carry out the first recommendation only" — so the agent acts on a diagnosis you have already reviewed.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">When is a full triage pass a waste of a turn?</p>
+  <button class="opt" type="button">When the repo has many open branches now.</button>
+  <button class="opt" type="button">When a review bot has left fresh comments.</button>
+  <button class="opt" type="button">When you are unsure which branch is live.</button>
+  <button class="opt" type="button">When you already know which file it is.</button>
+  <div class="why"><p>Many branches, fresh comments, and an unclear live branch are exactly when triage pays. If you already know the one file to edit, a full report is over-asking.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> — Anthropic's own habits page, including "stop and ask" before side-effecting work and watching the first minute of a run. The prompting ideas apply to all three agents; read the first two sections.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Try: <em>"Take this triage prompt and make it stricter — forbid network access too"</em> or <em>"Rewrite my last messy request as a two-step triage plus approval."</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-1">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-2">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a> (Goal, Context, Constraints, Done when). Retrieved 2026-11-02.</li>
+  <li id="src-3">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as outdated). Retrieved 2026-11-02.</li>
+  <li id="src-4">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> send a read-only triage prompt, read a state-plus-diagnosis-plus-ranked-recommendations report, and approve action in one sentence.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Previous: <a href="0115-handoff-docs-long-sessions.html">9.7 Handoff docs</a></span> · <span>End of Unit 9 — see <a href="../index.html">the course index</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

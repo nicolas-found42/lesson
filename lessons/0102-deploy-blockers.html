@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deploy blockers: missing secrets and secret managers</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.14</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.14</p>
+  <h1>Deploy blockers: missing secrets and secret managers</h1>
+  <p class="lede">Your app works on your own machine and breaks the moment it is deployed. The most common reason: the deploy host has none of your secrets. This lesson shows how to find and fix that.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="../lessons/0089-secrets.html">Lesson 8.1, Secrets</a></span><span>Win: you can unblock a deploy by listing your app's secrets and storing them in the host's secret manager</span></div>
+</header>
+<main>
+
+<h2>Why this matters</h2>
+<p>So far you have shipped pages that need nothing from the outside world. The moment your app talks to a service, it needs <em>secrets</em>. A database, a login provider, a payment API: each one asks for a key or token that proves who your app is. Those secrets cannot live in your code (lesson 8.1). At deploy time they must live somewhere else. When they are missing there, the deploy fails or the live app fails. That is a <span class="term">deploy blocker</span>, and missing secrets are its most frequent cause.</p>
+
+<h2>"It works on my machine"</h2>
+<p>On your own computer the app works because your machine <em>has</em> the secrets. They may sit in a <code>.env</code> file, in a signed-in command-line tool, or in your shell. A deploy host starts empty. It gets only what you explicitly give it. So the same code that ran fine locally fails on the host. You see sign-in errors, permission errors, or a deploy that refuses to finish.</p>
+<p>A <code>.env</code> file is easy to forget, because nothing announces it. It sits in your project folder, often hidden from the file browser, and the app reads it at startup. The deploy host has no such file. It has only the secrets you typed into its settings page.</p>
+<p>On GitHub Actions the failure is quiet. GitHub's own documentation states: <q>If a secret has not been set, the return value of an expression referencing the secret (such as <code>${{ secrets.SuperSecret }}</code> in the example) will be an empty string.</q><sup class="cite"><a href="#src-gh-secrets">[1]</a></sup> An empty string is not an error message — the step runs, the sign-in fails quietly. That is why "the deploy said nothing was wrong" and "the live app does not work" often happen together.</p>
+
+<h2>Reading the failure</h2>
+<p>Two symptoms look different, but they share one cause. In the first, the deploy stops before it ships anything. The host checked a list of required values, found one missing, and refused to go on. In the second, the deploy finishes and the live app breaks when a visitor tries the feature. The code ran with an empty value and failed later.</p>
+<p>The first symptom is the easier one, because the host names the missing key. The second is quiet, because an empty string looks like a value.</p>
+<p>Say your app has a form that saves notes to a database. On your laptop, <code>DATABASE_URL</code> comes from <code>.env</code>, so saving works. On the host, that name does not exist. The page still loads, because loading needs no database. The save button fails. Nothing in the log says "missing secret"; the log says the connection failed.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user's app had server-side functions that each needed their own key. The deploy tool checked every declared secret before shipping <em>anything</em>, so one missing key blocked the whole deploy — six of them, in fact. The agent restructured the code, so features that needed no secrets could ship first. The user then created the missing secrets one by one in the host's settings. Deploy went green only when the last secret existed.</p>
+</div>
+
+<h2>Where deploy-time secrets live: the secret manager</h2>
+<p>Every host has an encrypted store for secrets — a <span class="term">secret manager</span>. On GitHub it is reached via the repo's <strong>Settings → Secrets and variables → Actions</strong>. GitHub's docs describe creating secrets at three levels: repository, environment, and organization.<sup class="cite"><a href="#src-gh-secrets">[1]</a></sup> Repository secrets are visible to every workflow in the repo. <span class="term">Environment secrets</span> belong to one named environment, such as <code>production</code>. That is useful when the live site and a test site use different keys. You can also manage them from the terminal with <code>gh secret set SECRET_NAME</code> (it prompts for the value, or reads it from a file) and <code>gh secret list</code>.<sup class="cite"><a href="#src-gh-secrets">[1]</a></sup></p>
+<p>Other hosts (your cloud provider, your registrar, your backend platform) each have an equivalent store. You do not need to memorize them. You need the pattern: <em>the host keeps the value, your code asks for it by name.</em> omp's own documentation puts the rule this way: prefer an environment-variable or secret-manager reference instead of a literal key. It also says to inject the value from the CI secret store or a password manager, and to confirm that project files, shell history, logs, and exported session transcripts do not contain it.<sup class="cite"><a href="#src-omp-secrets">[4]</a></sup></p>
+
+<table class="ref">
+  <tr><th>Secret</th><th>Comes from</th><th>Stored on the host as</th></tr>
+  <tr><td><code>DATABASE_URL</code></td><td>your database provider's console</td><td>repository or environment secret</td></tr>
+  <tr><td><code>API_KEY</code></td><td>the third-party service's dashboard</td><td>repository secret (or the provider's own secret manager)</td></tr>
+  <tr><td><code>SIGNING_KEY</code></td><td>generated once, kept in a password manager</td><td>environment secret for <code>production</code> only</td></tr>
+</table>
+
+<h2>The unblock checklist</h2>
+<p>When a deploy fails and you suspect secrets, run the same short checklist every time: list what the app needs, compare with what the host has, add the missing ones, redeploy. Ask your agent for the first step — it can read the code and name every secret:</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>My deploy fails with sign-in errors but works locally. List every secret this app reads: its name, what it is for, and where the value comes from. Then tell me exactly which ones are missing on the host and how to add each one to the host's secret store. Never print, log, or commit any secret value.</pre>
+</div>
+
+<div class="doit">
+  <span class="label">Do it now with your app</span>
+  <ol>
+    <li><label><input type="checkbox"> Paste the prompt above into your agent and read its list of secrets your app needs.</label></li>
+    <li><label><input type="checkbox"> Compare that list with what the host actually has: run <code>gh secret list</code> for GitHub Actions, or open the host's secrets page.</label></li>
+    <li><label><input type="checkbox"> For each missing secret, create it in the host's secret store — type the value into the host's page, or use <code>gh secret set NAME &lt; file</code>. Never paste the value into the chat.</label></li>
+    <li><label><input type="checkbox"> Re-run the deploy and then open the live URL and test the feature that needs the secret.</label></li>
+  </ol>
+  <div class="expect"><p><strong>What you should see:</strong> <code>gh secret list</code> shows every name from the agent's list, the deploy finishes, and the live app signs in successfully. If a name is still missing, the host's list will not show it — that gap is the blocker.</p></div>
+  <p class="progress" aria-live="polite"></p>
+</div>
+
+<h2>Never do this</h2>
+<div class="warn">
+  <span class="label">The three ways secrets leak at deploy time</span>
+  <p>Never put the value in the workflow file, the README, a log line, or a chat message, even temporarily. GitHub masks secrets it knows about, but if a value ever reaches your repository, history keeps it (lesson <a href="../lessons/0091-never-print-commit.html">8.3</a>). GitHub's guidance is blunt: <q>as a first step you need to revoke and/or rotate that secret,</q> and its secret-scanning page adds that on an alert you should rotate the affected credential immediately, to prevent unauthorized access.<sup class="cite"><a href="#src-gh-remove">[2]</a><a href="#src-gh-scan">[3]</a></sup> Push protection exists to stop hardcoded secrets from being pushed at all.<sup class="cite"><a href="#src-gh-remove">[2]</a></sup> The safe habit: values travel only through the host's secret page or <code>gh secret set</code> reading from a file — never through your screen, your chat, or your logs. See the <a href="../reference/safety-checklist.html">safety checklist</a> and <a href="../reference/deploy-checklist.html">deploy checklist</a>.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: when a deployed app fails to sign in but works locally, what is the first thing to check, and where should the missing value be stored? Write it in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Check the host's secret store.</strong> The host starts empty, so a secret that exists only on your machine is missing on the host — in GitHub Actions the reference silently becomes an <strong>empty string</strong>. The value belongs in the host's <strong>secret manager</strong> (repository or environment secret), never in code, logs, or chat.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your app works on your own machine, but the deployed copy fails to sign in. What is the most likely cause?</p>
+  <button class="opt" type="button">The host is down, so no app can deploy today.</button>
+  <button class="opt" type="button">The host has no secrets set for your app yet.</button>
+  <button class="opt" type="button">Your laptop forgot the key between both of the runs.</button>
+  <button class="opt" type="button">The agent typed the wrong key into your source code.</button>
+  <div class="why"><p>The host starts empty and only has the secrets you added to it. Locally your machine already has them, which is why the same code behaves differently in the two places.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">In a GitHub Actions workflow, what does <code>${{ secrets.MY_KEY }}</code> become when MY_KEY was never created?</p>
+  <button class="opt" type="button">An empty string, so the step runs with a missing value.</button>
+  <button class="opt" type="button">A hard error that halts the entire workflow at that point.</button>
+  <button class="opt" type="button">The name of the secret printed out inside the curly brackets.</button>
+  <button class="opt" type="button">The number zero, which your app would then accept as valid.</button>
+  <div class="why"><p>GitHub's docs say an unset secret evaluates to an empty string, not an error. The step runs, the sign-in fails, and the log gives no obvious clue — so check the secret store, not just the log.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Which is the safest home for a production secret that a deployed app needs?</p>
+  <button class="opt" type="button">Hardcoded in the config file so that every single deploy works.</button>
+  <button class="opt" type="button">Pasted into the chat so that the agent can insert it.</button>
+  <button class="opt" type="button">Written in the README so that teammates can find it fast.</button>
+  <button class="opt" type="button">Stored in the host's own secret manager and never in code.</button>
+  <div class="why"><p>The host's secret manager keeps the value encrypted and out of your repo, your logs, and your history. Any copy in code, chat, or README is a leak that git history will keep (lesson 8.3).</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets">Using secrets in GitHub Actions</a> — GitHub's page on creating repository, environment, and organization secrets and on what an unset secret evaluates to. Bookmark it; you will use it every time a deploy blocks.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"My deploy fails but my tests pass — how do I tell whether a secret is missing?"</em> or <em>"Explain environment secrets vs repository secrets with a coffee-shop example."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-gh-secrets">GitHub Docs, <a href="https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets">Using secrets in GitHub Actions</a> (redirects from the older security-guides URL). Retrieved 2026-11-02.</li>
+  <li id="src-gh-remove">GitHub Docs, <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository">Removing sensitive data from a repository</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gh-scan">GitHub Docs, <a href="https://docs.github.com/en/code-security/concepts/secret-security/secret-scanning">Secret scanning</a> (redirects from /code-security/secret-scanning/about-secret-scanning). Retrieved 2026-11-02.</li>
+  <li id="src-omp-secrets">Stencil Labs, <a href="https://omp.sh/docs/secrets">omp docs: Secrets and auth</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain why a deploy blocks on missing secrets, list your app's secrets with your agent, store them in the host's secret manager, and redeploy — without ever exposing a value.</p>
+  <div class="pager"><a href="../lessons/0089-secrets.html">← Lesson 8.1: Secrets</a><a href="../index.html">Course index</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

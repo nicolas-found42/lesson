@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The pull request: a proposal, not a merge</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control as the safety net · Lesson 3.7</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.7 · First-ship path ★</p>
+  <h1>The pull request: a proposal, not a merge</h1>
+  <p class="lede">A branch keeps your work separate. A pull request is how that work gets looked at, checked, and only then allowed into <code>main</code>.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0011-remote-origin-push.html">3.6 Remote, origin and push</a></span><span>Win: you can open a pull request and read its checks before anything merges</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your app goes public from the main branch of your repository. Every change that reaches <code>main</code> is a change the world can see, and on a site that deploys automatically, a broken merge is a broken link within minutes.</p>
+<p>A <span class="term" title="A page on the code host that proposes merging one branch into another, with a description and automated checks">pull request</span> is the door between "I made this on a branch" and "this is part of the app". It is also the one place where a machine tells you, in plain sight, whether the change passes its checks. Learn to read that page and you can merge without taking anyone's word for it.</p>
+
+<h2>A proposal, not a merge</h2>
+<p>GitHub's own reference is blunt about the word: <q>Pull requests are proposals to merge code changes into a project.</q><sup class="cite"><a href="#src-pr-ref">[1]</a></sup> Nothing about opening one changes the app. It creates a page where the change sits in the open until someone — you — decides.</p>
+<p>A pull request always compares two branches. GitHub notes that <q>Pull requests can only be opened between two different branches</q><sup class="cite"><a href="#src-create">[2]</a></sup>. In plain words: the <em>head</em> branch holds your new commits, and the <em>base</em> branch is where they would land. In your project the base is almost always <code>main</code>. If you have not made a branch yet, lesson <a href="0044-branch.html">3.5</a> covers that, and lesson <a href="0011-remote-origin-push.html">3.6</a> covers getting the branch onto GitHub, which must happen first.</p>
+<p>That separation is the whole safety property. Commits on a branch cannot break the live site, because the live site is built from <code>main</code>. A pull request is a proposal to change that, with the evidence attached.</p>
+
+<h2>What the page actually holds</h2>
+<p>The pull request page is a set of tabs, and each answers one question a person would ask before merging.</p>
+<table class="ref">
+  <thead><tr><th>Tab or area</th><th>The question it answers</th></tr></thead>
+  <tbody>
+    <tr><td>Conversation</td><td>What is being proposed, and what have people said about it?</td></tr>
+    <tr><td>Commits</td><td>Which saved snapshots does this proposal carry?</td></tr>
+    <tr><td>Files changed</td><td>Which lines would actually change in <code>main</code>?</td></tr>
+    <tr><td>Checks</td><td>Did the automated tests, builds and linters pass?</td></tr>
+    <tr><td>Merge box</td><td>Is anything still blocking the merge?</td></tr>
+  </tbody>
+</table>
+<p>GitHub describes the last two of those directly: <q>The Checks tab shows automated tests, builds, and other validations.</q> and <q>The Files changed tab shows the diff that reviewers use to understand the proposed changes.</q><sup class="cite"><a href="#src-pr-ref">[1]</a></sup> Near the merge button, a merge status line <q>highlights blockers, missing approvals, and other requirements before merging</q><sup class="cite"><a href="#src-pr-ref">[1]</a></sup>. When it says the branch is behind, or a review is missing, that is not a defect: it is the page refusing to let you skip a step.</p>
+<p>Opening a pull request also does not require the branch to be finished. GitHub offers a <em>draft</em>: <q>Draft pull requests cannot be merged</q>, and you mark one ready when you want real feedback<sup class="cite"><a href="#src-pr-ref">[1]</a></sup>. A draft is a good place to park work in progress, because the checks still run while nobody can merge it by accident.</p>
+
+<h2>The description is the argument</h2>
+<p>Reviewers — including you, next week — arrive without your context. The description is where you supply it. Three short paragraphs are enough, and each has a job.</p>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Weak description</span>
+    <p>"Fixed the gallery stuff. Should be working now."</p>
+    <p>A reader cannot tell what changed, why, or what "working" would look like. Nothing here can be checked.</p>
+  </div>
+  <div class="good">
+    <span class="label">Usable description</span>
+    <p>"The gallery page showed every photo at full size, so it took eleven seconds to load on a phone. This adds thumbnails and loads the big file only when a photo is tapped. I checked it in a browser at phone width; the first screen now draws in under a second."</p>
+    <p>What changed, why it mattered, and the check that was run. All three can be argued with.</p>
+  </div>
+</div>
+<p>Your agent can draft this from the branch's commits, and you should still read it. A description that claims a check the agent did not run is worse than no description, because it invites you to trust the wrong thing. The habit from lesson <a href="0030-claims-vs-evidence.html">2.2</a> applies to the page itself: the sentence "tested in a browser" is a claim until the Checks tab or your own eyes back it up.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: opening a pull request changes which branch, and which two branches does it compare?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>It changes nothing on <code>main</code>; it only creates a page. It compares a <strong>head</strong> branch (your new commits) with a <strong>base</strong> branch (where they would land, normally <code>main</code>). GitHub requires the two to be different branches.</p></div>
+</div>
+
+<h2>Checks: the page's own opinion</h2>
+<p>A <span class="term" title="An automated result attached to a commit, usually from a build, test or lint job">check</span> is a result reported by a machine about a specific commit. GitHub's definition is precise: <q>Status checks show whether commits meet the conditions set for a repository.</q><sup class="cite"><a href="#src-checks">[3]</a></sup> They normally come from continuous integration: the tests, builds and linters that a server runs after every push.</p>
+<p>Three states matter to you. A check is <em>pending</em> while it runs, and the merge button waits. It <em>passes</em> when the work succeeded, or <em>fails</em> when something did not. GitHub adds one consequence worth knowing: <q>If status checks are required for a protected branch, they must pass before the pull request can be merged.</q><sup class="cite"><a href="#src-checks">[3]</a></sup> Protection is a repository setting; lesson <a href="0054-branch-protection-prs-only-convention.html">3.15</a> takes it up.</p>
+<div class="warn">
+  <span class="label">A green check can be a skipped check</span>
+  <p>GitHub's checks page says a job that is skipped <q>will report its status as "Success"</q><sup class="cite"><a href="#src-checks">[3]</a></sup>. A test suite that quietly did not run can therefore look like a passing one. Read what ran, not only the colour. Lesson <a href="0046-local-vs-ci.html">2.12</a> is about the gap between checks on your laptop and checks in the cloud.</p>
+</div>
+<p>You do not need to memorise where the buttons are to know the state. The <code>gh</code> command line tool on your machine has <code>gh pr checks</code>, documented in its own help as <q>Show CI status for a single pull request.</q><sup class="cite"><a href="#src-gh">[4]</a></sup> Two details from that help page are useful to a beginner: run without an argument, <q>the pull request that belongs to the current branch is selected</q>, and the command exits with code 8 while checks are still pending<sup class="cite"><a href="#src-gh">[4]</a></sup>. A non-zero exit there means "not finished", not "broken".</p>
+
+<h2>What merging means, and when not to</h2>
+<p>Merging is a separate act with its own button. GitHub's instructions put the condition first: <q>Merge a pull request when the proposed changes are ready and any repository requirements are satisfied.</q><sup class="cite"><a href="#src-merge">[5]</a></sup> The word "ready" is doing the work. Ready means you read the description, you looked at the changed files, and the checks you care about finished and passed.</p>
+<p>There is a real cost to pressing the button early. Once a branch is merged, it cannot take more commits, so a review comment that arrives afterwards needs a brand-new pull request. That is not a catastrophe; it is rework you can avoid by waiting a few minutes. Lesson <a href="0047-merge-vs-squash.html">3.8</a> covers the merge methods themselves.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user had three pull requests open and typed "merge" while the checks on one were still running. The agent could not wait for them, so it asked: merge now on the local test run, or leave the request open? The user chose now. Hours later a review comment arrived on the merged change and found a genuine bug; the fix had to go through a new pull request on a new branch. Nothing was lost, and the second attempt went through green checks. The lesson the user drew was simple: the merge box was already telling them what to wait for.</p>
+</div>
+
+<h2>Do it: open one, then read it</h2>
+<p>You need a repository on GitHub with a branch you have pushed, and the agent's approval prompts left on. Ask for the pull request and the evidence, not only the link. If the agent opens it with <code>gh pr create</code>, its help page notes that <q>Upon success, the URL of the created pull request will be printed.</q><sup class="cite"><a href="#src-gh">[4]</a></sup></p>
+<div class="prompt"><pre>Open a pull request from the branch I am on into main.
+Do not merge it.
+Write the description as three short parts: what changed, why, and exactly how you checked it.
+Then run gh pr checks and tell me the state of every check, including any that were skipped.</pre></div>
+<div class="doit">
+  <span class="label">Your turn</span>
+  <ol>
+    <li><label><input type="checkbox"> Paste the prompt above. Approve the push and the pull request creation when asked.</label></li>
+    <li><label><input type="checkbox"> Open the link the agent prints. Read the description and count the files under <em>Files changed</em>.</label></li>
+    <li><label><input type="checkbox"> Find the checks area or the merge box. Note whether it lets you merge right now, and what it says is missing.</label></li>
+    <li><label><input type="checkbox"> Ask the agent: "Which of these checks are required, and which one would catch a broken page?"</label></li>
+    <li><label><input type="checkbox"> Leave it unmerged, and say out loud what you are still waiting for.</label></li>
+  </ol>
+  <button class="btn reveal" type="button">What you should see</button>
+  <div class="expect"><p>A page with a title, a description you can read without asking questions, a list of commits, and a number of changed files. The checks area lists named jobs with a state; the merge box either offers a merge button or names what blocks it. If the description is vague or claims a check that is not listed, that is the finding — send it back before merging.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You open a pull request from a branch into main. What has changed on main?</p>
+  <button class="opt" type="button">Nothing yet: main still holds its old files</button>
+  <button class="opt" type="button">The branch files are already live on main</button>
+  <button class="opt" type="button">Only the files the checks approved are added</button>
+  <button class="opt" type="button">The description alone was copied into main now</button>
+  <div class="why"><p>A pull request is a proposal. The base branch changes only when someone merges, which is a separate action.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A check on your pull request reports a failure. What does that mean?</p>
+  <button class="opt" type="button">The proposal was merged before the checks finished</button>
+  <button class="opt" type="button">The branch was deleted and cannot be restored</button>
+  <button class="opt" type="button">A check found something that needs your attention</button>
+  <button class="opt" type="button">The repository is private and requires paid access</button>
+  <div class="why"><p>A failed check says a condition set for the repository did not hold. Read the details, fix the branch, and the new commits re-run the checks.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">The checks are still running. What is the honest next step?</p>
+  <button class="opt" type="button">Merge now and read the results later tonight</button>
+  <button class="opt" type="button">Wait for the checks, then read the result</button>
+  <button class="opt" type="button">Close the pull request and start over fresh</button>
+  <button class="opt" type="button">Ask a reviewer to approve without any checks</button>
+  <div class="why"><p>Pending means the evidence is not in yet. Merging first turns a check into a report about code that is already in main.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/pull-requests/reference/pull-requests">Pull requests</a> — GitHub's reference page for what the page contains and what a draft is. Read the section called "Working with pull requests"; the merge buttons belong to lesson 3.8.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a check you do not recognise? Ask the agent: <em>"Explain this check in plain words, and tell me what failure would look like."</em> Then ask whether it ran or was skipped.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-pr-ref">GitHub, <a href="https://docs.github.com/en/pull-requests/reference/pull-requests">Pull requests (reference)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-create">GitHub, <a href="https://docs.github.com/en/pull-requests/how-tos/create-pull-requests/creating-a-pull-request">Creating a pull request</a>. Retrieved 2026-11-02.</li>
+  <li id="src-checks">GitHub, <a href="https://docs.github.com/en/pull-requests/reference/status-checks">Status checks</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gh">GitHub CLI, <code>gh pr checks --help</code> and <code>gh pr create --help</code>, run on this machine (gh 2.102.0). Retrieved 2026-11-02.</li>
+  <li id="src-merge">GitHub, <a href="https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/merging-a-pull-request">Merging a pull request</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain why a pull request changes nothing by itself, write a description someone can check, and read the checks and merge box before merging.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 3.8 Merge vs squash (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

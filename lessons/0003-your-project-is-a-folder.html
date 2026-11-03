@@ -31,7 +31,7 @@
 <figcaption class="sidenote" style="margin-top:.4rem">One folder, two or three files, and one folder inside it. Real projects grow deeper than this; the shape stays the same.</figcaption>
 </figure>
 <p>To talk about a file, you give its <span class="term">file path</span>: the route from a starting point down to the file. MDN puts it plainly: <q>To reference one file from another, you have to provide a file path — basically a route, so one file knows where another one is.</q><sup class="cite"><a href="#src-mdn-files">[1]</a></sup> In the picture above, one path to the picture is <code>my-app/images/cover.jpg</code>. Read it left to right, entering each folder in turn.</p>
-<p>The same idea in your file manager is a series of windows: open <code>my-app</code>, open <code>images</code>, there is the picture. The path is that journey written as one line. Paths matter later because the page will use them to find its own pictures and other pages.</p>
+<p>The same idea in your file manager is a series of windows: open <code>my-app</code>, open <code>images</code>, there is the picture. Paths matter later because the page will use them to find its own pictures and other pages.</p>
 
 <h2>Files are text (most of the ones you will touch)</h2>
 <p>Open <code>index.html</code> in a plain text editor and you see characters: letters, angle brackets, spaces, line breaks. That is the whole file. A web page is text that a browser knows how to read. MDN says of the <code>.html</code> ending that it <q>identifies the type of file we are dealing with</q> and tells the computer <q>what kind of content it can expect in the file, which program it should use to open the file</q>.<sup class="cite"><a href="#src-mdn-files">[1]</a></sup></p>
@@ -47,17 +47,17 @@
 <p>This is not a technicality. Codex's documentation says to <q>Open a project directory and run codex</q>.<sup class="cite"><a href="#src-cx">[2]</a></sup> Anthropic's memory documentation says project instruction files are loaded <q>from your current working directory and every directory above it</q> — the starting folder decides what the agent picks up at launch.<sup class="cite"><a href="#src-cc-memory">[3]</a></sup> omp keeps its session tied to the same place: <q>omp records completed messages and tool activity in a session associated with the working directory.</q><sup class="cite"><a href="#src-omp-sessions">[4]</a></sup></p>
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
     <p>You start <code>claude</code> from inside your project folder, after moving there in a terminal.<sup class="cite"><a href="#src-cc-quickstart">[5]</a></sup> Its project instructions are read from that folder and the folders above it.<sup class="cite"><a href="#src-cc-memory">[3]</a></sup> Lesson 0.4 shows the move; lesson 0.5 covers install and sign-in.</p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
     <p>Codex's own instruction is the shortest version of the rule: <q>Open a project directory and run codex.</q><sup class="cite"><a href="#src-cx">[2]</a></sup> OpenAI's sandbox documentation describes Codex editing <q>within the workspace</q>, and that workspace is the project you opened.<sup class="cite"><a href="#src-cx-sandbox">[7]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
     <p>omp ties a session to the working directory it was started in, so the folder you launch from is the folder the conversation belongs to.<sup class="cite"><a href="#src-omp-sessions">[4]</a></sup> Start it somewhere else and you are in a different session with a different "here".</p>
   </div>
 </div>
@@ -70,9 +70,9 @@
 </div>
 <div class="vignette">
   <span class="label">A real pattern, anonymized</span>
-  <p>A different user asked for the contents of their most recent download to be added to a catalogue. The download existed twice: as a compressed file and as the folder it had been unpacked into. Before copying anything, the agent compared the two, confirmed they matched, and worked from the folder as the authoritative copy. Same bytes, two shapes; knowing which shape is the project mattered.</p>
+  <p>A different user asked for the contents of their most recent download to be added to a catalogue. The download existed twice: as a compressed file and as the folder it had been unpacked into. Before copying anything, the agent compared the two, confirmed they matched, and worked from the folder. Same bytes, two shapes; knowing which shape is the project mattered.</p>
 </div>
-<p>Both stories are about the same thing. The agent is competent inside the folder you give it. Outside that folder it is guessing, and guesses about location waste turns and produce confusing reports.</p>
+<p>Both stories are about the same thing. The agent is reliable about the folder it was given. When the folder and the description disagree, every name it tries can point at nothing, and the turn is spent finding out where the files really are.</p>
 
 <div class="recall">
   <span class="label">Recall before you read on</span>
@@ -106,7 +106,7 @@
 </div>
 
 <p>When you do have an agent running, the sentence to practise is a location sentence, not a task sentence. Try this one the first time you open a session:</p>
-<div class="prompt"><button class="copy">Copy</button><pre>Before you change anything: tell me which folder you are working in, list the files you can see there, and say which one you think is the page. Do not edit anything yet.</pre></div>
+<div class="prompt"><button type="button" class="copy">Copy</button><pre>Before you change anything: tell me which folder you are working in, list the files you can see there, and say which one you think is the page. Do not edit anything yet.</pre></div>
 <p>If the answer names a folder you did not expect, stop and fix the start. That is cheaper than fixing the work.</p>
 
 <h2>Check yourself</h2>

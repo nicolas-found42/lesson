@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>An Actions workflow: a recipe GitHub runs on every push</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 6 · Shipping a static app · Lesson 6.5</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 6 · Lesson 6.5 · First-ship path ★</p>
+  <h1>An Actions workflow: a recipe GitHub runs on every push</h1>
+  <p class="lede">The checks on your pull request and the publishing of your site are not done by your laptop. They are done by a small recipe file in your repo that GitHub runs for you, on a fresh machine, every time you push.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0045-pull-request.html">3.7 The pull request</a></span><span>Win: you can add a workflow that runs on every push and read its result in the Actions tab</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You have already met the effects of this lesson without seeing the machinery. In <a href="0045-pull-request.html">3.7</a> your pull request showed a list of checks. In <a href="0013-github-pages.html">6.3</a> your site appeared at a public URL. Both of those were done by <strong>GitHub Actions</strong>. GitHub's documentation describes it as <q>a continuous integration and continuous delivery (CI/CD) platform that allows you to automate your build, test, and deployment pipeline.</q><sup class="cite"><a href="#src-1">[1]</a></sup> Once you can read the recipe, you can make GitHub run <em>your own</em> steps on every push — and you can read a red check without guessing.</p>
+
+<h2>A recipe, not a robot</h2>
+<p>A <strong>workflow</strong> is a plain text file written in YAML that lives in your repository. GitHub's syntax page is blunt about the two rules that matter: <q>A workflow is a configurable automated process made up of one or more jobs,</q> and <q>You must store workflow files in the .github/workflows directory of your repository.</q><sup class="cite"><a href="#src-3">[3]</a></sup> The file must end in <code>.yml</code> or <code>.yaml</code>: <q>Workflow files use YAML syntax, and must have either a .yml or .yaml file name extension.</q><sup class="cite"><a href="#src-3">[3]</a></sup> The quickstart adds the discovery rule: <q>For GitHub to discover any GitHub Actions workflows in your repository, you must save the workflow files in a directory called .github/workflows.</q><sup class="cite"><a href="#src-1">[1]</a></sup></p>
+<p>Every workflow has four ingredients, and the documentation names them plainly:</p>
+<ul>
+  <li><strong>Trigger</strong> — the <code>on:</code> line names the event that starts the run, <q>such as a pull request being opened or an issue being created.</q><sup class="cite"><a href="#src-2">[2]</a></sup> The most common for shipping is <code>on: [push]</code>, which the quickstart confirms: <q>Committing the workflow file to a branch in your repository triggers the push event and runs your workflow.</q><sup class="cite"><a href="#src-1">[1]</a></sup></li>
+  <li><strong>Job</strong> — a set of steps that runs on one machine. A job <q>will run inside its own virtual machine runner.</q><sup class="cite"><a href="#src-2">[2]</a></sup></li>
+  <li><strong>Step</strong> — each step can <q>run a script that you define or run an action, which is a reusable extension that can simplify your workflow.</q><sup class="cite"><a href="#src-2">[2]</a></sup></li>
+  <li><strong>Runner</strong> — the machine itself. GitHub provides the machines, and each one is clean: <q>Each workflow run executes in a fresh, newly-provisioned virtual machine.</q><sup class="cite"><a href="#src-2">[2]</a></sup> Nothing you installed on your laptop travels with a push, which is exactly why <a href="0046-local-vs-ci.html">2.12</a> matters.</li>
+</ul>
+
+<h2>A minimal recipe you can read top to bottom</h2>
+<p>This is the smallest useful workflow, in the shape of GitHub's own quickstart example:</p>
+<pre><code>name: Say hello on every push
+on: [push]
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v6
+      - name: Print one line
+        run: echo "This run was triggered by a push"</code></pre>
+<p>Read it as a recipe. <code>on: [push]</code> says "run this every time someone pushes." <code>jobs:</code> starts the work; <code>runs-on: ubuntu-latest</code> picks GitHub's Linux machine image. The first step, <code>actions/checkout@v6</code>, is a reusable action that copies your repo onto that machine; the second runs one shell command. When the push happens, GitHub starts the machine, runs the steps in order, and shows you the result.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user pushed a branch that changed one page of their small site. On the pull request, a check appeared and started running. That check was a workflow: on every push, GitHub started a fresh machine, checked out the code, ran the project's checks, and colored the check green or red. The user waited for green before merging — <em>"merge" means "merge if the checks pass"</em> — and a second workflow then rebuilt and published the site. After that, every push to the main branch updated the public page by itself. Nothing ran on the user's laptop.</p>
+</div>
+
+<h2>The two workflows you will meet first</h2>
+<p>On your first projects, two recipes do almost all the work. The <strong>check workflow</strong> runs your project's checks on every pull request and every push — the checks you saw in <a href="0045-pull-request.html">3.7</a>, and the cloud-versus-laptop gap from <a href="0046-local-vs-ci.html">2.12</a>. The <strong>Pages workflow</strong> builds and publishes your site; GitHub documents that <q>Custom workflows allow GitHub Pages sites to be built via the use of GitHub Actions.</q><sup class="cite"><a href="#src-4">[4]</a></sup> Its ready-made template is called <code>static.yml</code> — literally <q>Simple workflow for deploying static content to GitHub Pages</q> — and it <q>Runs on pushes targeting the default branch</q> and also offers <code>workflow_dispatch</code>, which <q>Allows you to run this workflow manually from the Actions tab.</q><sup class="cite"><a href="#src-6">[6]</a></sup> When you add a workflow through the web UI, GitHub offers these preconfigured templates: <q>GitHub provides preconfigured workflow templates that you can use as-is or customize to create your own workflow.</q><sup class="cite"><a href="#src-1">[1]</a></sup> You do not have to invent YAML from scratch.</p>
+
+<h2>Reading the result: the Actions tab</h2>
+<p>Every run is visible on your repository's Actions tab: <q>Under your repository name, click Actions.</q><sup class="cite"><a href="#src-1">[1]</a></sup> Click a run, then a job, and <q>The log shows you how each of the steps was processed.</q><sup class="cite"><a href="#src-1">[1]</a></sup> A green run means every step succeeded on GitHub's machine. A red run means a step failed there — read the log near the first error line before changing anything. If a failure was a one-off, GitHub lets you <q>re-run a workflow run, all failed jobs in a workflow run, or specific jobs in a workflow run up to 30 days after its initial run,</q><sup class="cite"><a href="#src-5">[5]</a></sup> and from the terminal the same page shows <code>gh run rerun RUN_ID</code> and <code>gh run watch</code>.<sup class="cite"><a href="#src-5">[5]</a></sup> Re-running is for flakes; if the log names a real problem, fix the code or the recipe instead of re-running until green.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the four ingredients of a workflow, say where the workflow file must live for GitHub to find it, and say what a red mark on the Actions tab actually means.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Trigger (<code>on:</code>), jobs, steps, and the runner machine. The file must be in <code>.github/workflows</code> with a <code>.yml</code> or <code>.yaml</code> name. A red mark means a job failed on GitHub's fresh runner machine — the log's first error line tells you what to fix.</p></div>
+</div>
+
+<h2>Do this with your own project</h2>
+<div class="doit">
+  <ol>
+    <li><label><input type="checkbox"> In your project folder, ask your agent to create the file <code>.github/workflows/hello.yml</code> with the minimal recipe above (you can paste it from this page). Keep approval prompts on and approve the file write.</label></li>
+    <li><label><input type="checkbox"> Commit the file on a new branch and push it, then open a pull request as in <a href="0045-pull-request.html">3.7</a>.</label></li>
+    <li><label><input type="checkbox"> On GitHub, under your repository name, click <strong>Actions</strong>. Find the run named "Say hello on every push" and wait for it to finish.</label></li>
+    <li><label><input type="checkbox"> Click the run, then the <code>hello</code> job, and expand the "Print one line" step to see its log output.</label></li>
+    <li><label><input type="checkbox"> Push one more small change and watch a second run appear by itself.</label></li>
+  </ol>
+  <div class="expect"><p>You should see a run that turns green, whose job log contains the line <code>This run was triggered by a push</code>, and a second run that appears automatically after your next push. If the run is red instead, open the failing step's log and read the first error line — that reading is the skill.</p></div>
+  <p class="progress"></p>
+</div>
+
+<div class="prompt">
+<span class="label">Prompt to paste into your agent</span>
+<p>Add a GitHub Actions workflow file at .github/workflows/hello.yml that runs on every push (on: [push]) and, on ubuntu-latest, checks out the repo with actions/checkout and then runs a single echo command. Create it on a new branch, push, open a pull request, and then watch the Actions tab until the run finishes. Tell me whether the run is green and quote the echo line from the job log.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">What is a GitHub Actions workflow, in one sentence?</p>
+  <button class="opt" type="button">A YAML file that defines automated jobs for GitHub</button>
+  <button class="opt" type="button">A paid server you rent to host your website</button>
+  <button class="opt" type="button">A robot that reviews code like a human does</button>
+  <button class="opt" type="button">A chat message that you send to GitHub support</button>
+  <div class="why"><p>It is a YAML file in the repo (stored in .github/workflows) that tells GitHub which jobs to run automatically when an event happens. Hosting, review, and support are different things.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You saved your workflow as <code>workflows/run.yml</code> in the repo root. What happens?</p>
+  <button class="opt" type="button">GitHub runs it anyway because any YAML file counts</button>
+  <button class="opt" type="button">GitHub never sees it, so no run ever starts</button>
+  <button class="opt" type="button">It runs only on pull requests, never on push</button>
+  <button class="opt" type="button">It runs once a day on a schedule instead</button>
+  <div class="why"><p>GitHub only discovers workflows stored in the .github/workflows directory with a .yml or .yaml extension. A file elsewhere is just an ordinary file, so nothing triggers.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A run on the Actions tab is marked red. What does that mean?</p>
+  <button class="opt" type="button">A step failed on GitHub's fresh runner machine</button>
+  <button class="opt" type="button">Your laptop lost power during the push itself</button>
+  <button class="opt" type="button">The workflow was deleted and cannot be found</button>
+  <button class="opt" type="button">GitHub is down for scheduled maintenance right now</button>
+  <div class="why"><p>The runner is GitHub's own clean virtual machine, not your laptop. Red means one step exited with an error there; the job log's first error line says what to fix. Re-run only if it was a flake.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/actions/get-started/quickstart">Quickstart for GitHub Actions, GitHub Docs</a> — the same walkthrough used above: create <code>.github/workflows/</code>, commit, and watch the run under Actions. Then try the <a href="https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax">workflow syntax reference</a> for the <code>on:</code> triggers when you want more than <code>push</code>.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me every workflow file in my repo and explain what each one triggers on"</em> or <em>"Add a step to my hello workflow that prints the list of files in the repo"</em> — the quickstart's own example lists files with <code>ls</code>.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-1">GitHub, <a href="https://docs.github.com/en/actions/get-started/quickstart">Quickstart for GitHub Actions</a>. Retrieved 2026-11-02. Used for the CI/CD definition, the .github/workflows rule, the push trigger, the demo YAML (actions/checkout@v6, ubuntu-latest), and viewing runs in the Actions tab.</li>
+  <li id="src-2">GitHub, <a href="https://docs.github.com/en/actions/get-started/understand-github-actions">Understanding GitHub Actions</a>. Retrieved 2026-11-02. Used for trigger/job/step/runner definitions and the fresh-virtual-machine rule.</li>
+  <li id="src-3">GitHub, <a href="https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax">Workflow syntax for GitHub Actions</a>. Retrieved 2026-11-02. Used for "configurable automated process", YAML extension rule, and the fresh-runner sentence.</li>
+  <li id="src-4">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages">Using custom workflows with GitHub Pages</a>. Retrieved 2026-11-02. Used for Pages being built via Actions.</li>
+  <li id="src-5">GitHub, <a href="https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs">Re-running workflows and jobs</a>. Retrieved 2026-11-02. Used for the 30-day re-run rule and the gh run rerun / gh run watch commands.</li>
+  <li id="src-6">GitHub, <a href="https://github.com/actions/starter-workflows/blob/main/pages/static.yml">starter-workflows/pages/static.yml</a>. Retrieved 2026-11-02. Used for the Pages deploy template name, default-branch push trigger, and workflow_dispatch.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain the four ingredients of a workflow, add a recipe file that GitHub runs on every push, and read a run's green or red result in the Actions tab.</p>
+  <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Next: <a href="0082-readme-repo-description.html">6.7 README and repo description</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

@@ -37,6 +37,17 @@
 </div>
 <p>The first version only works if you already know what "deploy workflow" means and whether it is the right tool. The second leaves the method open and adds three facts the agent could never find alone: the readers use phones, they will not create accounts, and "done" includes a link in a named place. Everything else follows from those facts.</p>
 
+<h2>How to say who it is for</h2>
+<p>"Everyone" is not an audience. It gives the agent nothing to work with. Three short facts do more:</p>
+<ul>
+  <li><strong>The device.</strong> "On a phone, held in one hand."</li>
+  <li><strong>The starting knowledge.</strong> "They have never used a code repository."</li>
+  <li><strong>The friction they will not accept.</strong> "No sign-up, no download, no app store."</li>
+</ul>
+<p>Each fact quietly rules out options. A phone in one hand rules out wide tables and menus that open on hover. "No sign-up" rules out anything that asks for a login. "Never used a repository" rules out a deliverable that is a folder to download and open. You do not have to name those options yourself. You only supply the facts, and the agent connects them faster than you can.</p>
+<p>Compare "make it easy to use" with "my father will open this on an old phone over a slow connection, so the page must be readable before the images finish loading." The first is a wish. The second lets the agent decide about image size, text size, and where the important part of the page sits. The same goes for "make it quick": ask what a person should be able to do within ten seconds, and the answer becomes something you can check.</p>
+<p>The third blank in the template — "when it works, I should be able to…" — is your own check. It must be something you can see for yourself, not something the agent reports. "I can open the link on my phone and read the menu without pinching" is a check. "The deploy is configured" is not, because looking at the page tells you nothing about it.</p>
+
 <div class="vignette">
   <span class="label">A real pattern, anonymized</span>
   <p>Remember the gallery in lesson 0.1, where one message led to about fifty tool calls? That message was two sentences. One said who the page was for: friends who are not technical and would not know how to use a code repository. The other said where the link should go afterwards. It named no tool and no step. Because the audience was stated, the agent decided that the deliverable was a web address rather than a list of instructions, and it measured the project and changed its plan when it found the folder was too big for free hosting.</p>
@@ -81,27 +92,27 @@ If you have to choose between options, pick the simplest one that works and tell
 <div class="quiz" data-correct="2">
   <span class="label">Question 1 of 3</span>
   <p class="q">Which prompt gives the agent a goal and an audience?</p>
-  <button class="opt" type="button">Add a build step and a hosting config to my folder.</button>
-  <button class="opt" type="button">Use the usual web tools and make the page fast.</button>
-  <button class="opt" type="button">Put my photos online so my gran can open them.</button>
-  <button class="opt" type="button">Create the files for a web page in my folder.</button>
+  <button class="opt" type="button">Add a build step and a hosting config file.</button>
+  <button class="opt" type="button">Use the usual web tools and make it fast.</button>
+  <button class="opt" type="button">Put my photos online so my gran sees them.</button>
+  <button class="opt" type="button">Create the files for a web page right now.</button>
   <div class="why"><p>Only the third says what should exist (photos online) and who it is for (a gran who needs to open them). The others describe steps or tools without a reader.</p></div>
 </div>
 <div class="quiz" data-correct="0">
   <span class="label">Question 2 of 3</span>
   <p class="q">You wrote only method steps and the agent built something odd. What is the likeliest cause?</p>
   <button class="opt" type="button">The agent never learned who the result was for.</button>
-  <button class="opt" type="button">The agent could not read the files in your folder.</button>
+  <button class="opt" type="button">The agent could not read the files in there.</button>
   <button class="opt" type="button">The agent needs more steps written out for it.</button>
-  <button class="opt" type="button">The agent works better with shorter and vaguer prompts.</button>
+  <button class="opt" type="button">The agent works better with short, vague prompt text.</button>
   <div class="why"><p>Steps tell the agent what to do but not why. Without a reader in mind, it fills the gap with a guess. More steps would only make you responsible for more details.</p></div>
 </div>
 <div class="quiz" data-correct="3">
   <span class="label">Question 3 of 3</span>
   <p class="q">You really do not want an account system. Where does that belong?</p>
-  <button class="opt" type="button">Nowhere, because the agent will work it out.</button>
+  <button class="opt" type="button">Nowhere, because the agent will work that out.</button>
   <button class="opt" type="button">As a ten-step recipe for building the page.</button>
-  <button class="opt" type="button">In a second chat that the agent never sees.</button>
+  <button class="opt" type="button">In a second chat the agent never opens.</button>
   <button class="opt" type="button">As a stated constraint beside the goal itself.</button>
   <div class="why"><p>A preference the agent cannot read from your files has to be stated. Write it as a constraint ("no sign-up") next to the goal, not as a recipe.</p></div>
 </div>

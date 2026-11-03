@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Permission errors: 403, 404, forks and token scopes</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control as the safety net · Lesson 3.12</nav>
+<header class="lesson-head">
+<p class="kicker">Unit 3 · Lesson 3.12</p>
+<h1>Permission errors: when the server says no</h1>
+<p class="lede">A refused push does not mean your app is broken. Find out which account, repository and permission the request actually used before changing anything.</p>
+<div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0011-remote-origin-push.html">3.6 Remote, origin, push</a></span><span>Win: you can turn a permission refusal into a specific access request</span></div>
+</header>
+<main>
+<h2>Why this matters for shipping your app</h2>
+<p>Your app may work perfectly on your computer and still fail at the last step: sending its commits to GitHub. When a push is refused, asking the agent to rewrite the app will not help. You need to distinguish a code problem from an access problem, preserve the work, and ask the right person for the smallest necessary permission.</p>
+<p>Keep the refusal message. It tells you more than “push failed.” The useful questions are: where did the request go, whose account did it use, and was that account allowed to do that particular thing?</p>
+
+<h2>Two numbers, not a complete diagnosis</h2>
+<p><span class="term" title="An HTTP response saying the server understood the request but refused it">403 Forbidden</span> is a response from a web server. MDN describes it as <q>the server understood the request but refused to process it</q>.<sup class="cite"><a href="#src-http">[1]</a></sup> Treat it as a refusal to investigate, not an invitation to keep retrying. The same documentation says an unchanged request should be expected to fail again.</p>
+<p><span class="term" title="An HTTP response saying the requested resource was not found">404 Not Found</span> needs more care. A wrong address or a missing repository is possible, but lack of access is possible too. GitHub says its “Repository not found” error can mean <q>the repository does not exist or you do not have permission to access it</q>.<sup class="cite"><a href="#src-errors">[2]</a></sup> You cannot conclude that someone deleted the repository from that message alone.</p>
+<p>Why hide access behind “not found”? MDN explains that a server may return 404 instead of 403 when it does not want to admit that a resource exists.<sup class="cite"><a href="#src-http">[1]</a></sup> The number is a clue. The full message and the account used are the evidence.</p>
+<p>Read the code and the message together. The code says which kind of refusal it is. The message often names the account, the repo or the rule. Neither one tells the whole story alone.</p>
+
+<div class="compare">
+<div class="bad"><span class="label">Guessing</span><p>“It says not found. Create a replacement repository and push everything there.” This changes the destination before establishing whether the original exists.</p></div>
+<div class="good"><span class="label">Diagnosing</span><p>“Check the owner and repository spelling, then establish which account the failed command used. Stop before changing the destination.”</p></div>
+</div>
+
+<h2>Permission has more than one gate</h2>
+<p>An <strong>account role</strong> is the set of jobs a person is allowed to do on a repository. Reading code, pushing commits, and changing settings are different jobs. For organization repositories, GitHub recommends the Write role for people who push. Admin adds risky settings work.<sup class="cite"><a href="#src-roles">[3]</a></sup> Being able to read a repository is not proof that you can push to it.</p>
+<p>Put the three gates in order. First the destination: which repo, which branch. Second the account: which login makes the request. Third the credential: what that login handed to the tool. A refusal comes from the first gate that closed. Widening a later gate cannot open an earlier one.</p>
+<p>A <span class="term" title="A secret credential that lets software act as your account within defined limits">personal access token</span> is a secret credential used to authenticate requests. GitHub says <q>A token cannot grant additional access capabilities to a user.</q><sup class="cite"><a href="#src-token">[4]</a></sup> If your account cannot push to a repository, a more powerful token will not turn you into its owner.</p>
+<p>The token can also be narrower than your account. A <span class="term" title="A named limit on what an OAuth or classic personal access token may access">scope</span> limits the access carried by an OAuth token or a classic personal access token. GitHub's fine-grained personal access tokens instead select a resource owner, repositories and specific permissions. Both approaches limit the credential; neither adds rights the account lacks.<sup class="cite"><a href="#src-token">[4]</a></sup><sup class="cite"><a href="#src-scopes">[5]</a></sup></p>
+<table class="ref">
+<tr><th>Gate</th><th>Question to answer</th><th>Safe next move</th></tr>
+<tr><td>Destination</td><td>Is this the intended owner and repository?</td><td>Compare the remote address with the repository page.</td></tr>
+<tr><td>Account role</td><td>May this account perform this operation?</td><td>Ask the owner for access or the operation itself.</td></tr>
+<tr><td>Token limit</td><td>Does this credential permit the operation here?</td><td>Review its selected repositories and permissions privately.</td></tr>
+</table>
+<p>Do not request every permission to make an error disappear. GitHub recommends choosing the smallest repository access and permissions needed.<sup class="cite"><a href="#src-token">[4]</a></sup> A code push is not a reason to grant repository deletion.</p>
+<p>A useful access request names four things. The repo, the action, the account, and what you already tried. For example: “I cannot push the gallery commits as this account. Here is the redacted message.” That gets a faster answer than “GitHub is broken”.</p>
+
+<div class="recall">
+<span class="label">Recall before you read on</span>
+<p>Your account can read a repository but cannot push. Could adding scopes to its token create write access? What else might “Repository not found” mean besides deletion?</p>
+<textarea aria-label="Your answer"></textarea>
+<button class="btn reveal" type="button">Check my answer</button>
+<div class="answer"><p>No. A token can narrow the account's rights, not expand them. “Repository not found” can also mean a wrong address or insufficient permission to access that repository.</p></div>
+</div>
+
+<h2>A fork is another repository</h2>
+<p>A <span class="term" title="A separate repository that starts as a copy of an upstream repository">fork</span> starts as a copy of another repository, called the <strong>upstream repository</strong>. GitHub explains: <q>A fork has its own settings and permissions but stays connected to the upstream repository.</q><sup class="cite"><a href="#src-forks">[6]</a></sup> A branch is a line of work within one repository; a fork is a separate repository.</p>
+<p>This explains a common surprise: pushing to your fork works, but pushing to the original does not. Success at one destination is not permission at the other. Read the owner in the remote address, not only its nickname. As you learned in lesson 3.6, <code>origin</code> is a name saved in your project, not a promise of ownership.</p>
+<p>The remote address ends in <code>owner/name.git</code>. Git also stores a short name for it. Print the address, not the short name. The address is the fact; the short name is a label you chose.</p>
+<p>If you intend to contribute without direct write access, a fork can hold your changes and a <a href="0045-pull-request.html">pull request</a> can propose them to the original. Creating a fork is a collaboration choice, not something the agent should silently do to bypass a refusal. Private-repository policies can restrict whether and where forks may be created.<sup class="cite"><a href="#src-forks">[6]</a></sup></p>
+
+<div class="vignette">
+<span class="label">A real pattern, anonymized</span>
+<p>A user had a personal copy and a shared copy of an app. The agent pushed to the personal copy, then received a 403 at the shared copy. The user arranged access and told the agent it had changed; the same push then succeeded. Later, a repository-management operation needed stronger access, and deleting an unwanted fork needed a token capability the stored credential did not carry. Those were separate permissions, not one broken login.</p>
+</div>
+<p>The boundary matters even when credentials already exist. In another run, an agent used a stored credential to publish a public repository before asking which account the user intended. The credential worked; the decision was wrong. Before publication, name the account, destination and intended visibility. A working credential is not your consent.</p>
+
+<h2>Diagnose without exposing the credential</h2>
+<p>When GitHub CLI is already part of your setup, <code>gh auth status</code> reports its active account and authentication state. Its help also offers <code>--show-token</code>; do not use that option for this exercise. A local run showed a “Token scopes” line for an OAuth credential. That is useful metadata, not a reason to print the token itself.<sup class="cite"><a href="#src-cli">[7]</a></sup></p>
+<p>That check describes GitHub CLI's credentials. Do not assume a separate Git command used the same credential. GitHub's troubleshooting guide warns that incorrect or outdated cached credentials can cause authentication failures.<sup class="cite"><a href="#src-errors">[2]</a></sup> If the evidence does not identify the credential used by Git, mark that part unknown rather than guessing.</p>
+<p>Credentials go stale. A token can expire, be revoked, or stay cached after you switch accounts. A login that worked last month is not evidence about today. That is why the first check is what the tool says it is using right now.</p>
+<div class="warn"><span class="label">Keep secrets out of the diagnosis</span><p>GitHub says <q>Treat your access tokens like passwords.</q><sup class="cite"><a href="#src-token">[4]</a></sup> Never paste a token into your prompt, screenshot or error report. Share the status code, operation and redacted message instead.</p></div>
+
+<div class="doit">
+<span class="label">Do it in your own project</span>
+<ol>
+<li><label><input type="checkbox"> Keep approval prompts on, as in <a href="0006-approvals-and-permissions.html">lesson 0.6</a>. Open your project and use the prompt below.</label></li>
+<li><label><input type="checkbox"> Compare the owner and repository in the remote address with the intended GitHub page. Do not share an address containing a secret.</label></li>
+<li><label><input type="checkbox"> If GitHub CLI is installed, inspect its account and authentication metadata without revealing its token. Otherwise leave this check unavailable; do not install or log in for this exercise.</label></li>
+<li><label><input type="checkbox"> Write a one-sentence access request naming the destination and operation, or record which evidence is still missing.</label></li>
+</ol>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Help me diagnose repository access without changing it.
+Inspect the configured remote addresses without exposing credentials. If GitHub CLI is installed, run gh auth status without --show-token.
+If I have supplied a refusal message, separate what it proves from what remains unknown: destination, account role, and token limits.
+Do not push, create a fork, change remotes, create credentials, widen scopes, or alter approvals. Do not read or print token values.
+Finish with the smallest specific access request I could send to the repository owner, or the missing evidence needed first.</pre></div>
+<div class="expect"><p>You should see an identified destination, available account metadata, and a short list of known facts and unknowns. No new permission or repository is required. If you have no current failure, a destination-and-credential inventory is a valid result; do not manufacture a refusal.</p></div>
+<p class="progress"></p>
+</div>
+<p>After the owner or account holder changes the relevant access, ask for one approved retry of the planned action. If the message instead names a branch rule, follow that rule rather than widening a token; <a href="0054-branch-protection-prs-only-convention.html">lesson 3.15</a> covers that case.</p>
+<p>A refusal is not a verdict on your app. It is a statement about one action, for one account, at one moment. Fix that access, retry once, and read the next message on its own terms. A refusal that names a rule, a missing review or a failed check is a different problem; treat it as one.</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+<span class="label">Question 1 of 3</span>
+<p class="q">A repository request says “not found.” What conclusion is justified?</p>
+<button class="opt" type="button">The repository was deleted by its owner</button>
+<button class="opt" type="button">The repository might be hidden from you</button>
+<button class="opt" type="button">The repository needs rebuilding on your laptop</button>
+<div class="why"><p>Check the address and account access. GitHub documents “Repository not found” for both missing repositories and insufficient access.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+<span class="label">Question 2 of 3</span>
+<p class="q">Your account lacks write access. What can a wider token do?</p>
+<button class="opt" type="button">It cannot exceed your account's current access</button>
+<button class="opt" type="button">It can replace the repository owner's approval</button>
+<button class="opt" type="button">It can grant your account permanent ownership</button>
+<div class="why"><p>A token is further limited by scopes or permissions. It cannot grant rights its owner does not have.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+<span class="label">Question 3 of 3</span>
+<p class="q">You pushed to your fork. What does that establish?</p>
+<button class="opt" type="button">Your changes also reached the original repository</button>
+<button class="opt" type="button">Your account now controls the original repository</button>
+<button class="opt" type="button">Your commits reached your own fork repository</button>
+<div class="why"><p>A fork is a separate repository. A successful push there does not demonstrate write access to, or update, the upstream repository.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box"><span class="label">Read this next (primary source)</span><p><a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/troubleshooting-cloning-errors">GitHub: Troubleshooting cloning errors</a> — read “Error: Repository not found” before assuming a repository has vanished.</p></div>
+<div class="ask"><span class="label">Ask your teacher</span><p>Try: “Here is a redacted refusal. Which facts does it prove, and what is the smallest read-only check that would distinguish the remaining explanations?”</p></div>
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+<li id="src-http">MDN contributors, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/403">403 Forbidden</a>. Retrieved 2026-11-02.</li>
+<li id="src-errors">GitHub, <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/troubleshooting-cloning-errors">Troubleshooting cloning errors</a>. Retrieved 2026-11-02.</li>
+<li id="src-roles">GitHub, <a href="https://docs.github.com/en/organizations/managing-user-access-to-your-organizations-repositories/managing-repository-roles/repository-roles-for-an-organization">Repository roles for an organization</a>. Retrieved 2026-11-02.</li>
+<li id="src-token">GitHub, <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">Managing your personal access tokens</a>. Retrieved 2026-11-02.</li>
+<li id="src-scopes">GitHub, <a href="https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps">Scopes for OAuth apps</a>. Retrieved 2026-11-02.</li>
+<li id="src-forks">GitHub, <a href="https://docs.github.com/en/pull-requests/reference/forks">Forks</a>. Retrieved 2026-11-02.</li>
+<li id="src-cli">GitHub CLI 2.102.0, local <code>gh auth status --help</code> and output, observed 2026-11-02. Related <a href="https://cli.github.com/manual/gh_auth_login">GitHub CLI login manual</a>, retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+<p><strong>You can now:</strong> distinguish a refused request from missing access, explain why a fork has separate permissions, and ask for a specific role or token permission without exposing credentials.</p>
+<p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../reference/safety-checklist.html">Safety checklist</a></p>
+<div class="pager"><a href="0050-undo.html">Previous: Undo</a> · <a href="0052-checkpoint-often.html">Next: Checkpoint often</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

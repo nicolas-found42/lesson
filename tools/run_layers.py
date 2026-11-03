@@ -79,6 +79,8 @@ def main() -> int:
     # Strict mode escalates broken relative links (L6) to errors; structural L1
     # errors already block.
     static_flags = ['--strict-links'] if strict else []
+    if '--verbose' in sys.argv:
+        static_flags.append('--verbose')
     code, out = sh(['python3', '-I', 'tools/check_lessons.py', *static_flags, *targets])
     results.append(('L1/L4/L5/L6 static', code, out))
 

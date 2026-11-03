@@ -23,6 +23,7 @@ import math
 import html
 import json
 import glob
+from functools import lru_cache
 from html.parser import HTMLParser
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -90,6 +91,41 @@ def load_curriculum() -> dict[str, dict]:
             except Exception:
                 pass
     return {}
+
+_TYPOGRAPHY = str.maketrans({
+    '\u2018': "'", '\u2019': "'", '\u201c': '"', '\u201d': '"',
+    '\u2013': '-', '\u2014': '-', '\u2026': '...', '\u00a0': ' ',
+})
+
+
+_HTML_TAGS = (
+    'a|abbr|address|article|aside|audio|b|blockquote|body|br|button|caption|cite|code|col|'
+    'colgroup|dd|del|details|dfn|div|dl|dt|em|figcaption|figure|footer|form|h[1-6]|head|header|'
+    'hr|html|i|iframe|img|input|ins|kbd|label|legend|li|link|main|mark|meta|nav|ol|optgroup|'
+    'option|p|picture|pre|q|s|samp|script|section|select|small|source|span|strong|style|sub|'
+    'summary|sup|svg|table|tbody|td|template|textarea|tfoot|th|thead|time|title|tr|track|u|ul|'
+    'var|video|wbr'
+)
+_TAG_RE = re.compile(rf'</?(?:{_HTML_TAGS})\b[^>]*>', re.I)
+
+
+@lru_cache(maxsize=8192)
+def canonical_text(s: str) -> str:
+    """Normalizes quotes and evidence before provenance comparison.
+
+    Entity escapes (`&lt;` vs `<`), smart punctuation, and whitespace
+    differences are formatting, not missing provenance.
+    """
+    s = _TAG_RE.sub('', s)
+    s = html.unescape(s)
+    s = s.replace('`', '')
+    s = s.translate(_TYPOGRAPHY)
+    s = re.sub(r'\s*\.\.\.\s*', '...', s)
+    s = re.sub(r'\s*-\s*', '-', s)
+    s = re.sub(r'\s+([,.;:!?])', r'\1', s)
+    s = re.sub(r'\s+', ' ', s).strip().strip('\'"').rstrip('.,;:!?')
+    return s.lower()
+
 
 def load_evidence() -> str:
     """Loads text from local saved sources if available."""
@@ -276,7 +312,7 @@ def check_lesson_file(
         quiz_correct_indices.append(corr_idx)
 
         # Options
-        raw_opts = re.findall(r'<button class="opt"[^>]*>(.*?)</button>', q_body, re.S)
+        raw_opts = re.findall(r'<button\b[^>]*\bclass="[^"]*\bopt\b[^"]*"[^>]*>(.*?)</button>', q_body, re.S)
         if len(raw_opts) < 3:
             errors.append(f'Quiz #{q_idx+1} has fewer than 3 options ({len(raw_opts)})')
             continue
@@ -333,8 +369,10 @@ def check_lesson_file(
         
         # Reference docs that are spec-mandated to be linked but uncreated yet
         if target.startswith('../reference/') or target.startswith('reference/'):
-            # Warn only, never block
-            warnings.append(f'Forward link to planned reference doc: {href}')
+            # Reference pages may be linked before they land; warn only while missing.
+            ref_path = os.path.normpath(os.path.join(os.path.dirname(path), target))
+            if not os.path.exists(ref_path):
+                warnings.append(f'Forward link to planned reference doc: {href}')
             continue
 
         # Normal relative targets
@@ -375,7 +413,7 @@ def check_lesson_file(
             warnings.append(f'Prose budget {word_count} words outside spec 900-1500')
 
     for term in ('simply', 'obviously', 'just'):
-        hits = len(re.findall(rf'\b{term}\b', prose, re.I))
+        hits = len(re.findall(rf'\b{term}\b', extract_prose(content, include_quotes=False), re.I))
         if hits:
             warnings.append(f'Banned intensifier "{term}" used {hits}x outside quotes/code')
 
@@ -384,20 +422,31 @@ def check_lesson_file(
         if grade > 8.5:
             warnings.append(f'Readability FK grade {grade:.1f} above 8.5 target')
 
-    # 10. Layer 5 — Semantic provenance: every <q> must exist in saved evidence
+    # 10. Layer 5 — Semantic provenance: a cited <q> must exist in saved evidence.
+    # Uncited <q> marks a phrase reused from the lesson's own prose or an example
+    # prompt; only a nearby citation claims an external source, so only that is
+    # checked. The citation may follow the quote after commentary ("...says
+    # <q>X</q>. The page adds <sup class=cite>"), so the window ends at the next
+    # quote or block close.
     if evidence_text:
+        evidence = canonical_text(evidence_text)
         for m in re.finditer(r'<q>(.*?)</q>', content, re.S):
-            raw_q = re.sub(r'<[^>]+>', '', m.group(1))
-            norm_q = re.sub(r'\s+', ' ', raw_q).strip().strip('\u201c\u201d"\'')
-            norm_q = norm_q.rstrip('.,;:!?')
-            if len(norm_q) >= 8 and norm_q.lower() not in evidence_text:
+            tail = content[m.end():]
+            boundary = re.search(r'<q>|</p>|</li>|</span>|</div>|</td>|</th>', tail)
+            window = tail[:boundary.start()] if boundary else tail[:400]
+            if 'class="cite"' not in window:
+                continue
+            norm_q = canonical_text(m.group(1))
+            if len(norm_q) >= 8 and norm_q not in evidence:
                 warnings.append(f'Quote not found in saved evidence: "{norm_q[:60]}"')
 
     return errors, warnings
 
 
-def extract_prose(content: str) -> str:
+def extract_prose(content: str, include_quotes: bool = True) -> str:
     """Returns prose text only: no chrome, code, or interactive components."""
+    if not include_quotes:
+        content = re.sub(r'<q\b.*?</q>', ' ', content, flags=re.S | re.I)
     text = re.sub(r'<pre\b.*?</pre>', ' ', content, flags=re.S | re.I)
     text = re.sub(r'<code\b.*?</code>', ' ', text, flags=re.S | re.I)
     text = re.sub(r'<script\b.*?</script>', ' ', text, flags=re.S | re.I)

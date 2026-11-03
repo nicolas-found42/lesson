@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The context window: what your agent remembers</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 5 · How agents work · Lesson 5.1</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 5 · Lesson 5.1</p>
+  <h1>The context window: what your agent remembers</h1>
+  <p class="lede">An agent does not remember your project the way you remember a room you are standing in. It holds a working memory that fills up, gets summarized, and can lose early instructions. Knowing that explains a lot of strange behaviour on long builds.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0001-what-a-coding-agent-is.html">0.1 What a coding agent actually is</a></span><span>Win: you can explain why a long session forgets, and keep it on track</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your mission is to take an idea to a live app by directing a coding agent. The longest part of that journey is one long working relationship: hours of building, fixing, and checking. When the agent suddenly "forgets" a rule you gave it an hour ago, or acts like a stranger to its own work, the cause is not laziness or a broken tool. It is the size of its working memory. Once you can picture that memory, the fix for each strange behaviour is small and boring, and you will stop losing hours to it.</p>
+
+<h2>The window</h2>
+<p>Everything the agent can currently pay attention to fits in one limited space, called the <span class="term" title="The space holding everything the agent can currently pay attention to.">context window</span>. Anthropic describes what it holds: <q>Claude's context window holds your conversation history, file contents, command outputs, CLAUDE.md, auto memory, loaded skills, and system instructions.</q><sup class="cite"><a href="#src-hcw">[1]</a></sup> Codex and omp work the same way; the three tools differ in what they show you about it, not in the idea.</p>
+<p>So the window is not a diary. It is a desk. Your messages sit on it, and so does every file the agent read, every command result, and the tool's own instructions. As the loop from lesson 0.1 turns — gather, act, verify — each turn drops more paper on that desk. A long session is a desk filling up.</p>
+<span class="sidenote">The window is measured in <em>tokens</em>, the small word-pieces models read. Lesson 5.2 covers tokens, cost, and caching.</span>
+<p>Two consequences follow, and both are verifiable in the tools' own documentation. First, a brand-new session starts empty: <q>Sessions are independent. Each new session starts with a fresh context window</q>, so it has no memory of what you discussed yesterday.<sup class="cite"><a href="#src-hcw">[1]</a></sup> Second, the window has a hard size, so something has to give when it fills.</p>
+
+<h2>Compaction: the summary swap</h2>
+<p>When the desk is nearly full, the agent does not stop. It <em>compacts</em>: it replaces older back-and-forth with a shorter summary and keeps working from that summary. Anthropic's best-practices page describes it plainly: <q>To keep a long session going without you managing it, your conversation is compacted automatically before the context window fills.</q><sup class="cite"><a href="#src-bp">[2]</a></sup></p>
+<p>Compaction is genuinely useful and genuinely lossy. The same documentation warns: <q>Claude compacts automatically, but instructions from early in the conversation can get lost.</q><sup class="cite"><a href="#src-hcw">[1]</a></sup> The summary keeps the shape of the work — what was asked, what changed — but a detail you stated once, in passing, in the first ten minutes may not survive the rewrite.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user ran one session for about five hours, driving an agent through dozens of long test runs. Partway through, the tool quietly compacted the conversation. Shortly afterwards the agent drifted from a rule the user had set at the start of the session. The user did not argue with the agent about it; they restated the rule in one line, and the rest of the session followed it. The lesson they drew: a rule that matters gets repeated, or written somewhere that survives compaction.</p>
+</div>
+
+<p>Three defences, in increasing order of strength:</p>
+<ul>
+  <li><strong>Watch the space.</strong> Claude Code has a command that shows what is using room: <q>run <code>/context</code> to see what's using space.</q><sup class="cite"><a href="#src-hcw">[1]</a></sup> omp shows context use right in its status bar.<sup class="cite"><a href="#src-using">[5]</a></sup></li>
+  <li><strong>Compact on purpose, with a focus.</strong> Claude Code accepts a focus, for example <code>/compact focus on the API changes</code>, so the summary keeps what you name.<sup class="cite"><a href="#src-hcw">[1]</a></sup> Codex documents the same idea: its <code>/compact</code> command will <q>Summarize the visible chat to free tokens.</q><sup class="cite"><a href="#src-cx">[3]</a></sup></li>
+  <li><strong>Put rules where compaction cannot reach.</strong> Persistent instructions live in the project rules file (CLAUDE.md / AGENTS.md), which reloads regardless of what the summary kept. Anthropic says it directly: <q>Put persistent rules in CLAUDE.md rather than relying on conversation history.</q><sup class="cite"><a href="#src-hcw">[1]</a></sup> Lesson 1.12 teaches writing one.</li>
+</ul>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what happens when the context window fills, and what is the one thing that gets lost first? Write it in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The conversation is <strong>compacted</strong>: older turns are replaced with a summary and the agent continues. What gets lost first is <strong>early detail</strong> — instructions stated once, early, that the summary did not keep. Persistent rules belong in the rules file, which survives.</p></div>
+</div>
+
+<h2>Resume: yesterday's session comes back</h2>
+<p>Because each session is saved, quitting does not throw work away. <em>Resuming</em> reopens a saved session and continues it, history included. This matters for real builds: you will stop mid-task, sleep, and come back.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Anthropic documents both doors: <q>Resuming a session with <code>claude --continue</code> or <code>claude --resume</code> reopens it under the same session ID and appends new messages to the existing conversation.</q><sup class="cite"><a href="#src-hcw">[1]</a></sup> Inside a session, <code>/resume</code> opens a picker of saved sessions.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Codex ships a resume command: <q>Continue a previous interactive session by ID or resume the most recent chat.</q><sup class="cite"><a href="#src-cx">[3]</a></sup> Inside the CLI, <code>/resume</code> picks a saved session.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp records sessions as you work — its docs note <q>There is no Save command</q> — and <code>omp -c</code> continues the most recent session in that project, while <code>omp -r</code> opens a picker.<sup class="cite"><a href="#src-sess">[4]</a></sup> omp is documented only by its own authors, so treat surprises as questions for your teacher.</p>
+  </div>
+</div>
+<p>One caution pairs with this convenience. A resumed session returns <em>with</em> its full history, so it is also close to full. If the session ended because it was drifting, resuming reopens the drift along with the work. Lesson 5.8 covers why an agent should re-check facts against the files rather than trust its own memory of them.</p>
+
+<h2>Fork: two tries from the same past</h2>
+<p>Sometimes you stand at a decision point: the app could go two ways, and you want to try one without losing the other. A <span class="term" title="A copy of a session's history opened as a new session, leaving the original untouched.">fork</span> copies the conversation so far into a new session, and the original stays as it was.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab2-claude" aria-controls="panel2-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab2-codex" aria-controls="panel2-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab2-omp" aria-controls="panel2-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel2-claude" aria-labelledby="tab2-claude" data-panel="claude">
+    <p>From the same documentation: <q>Forking with <code>--fork-session</code> or <code>/branch</code> copies the history into a new session ID, leaving the original unchanged.</q><sup class="cite"><a href="#src-hcw">[1]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel2-codex" aria-labelledby="tab2-codex" data-panel="codex" hidden>
+    <p>Codex documents <code>codex fork</code> as a way to <q>Fork a previous interactive session into a new chat, preserving the original transcript.</q><sup class="cite"><a href="#src-cx">[3]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel2-omp" aria-labelledby="tab2-omp" data-panel="omp" hidden>
+    <p>omp offers <code>/fork</code>, which <q>Selects an earlier message and creates a separate session file from it</q>, plus <code>/branch</code> for a second line inside the same session file.<sup class="cite"><a href="#src-slash">[6]</a></sup></p>
+  </div>
+</div>
+<p>Beginners rarely need a fork in week one, but the idea is worth having: a fork is to a session what a branch is to a repository (lesson 3.5) — a safe parallel try. If a fork's experiment fails, the original is still there, untouched.</p>
+
+<h2>Handoff: moving to a clean desk</h2>
+<p>There is a third move. Instead of continuing a crowded session, you can ask the agent to write down the state of the work and start fresh from that note. This is a <span class="term" title="A written summary of a task's state, made so a new session can continue the work.">handoff</span>.</p>
+<p>omp has this built in: its <code>/handoff</code> command <q>Generates a handoff document and commits it as a compaction entry in the same session.</q><sup class="cite"><a href="#src-slash">[6]</a></sup> But you do not need a built-in command. The behaviour works in any agent, as a prompt:</p>
+<div class="prompt"><button class="copy" type="button" data-copy>Copy</button><pre>Before we continue, write a handoff note for a fresh session of this project.
+Include: the goal in one line, what is done and checked, what is in progress,
+decisions we made and why, any standing rules, and the next three steps.
+Save it as HANDOFF.md in the project folder. Then stop and wait for me.</pre></div>
+<p>Then open a new session and start it with <q>Read HANDOFF.md, then continue from the next step.</q> The fresh session has a small, tidy desk with the important paper on it — often better than a crowded one, and it links to what you already know: the note lives in the project folder, next to the code, where the next agent (or a human teammate) will find it. Unit 9's lesson on <a href="0115-handoff-docs-long-sessions.html">handoff docs for long sessions</a> builds on this pattern; git save points from Unit 3 are what make a mid-task restart safe in the first place.</p>
+
+<div class="warn">
+  <span class="label">Common trap</span>
+  <p>Do not treat the summary or the handoff note as the finished truth. Both are the agent's account of the work, not the work. The files on disk — checked with your own eyes and saved with git — remain the source of truth. Lesson 5.8 is about exactly this habit.</p>
+</div>
+
+<div class="compare">
+  <div class="bad">
+    <span class="label">Weak: trust the long session</span>
+    <p>Give every rule in the chat's first message, run for hours, never commit, never repeat a rule. When behaviour drifts after an automatic summary, argue with the agent about what it was told.</p>
+  </div>
+  <div class="good">
+    <span class="label">Strong: work with the window</span>
+    <p>Keep standing rules in the rules file, commit at each finished step, glance at context use, compact with a focus before a big new phase, and hand off to a fresh session when the work changes shape.</p>
+  </div>
+</div>
+
+<h2>Try it in your own agent</h2>
+<p>This works best in a practice project folder — anything small you made in Unit 0. Keep approval prompts on, as always.</p>
+<div class="doit">
+  <span class="label">Do it now</span>
+  <ol>
+    <li><input type="checkbox" aria-label="step 1"> <div class="step">In your project folder, start your agent and ask: <em>"Read the main files in this project and summarize what it does."</em>
+      <div class="expect"><p>The agent reads a few files and answers. Those file contents now sit in the context window.</p></div></div></li>
+    <li><input type="checkbox" aria-label="step 2"> <div class="step">Check how much of the window is used.
+      <div class="expect"><p>Claude Code: type <code>/context</code>. omp: read the context-use part of the status bar. Codex: type <code>/status</code> for session information. Exact numbers vary; the point is seeing that the window is finite and measured.</p></div></div></li>
+    <li><input type="checkbox" aria-label="step 3"> <div class="step">Compact on purpose, with a focus: <code>/compact keep the project's purpose and its file layout</code>.
+      <div class="expect"><p>The agent replaces earlier turns with a short summary and confirms it. Nothing in your project folder changed — compaction rewrites the conversation, not your files.</p></div></div></li>
+    <li><input type="checkbox" aria-label="step 4"> <div class="step">Test what survived: ask, <em>"What is this project for, and which files matter most?"</em>
+      <div class="expect"><p>The answer should match your focused summary. Anything you did not name in the focus may be gone — that is the lossiness, demonstrated safely.</p></div></div></li>
+  </ol>
+  <p class="progress">Tick each step as you finish it.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your agent has been building for an hour and its context window is nearly full. What happens?</p>
+  <button class="opt" type="button">It deletes your project and starts over fresh from nothing.</button>
+  <button class="opt" type="button">It summarizes the older work and continues on from that.</button>
+  <button class="opt" type="button">It emails the whole conversation to you and closes down.</button>
+  <button class="opt" type="button">It starts a new session with nothing of your history.</button>
+  <div class="why"><p>Compaction replaces older turns with a summary and the work continues. The cost is detail: instructions stated early can be lost, which is why standing rules belong in the rules file.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You want to try a second approach without losing the first. What does forking a session do?</p>
+  <button class="opt" type="button">It copies the conversation so both branches keep their own histories.</button>
+  <button class="opt" type="button">It deletes the old conversation so only the new branch survives.</button>
+  <button class="opt" type="button">It moves the conversation to a different computer without any copying.</button>
+  <button class="opt" type="button">It converts the conversation into a file that you must rewrite.</button>
+  <div class="why"><p>A fork copies the history into a new session and leaves the original unchanged — like a git branch for a conversation. The original path stays available if the experiment fails.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A long session ends mid-task. Tomorrow you want to continue that same work. Your best first move?</p>
+  <button class="opt" type="button">Retype each instruction from the start of the work by memory.</button>
+  <button class="opt" type="button">Start a fresh session and hope it guesses what you want.</button>
+  <button class="opt" type="button">Resume the saved session so its history is loaded back up.</button>
+  <button class="opt" type="button">Take a screenshot of the chat and read it back aloud.</button>
+  <div class="why"><p>Every tool here saves sessions and can reopen them, history included. Resuming is the designed path; a handoff note is the alternative when the old session was too crowded or drifting.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works — Work with sessions</a> — Anthropic's own page on sessions, resume, fork, and the context window. Written for one tool, but the model of a filling window applies to all three.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me a project where the rules file saved the agent from forgetting something"</em> or <em>"When should I resume a session and when should I hand off to a fresh one?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-hcw">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02.</li>
+  <li id="src-bp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex developer commands</a>. Retrieved 2026-11-02.</li>
+  <li id="src-sess">Stencil Labs, <a href="https://omp.sh/docs/sessions">omp sessions</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-using">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-slash">Stencil Labs, <a href="https://omp.sh/docs/slash">omp slash commands</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain what the context window holds, why compaction loses early instructions, and when to resume, fork, or hand off to a fresh session.</p>
+  <p>Quick reference: <a href="../reference/agent-loop.html">The agent loop (one page)</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a></p>
+  <div class="pager"><span>Next: <a href="0069-tokens-cost-caching.html">5.2 Tokens, cost, and caching</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

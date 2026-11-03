@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assets &amp; licensing — and the reverse-engineering caution</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.18</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.18</p>
+  <h1>Assets &amp; licensing — and the reverse-engineering caution</h1>
+  <p class="lede">Images, sounds, fonts, icons, and other people's files make your app look finished. Each one has an owner. An agent will fetch, copy, or rebuild whatever you point at, without checking who owns it. So learn to do three things: check a license before an asset enters your repo, license your own work, and pause before asking an agent to take apart something you don't own.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0105-data-dont-own.html">8.17 Data you don't own</a></span><span>Win: you can check an asset's license before using it, add a LICENSE file to your own repo, and name the line you won't cross with reverse engineering</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Lesson 8.17 taught you that data you did not collect has a source, and that source deserves a look. The same holds, more sharply, for <strong>assets</strong>: the images, sounds, music, fonts, icons, and video clips your app shows. Code you write is yours. An image from someone else's site is theirs. If you ship it without permission, the fix is not a code edit. It is a legal problem, and your public URL makes it easy to find. Your agent can search the web, copy files, and embed anything in a page. It has no sense of what is fair to take. That call is yours.</p>
+
+<h2>Default copyright: no answer is an answer</h2>
+<p>Here is the rule that surprises most beginners. A file you find on the web with no license attached is not free. It is the opposite. Copyright protects creative work the moment it exists. Choose A License puts it plainly: <q>When you make a creative work (which includes code), the work is under exclusive copyright by default.</q><sup class="cite"><a href="#src-cal-noperm">[2]</a></sup> So an image with no visible license means <em>no permission</em>, not <em>any permission</em>. Their advice for unlicensed software fits any asset word for word: <q>that generally means you have no permission from the creators of the software to use, modify, or share the software.</q><sup class="cite"><a href="#src-cal-noperm">[2]</a></sup></p>
+<p>This runs in both directions. Your own repository, on a public host, sits under that same default. GitHub's docs are plain: <q>without a license, the default copyright laws apply, meaning that you retain all rights to your source code and no one may reproduce, distribute, or create derivative works from your work.</q><sup class="cite"><a href="#src-gh-license">[1]</a></sup> If you want people to use your app's code, say so in a <strong>LICENSE file</strong>. That is a plain text file in the repo root, and it states the terms. GitHub notes that most people name it <code>LICENSE.txt</code>, <code>LICENSE.md</code>, or <code>LICENSE.rst</code>.<sup class="cite"><a href="#src-gh-license">[1]</a></sup> Picking one is a bigger question than this lesson. The site <a href="https://choosealicense.com/">choosealicense.com</a>, which GitHub points to, walks you through it. A beginner shipping a small project usually wants a permissive license: "use it, keep my notice."</p>
+
+<h2>Reading a Creative Commons label</h2>
+<p>Many images, sounds, and teaching materials carry a <strong>Creative Commons</strong> license. That is a standard grant of permission, attached in advance, so you know what is allowed. Creative Commons describes them as <q>a standardized, legally-sound way to grant permission in advance, so that creators can clearly communicate how their work may be used, without negotiating individual permissions every time.</q><sup class="cite"><a href="#src-cc">[3]</a></sup> The letters take a minute to learn:</p>
+<ul>
+<li><strong>BY</strong> — credit must be given to the creator. It appears in almost every CC license.</li>
+<li><strong>SA</strong> (ShareAlike) — if you remix or adapt the material, you must license your adaptation under the same terms.<sup class="cite"><a href="#src-cc">[3]</a></sup></li>
+<li><strong>NC</strong> (NonCommercial) — only noncommercial use is permitted, meaning use <q>not primarily intended for or directed towards commercial advantage or monetary compensation.</q><sup class="cite"><a href="#src-cc">[3]</a></sup></li>
+<li><strong>ND</strong> (NoDerivatives) — no adaptations permitted: copy and distribute the original, but do not change it.<sup class="cite"><a href="#src-cc">[3]</a></sup></li>
+</ul>
+<p>So <strong>CC BY</strong> means "use it for anything, including a business, credit the creator." <strong>CC BY-NC-ND</strong> means "credit the creator, no commercial use, and no edits." Before your agent drops an asset into the project, you should be able to say which letters apply. Tell the agent to record that credit in your README. If an agent fetches an image and cannot name its license, that is the "unverified claim" case from lesson 5.8. The honest answer is to leave the asset out.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what does a file with no license attached actually mean, and what do the letters NC and ND in a Creative Commons label each forbid?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>No license means the default copyright applies: all rights stay with the creator and you have no permission to copy, modify, or share it. <strong>NC</strong> forbids commercial use; <strong>ND</strong> forbids adaptations — you may only pass the original along unchanged.</p></div>
+</div>
+
+<h2>Reverse engineering: powerful, and a line to draw on purpose</h2>
+<p><strong>Reverse engineering</strong> means working backward from a finished product to see how it works. For example, you might ask the agent to study a program's compiled files. Or you might ask it to rebuild a piece of software's behavior from watching it. Coding agents are very good at this. Given time, one can trace how a program loads its data. It can rebuild rules hidden inside it. It can copy effects that no doc explains. There are honest uses: learning a file format so you can import your own data, fixing interop with a tool you own, or studying how a technique works. Aim the same skill at someone else's commercial product and the line moves. Pulling out their art, rebuilding their game from a copy of their disc, or cloning their app's look can cross into taking what is not yours. That is like using an unlicensed image, at a much larger scale.</p>
+<p>The practical caution is a habit, not a legal treatise. Ask one question <em>before</em> the work starts: <strong>who owns this, and do I have permission for what I am about to do?</strong> Software licenses and platform terms often say what they allow about decompiling or extracting. Sometimes study is fine. Often it is not. That text is the thing to check, not your optimism. This lesson does not give legal advice. When a project touches commercial software or content, do three things: read the product's own terms, prefer assets with an open license, and use your own files (a recording you made, data you exported) as inputs.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user spotted one small visual defect in a viewer they had built from an old commercial program's data. They asked the agent to make it match the original exactly. Ninety seconds found the cause. But each fix set up the next one: "and also make this match the original." The session ran about twenty hours, with the agent rebuilding details of the original product that nobody had asked for. The work was real and impressive. Every hour of it also deepened the dependency on files the user did not own, under a license nobody had read. The cheaper, safer version: use assets you have rights to, and set a stop condition (lesson 4.3) before the first prompt.</p>
+</div>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>In another session, an agent was asked how one mode of a rebuilt application worked. It sent four read-only helpers to look at different parts. It checked their contradicting reports against the actual code. Then it wrote an explanation, and ended by stating what it had <em>not</em> verified. That is the fair face of this kind of work: reading and explaining, on materials the user already had. The caution is about the inputs, not the technique.</p>
+</div>
+
+<h2>The habit: license check before copy</h2>
+<p>Make this a habit. Before any downloaded asset enters your project:</p>
+<ul>
+<li>Find the asset's source page and look for a license note. No note means no permission — pick a different asset.</li>
+<li>Tell the agent which license applies and ask it to record the credit (creator, license name, link) in your README.</li>
+<li>Keep a <code>LICENSE</code> file in your repo root so people who find your app know what they may do with your code.<sup class="cite"><a href="#src-gh-license">[1]</a></sup></li>
+<li>For anything involving other people's compiled software or commercial content, read that product's terms before asking the agent to dig into it — and say in the prompt what is off-limits.</li>
+</ul>
+
+<h2>Weak prompt vs strong prompt</h2>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Weak — asks the agent to make it work, ignores ownership</span>
+    <p><q>Find a nice background image and some sound effects online and add them to my app. Also figure out how the original version of this program does its lighting and copy that.</q></p>
+  </div>
+  <div class="good">
+    <span class="label">Strong — provenance and permission first</span>
+    <p><q>Find background images and sound effects that carry a Creative Commons license allowing commercial use. For each, report the source page, the exact license name, and the creator. Add only assets whose license you confirmed, record each credit in the README, and tell me what you could not verify. Do not extract or rebuild anything from other people's compiled software or commercial files.</q></p>
+  </div>
+</div>
+
+<h2>Do it in your own project</h2>
+<div class="doit">
+  <span class="label">Do it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Look at your repo root. If there is no LICENSE file, choose one with your agent via choosealicense.com and commit it.</label></li>
+    <li><label><input type="checkbox"> List every non-code asset in your project (images, sounds, fonts). Send the prompt below. Keep approval prompts on.</label></li>
+    <li><label><input type="checkbox"> For each asset with no confirmable license, remove it, note why, and ask the agent for an openly licensed alternative from a source you can check.</label></li>
+  </ol>
+  <div class="prompt">
+    <span class="label">Copy-paste prompt</span>
+    <button class="copy" type="button">Copy</button>
+    <pre>Find every non-code asset in my project (images, sounds, fonts, video).
+For each one, report: the file, where it came from (if known), and any
+license information in or near it. Mark each as LICENSED (with the exact
+license name), UNKNOWN, or GENERATED-BY-ME. Do not download or change
+anything yet. End with a list of what you could NOT verify.
+Then create or update a LICENSE file in the repository root describing
+the license I choose for my own code.</pre>
+  </div>
+  <div class="expect"><p>You should see a per-file list with a license status for each asset — not a cheerful "all good." Anything marked UNKNOWN is a claim without evidence, as in lesson 8.17. The second step should leave a LICENSE file in your repo root, showing in <code>git status</code> as a new file to commit.</p></div>
+</div>
+
+<div class="warn">
+  <span class="label">The trap to avoid</span>
+  <p>The agent will not raise the ownership question on its own. "It works" is its whole scorecard. A request like <q>make this behave exactly like the original</q>, aimed at someone else's product, can pull the agent into hours of extraction work from files you have no rights to. Decide the line first: what inputs are yours, and what license covers them. Then put it in the prompt.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">You find a great icon online with no license mentioned anywhere. What does that mean?</p>
+  <button class="opt" type="button">It may be used freely since nothing was stated there.</button>
+  <button class="opt" type="button">It is owned outright by whichever site hosted the file.</button>
+  <button class="opt" type="button">It is copyrighted by default and you have no permission.</button>
+  <button class="opt" type="button">It becomes public property once it has been indexed anywhere.</button>
+  <div class="why"><p>Creative work is under exclusive copyright by default; with no license granting permission, you have none, so the icon is off-limits no matter how easy it was to download.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">What do the letters NC and ND forbid in a Creative Commons license?</p>
+  <button class="opt" type="button">It forbids commercial use and modified versions, respectively.</button>
+  <button class="opt" type="button">It forbids public copies and unchanged re-sharing, respectively.</button>
+  <button class="opt" type="button">It forbids credit lines and source links, respectively.</button>
+  <button class="opt" type="button">It forbids code reuse and image editing, respectively.</button>
+  <div class="why"><p>NC means only noncommercial use is permitted; ND means no derivatives or adaptations — you may copy and share the original unchanged, but not remix it.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Why should your own public repository contain a LICENSE file?</p>
+  <button class="opt" type="button">Because hosts delete any unlicensed repositories after one week.</button>
+  <button class="opt" type="button">Because without one, default copyright law blocks all reuse.</button>
+  <button class="opt" type="button">Because agents refuse to read projects without a license.</button>
+  <button class="opt" type="button">Because licenses help the whole build step run faster.</button>
+  <div class="why"><p>Per GitHub's docs, no license means the default copyright laws apply and nobody may reproduce, distribute, or create derivatives of your work — a LICENSE file is how you grant permission.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">Before asking your agent to reverse engineer a commercial program, the first thing to do is:</p>
+  <button class="opt" type="button">Back up the program files in a safe folder.</button>
+  <button class="opt" type="button">Switch the agent to its most capable model first.</button>
+  <button class="opt" type="button">Set a token budget so it cannot run out.</button>
+  <button class="opt" type="button">Check who owns it and what its terms permit.</button>
+  <div class="why"><p>The caution in this lesson is about ownership and permission, not capability or cost. The product's own terms may permit or forbid decompilation and extraction — that check comes before any work starts.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>Every asset gets a source and a license before it enters the repo. Every credit lands in the README. Every public repo gets a LICENSE file. Every reverse-engineering request starts with "who owns this, and do I have permission?" The agent works to make things run. Ownership is your call, every time.</p>
+</div>
+
+<div class="source-box">
+  <span class="label">Read this next (primary sources)</span>
+  <p><a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository">GitHub Docs: Licensing a repository</a> — where the LICENSE file goes and what no license means. <a href="https://choosealicense.com/">Choose a License</a> — the site GitHub recommends for picking one, including its <a href="https://choosealicense.com/no-permission/">"No License" page</a>. <a href="https://creativecommons.org/cc-licenses/">Creative Commons: About CC Licenses</a> — the six license types explained by the organization behind them.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"List the non-code assets in my repo and tell me which lack a license note"</em> or <em>"Draft a README credit table for three CC BY images I want to use."</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-gh-license">GitHub Docs, <a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository">Licensing a repository</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cal-noperm">Choose a License, <a href="https://choosealicense.com/no-permission/">No License</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cc">Creative Commons, <a href="https://creativecommons.org/cc-licenses/">About CC Licenses</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> interpret a Creative Commons label, treat a missing license as "no permission," add a LICENSE file to your own repo, and name the ownership question that must precede any reverse-engineering request.</p>
+  <p>Quick reference: <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0105-data-dont-own.html">← 8.17 Data you don't own</a><a href="0107-performance.html">8.19 Performance →</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

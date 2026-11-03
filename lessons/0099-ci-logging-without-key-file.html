@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How CI logs in without a key file</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.11</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.11</p>
+  <h1>How CI logs in without a key file</h1>
+  <p class="lede">Your workflow runs on a fresh machine that belongs to GitHub, so it cannot carry a key file. The modern trick is a short-lived digital ID that proves which repo and which run is asking — no stored secret at all.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0081-actions-workflow.html">6.5 An Actions workflow</a>, <a href="0089-secrets.html">8.1 Secrets</a></span><span>Win: you can explain why a CI job can log in with no key file, and spot the <code>id-token: write</code> line that enables it</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>In <a href="0081-actions-workflow.html">6.5</a> you learned that every push runs your recipe on a brand-new virtual machine. That machine is a stranger: nothing you saved on your laptop travels with the code. So when a workflow needs to <em>log in</em> somewhere — to publish, to talk to a cloud service — it cannot open a key file, because there is no key file on that machine. In <a href="0089-secrets.html">8.1</a> you learned never to put keys in your code. CI has the same problem one level up: the credential has to live somewhere, and the wrong somewhere is a leak waiting to happen.</p>
+
+<h2>The old way: one long-lived key in settings</h2>
+<p>The traditional answer is a key stored as a GitHub secret, which the workflow presents on every run. GitHub's own documentation describes exactly that: <q>These credentials are usually stored as a secret in GitHub, and the workflow presents this secret to the cloud provider every time it runs.</q><sup class="cite"><a href="#src-2">[2]</a></sup> The trouble is the word <em>long-lived</em>. Such a key keeps working until someone remembers to rotate it, so if it ever leaks, it is a door that stays open.</p>
+
+<h2>The new idea: prove who you are, briefly</h2>
+<p>The newer approach is called <strong>workload identity</strong>. Instead of carrying a key, the running job asks GitHub for a signed, short-lived identity token — think of it as a temporary badge that says <em>this is repository X, branch Y, run Z</em>. GitHub's OIDC documentation puts the mechanism plainly: <q>Every time your job runs, GitHub's OIDC provider auto-generates an OIDC token.</q><sup class="cite"><a href="#src-1">[1]</a></sup> The job shows that badge to the cloud provider, the provider checks it against a trust rule you set up once, and hands back a token that <q>is only valid for a single job, and then automatically expires.</q><sup class="cite"><a href="#src-1">[1]</a></sup> If the badge leaks, it is worthless within minutes. The payoff, in GitHub's words: <q>You won't need to duplicate your cloud credentials as long-lived GitHub secrets.</q><sup class="cite"><a href="#src-1">[1]</a></sup></p>
+<span class="sidenote">OIDC (OpenID Connect) is the standard behind this. You do not need to implement it — official actions do that for you. You only need to recognize the <code>id-token: write</code> permission.</span>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user's app deployed fine from their own laptop, but in CI the deploy stopped at the login step. The cause was not a wrong password: the cloud side had no trust rule for this repository's workflow, so the short-lived identity was refused. Running the project's one-time setup again fixed it, and every later push deployed with nobody ever typing a key into CI.</p>
+</div>
+
+<h2>The trust rule is the other half</h2>
+<p>A short-lived badge only works because the cloud side agrees to read it. Before any of this runs, you set up a trust rule in the provider's console. That rule names which repository may ask, and often which branch or workflow file. When a job presents its token, the provider compares the two. If they match, the provider issues its own short-lived access token. If they do not, the login fails, and the error looks like a permission problem rather than a wrong password.</p>
+<p>This is the part people forget. The workflow file can be perfect and the job can still be refused, because nobody wrote the cloud-side rule. That was exactly the failure in the vignette above.</p>
+<p>Treat the token as disposable. Do not print it, copy it into a file, or hand it to another job. It exists so one run can prove who it is, once.</p>
+
+<h2>You already use this: the Pages deploy</h2>
+<p>The site you shipped in <a href="0013-github-pages.html">6.3</a> is the everyday example. When GitHub Pages is deployed through a custom workflow, the deploy job needs no secret at all. GitHub's instructions state: <q>The job must have a minimum of pages: write and id-token: write permissions.</q><sup class="cite"><a href="#src-3">[3]</a></sup> The permission is the switch that lets the job request the badge:</p>
+<pre><code>jobs:
+  deploy:
+    permissions:
+      contents: read
+      pages: write
+      id-token: write   # lets this job ask for a short-lived ID token
+    steps:
+      - uses: actions/deploy-pages@v4</code></pre>
+<p>The workflow syntax reference defines the permission in one line: <q>id-token: Fetch an OpenID Connect (OIDC) token. This requires id-token: write.</q><sup class="cite"><a href="#src-4">[4]</a></sup> Nothing in that file is a secret. The deploy works because GitHub itself vouches for the run.</p>
+
+<h2>When to use which</h2>
+<p>Secrets are still the right tool for things like third-party API keys, which you will meet in <a href="0092-third-party-api-keys.html">8.4</a> — those services have no way to verify a GitHub badge. Workload identity is the right tool whenever the other side is a cloud provider that supports OIDC (AWS, Azure, Google Cloud and others). GitHub's secrets page says it directly: <q>This will let you stop storing these credentials as long-lived secrets and provide other security benefits.</q><sup class="cite"><a href="#src-2">[2]</a></sup> A third-party API key sits on the other side of that line. A weather service has no trust rule for GitHub, and it cannot check a badge. The key is the only proof it accepts, so it has to be stored and rotated. Matching the tool to the trust model is the whole skill. If you are unsure whether a service supports it, ask your agent: <em>"does this provider support OIDC login from GitHub Actions?"</em> — and check the provider's own docs for the answer.</p>
+
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>Three things must line up for the badge to work: the cloud trust rule names your repository; the workflow declares <code>id-token: write</code>; and the provider grants a role with only the access the job needs. Miss any one and the login fails.</p>
+  <p>Before storing any new credential as a CI secret, ask whether the target accepts a short-lived identity instead. If it does, prefer the badge: nothing stored, nothing to rotate, nothing to leak for long.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what does a workflow present instead of a key file when it logs in to a cloud provider, and why does that thing become useless on its own?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A signed OIDC identity token naming the repo, branch and run. The cloud exchanges it for an access token <strong>valid for a single job only</strong>, which then expires by itself — so a leaked token is soon worthless, unlike a stored key.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">A workflow must deploy to a cloud service. Which credential does this lesson say to avoid storing in GitHub?</p>
+  <button class="opt" type="button">A short-lived token that GitHub mints fresh for each job and run.</button>
+  <button class="opt" type="button">A long-lived key stored as a secret, valid until it is rotated.</button>
+  <button class="opt" type="button">A password typed into the workflow file by hand on every run.</button>
+  <button class="opt" type="button">A signed note the cloud checks that expires after a single job.</button>
+  <div class="why"><p>The stored long-lived key is the risky one: it stays valid until rotated, so a leak keeps working. The short-lived token and the signed note are the workload-identity side, which expires by itself.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">What does giving a job <code>id-token: write</code> permission allow?</p>
+  <button class="opt" type="button">Requesting a signed identity token from GitHub for this one job.</button>
+  <button class="opt" type="button">Printing the stored secrets into the public workflow log for debugging.</button>
+  <button class="opt" type="button">Letting the job rewrite the workflow file automatically while it runs.</button>
+  <button class="opt" type="button">Downloading the entire runner machine image down onto your own laptop.</button>
+  <div class="why"><p>The workflow syntax reference is explicit: id-token means "fetch an OpenID Connect (OIDC) token", and it requires id-token: write. The other options describe things a job should never do with that permission.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Why is a workload-identity token safer than a stored key if it leaks?</p>
+  <button class="opt" type="button">It is far longer and so much harder for an attacker to guess.</button>
+  <button class="opt" type="button">It can only be used from the exact same laptop computer you own.</button>
+  <button class="opt" type="button">It expires by itself after the job ends, so it is soon useless.</button>
+  <button class="opt" type="button">It never needs any trust setup on the cloud provider side at all.</button>
+  <div class="why"><p>GitHub's OIDC page says the cloud issues a token "only valid for a single job, and then automatically expires". Length, your laptop, and skipping trust setup are all wrong: the safety comes from the expiry, and the trust rule is exactly what you configure once.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">Which deploy in this course already logs in without any key file or stored secret?</p>
+  <button class="opt" type="button">Publishing the static site to GitHub Pages from a workflow.</button>
+  <button class="opt" type="button">Sending a marketing email through a third-party service API key.</button>
+  <button class="opt" type="button">Running the linter checks on every pull request you open.</button>
+  <button class="opt" type="button">Storing the database password in the repo for the tests.</button>
+  <div class="why"><p>The Pages deploy job uses pages: write and id-token: write with actions/deploy-pages, so GitHub vouches for the run and no secret is stored. Third-party APIs still need secrets (lesson 8.4), and a database password must never be committed.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/actions/concepts/security/openid-connect">OpenID Connect — GitHub Actions</a> — GitHub's own explanation of how workflows get short-lived tokens instead of stored credentials. Read the "Overview" and "Benefits" sections only.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Explain workload identity using a hotel key-card analogy"</em> or <em>"Does my hosting provider accept OIDC logins from GitHub Actions?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-1">GitHub, <a href="https://docs.github.com/en/actions/concepts/security/openid-connect">OpenID Connect</a> (Actions security concepts). Retrieved 2026-11-02. Used for the auto-generated OIDC token per job, the single-job expiry, and "no long-lived secrets".</li>
+  <li id="src-2">GitHub, <a href="https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets">Using secrets in GitHub Actions</a>. Retrieved 2026-11-02. Used for the old stored-secret pattern and the advice to stop storing cloud credentials as long-lived secrets when OIDC is available.</li>
+  <li id="src-3">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages">Using custom workflows with GitHub Pages</a>. Retrieved 2026-11-02. Used for the "pages: write and id-token: write" requirement and the deploy-pages example.</li>
+  <li id="src-4">GitHub, <a href="https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax">Workflow syntax for GitHub Actions</a>. Retrieved 2026-11-02. Used for the definition of the <code>id-token</code> permission.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain how a CI job logs in with no key file, recognize the <code>id-token: write</code> permission, and choose between a stored secret and a short-lived identity.</p>
+  <p>Quick reference: <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Next: <a href="0100-docker.html">8.12 Docker</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

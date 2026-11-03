@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Over-asking: cap the interview before it runs too long</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 4 · Scope &amp; stopping · Lesson 4.11</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 4 · Lesson 4.11</p>
+  <h1>Over-asking: cap the interview before it runs too long</h1>
+  <p class="lede">An interview exists to catch wrong guesses before they become code. Past a certain length it stops catching them — and starts costing you the attention it was supposed to save.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0019-interview.html">1.4 The interview</a></span><span>Win: you can cap an interview in the prompt, and cut a long one short mid-run</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Lesson <a href="0019-interview.html">1.4</a> gave you the interview: numbered questions, one decision each, a recommended answer you can accept in one word. That technique works because it catches a wrong guess while the fix costs one sentence. But no agent has a built-in sense of <em>enough questions</em>. Anthropic's own example prompt is <q>Interview me until you could write the spec</q> — the stopping point is the spec, and nothing tells the agent that the spec is already writable.<sup class="cite"><a href="#src-ccbp">[1]</a></sup> Codex's guidance has the same shape: <q>ask Codex to question you first</q> and <q>turn the fuzzy idea into something concrete before writing code</q>.<sup class="cite"><a href="#src-cxbp">[2]</a></sup> Both stop conditions are about the output, not about how many questions got you there.</p>
+<p>So the interview can keep growing. Every extra round costs you reading time, and the classic failure follows: you skim, answer "yes to all", and the unread questions quietly become defaults — the exact thing the interview was invented to prevent. Worse, a question is not free to the run either. Claude Code's documentation for its question tool says <q>Questions stay open until you answer them</q>:<sup class="cite"><a href="#src-cctr">[3]</a></sup> each unanswered question is real waiting.</p>
+
+<h2>What over-asking looks like</h2>
+<p>This illustrative rewrite shows the pattern: early questions change the app's direction; later ones repeat low-risk choices. It is not a verbatim session transcript.</p>
+
+<div class="transcript">
+  <div class="row"><span class="who">agent</span><span>Round 1 — Q1-3: who uses this, what must never change, desktop or phone first. <b>Recommended:</b> an answer for each.</span></div>
+  <div class="row you"><span class="who">you</span><span>1. newcomers. 2. keep browsing first. 3. desktop first.</span></div>
+  <div class="row"><span class="who">agent</span><span>Round 4 — Q8-13: labels, colors, panel order, hint text, density, toggle.</span></div>
+  <div class="row you"><span class="who">you</span><span>yes to all</span></div>
+  <div class="row"><span class="who">agent</span><span>Round 7 — Q17-22: motion, drag feel, empty state, errors, zoom, reset.</span></div>
+  <div class="row you"><span class="who">you</span><span>Use those defaults, except keep dragging light and movable.</span></div>
+  <div class="row"><span class="who">agent</span><span>Round 9 — Q24-26: confirmation dialogs, then "ready to implement?"</span></div>
+  <div class="row"><span class="who">note</span><span>The repeated rounds are the warning sign; not every detail needs a separate approval.</span></div>
+</div>
+
+<p>Those later details may matter, but asking about every one separately can exhaust the person making the choices. Bulk acceptance alone does not prove anyone skimmed. The warning is that you notice yourself accepting without reading.</p>
+
+<h2>Three signs the interview has run long</h2>
+<ul>
+  <li><strong>The question answers itself from the folder.</strong> "What does this page do?" — the answer is in the code or the README. Lesson <a href="0066-questions-agent-cant-answer-vs-ones.html">4.12</a> covers which questions belong to you and which to the files.</li>
+  <li><strong>You are accepting without reading.</strong> Several identical replies can be fine after careful review; they become a warning when you cannot restate what you approved.</li>
+  <li><strong>The answer would change no file.</strong> "Should we also support dark mode someday?" is a park-it, not a round.</li>
+</ul>
+
+<h2>The test that keeps an interview short</h2>
+<p>Ask: <em>would the answers materially change this build, or create a risk I need to own?</em> Audience, the first thing a newcomer does, and deletion behavior deserve your attention. A reversible styling detail can usually become a proposed default. If the question is unclear, ask for its consequence rather than guessing. Six questions per round and two rounds total are useful starting caps for a small task, not vendor limits or universal rules.</p>
+
+<h2>Put the cap in the prompt</h2>
+<p>You do not have to hope the agent stops. Say the cap out loud, with the stopping rule, in the same prompt that asks for the interview:</p>
+
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>I want [your goal in one sentence, and who it is for].
+
+Before writing any code, interview me: numbered questions, one
+decision each, with your recommended answer and a one-line reason.
+Hard cap: at most 6 questions per round, at most 2 rounds. Stop
+early the moment you could write a one-page spec. For low-risk,
+reversible details still open, propose defaults under "Decided by
+you" (meaning the agent). List unresolved safety or product-direction
+choices as blockers instead of guessing. Show the spec and wait
+for my go-ahead. Do not edit files.</pre>
+</div>
+
+<p>The cap limits questions, not care. Finish with your decisions, the agent's proposed defaults, and any genuine blockers. A blocker is a missing decision that prevents safe work. At the cap, stop the interview and show those blockers together; do not hide them or keep opening more rounds.</p>
+
+<h2>Cutting one short mid-run</h2>
+<p>Sometimes the long interview arrives anyway, because the agent decided to ask first and cap never. You do not have to sit through it. Send the cut, in the same numbering:</p>
+
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Stop asking new rounds. Summarize the answers so far. For
+questions 7 onward, propose low-risk defaults under "Decided by
+you" (the agent), and list risky unresolved choices as blockers.
+Show the spec now and wait for my approval. Do not build yet.</pre>
+</div>
+
+<p>Then actually read the "Decided by you" list — that is the whole point. Overriding one line there costs seconds; discovering the wrong default after the build costs the build. Steering mid-run is lesson <a href="0025-steering-mid-run.html">1.10</a>, and "yes to all" with amendments is lesson <a href="0020-yes-all.html">1.5</a>.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked for an easier-to-navigate, better-looking app. The interview grew to roughly two dozen questions over several rounds. Many recommendations were accepted in batches, but the user overrode three important choices about the opening view, the main activity, and which screen size to prioritize. There was a long pause before the final answers, then implementation began. The record does not prove why the user paused, or that a shorter interview would have produced the same result. It does show where the attention mattered: product direction, not repeated confirmation of defaults. A cap would have forced the remaining questions into a reviewable summary; that is our proposed improvement, not an observed second session.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name two signs that an interview has run too long, and state the one test you apply to decide whether a question deserves your answer.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Signs include questions answerable from the folder, accepting without reading, or details outside this build. Ask whether the answer materially changes the current build or creates a risk you must own. Delegate low-risk defaults, keep blockers visible, and stop at the agreed cap.</p></div>
+</div>
+
+<h2>Cap one yourself</h2>
+
+<div class="doit">
+  <span class="label">Do it now: run a capped interview</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your project folder and start your agent, with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Paste the capped-interview prompt above with your real one-sentence goal.</label></li>
+    <li><label><input type="checkbox"> Count the questions as they arrive. If the agent passes 6 in a round, do not answer yet.</label></li>
+    <li><label><input type="checkbox"> If the cap is exceeded, send the cut line with the right numbers. Otherwise answer the short round, then request the spec at the stopping point.</label></li>
+    <li><label><input type="checkbox"> Read the "Decided by you" list in the spec and override anything wrong in one line.</label></li>
+    <li><label><input type="checkbox"> Tell it to wait. Do not let it build in the same turn (that gate is lesson <a href="0022-plan-then-human-go.html">1.7</a>).</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see the agreed question count, followed by a spec separating your answers, the agent's proposed defaults, and unresolved blockers. Read all three before approving a build. If the agent keeps asking, repeat the boundary and request only the summary. If it starts editing, use the steering procedure from lesson 1.10 and restate that this is an interview only.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>The cap is a plain prompt line; no command changes. If questions arrive as a multiple-choice dialog, that is Claude Code's built-in <code>AskUserQuestion</code> tool, and per its documentation <q>questions stay open until you answer them</q> — so the dialog itself is where an uncapped interview stalls.<sup class="cite"><a href="#src-cctr">[3]</a></sup> Approval prompts from lesson <a href="0006-approvals-and-permissions.html">0.6</a> are unaffected.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Same plain prompt. OpenAI's best-practices page recommends <q>ask Codex to question you first</q> and notes that Plan mode <q>lets Codex gather context, ask clarifying questions, and build a stronger plan before implementation</q> — the cap line works the same inside Plan mode.<sup class="cite"><a href="#src-cxbp">[2]</a></sup> If your version shows questions as selectable options, the numbered reply still works.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp ships a shortcut for interviews: its documentation says <code>/guided-goal</code> <q>Starts an interview in chat, then configures goal mode from the result.</q><sup class="cite"><a href="#src-omp">[4]</a></sup> That also starts a persistent goal, so for a capped interview prefer the plain prompt above. Single-vendor source.</p>
+  </div>
+</div>
+
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>Choose a question cap you will actually read. When it is reached, switch from questions to a short summary: decisions, proposed defaults, blockers. A screenful is a useful personal warning, not a rule; a short question about deleting data can matter more than a page of styling choices.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">The agent has asked fourteen questions, and you notice you are accepting without reading. What is the real risk?</p>
+  <button class="opt" type="button">Nothing at all; accepting every default is always the fastest route.</button>
+  <button class="opt" type="button">The agent may rewrite files immediately without waiting for any spec.</button>
+  <button class="opt" type="button">Risky questions get approved without ever actually being read at all.</button>
+  <button class="opt" type="button">Fourteen questions is far too few for substantial apps to need.</button>
+  <div class="why"><p>A run of unread accepts means the dangerous defaults slip through unnoticed. The interview was meant to surface them; a rubber stamp does not.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">For this build you delegated cosmetic defaults and excluded future features. Which question most needs your answer?</p>
+  <button class="opt" type="button">"Who may delete things, and what exactly gets deleted then?"</button>
+  <button class="opt" type="button">"Should the button be slightly rounder in some future version?"</button>
+  <button class="opt" type="button">"Want the default font size or rather the larger one?"</button>
+  <button class="opt" type="button">"Should the app also exist on phones, not just computers?"</button>
+  <div class="why"><p>Deletion needs your decision because it can destroy data. Under the stated scope, cosmetic choices are delegated and phone support belongs to a later discussion. With a different goal, font size or phone support could be important questions too.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Mid-interview, the list is longer than you will read. What do you send?</p>
+  <button class="opt" type="button">"Answer the rest yourself and keep on building without telling me."</button>
+  <button class="opt" type="button">"Keep asking; I will answer all of it eventually, just slower."</button>
+  <button class="opt" type="button">"Ignore the questions and start over in a brand new session."</button>
+  <button class="opt" type="button">"Stop asking; take your recs, list them, show me the spec."</button>
+  <div class="why"><p>The cut keeps the decisions visible: the agent picks defaults, lists them under "Decided by you", and you override in one line — instead of skimming twenty-six questions.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> — read "Brainstorm with Claude first" to see how the written spec serves as the interview's stopping point.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Unsure whether a question matters? Paste it and ask: <em>"Would the two answers change any file? If not, take your recommendation and list it as decided by you."</em> Then check the spec — that is cheaper than guessing.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-ccbp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>, "Brainstorm with Claude first": "Interview me until you could write the spec, then write it to SPEC.md." Retrieved 2026-11-02.</li>
+  <li id="src-cxbp">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>, "Plan first for difficult tasks": "ask Codex to question you first"; Plan mode "lets Codex gather context, ask clarifying questions, and build a stronger plan before implementation." Retrieved 2026-11-02.</li>
+  <li id="src-cctr">Anthropic, <a href="https://code.claude.com/docs/en/tools-reference">Claude Code tools reference</a>, AskUserQuestion: "Questions stay open until you answer them." Retrieved 2026-11-02.</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/slash">omp slash commands</a> (<code>/guided-goal</code>): "Starts an interview in chat, then configures goal mode from the result." Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> put a question cap and stopping rule in an interview prompt, spot the signs of over-asking, and cut a long interview short with a "Decided by you" list you actually read.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns (interview caps)</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Previous: <a href="0064-recovering-derail.html">4.10 Recovering a derail</a></span><span>Next: <a href="0066-questions-agent-cant-answer-vs-ones.html">4.12 Questions the agent can't answer vs ones you can</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

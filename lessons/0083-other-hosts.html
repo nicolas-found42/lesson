@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Other free hosts, and the guardrails on every free plan</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.8</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 6 · Lesson 6.8</p>
+  <h1>Other free hosts, and the guardrails on every free plan</h1>
+  <p class="lede">GitHub Pages is not the only free place to put a static site. Cloudflare, Netlify, and Vercel all do the same job with different extras — and every free plan comes with limits that can pause your site. Learn to read them before you depend on them.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0013-github-pages.html">6.3 GitHub Pages</a></span><span>Win: you can pick a second free host for a project and name the free-plan limit most likely to bite you</span></div>
+</header>
+<main>
+
+<h2>Why look beyond Pages</h2>
+<p>Lesson 6.3 showed that Pages turns a repository into a website for free, and for a plain static site that is usually enough. Your mission is to ship a link that works for anyone, and sometimes a different host fits better: a nicer address, automatic preview links for every branch, or a build step that Pages handles differently. The good news is that the core idea never changes. A <strong>host</strong> is a service that stores your files and answers browsers that ask for them; switching hosts changes the domain in your address, not the shape of your folder.</p>
+<p>What does change is the small print. Every free plan has <strong>usage limits</strong> — caps on builds, files, traffic, or deploys — and when you hit one, the host may slow down or stop your site until the next cycle. Reading that small print is the skill of this lesson.</p>
+
+<h2>Three popular alternatives</h2>
+<p>Cloudflare Pages, Netlify, and Vercel all work the same way at a beginner's level: you create a free account, connect a git repository (or drop in a folder of files), and each push becomes a new <strong>deploy</strong> — a published version of your site. Each gives you a free address on their own domain, such as <code>my-app.pages.dev</code>, <code>my-app.netlify.app</code>, or <code>my-app.vercel.app</code>. Signing up and signing in happen in your browser and are always <em>your</em> steps; no agent can log in for you.</p>
+
+<table class="ref">
+  <caption class="sidenote" style="caption-side:bottom;text-align:left">Free-plan figures quoted from each vendor's own documentation, retrieved 2026-11-02. Plans change; always re-check the linked pages.</caption>
+  <thead><tr><th>Host</th><th>Free address shape</th><th>Free-plan guardrails (headline)</th></tr></thead>
+  <tbody>
+    <tr><td>Cloudflare Pages</td><td><code>my-app.pages.dev</code></td><td>500 builds per month; up to 20,000 files per site; 25 MiB per file; builds time out after 20 minutes<sup class="cite"><a href="#src-cf1">[1]</a></sup></td></tr>
+    <tr><td>Netlify</td><td><code>my-app.netlify.app</code></td><td>300 credits per month with a hard limit; bandwidth costs 20 credits per GB; each production deploy costs 15 credits; 1 build at a time<sup class="cite"><a href="#src-nl1">[2]</a></sup></td></tr>
+    <tr><td>Vercel</td><td><code>my-app.vercel.app</code></td><td>First 100 GB of data transfer per month; 100 deployments per day; personal, non-commercial use only<sup class="cite"><a href="#src-vc1">[3]</a></sup><sup class="cite"><a href="#src-vc2">[4]</a></sup></td></tr>
+  </tbody>
+</table>
+
+<h2>How to read a guardrail</h2>
+<p>Cloudflare's limits page states it plainly: <q>Cloudflare Pages sites can contain up to 20,000 files on the Free plan</q>, and <q>the maximum file size for a single Cloudflare Pages site asset is 25 MiB</q>.<sup class="cite"><a href="#src-cf1">[1]</a></sup> Its build table lists 500 builds per month on Free and warns that <q>builds will timeout after 20 minutes</q>.<sup class="cite"><a href="#src-cf1">[1]</a></sup> If your project has 30,000 files, Cloudflare's free plan is the wrong tool — no setting fixes that.</p>
+<p>Netlify now bills new accounts in <strong>credits</strong>: <q>the Free plan includes 300 credits/month with a hard limit and no auto recharge option</q>.<sup class="cite"><a href="#src-nl1">[2]</a></sup> Traffic is metered — web bandwidth costs 20 credits per GB — and <q>production deploys consume 15 credits</q>.<sup class="cite"><a href="#src-nl1">[2]</a></sup> So a busy month can run the tank dry and stop your deploys, which is exactly what a hard limit means: nothing over the line until next month.</p>
+<p>Vercel's Hobby plan is also free but adds a <em>policy</em> guardrail, not only a number: <q>the Hobby plan restricts users to non-commercial, personal use only</q>.<sup class="cite"><a href="#src-vc2">[4]</a></sup> Its table gives <q>First 100 GB</q> of fast data transfer and 100 deployments per day, and it warns that if you exceed limits <q>you will have to wait until 30 days have passed</q>.<sup class="cite"><a href="#src-vc1">[3]</a></sup> Read guardrails as two kinds: <strong>quotas</strong> (numbers you can measure, like files or GB) and <strong>policies</strong> (rules about what the plan is for).</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymised</span>
+  <p>A user had a small site live on GitHub Pages and wanted the same files on a second host as a backup. They asked the agent to &ldquo;set it up on another free host.&rdquo; The agent prepared the deploy steps but stopped at sign-in: only a human can log in, in a browser. The user ran the login, checked the account page, and confirmed the account was still on the free plan before telling the agent to deploy. The deploy then worked, and the backup site was live.</p>
+  <p>Two habits to copy: logins stay with you, and &ldquo;free plan&rdquo; is something you verify on the account page — the agent cannot see it.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name one numeric limit on Cloudflare Pages' free plan, and one rule on Vercel's Hobby plan that is a policy rather than a number. Then say which of the three hosts you would check first for a site with 40,000 small files.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Cloudflare's free plan caps a site at 20,000 files (also 25 MiB per file, 500 builds per month). Vercel's Hobby plan is restricted to non-commercial personal use. A site with 40,000 files exceeds Cloudflare's free file cap, so check Vercel or Netlify first — and re-read their current limits, because plans change.</p></div>
+</div>
+
+<h2>What changes and what does not</h2>
+<p>Switching hosts changes the domain in front of your files; it does not change your files. The relative-link habit from lesson 6.3 is exactly why: links between your own pages are written without any domain, so they survive a move from <code>github.io</code> to <code>pages.dev</code>, <code>netlify.app</code>, or <code>vercel.app</code> unchanged. What you must re-check after moving is the new host's guardrails against your real numbers — file count, biggest file, expected visitors — and its deploy settings, which you confirm in the host's dashboard. Adding your own domain name on top is lesson 6.10; rollback if a deploy goes wrong is lesson 6.9.</p>
+
+<div class="doit">
+  <span class="label">Do it now</span>
+  <ol>
+    <li><label><input type="checkbox"> Ask your agent: <em>&ldquo;Count the files in the folder I publish, the size of the biggest single file, and the total size. Report the three numbers.&rdquo;</em></label></li>
+    <li><label><input type="checkbox"> Open the three limits pages linked in the source box below and write each host's free-plan numbers next to yours.</label></li>
+    <li><label><input type="checkbox"> Ask your agent: <em>&ldquo;Given my file count, biggest file, and total size, which of Cloudflare Pages, Netlify, and Vercel free plans fit my site today? Name the first limit I would hit on each.&rdquo;</em></label></li>
+    <li><label><input type="checkbox"> If you want a second live copy: create the free account yourself in your browser (the agent cannot log in), connect the repository, and let the first deploy finish. Do not enter any payment details; stay on the free plan.</label></li>
+  </ol>
+  <div class="expect"><p>Step 1 returns three numbers. Step 3 names a concrete first-hit limit per host — for example, &ldquo;Cloudflare: fine on files if under 20,000, but each file must be under 25 MiB.&rdquo; If you deployed, the host's dashboard shows one successful deploy and a free address on the host's own domain, and your internal links still work without edits.</p></div>
+  <p class="progress"></p>
+</div>
+
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Start it with <code>claude</code> inside your project folder and paste the step 1 request as a normal message.<sup class="cite"><a href="#src-a1">[5]</a></sup> Keep approval prompts on; lesson 0.6 covers permission modes.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Start it with <code>codex</code> inside your project folder; it can <q>inspect code, make changes, run commands, and automate repeatable work without leaving your terminal</q>.<sup class="cite"><a href="#src-b1">[6]</a></sup> Keep the approval prompts as they are.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Start it with <code>omp</code> inside your project folder. Its documentation comes only from its own authors, so double-check anything surprising there; the prompts above work the same in all three agents.<sup class="cite"><a href="#src-c1">[7]</a></sup></p>
+  </div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">A free hosting plan is best described as…</p>
+  <button class="opt" type="button">Free forever with no cap on site traffic.</button>
+  <button class="opt" type="button">Free to use within stated monthly usage limits.</button>
+  <button class="opt" type="button">This plan costs money each and every month.</button>
+  <button class="opt" type="button">Free only until the first thousand visitors arrive.</button>
+  <div class="why"><p>Every free plan publishes usage limits, and hosts enforce them — by pausing features or stopping deploys until the next cycle. The other options describe a plan with no limits, which does not exist.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">On Cloudflare Pages' free plan, one site may contain up to…</p>
+  <button class="opt" type="button">Twenty thousand files with a twenty-five MiB cap.</button>
+  <button class="opt" type="button">Five hundred files with a twenty-five MiB cap.</button>
+  <button class="opt" type="button">One hundred files with no per-file size cap.</button>
+  <button class="opt" type="button">Unlimited files if every single build stays small.</button>
+  <div class="why"><p>Cloudflare's limits page states up to 20,000 files per site on the Free plan and 25 MiB per single asset. Five hundred is the builds-per-month figure, not the file count.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Vercel's free Hobby plan is restricted to…</p>
+  <button class="opt" type="button">Whatever you like, commercial, personal, big, or small.</button>
+  <button class="opt" type="button">Anything at all provided it stays online free.</button>
+  <button class="opt" type="button">Non-commercial personal use only, that is the rule.</button>
+  <button class="opt" type="button">Sites bigger than one hundred gigabytes monthly traffic.</button>
+  <div class="why"><p>Vercel's fair-use guidelines restrict the Hobby plan to non-commercial, personal use; commercial projects need a paid plan. The 100 GB figure is a monthly data-transfer quota, not a minimum site size.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">A new Netlify account on the free plan receives…</p>
+  <button class="opt" type="button">Three hundred monthly credits with a hard limit.</button>
+  <button class="opt" type="button">Unlimited builds and bandwidth with no monthly cap.</button>
+  <button class="opt" type="button">One thousand credits monthly with auto recharge on.</button>
+  <button class="opt" type="button">Free domains and unlimited storage for all files.</button>
+  <div class="why"><p>Netlify's free plan includes 300 credits per month with a hard limit and no auto-recharge; bandwidth and production deploys each consume credits. The thousand-credit figure belongs to the paid Personal plan.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary sources)</span>
+  <p><a href="https://developers.cloudflare.com/pages/platform/limits/">Cloudflare Pages limits</a> — the Free-plan column is the one to memorise. Then <a href="https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/">Netlify's credit-based plans</a> for how credits are spent, and <a href="https://vercel.com/docs/plans/hobby">Vercel's Hobby plan</a> plus its <a href="https://vercel.com/docs/limits/fair-use-guidelines">fair-use guidelines</a>.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>&ldquo;Compare my publish folder against the free plans of Cloudflare, Netlify, and Vercel, and tell me which limit I would hit first on each&rdquo;</em> or <em>&ldquo;My site has 40,000 files — which free host fits?&rdquo;</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-cf1">Cloudflare, <a href="https://developers.cloudflare.com/pages/platform/limits/">Pages platform limits</a>. Retrieved 2026-11-02.</li>
+  <li id="src-nl1">Netlify, <a href="https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/">Credit-based pricing plans</a>. Retrieved 2026-11-02.</li>
+  <li id="src-vc1">Vercel, <a href="https://vercel.com/docs/plans/hobby">Hobby plan</a>. Retrieved 2026-11-02.</li>
+  <li id="src-vc2">Vercel, <a href="https://vercel.com/docs/limits/fair-use-guidelines">Fair use guidelines</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/quickstart">omp quickstart</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name a second free host for a static site and read a free plan's guardrails well enough to say which limit your own project would hit first.</p>
+  <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Previous: <a href="0082-readme-repo-description.html">6.7 README and repo description</a></span><span>Next: <a href="0084-rollback.html">6.9 Rollback</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

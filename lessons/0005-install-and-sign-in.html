@@ -17,15 +17,15 @@
 <main>
 
 <h2>Why this matters for shipping your app</h2>
-<p>Everything later in this course happens inside an agent session: the first page, the save points, the deploy. If the agent is not installed and signed in, none of it can start. This lesson is the setup gate, and it is the only one you cross once. Treat it as a reference page: run the steps for your agent, keep the page nearby, and come back if a later machine or a reinstall needs the same commands.</p>
+<p>Everything later in this course happens inside an agent session: the first page, the save points, the deploy. If the agent is not installed and signed in, none of it can start. Treat this as a reference page: run the steps for your agent, keep it nearby, and return when a new machine or a reinstall needs the same commands.</p>
 
 <h2>Two different one-time jobs</h2>
-<p><strong>Installing</strong> copies a program onto your computer. <strong>Signing in</strong> tells the company behind that program who you are, so the work can be billed to your account and your settings can follow you. They fail differently, which is why this lesson keeps them apart.</p>
-<p>When you type a command name such as <code>claude</code>, your terminal does not search the whole disk. It looks through a fixed list of folders called the <span class="term" title="The list of folders your terminal searches, in order, when you type a command name.">PATH</span>. An install that finishes but leaves the program outside those folders looks successful and still answers <q>command not found</q>. That single sentence explains most first-day setup confusion.</p>
+<p><strong>Installing</strong> copies a program onto your computer. <strong>Signing in</strong> tells the company behind that program which account you are, so the work can be billed to you. They fail differently, which is why this lesson keeps them apart.</p>
+<p>When you type a command name such as <code>claude</code>, your terminal does not search the whole disk. It looks through a fixed list of folders called the <span class="term" title="The list of folders your terminal searches, in order, when you type a command name.">PATH</span>. An install that leaves the program outside those folders looks successful and still answers <q>command not found</q>. That explains most first-day setup confusion.</p>
 
 <div class="callout">
   <span class="label">The order that avoids trouble</span>
-  <p>Install, open a <em>new</em> terminal window, check the version, then start the agent once to sign in. A new window is what lets the terminal notice a folder that was added to its PATH list.</p>
+  <p>Install, open a <em>new</em> terminal window, check the version, then start the agent once to sign in. Two of the three vendors explicitly tell you to open a new terminal window for the check; an already-open window keeps the search list it started with.<sup class="cite"><a href="#src-ccqs">[1]</a></sup><sup class="cite"><a href="#src-ompqs">[4]</a></sup></p>
 </div>
 
 <h2>Step 1: install and check</h2>
@@ -33,23 +33,23 @@
 
 <div class="agent-tabs">
   <div role="tablist" aria-label="Install command by agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
     <pre><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre>
     <p>Anthropic labels this the <q>Native Install (Recommended)</q>.<sup class="cite"><a href="#src-ccqs">[1]</a></sup> Homebrew users can run <code>brew install --cask claude-code</code> instead, but Homebrew installs do not update themselves.<sup class="cite"><a href="#src-ccqs">[1]</a></sup> Then check it from a new window:</p>
     <pre><code>claude --version</code></pre>
     <p>The docs say: <q>The command prints a version number followed by <code>(Claude Code)</code>.</q><sup class="cite"><a href="#src-ccqs">[1]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
     <pre><code>curl -fsSL https://chatgpt.com/codex/install.sh | sh</code></pre>
     <p>OpenAI's documented standalone installer for macOS and Linux; <code>npm install -g @openai/codex</code> and <code>brew install --cask codex</code> are listed as alternatives.<sup class="cite"><a href="#src-cx">[3]</a></sup> Then check it:</p>
     <pre><code>codex --version</code></pre>
     <p>You should see a line beginning <code>codex-cli</code> followed by a version number. Open a new window first if the old one says the command is missing.</p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
     <pre><code>curl -fsSL https://omp.sh/install | sh</code></pre>
     <p>omp's own install script. It is a shell script fetched from the project's site, so you are running code the project publishes.<sup class="cite"><a href="#src-ompqs">[4]</a></sup> Then check it:</p>
     <pre><code>omp --version</code></pre>
@@ -65,17 +65,17 @@
 
 <div class="agent-tabs">
   <div role="tablist" aria-label="First launch by agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab2-claude" aria-controls="panel2-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab2-codex" aria-controls="panel2-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab2-omp" aria-controls="panel2-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
+  <div role="tabpanel" id="panel2-claude" aria-labelledby="tab2-claude" data-panel="claude">
     <p>Run <code>claude</code> in the folder. <q>Claude Code prompts you to log in on first use.</q><sup class="cite"><a href="#src-ccqs">[1]</a></sup> It opens a browser window; finish there and return to the terminal. Once you are through, <q>your credentials are stored and you won't need to log in again.</q><sup class="cite"><a href="#src-ccqs">[1]</a></sup> To switch accounts later, type <code>/login</code> in a session; to sign out, type <code>/logout</code>.<sup class="cite"><a href="#src-ccauth">[2]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
-    <p>Run <code>codex</code> in the folder. <q>The first time you run Codex, choose Sign in with ChatGPT or another available sign-in method.</q><sup class="cite"><a href="#src-cx">[3]</a></sup> The browser flow completes the sign-in. To remove the stored credential later, <code>codex logout</code> is the documented command.<sup class="cite"><a href="#src-cxhelp">[5]</a></sup></p>
+  <div role="tabpanel" id="panel2-codex" aria-labelledby="tab2-codex" data-panel="codex" hidden>
+    <p>Run <code>codex</code> in the folder. <q>The first time you run Codex, choose Sign in with ChatGPT or another available sign-in method.</q><sup class="cite"><a href="#src-cx">[3]</a></sup> Follow the prompts it shows, then return to the terminal. To remove the stored credential later, <code>codex logout</code> is the documented command.<sup class="cite"><a href="#src-cxhelp">[5]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel2-omp" aria-labelledby="tab2-omp" data-panel="omp" hidden>
     <p>Run <code>omp</code> in the folder. <q>The first launch opens a setup wizard.</q><sup class="cite"><a href="#src-ompqs">[4]</a></sup> Keep the <strong>Sign in</strong> tab, choose your provider, press Enter, and finish in the browser. Then choose a default model and accept the remaining appearance prompts. <q>OAuth users can reopen sign-in with <code>/login</code></q>.<sup class="cite"><a href="#src-ompqs">[4]</a></sup></p>
   </div>
 </div>
@@ -102,7 +102,7 @@
   <div class="row"><span class="who">you</span><span>browser opens, sign in, return to the terminal</span></div>
   <div class="row"><span class="who">agent</span><span>prompt ready, working folder shown</span></div>
 </div>
-<p>The two lessons in that transcript: a version number is the only proof of install, and a new window is part of the procedure, not a workaround.</p>
+<p>A version number is the only proof of install, and a new window is part of the procedure.</p>
 
 <div class="recall">
   <span class="label">Recall before you read on</span>
@@ -122,7 +122,7 @@
     <tr><td>omp</td><td><code>/logout</code></td><td><q>The local database is not encrypted at rest.</q><sup class="cite"><a href="#src-ompsec">[6]</a></sup></td></tr>
   </tbody>
 </table>
-<p>That last line matters on a shared or borrowed computer: a stored login is only as private as the account you use to log in to that machine.</p>
+<p>On a shared or borrowed computer, a stored login is only as private as that machine's own account.</p>
 
 <div class="doit">
   <span class="label">Do it now</span>
@@ -131,7 +131,7 @@
     <li><label><input type="checkbox"> Open a new terminal window and run the matching <code>--version</code> command.</label></li>
     <li><label><input type="checkbox"> Make a throwaway folder and go into it: <code>mkdir ~/agent-test &amp;&amp; cd ~/agent-test</code></label></li>
     <li><label><input type="checkbox"> Start your agent there and complete the browser sign-in.</label></li>
-    <li><label><input type="checkbox"> Ask it one harmless question, such as <em>"Which folder are you working in?"</em>, then leave the session: <code>/exit</code> works in all three.</label></li>
+    <li><label><input type="checkbox"> Ask it one harmless question, such as <em>"Which folder are you working in?"</em>, then leave the session: <code>/exit</code> works in all three.<sup class="cite"><a href="#src-cxcmd">[7]</a></sup></label></li>
   </ol>
   <div class="expect">
     <p>You should see a version number, then a prompt that names your project folder, then an answer that names the same folder. If instead you see <q>command not found</q>, you are in the wrong window or the installer's PATH line has not been applied yet; repeat step 2 in a fresh window before anything else.</p>
@@ -187,6 +187,7 @@
   <li id="src-ompqs">Stencil Labs, <a href="https://omp.sh/docs/quickstart">omp Quickstart</a>. Retrieved 2026-11-02. Single-vendor source.</li>
   <li id="src-cxhelp">OpenAI, <code>codex --help</code>, local command output. Retrieved 2026-11-02.</li>
   <li id="src-ompsec">Stencil Labs, <a href="https://omp.sh/docs/secrets">Secrets and auth</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-cxcmd">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex developer commands</a>. Retrieved 2026-11-02.</li>
 </ol>
 </main>
 <footer class="lesson-foot">

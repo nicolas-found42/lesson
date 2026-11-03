@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Undo: revert, reset, and the copy of the remote you cannot see</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control as the safety net · Lesson 3.11</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.11</p>
+  <h1>Undo: revert, reset, and the copy of the remote you cannot see</h1>
+  <p class="lede">There are two ways to take a change back, and they make opposite promises. Choosing the wrong one is the fastest way for a beginner to lose work that other people can no longer recover.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0011-remote-origin-push.html">3.6 Remote, origin, push</a></span><span>Win: you can name the safe undo before you run it</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You can already commit, push, and merge (lessons <a href="0009-why-save-points-exist.html">3.1</a>, <a href="0011-remote-origin-push.html">3.6</a> and <a href="0045-pull-request.html">3.7</a>). Sooner or later you will want one of those changes gone: the agent's work looked right and was not, or a commit swept in files you never asked for. That is a normal, fixable moment. It becomes an unfixable moment only when the undo is chosen by guesswork.</p>
+
+<h2>Two undos, two different promises</h2>
+<p>Git gives you two families of undo, and the difference is not cosmetic. <code>git revert</code> leaves history alone and adds to it. The reference says it will <q>revert the changes that the related patches introduce, and record some new commits that record them</q>.<sup class="cite"><a href="#src-git-revert">[1]</a></sup> The faulty commit stays in the log, and a new commit on top cancels its effect.</p>
+<p><code>git reset</code> moves the branch itself. The reference says the command <q>changes which commit HEAD points to</q>.<sup class="cite"><a href="#src-git-reset">[2]</a></sup> Everything after that point leaves your branch. Those commits usually still exist somewhere on your disk, but the branch you ship from no longer contains them.</p>
+
+<div class="compare">
+  <div class="good">
+    <span class="label">Revert: add a correction</span>
+    <p>History grows by one commit whose message begins "Revert …". The original commit remains visible and can be read, blamed and discussed.</p>
+    <p>Safe on a branch other people already have, because nothing they hold is replaced.</p>
+  </div>
+  <div class="bad">
+    <span class="label">Reset: move the branch back</span>
+    <p>The branch label moves to an older commit. Later commits drop off the branch and the log no longer shows them.</p>
+    <p>Fine on work that has never left your machine. Destructive once other people have the commits.</p>
+  </div>
+</div>
+
+<p>Here is a real run in a throwaway project with three commits: a home page, a banner, a footer. I asked git to undo the footer commit without erasing it.</p>
+<pre><code>$ git log --oneline
+31ed074 Add footer
+75650c2 Add banner
+454ec2c Add home page
+
+$ git revert --no-edit HEAD
+[main 207e2a9] Revert "Add footer"
+ 1 file changed, 1 deletion(-)
+
+$ git log --oneline
+207e2a9 Revert "Add footer"
+31ed074 Add footer
+75650c2 Add banner
+454ec2c Add home page</code></pre>
+<p>Four commits where there were three, and the page is back to two lines. Nobody reading the project later has to guess why the footer disappeared: the reason is a commit in the history.</p>
+
+<div class="callout">
+  <span class="label">The sentence to remember</span>
+  <p>Revert answers "what changed?" with a new entry. Reset answers it by pretending the entry never happened. Only the first answer survives being shared with other people.</p>
+</div>
+
+<h2>What reset can destroy</h2>
+<p><code>git reset</code> has three strengths. The gentle two, <code>--soft</code> and the default <code>--mixed</code>, move the branch label and leave your files in place. <code>--hard</code> is the one to slow down for. Its documentation says it will <q>Overwrite all files and directories with the version from &lt;commit&gt;</q>.<sup class="cite"><a href="#src-git-reset">[2]</a></sup> Pro Git is blunter: <code>--hard</code> is <q>the only way to make the reset command dangerous, and one of the very few cases where Git will actually destroy data</q>.<sup class="cite"><a href="#src-pg-reset">[3]</a></sup></p>
+<p>In the same project I typed one uncommitted line into the page, then reset back two commits:</p>
+<pre><code>$ git status --short
+ M index.html
+
+$ git reset --hard HEAD~2
+HEAD is now at 1e5c266 Add home page
+
+$ cat index.html
+&lt;h1&gt;My Recipe Box&lt;/h1&gt;</code></pre>
+<p>The banner, the footer and the half-written line are all gone from the folder. Two of them are recoverable. The half-written line is not, because it was never a commit, so nothing recorded it.</p>
+<p>Committed work usually survives a reset, and this is where a beginner's luck comes from. Git keeps a log of where your branches used to point: reflogs <q>record when the tips of branches and other references were updated in the local repository</q>.<sup class="cite"><a href="#src-git-reflog">[4]</a></sup> In the same project, <code>git reflog</code> still listed the dropped commits, and <code>git reset --hard HEAD@{1}</code> put them back.</p>
+<div class="warn">
+  <span class="label">The reflog is not a backup</span>
+  <p>It lives in the same folder as the repository, it is local, and git prunes old entries from it.<sup class="cite"><a href="#src-git-reflog">[4]</a></sup> It cannot return an edit you never committed, and it cannot save a project you deleted. Checkpoint often is lesson <a href="0052-checkpoint-often.html">3.13</a> for that reason.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: which undo adds a commit, which one moves the branch, and which of the two can throw away an edit that was never committed?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Revert</strong> adds a new commit that cancels an earlier one, and history keeps both. <strong>Reset</strong> moves the branch pointer back, and <code>--hard</code> also overwrites the files in your folder, so uncommitted edits are destroyed for good.</p></div>
+</div>
+
+<h2>The question that decides: has anyone else got it?</h2>
+<p>Before choosing, ask one question: have these commits left my machine, or could someone else have pulled them? If yes, revert. If the work has never been pushed, reset is available and private.</p>
+<p>Force pushing is what lets a reset travel to a shared branch. Git's push reference describes the flag plainly: <q>It can cause the remote repository to lose commits; use it with care.</q><sup class="cite"><a href="#src-git-push">[5]</a></sup> I rewrote a commit message, then tried an ordinary push from a clone whose history no longer matched the server:</p>
+<pre><code>$ git push
+ ! [rejected]        main -&gt; main (non-fast-forward)
+error: failed to push some refs
+hint: Updates were rejected because the tip of your current branch is behind</code></pre>
+<p>The refusal is the safety net working. The server is telling you that replacing its history would discard commits it has and you do not.</p>
+<p>If you truly must replace published history, <code>--force-with-lease</code> is the narrower option. Its documentation warns that <q>blindly pushing with --force will lose their work</q>, and explains that the lease checks the remote is still where you last saw it.<sup class="cite"><a href="#src-git-push">[5]</a></sup> In a second clone I amended a commit while a teammate pushed, left my copy stale, and the lease refused the push with <code>rejected … (stale info)</code>. Plain <code>--force</code> accepted it and the teammate's commit vanished from the branch.</p>
+<p>Hosted repositories often refuse the situation entirely. GitHub says a protected branch <q>can block force pushes or deletion</q>.<sup class="cite"><a href="#src-gh-branches">[6]</a></sup> The "PRs only" convention in lesson <a href="0054-branch-protection-prs-only-convention.html">3.15</a> exists partly for this.</p>
+<p>On a shared branch, the version that keeps everyone's work is a revert, and it can be done from the site: <q>Reverting a merged pull request creates a new pull request that reverts the original merge commit.</q><sup class="cite"><a href="#src-gh-revert">[7]</a></sup> It requires permission to write to the repository, so ask before promising it.<sup class="cite"><a href="#src-gh-revert">[7]</a></sup></p>
+
+<h2>Your picture of the remote is a memory</h2>
+<p>Names like <code>origin/main</code> are not the server. They are notes your repository keeps about where the server was the last time you fetched. Git's reference for <code>--prune</code> says it will <q>remove any remote-tracking references that no longer exist on the remote</q>,<sup class="cite"><a href="#src-git-fetch">[8]</a></sup> which only makes sense because git otherwise keeps them: <q>Git has a default disposition of keeping data unless it's explicitly thrown away</q>.<sup class="cite"><a href="#src-git-fetch">[8]</a></sup></p>
+<p>So a list of branches can be confidently wrong. In a throwaway pair of repositories I deleted a branch on the server side and looked again from the clone:</p>
+<pre><code>$ git branch -r
+  origin/add-search
+  origin/main
+
+$ git fetch --prune
+ - [deleted]         (none)     -&gt; origin/add-search
+
+$ git branch -r
+  origin/main</code></pre>
+<p>Nothing about your own commits changed. What changed was the memory. This is why "that branch still exists" is a claim to check rather than repeat, whether it comes from you, an agent, or a second reviewer.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user finished a tidy-up and asked an agent to delete the branches that were already merged. The agent answered from its local list of remote branches and said one of them still existed on the server, so it left that branch alone. A second reviewer disagreed. The agent then fetched from the server, saw the branch had been gone for a day, and corrected its answer. No work was lost, because nothing had been forced. The user's takeaway was smaller than the story: "still exists" is a statement about a memory until someone fetches.</p>
+</div>
+
+<h2>Asking your agent for the safe undo</h2>
+<p>An agent will run whichever undo you name, and it may name one for you if you leave the choice open. Give it the decision rule instead of the command.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Something I merged is wrong. Before changing anything:
+
+1. Show me `git log --oneline -10` and `git status`.
+2. Tell me which commit introduced the problem, and whether it has been pushed.
+3. If it has been pushed or merged, undo it with `git revert` and explain the new commit.
+   If it has never left this machine, tell me that too, and wait for my approval before any reset.
+4. Do not use `git reset --hard`, `git push --force`, or `--force-with-lease` without asking me first.
+
+Then show me the file and the log again, and stop there. Do not push.</pre>
+</div>
+
+<div class="doit">
+  <span class="label">Do it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Commit whatever is in progress, so <code>git status</code> reports a clean working tree.</label></li>
+    <li><label><input type="checkbox"> Keep approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>) and give your agent the prompt above, naming a small change from your own history.</label></li>
+    <li><label><input type="checkbox"> Read the command it proposes before you approve it. The word <code>revert</code> or the word <code>reset</code> is the whole decision.</label></li>
+    <li><label><input type="checkbox"> Check the result yourself: run <code>git log --oneline -5</code> and open the page in your browser.</label></li>
+  </ol>
+  <div class="expect"><p>A new commit whose message starts with <code>Revert</code>, the original commit still visible below it, and the page back to how it looked before the change. If the log is <em>shorter</em> than before, a reset happened: stop and ask why before anything is pushed.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">A change you merged last week is already live and it broke the page. What is the safe undo?</p>
+  <button class="opt" type="button">Revert it, adding one commit that undoes it</button>
+  <button class="opt" type="button">Reset main back, then force push the branch</button>
+  <button class="opt" type="button">Delete the branch, then clone the repository again</button>
+  <button class="opt" type="button">Change the live page files by hand directly</button>
+  <div class="why"><p>The commits are already shared, so replacing history would erase work other people hold. A revert adds a correction that everyone can pull normally.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">You have uncommitted edits in a file and run <code>git reset --hard HEAD~1</code>. What happens?</p>
+  <button class="opt" type="button">Git stashes your edits and restores them later</button>
+  <button class="opt" type="button">Git keeps your edits and moves the branch</button>
+  <button class="opt" type="button">Git adds the edits to the undone commit</button>
+  <button class="opt" type="button">Git overwrites the file and loses the edits</button>
+  <div class="why"><p><code>--hard</code> rewrites the working files to match the older commit. Nothing recorded those edits, so the reflog cannot bring them back.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">A push fails with "non-fast-forward". What is the server telling you?</p>
+  <button class="opt" type="button">Your history drops commits the server has</button>
+  <button class="opt" type="button">Your password has expired and needs renewal</button>
+  <button class="opt" type="button">The repository has reached its storage limit</button>
+  <button class="opt" type="button">The branch name belongs to another user</button>
+  <div class="why"><p>The server refuses updates that are not a fast-forward, because replacing its tip would lose commits you have not seen. Pulling or reverting resolves it; forcing over it hides it.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">Someone says a branch "still exists on the remote". What makes that a check rather than a claim?</p>
+  <button class="opt" type="button">Asking a second agent to confirm that list</button>
+  <button class="opt" type="button">Reading that name inside an old pull request</button>
+  <button class="opt" type="button">Fetch with prune first, then list remote refs</button>
+  <button class="opt" type="button">Looking at branches you have checked out before</button>
+  <div class="why"><p>Your remote-tracking names are a memory of the last fetch. <code>git fetch --prune</code> updates that memory and deletes names for branches the server no longer has.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://git-scm.com/book/en/v2/Git-Tools-Reset-Demystified">Pro Git, chapter 7.7: Reset Demystified</a> — the long, careful explanation of what reset moves and why <code>--hard</code> is the one dangerous setting. Read the section called "Reset Demystified" through the three steps; it assumes you have seen a branch move, which lesson <a href="0044-branch.html">3.5</a> covered.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me my last ten commits and tell me which of them are already on the remote"</em> or <em>"Explain what would be lost if I forced this push, using my real log."</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-git-revert">Git project, <a href="https://git-scm.com/docs/git-revert">git-revert documentation</a>. Retrieved 2026-11-02.</li>
+  <li id="src-git-reset">Git project, <a href="https://git-scm.com/docs/git-reset">git-reset documentation</a>. Retrieved 2026-11-02.</li>
+  <li id="src-pg-reset">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Tools-Reset-Demystified">Pro Git: Reset Demystified</a>. Retrieved 2026-11-02.</li>
+  <li id="src-git-reflog">Git project, <a href="https://git-scm.com/docs/git-reflog">git-reflog manual page</a>, read locally with <code>git help reflog</code> (git 2.56.0). Retrieved 2026-11-02.</li>
+  <li id="src-git-push">Git project, <a href="https://git-scm.com/docs/git-push">git-push documentation</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gh-branches">GitHub, <a href="https://docs.github.com/en/pull-requests/reference/branches">Branches</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gh-revert">GitHub, <a href="https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/reverting-a-pull-request">Reverting a pull request</a>. Retrieved 2026-11-02.</li>
+  <li id="src-git-fetch">Git project, <a href="https://git-scm.com/docs/git-fetch">git-fetch documentation</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> choose between a revert that adds a correction and a reset that moves a branch, say why force pushing is the wrong tool on shared work, and check a branch list against the server with <code>git fetch --prune</code> instead of trusting a stale memory.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

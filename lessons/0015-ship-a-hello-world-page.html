@@ -29,12 +29,12 @@
     <tr><td><strong>1. On your screen</strong></td><td>A local server serves the file to your own browser. Nobody else can reach it.</td><td><code>localhost</code> plus a port number appears in the address bar.</td></tr>
     <tr><td><strong>2. Committed</strong></td><td>A snapshot exists in the project's history on your machine.</td><td><code>git log --oneline -1</code> shows one line with your message.</td></tr>
     <tr><td><strong>3. Pushed</strong></td><td>That snapshot also exists on GitHub, the <span class="term" title="The copy of your repository that lives on a server such as GitHub.">remote</span>.</td><td>The repository page shows your commit; <code>git status</code> says the branch is up to date.</td></tr>
-    <tr><td><strong>4. Published</strong></td><td>GitHub Pages has taken the files from the repository and built the site it will serve.</td><td>The repository's Pages settings show a finished build, not "queued" or "building".</td></tr>
+    <tr><td><strong>4. Published</strong></td><td>GitHub Pages has taken the files from the repository and built the site it will serve.</td><td>The repository's Actions tab shows a finished Pages run: the site <q>will always be deployed with a GitHub Actions workflow run</q>.<sup class="cite"><a href="#src-p2">[2]</a></sup></td></tr>
     <tr><td><strong>5. Live</strong></td><td>A stranger's browser at the public address receives your page.</td><td>You opened the address yourself, logged out or in a private window.</td></tr>
   </tbody>
 </table>
-<p>The vocabulary is not decoration. Pro Git describes a commit as <q>a snapshot of your project that you can revert to or compare to later</q>.<sup class="cite"><a href="#src-g2">[6]</a></sup> A push is the step that puts that snapshot on a server: <q>The command for this is simple: git push &lt;remote&gt; &lt;branch&gt;.</q><sup class="cite"><a href="#src-g1">[5]</a></sup> Publishing is separate again. GitHub Pages <q>takes HTML, CSS, and JavaScript files straight from a repository on GitHub</q> and serves them, and GitHub's own description says <q>whenever changes are pushed to the source branch, the changes in the source folder will be published</q>.<sup class="cite"><a href="#src-p1">[1]</a><a href="#src-p2">[2]</a></sup></p>
-<span class="sidenote">A <span class="term" title="A site made only of files a browser can read: HTML, CSS, JavaScript, images. No server program runs.">static site</span> is the only kind GitHub Pages hosts. Lesson 6.1 explains why that is enough for most first projects.</span>
+<p>The vocabulary is not decoration. Pro Git describes a commit as <q>a snapshot of your project that you can revert to or compare to later</q>.<sup class="cite"><a href="#src-g2">[6]</a></sup> A push is the step that puts that snapshot on a server: <q>The command for this is simple: git push &lt;remote&gt; &lt;branch&gt;.</q><sup class="cite"><a href="#src-g1">[5]</a></sup> Publishing is separate again. GitHub Pages <q>takes HTML, CSS, and JavaScript files straight from a repository on GitHub</q> and serves them, and GitHub's own description says that <q>Whenever changes are pushed to the source branch, the changes in the source folder will be published</q>.<sup class="cite"><a href="#src-p1">[1]</a><a href="#src-p2">[2]</a></sup></p>
+<span class="sidenote">A <span class="term" title="A site made only of files a browser can read: HTML, CSS, JavaScript, images. No server program runs.">static site</span> is the only kind GitHub Pages hosts. <a href="0012-static-vs-dynamic.html">Lesson 6.1</a> explains why that is enough for most first projects.</span>
 <p>Notice what the fifth state adds. The first four are all things that exist somewhere in a system. The fifth is an observation. Nothing in your repository can prove it. Only a request to the public address can.</p>
 
 <h2>A run, end to end</h2>
@@ -102,7 +102,7 @@ Done when: I can open the URL in a private window and see the page.</pre>
     <li><label><input type="checkbox"> Open that URL in a private window, and on your phone if you can. Not the localhost address — the public one.</label></li>
     <li><label><input type="checkbox"> Send the link to one person, or open it on a device that has never seen the project.</label></li>
   </ol>
-  <div class="expect"><p>A page at <code>https://YOUR_USERNAME.github.io/my-app/</code> showing your heading. A clean <code>git status</code>. A README whose first line is the link. The build can take a few minutes; GitHub's quickstart warns of <q>up to 10 minutes</q> after a push.<sup class="cite"><a href="#src-p3">[3]</a></sup> If the URL answers with a 404, read the next section before changing anything.</p></div>
+  <div class="expect"><p>A page at <code>https://YOUR_USERNAME.github.io/my-app/</code> showing your heading. A clean <code>git status</code>. A README whose first line is the link. The build can take a few minutes; GitHub's quickstart warns that <q>it can take up to 10 minutes for changes to your site to publish</q> after a push.<sup class="cite"><a href="#src-p3">[3]</a></sup> If the URL answers with a 404, read the next section before changing anything.</p></div>
   <p class="progress"></p>
 </div>
 
@@ -135,21 +135,21 @@ Done when: I can open the URL in a private window and see the page.</pre>
 </div>
 
 <h2>Starting and resuming the same job</h2>
-<p>The five states are the same in all three agents, because the agent runs the same <code>git</code> and <code>gh</code> commands in your terminal. What differs is how you get back into the session if you close the window halfway through.</p>
+<p>The five states are the same in all three agents, because each one drives the same <code>git</code> commands in your terminal and, for the GitHub steps, the same account you signed in to. What differs is how you get back into the session if you close the window halfway through.</p>
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
-    <p>Start with <code>claude</code> in the folder. To pick the session back up, <code>claude -c</code> will <q>Continue most recent conversation in current directory</q>.<sup class="cite"><a href="#src-a1">[7]</a></sup> Recent versions start in <em>auto</em> mode, which does not ask before every action; lesson 0.6 covers how to move to a mode that asks, and why a beginner should.</p>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Start with <code>claude</code> in the folder. To pick the session back up, <code>claude -c</code> will <q>Continue most recent conversation in current directory</q>.<sup class="cite"><a href="#src-a1">[7]</a></sup> Recent versions start in <em>auto</em> mode, which does not ask before every action; <a href="0006-approvals-and-permissions.html">lesson 0.6</a> covers how to move to a mode that asks, and why a beginner should.</p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
-    <p>Start with <code>codex</code> in the folder. <code>codex resume</code> will <q>Continue a previous interactive session by ID or resume the most recent chat.</q><sup class="cite"><a href="#src-b1">[8]</a></sup> Keep the approval setting where lesson 0.6 left it; the publishing steps should stop and ask you.</p>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Start with <code>codex</code> in the folder. <code>codex resume</code> will <q>Continue a previous interactive session by ID or resume the most recent chat.</q><sup class="cite"><a href="#src-b1">[8]</a></sup> Keep the approval setting where <a href="0006-approvals-and-permissions.html">lesson 0.6</a> left it; the publishing steps should stop and ask you.</p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
-    <p>Start with <code>omp</code> in the folder. <code>omp -c</code> <q>continues this terminal's last session in the current directory.</q><sup class="cite"><a href="#src-c1">[9]</a></sup> omp's built-in default approval mode is <code>yolo</code>, which prompts for nothing; lesson 0.6 explains how to move to a mode that asks before you run this milestone.</p>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Start with <code>omp</code> in the folder. <code>omp -c</code> <q>continues this terminal's last session in the current directory.</q><sup class="cite"><a href="#src-c1">[9]</a></sup> omp's built-in default approval mode is <code>yolo</code>, which prompts for nothing; <a href="0006-approvals-and-permissions.html">lesson 0.6</a> explains how to move to a mode that asks before you run this milestone.</p>
   </div>
 </div>
 <p>If you get stuck between states, the useful question is not "is it done?" but "which state am I in, and what is the next one?" That question also works on the agent: <em>"Tell me which of these five states we are in: local, committed, pushed, published, live."</em></p>

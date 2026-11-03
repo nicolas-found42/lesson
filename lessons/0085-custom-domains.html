@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your own address for the site (optional)</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.10</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 6 · Lesson 6.10</p>
+  <h1>Your own address for the site (optional)</h1>
+  <p class="lede">Your app already has a working address like YOUR_USERNAME.github.io/my-app. A custom domain — yourname.com — is a nice extra, not a requirement. This lesson shows what it involves so you can decide whether it is worth it.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0083-other-hosts.html">6.8 Other hosts</a></span><span>Win: you can decide whether a custom domain is worth it, and if so, point one at your live site yourself</span></div>
+</header>
+<main>
+
+<h2>The address you already have is real</h2>
+<p>Every site on the internet is found through a <span class="term" title="The human-readable address of a website, like example.com.">domain</span>. The one GitHub Pages gave you — <code>YOUR_USERNAME.github.io/my-app/</code> — is a real address; it belongs to GitHub, and it is long to say. A custom domain is an address <em>you</em> own, such as <code>my-app.com</code>, that forwards to the same site. Nothing about your app changes. Visitors typing either address see the same pages. The trade is this. The github.io address already works and needs no renewal. A custom domain is rented by the year and must be renewed.</p>
+<p>So treat this lesson as optional polish. Ship first, share the link from lesson 6.7, and come back here only if a short, memorable address would genuinely help your audience.</p>
+
+<h2>How a domain finds your site: DNS in one paragraph</h2>
+<p>When someone types a domain into a browser, the browser asks the <span class="term" title="The Domain Name System: the internet's directory that maps domain names to the numeric addresses of servers.">DNS</span> — think of it as a phone book — where that name lives. You control the phone book entry through your <span class="term" title="A company that sells and manages domain names, and where you edit the domain's DNS records.">registrar</span> (the company where you bought the domain). The entry you write is a <span class="term" title="One line in DNS that maps a name to an address — for example a CNAME maps a subdomain to another domain, an A record maps a name to an IP address.">DNS record</span>. Vercel's own explanation: <q>DNS maps human-readable domain names to computer-friendly IP addresses.</q><sup class="cite"><a href="#src-vercel">[4]</a></sup> Changing the record is what "points" your domain at your hosted site. Concretely, one line with the name <code>www</code>, the type <code>CNAME</code> and the value <code>YOUR_USERNAME.github.io</code> says one thing. Anyone asking for <code>www.my-app.com</code> should be sent to the GitHub Pages site. Three fields, one line, and that is the whole edit.</p>
+
+<h2>Step 1 (you do this): buy a domain</h2>
+<p>Search any registrar for the name you want and buy it. You pay the registrar a yearly registration fee; current prices vary by company and by ending (.com, .io, your country's ending), so check the registrar's own pricing page rather than trusting any number quoted here. Some registrars also sell hosting — you do not need it; your site is already hosted (lesson 6.8). Keep the login for that registrar account; you will need it in step 3. This purchase is a human-only step: no agent can or should buy a domain for you, and you should never type that registrar password into a chat.</p>
+
+<h2>Step 2 (you do this): tell your host about the domain</h2>
+<p>On GitHub Pages, open your site's repository, then <strong>Settings</strong> → <strong>Pages</strong> → <strong>Custom domain</strong>, type your domain, and click <strong>Save</strong>. GitHub's docs note that saving <q>will create a commit that adds a CNAME file directly to the root of your source branch</q> — a small file that tells GitHub "this site answers to this address".<sup class="cite"><a href="#src-ghp-manage">[1]</a></sup> On Cloudflare Pages, Vercel, or Netlify the same idea lives in the project's <em>Custom domains</em> settings page: pick the project, add the domain, continue.<sup class="cite"><a href="#src-cf">[3]</a></sup></p>
+<p>GitHub warns you to do this step <em>before</em> touching DNS: <q>Make sure you add your custom domain to your GitHub Pages site before configuring your custom domain with your DNS provider.</q><sup class="cite"><a href="#src-ghp-manage">[1]</a></sup> Skipping ahead can let someone else host content on one of your subdomains.</p>
+
+<h2>Step 3 (you do this): write the DNS record at your registrar</h2>
+<p>Two shapes exist, and GitHub spells out both:</p>
+<ul>
+<li><span class="term" title="The bare domain without www, like example.com.">Apex domain</span> (<code>example.com</code>): create an <strong>A</strong> record (or ALIAS/ANAME if your registrar offers it) pointing to GitHub Pages' addresses — <code>185.199.108.153</code>, <code>185.199.109.153</code>, <code>185.199.110.153</code>, <code>185.199.111.153</code>.<sup class="cite"><a href="#src-ghp-manage">[1]</a></sup></li>
+<li><span class="term" title="A prefix in front of your domain, like www in www.example.com or blog in blog.example.com.">Subdomain</span> (<code>www.example.com</code>, <code>blog.example.com</code>): create a <strong>CNAME</strong> record pointing the subdomain to <code>YOUR_USERNAME.github.io</code> — without the repository name.<sup class="cite"><a href="#src-ghp-manage">[1]</a></sup> On Cloudflare Pages a subdomain is a CNAME pointing at <code>&lt;YOUR_SITE&gt;.pages.dev</code>.<sup class="cite"><a href="#src-cf">[3]</a></sup></li>
+</ul>
+<p>A subdomain (often <code>www</code>) is the easier, safer choice for beginners; GitHub recommends setting up both apex and <code>www</code> so it can redirect one to the other automatically.<sup class="cite"><a href="#src-ghp-manage">[1]</a></sup></p>
+<div class="warn"><p><strong>Do not create wildcard records</strong> like <code>*.example.com</code>. GitHub's warning is direct: wildcard records <q>put you at an immediate risk of domain takeovers, even if you verify the domain.</q><sup class="cite"><a href="#src-ghp-manage">[1]</a></sup> GitHub also recommends <em>verifying</em> your domain (a TXT record in your DNS) before adding it, <q>to improve security and avoid takeover attacks.</q><sup class="cite"><a href="#src-ghp-verify">[2]</a></sup></p></div>
+
+<h2>Step 4: wait, then check</h2>
+<p>DNS edits are not instant: GitHub notes <q>DNS changes can take up to 24 hours to propagate.</q> Resolvers hold on to answers for a while, so the old value can linger even after your registrar has saved the new one.<sup class="cite"><a href="#src-ghp-manage">[1]</a></sup> You can watch the change yourself from a terminal with <code>dig YOURDOMAIN.com +noall +answer</code> — a read-only lookup, no risk. The answer line names the record you asked for, its type, and the value it resolved to; if that value is your host's address, the edit is live from that resolver's point of view. Once the record resolves, open <code>https://yourdomain.com</code> in a private window and confirm it loads your app, not a parking page. On GitHub Pages, tick <strong>Enforce HTTPS</strong> once it appears (it <q>can take up to 24 hours before this option is available</q><sup class="cite"><a href="#src-ghp-manage">[1]</a></sup>) so the padlock shows for visitors. Cloudflare, Vercel, and Netlify issue the HTTPS certificate for custom domains automatically from their dashboards.<sup class="cite"><a href="#src-cf">[3]</a></sup><sup class="cite"><a href="#src-nl">[5]</a></sup></p>
+
+<h2>A pattern from real sessions</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user shipped a small portfolio site on GitHub Pages and wanted it at a domain they owned. They asked the agent to "set up my custom domain." The agent could not — buying the domain and editing DNS records require logins only the user has. What the agent <em>could</em> do was useful: it wrote out the exact steps and the exact DNS values for their host, so the user did the three human steps in about ten minutes, then asked the agent to run <code>dig</code> and confirm the record had propagated before sharing the new address.</p>
+  <p>The lesson: hand the agent the parts it can do (the checklist, the dig check), and keep the account logins for yourself.</p>
+</div>
+
+<h2>Do it (only if you already own a domain)</h2>
+<div class="doit">
+  <span class="label">Do it now — optional, needs a domain you own</span>
+  <ol>
+    <li><label><input type="checkbox"> In your site's repo on GitHub: <strong>Settings → Pages → Custom domain</strong>, type <code>www.yourdomain.com</code>, click <strong>Save</strong>. Confirm a commit added a <code>CNAME</code> file to your branch.</label></li>
+    <li><label><input type="checkbox"> At your registrar, add a <strong>CNAME</strong> record: name <code>www</code>, value <code>YOUR_USERNAME.github.io</code>.</label></li>
+    <li><label><input type="checkbox"> In a terminal, run <code>dig www.yourdomain.com +noall +answer</code> and check it shows your <code>YOUR_USERNAME.github.io</code> address.</label></li>
+    <li><label><input type="checkbox"> Open <code>https://www.yourdomain.com</code> in a private window; it must show your live app.</label></li>
+    <li><label><input type="checkbox"> Back in Settings → Pages, tick <strong>Enforce HTTPS</strong> when it appears, then reload once more over <code>https</code>.</label></li>
+  </ol>
+  <div class="expect">
+    <p><code>dig</code> eventually shows your GitHub Pages address, and the private window loads your app at the custom domain with a padlock after Enforce HTTPS. If it still shows the registrar's parking page after several hours, the record is not saved yet — re-check the CNAME value; do not recreate records repeatedly. If you do not own a domain, skip this entirely: the github.io address is a complete, shareable result.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: in what order do the three steps go — buying, telling the host, editing DNS — and which one must come first for safety, and why?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Tell the <strong>host</strong> first (Settings → Pages → Custom domain), then write the <strong>DNS record</strong> at your registrar; buying can happen before or in between. GitHub warns that configuring DNS before adding the domain to GitHub can let someone else host content on your subdomain — so host first, DNS second.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You bought example.com. Where do you first tell GitHub Pages about it?</p>
+  <button class="opt" type="button">In the repo's Settings, under Pages, in the Custom domain field.</button>
+  <button class="opt" type="button">At the registrar's DNS page first, before touching GitHub at all.</button>
+  <button class="opt" type="button">In the README shown near the top of the repository page.</button>
+  <button class="opt" type="button">In a new branch named after the domain you just bought.</button>
+  <div class="why"><p>GitHub's own instructions say to add the custom domain in Settings → Pages → Custom domain (Save creates the CNAME commit) <em>before</em> configuring DNS at the registrar, to avoid subdomain takeovers.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which DNS record do you create for an apex domain like example.com on GitHub Pages?</p>
+  <button class="opt" type="button">A CNAME record pointing at example.com itself, which makes a loop.</button>
+  <button class="opt" type="button">An MX record, since the apex domain must receive mail first.</button>
+  <button class="opt" type="button">An A record, or ALIAS, pointing at GitHub Pages' four IPs.</button>
+  <button class="opt" type="button">A TXT record holding only the words GitHub Pages, nothing more.</button>
+  <div class="why"><p>Apex domains use A records (GitHub lists four IPs, e.g. 185.199.108.153) or an ALIAS/ANAME pointing at YOUR_USERNAME.github.io. CNAME records are for subdomains like www, and an MX record is for email, not websites.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You saved the DNS record but yourdomain.com still shows a parking page. What is the sensible next move?</p>
+  <button class="opt" type="button">Delete and recreate the DNS record every few minutes to force it.</button>
+  <button class="opt" type="button">Wait, then re-check with dig; changes can take up to 24 hours.</button>
+  <button class="opt" type="button">Switch browsers, since propagation only ever hits one browser at a time.</button>
+  <button class="opt" type="button">Turn Enforce HTTPS off first, then wait out the whole day anyway.</button>
+  <div class="why"><p>GitHub states DNS changes can take up to 24 hours to propagate. Recreating records or switching browsers does not speed that up; run dig to see whether your record is live yet.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site">Managing a custom domain for your GitHub Pages site</a> — GitHub's step-by-step page, including the DNS record tables. Skim the "Configuring a subdomain" section if you use www.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Deciding whether the domain is worth it? Ask your agent: <em>"My site is live at https://YOUR_USERNAME.github.io/my-app/. I'm thinking of buying a custom domain — list exactly what I'd have to do for GitHub Pages and what could go wrong."</em> Then do the account-logged-in steps yourself.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-ghp-manage">GitHub, <a href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site">Managing a custom domain for your GitHub Pages site</a>. Retrieved 2026-11-02.</li>
+  <li id="src-ghp-verify">GitHub, <a href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages">About custom domains and GitHub Pages</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cf">Cloudflare, <a href="https://developers.cloudflare.com/pages/how-to/custom-domain/">Custom domains — Cloudflare Pages docs</a>. Retrieved 2026-11-02.</li>
+  <li id="src-vercel">Vercel, <a href="https://vercel.com/docs/domains">Domains Overview</a>. Retrieved 2026-11-02.</li>
+  <li id="src-nl">Netlify, <a href="https://docs.netlify.com/manage/domains/">Domains documentation</a> (limits table lists custom domains with SSL per plan). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> decide whether a custom domain is worth it for your app, and if you own one, point it at your live site in the safe order — host first, DNS second — then verify with dig and a private window.</p>
+  <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0084-rollback.html">Previous: Rollback</a> · <a href="0086-choose-idea.html">Next: Choose an idea</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

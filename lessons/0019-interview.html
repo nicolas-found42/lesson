@@ -93,17 +93,17 @@ one-page spec, then show me the spec and wait for my go-ahead.</pre>
 
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
     <p>The interview is a prompt, not a mode. Anthropic's own example is: <q>Interview me until you could write the spec, then write it to SPEC.md.</q><sup class="cite"><a href="#src-a1">[1]</a></sup> Answers arrive as ordinary chat text, and the approval prompts you set in lesson <a href="0006-approvals-and-permissions.html">0.6</a> stay exactly as they were.</p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
     <p>Same idea, stated as an instruction: <q>ask Codex to question you first</q>.<sup class="cite"><a href="#src-a2">[2]</a></sup> If your version shows the questions as selectable options, the numbering still applies, and a typed numbered reply works in every version.</p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
     <p>omp ships one shortcut for this shape: the documentation says <code>/guided-goal</code> <q>Starts an interview in chat, then configures goal mode from the result.</q><sup class="cite"><a href="#src-a3">[3]</a></sup> That last part also starts a persistent objective, so use the plain prompt above if you only want the questions. Its docs also list "answer a question" as a normal way to <q>intervene when needed</q>.<sup class="cite"><a href="#src-a4">[4]</a></sup></p>
   </div>
 </div>

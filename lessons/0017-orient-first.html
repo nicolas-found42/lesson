@@ -17,20 +17,19 @@
 <main>
 
 <h2>Why this matters for shipping your app</h2>
-<p>You have a page on your screen from lesson 0.7. The next thing you want is a change: different words, a photo, a button that does something. The tempting move is to describe that change immediately, because you can already picture the result.</p>
-<p>The agent cannot picture it. It has never seen your folder. Ask for a change first, and it has to guess where things live, what the page already does, and which of your files matters. Then it acts on those guesses. Guesses made while editing turn into edits, and edits have to be found and undone later.</p>
+<p>You have a page on your screen from lesson 0.7. The next thing you want is a change: different words, a photo, a button that does something. The tempting move is to describe it immediately, because you can already picture the result. The agent cannot. It has never seen your folder, so it guesses where things live, what the page already does, and which file matters, then acts on those guesses. Guesses made while editing turn into edits, and edits have to be found and undone later.</p>
 <p>A question asked first becomes knowledge you keep for the rest of the project. That is the whole habit this lesson teaches: <span class="term" title="Finding out what already exists before you decide to change it.">orient first</span>.</p>
 
 <h2>The cheapest question is one that only reads</h2>
-<p>To orient is to find out what exists before you decide anything. A cheap question asks the agent to read and report. It cannot break your project, because nothing is written down. Here are four that fit almost any folder:</p>
+<p>To orient is to find out what exists before you decide anything. A cheap question asks the agent to read and report, so nothing is written down and nothing can break. Four that fit almost any folder:</p>
 <ul>
   <li>"What files are in this folder, and what is each one for?"</li>
   <li>"How does this page get the text in its header today?"</li>
   <li>"If I wanted a second page, where would it go and what would link to it?"</li>
-  <li>"What else uses the file I just named? What would break if it changed?"</li>
+  <li>"What else uses the file I named? What would break if it changed?"</li>
 </ul>
 <p>Cheap here means low risk, not zero effort. The agent still reads and thinks. But reading cannot damage anything, and the answer makes your next request sharper: a minute of looking against an afternoon of undoing.</p>
-<p>The opposite move is expensive. "Make the header dark green" sounds small until you learn there are three pages, each with its own header, and you meant the first one. The agent edits all three because you never told it there were three.</p>
+<p>The opposite move is expensive. "Make the header dark green" sounds small until you learn there are three pages, each with its own header, and you meant the first. The agent edits all three because nobody told it there were three.</p>
 
 <h2>The same request, two openings</h2>
 <div class="compare">
@@ -40,7 +39,7 @@
 <p>The first opening asks the agent to invent a plan in the dark: it picks a file, invents a mechanism, builds it. Sometimes that works. When it does not, you own a change you did not ask for in a place you cannot name. The second costs one turn and produces a map, so your next message can be short and exact: "Good. Change the one colour rule in the styles file, nowhere else."</p>
 
 <h2>A map, then a change</h2>
-<p>Here is what orienting looks like in a real session. The user had never opened this project before.</p>
+<p>What orienting looks like in a session, in a project the user had never opened:</p>
 <div class="transcript" role="group" aria-label="A short orienting exchange">
   <div class="row you"><span class="who">you</span><span>Before you change anything: how are the pictures on this page made? Which files decide that? Answer only, no edits.</span></div>
   <div class="row tool"><span class="who">tool</span><span>read index.html, read render.js</span></div>
@@ -54,14 +53,14 @@
 </div>
 
 <h2>Ask for three things</h2>
-<p>A useful map has three parts, and you can ask for all three in one message: the files involved, how the thing works now, and the one surprise worth knowing. The third part is where the value hides, because the agent has read the code and you have not.</p>
+<p>A useful map has three parts: the files involved, how the thing works now, and the one surprise worth knowing. Ask for all three in one message. The third is where the value hides, because the agent has read the code and you have not.</p>
 <div class="prompt">
   <button class="copy" type="button">Copy</button>
   <pre>Before changing anything, read the project and answer three things.
 1. Which files would I touch to change [the thing I care about]?
 2. How does that work today, in two or three sentences?
 3. What would surprise me, or what would break if I changed it?
-Do not edit any files yet. Just report.</pre>
+Do not edit any files yet. Report only.</pre>
 </div>
 <p>That last line is not politeness. It is an instruction the agent will follow, and it protects you while you are still deciding. Lesson <a href="0022-plan-then-human-go.html">1.7</a> builds on this when the answer becomes a full plan you approve.</p>
 
@@ -70,20 +69,20 @@ Do not edit any files yet. Just report.</pre>
 <span class="sidenote">Reading is not free in every sense: what the agent reads fills its context window (lesson <a href="0068-context-window.html">5.1</a>). It costs no edits and no undo, which is the kind of cost that matters here.</span>
 
 <h2>Say "do not edit" out loud</h2>
-<p>An agent told to "look into" a problem may decide the fastest way to be helpful is to fix it. Each tool offers a way to keep the read-only promise. Learn the one for your agent, and keep approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</p>
+<p>An agent told to "look into" a problem may decide the fastest way to help is to fix it. Each tool offers a way to keep the read-only promise. Learn yours, and keep approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</p>
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
     <p>Plan mode is the built-in version of this habit: <q>Plan mode tells Claude to research and propose changes without making them.</q><sup class="cite"><a href="#src-a4">[3]</a></sup> Anthropic lists it for <q>Exploring a codebase before changing it.</q><sup class="cite"><a href="#src-a4">[3]</a></sup> You enter it by <q>pressing `Shift+Tab` or prefixing a single prompt with `/plan`</q>.<sup class="cite"><a href="#src-a4">[3]</a></sup> The status bar shows when it is on.</p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
-    <p>The CLI quickstart's example first message is simply <code>Tell me about this project</code>.<sup class="cite"><a href="#src-b1">[2]</a></sup> If you want a hard boundary rather than a polite request, start with the read-only sandbox: <q>read-only: The agent can inspect files, but it can't edit files or run commands without approval.</q><sup class="cite"><a href="#src-b4">[4]</a></sup> The flag is <code>--sandbox read-only</code>.</p>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>The CLI quickstart's example first message is a single line: <code>Tell me about this project</code>.<sup class="cite"><a href="#src-b1">[2]</a></sup> If you want a hard boundary rather than a polite request, start with the read-only sandbox: <q>read-only: The agent can inspect files, but it can't edit files or run commands without approval.</q><sup class="cite"><a href="#src-b4">[4]</a></sup> The flag is <code>--sandbox read-only</code>.</p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
     <p>The omp docs give the exact sentence to use: <q>If you only want an explanation, say “investigate, but do not edit.”</q><sup class="cite"><a href="#src-c1">[5]</a></sup> For anything larger, <code>/plan</code> gives you <q>a separate planning turn</q> before execution.<sup class="cite"><a href="#src-c1">[5]</a></sup> omp documents only itself, so treat these pages as single-vendor sources.</p>
   </div>
 </div>
@@ -97,18 +96,18 @@ Do not edit any files yet. Just report.</pre>
 </div>
 
 <h2>Check the map before you build on it</h2>
-<p>A map is also a claim, and it can be wrong in a large or unusual project. You do not need to audit all of it. Check one thing yourself: open the file it named, or look at the page and see whether the description matches. If that one check is wrong, treat the rest as unproven too. Lesson <a href="0030-claims-vs-evidence.html">2.2</a> makes this routine.</p>
+<p>A map is also a claim, and it can be wrong in a large or unusual project. Check one thing yourself: open the file it named, or look at the page and see whether the description matches. If that check fails, treat the rest as unproven. Lesson <a href="0030-claims-vs-evidence.html">2.2</a> makes this routine.</p>
 
 <h2>When not to bother</h2>
-<p>Orienting is a tool, not a ritual. Skip it when you already hold the map: a file you wrote ten minutes ago, a page with one heading, a change of a single word you can point at. A long questionnaire about a three-line file wastes the attention you were trying to save. Lesson <a href="0065-over-asking.html">4.11</a> covers where that turns into over-asking.</p>
+<p>Orienting is a tool, not a ritual. Skip it when you already hold the map: a file you wrote ten minutes ago, a change of a single word you can point at. A questionnaire about a three-line file wastes the attention you meant to save. Lesson <a href="0065-over-asking.html">4.11</a> covers where that turns into over-asking.</p>
 
 <div class="doit">
   <span class="label">Do it in your own agent</span>
   <ol>
     <li><label><input type="checkbox"> Open your agent in the project folder from lesson 0.7, with approval prompts on.</label></li>
     <li><label><input type="checkbox"> Send: "Before changing anything, tell me which files make this page, what each one does, and what would break if I edited the main one. Do not edit anything."</label></li>
-    <li><label><input type="checkbox"> Read the answer and write down the file names it gives you. Open one of them yourself and look.</label></li>
-    <li><label><input type="checkbox"> Then ask for one small change, naming that same file. Notice how much shorter your second message is than your first.</label></li>
+    <li><label><input type="checkbox"> Read the answer and write down the file names. Open one of them yourself and look.</label></li>
+    <li><label><input type="checkbox"> Then ask for one small change, naming that file. Notice how much shorter your second message is.</label></li>
   </ol>
   <div class="expect"><p>You should see a short list of real files that you can find in your folder, a one- or two-sentence explanation, and no edits at all in the agent's report. Your second message should now name a file instead of describing the whole page. If the agent edited something during step 2, its read-only setting is off: check lesson 0.6 before going further.</p></div>
   <p class="progress"></p>

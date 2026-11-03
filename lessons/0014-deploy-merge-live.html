@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merged is not live</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.6</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 6 · Lesson 6.6 · First-ship path ★</p>
+  <h1>Merged is not live</h1>
+  <p class="lede">Your pull request says Merged and the checks are green. The page your friend opens is still yesterday's. Three different states are all called "done", and only one of them is the address you will share.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0013-github-pages.html">6.3 GitHub Pages</a></span><span>Win: you can prove what the public URL serves before you send it</span></div>
+</header>
+<main>
+
+<h2>Your friend opens a URL, not a repository</h2>
+<p>The end of your mission is a link that works on someone else's phone. A GitHub Pages project site has a fixed shape: <code>https://&lt;owner&gt;.github.io/&lt;repositoryname&gt;/</code>.<sup class="cite"><a href="#src-pages">[1]</a></sup> Nothing about your commits, your branch or your careful pull request is visible at that address. What is visible is whatever the host is serving at that moment, which is a separate thing you have to go and look at.</p>
+<p>Beginners collapse several moments into the single word "done". They are separate events, and each one can succeed while the next has not happened yet.</p>
+
+<table class="ref">
+  <thead><tr><th>State</th><th>What it means</th><th>What it proves</th><th>What it does not prove</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Merged</strong></td><td>Your change is now part of the main branch.</td><td>The project's history contains your edit.</td><td>That the host has built anything at all.</td></tr>
+    <tr><td><strong>Deployed</strong></td><td>A deployment run finished and handed the host a package of files.</td><td>A build was accepted for publishing.</td><td>That the URL is already serving that package.</td></tr>
+    <tr><td><strong>Live</strong></td><td>The public URL returns your new content.</td><td>That a visitor, right now, receives it.</td><td>Anything beyond what you actually looked at.</td></tr>
+  </tbody>
+</table>
+
+<figure style="margin: 1.2rem 0;">
+<svg viewBox="0 0 520 120" role="img" aria-labelledby="ship-t ship-d" style="width:100%;height:auto;max-width:520px">
+  <title id="ship-t">Three events, not one</title>
+  <desc id="ship-d">Three boxes in a row: merged on main, deployment run finished, then the public URL serves the new content. Arrows between them are separate events that can fail or lag.</desc>
+  <defs><marker id="ah14" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--fg)">
+    <rect x="6" y="32" width="140" height="52" rx="6"/><rect x="190" y="32" width="140" height="52" rx="6"/><rect x="374" y="32" width="140" height="52" rx="6"/>
+    <path d="M146 58H188" marker-end="url(#ah14)"/><path d="M330 58H372" marker-end="url(#ah14)"/>
+  </g>
+  <g fill="currentColor" font-family="system-ui,sans-serif" font-size="13" text-anchor="middle" style="color:var(--fg)">
+    <text x="76" y="54">1. Merged</text><text x="76" y="71" font-size="11" opacity=".7">main has your change</text>
+    <text x="260" y="54">2. Deployed</text><text x="260" y="71" font-size="11" opacity=".7">a run finished</text>
+    <text x="444" y="54">3. Live</text><text x="444" y="71" font-size="11" opacity=".7">the URL serves it</text>
+    <text x="168" y="22" font-size="10" opacity=".7">separate</text><text x="352" y="22" font-size="10" opacity=".7">separate</text>
+    <text x="260" y="108" font-size="11" opacity=".7">each arrow can lag, or fail on its own</text>
+  </g>
+</svg>
+<figcaption class="sidenote" style="margin-top:.4rem">Only the third box is the thing you send to a person.</figcaption>
+</figure>
+
+<h2>Merge puts your change on main. It publishes nothing.</h2>
+<p><span class="term" title="A merge brings one line of work into another; here, your branch into main.">Merge</span> is a version-control action. GitHub's instructions describe it plainly: <q>Merge all commits into the base branch by clicking Merge pull request.</q><sup class="cite"><a href="#src-merge">[2]</a></sup> After that click, main contains your work. That is all it says.</p>
+<p>Publishing is a second, later event. GitHub's Pages documentation is explicit: <q>Your GitHub Pages site will always be deployed with a GitHub Actions workflow run</q>.<sup class="cite"><a href="#src-source">[3]</a></sup> So a merge can land at 10:00 while the workflow that packages your files is still queued at 10:01, still running at 10:05, or failing quietly while the pull request stays green from yesterday. The pull request reports on the branch; the site reports on whatever was last published.</p>
+<p>This is why "the PR is merged" is a terrible thing to tell a friend. It describes a change to a filing cabinet, not a page on the internet.</p>
+
+<h2>A green deployment is still only a claim</h2>
+<p><span class="term" title="One attempt by the host to take a package of files and serve it at your address.">Deploy</span> means handing the host a finished package and asking it to serve it. On Pages, that is usually the workflow from <a href="0081-actions-workflow.html">lesson 6.5</a>: one job builds and uploads the files, another publishes them in a job tied to a deployment environment called <code>github-pages</code>.<sup class="cite"><a href="#src-workflow">[4]</a></sup> The deploy step reports a result, and that result includes <q>The URL of the deployed Pages site</q> as an output.<sup class="cite"><a href="#src-dp">[5]</a></sup></p>
+<p>Useful — but read it for what it is. It is the deployment job saying where it put things, not a visitor's view. The same action's own default timeout is <q>Time in milliseconds after which to timeout and cancel the deployment (default: 10 minutes)</q>.<sup class="cite"><a href="#src-dp">[5]</a></sup> Deployments take minutes, can be queued behind other runs, and can be re-run. A green tick means the package was accepted. It does not tell you what an address returns when a stranger types it.</p>
+
+<h2>Live means the URL serves your change</h2>
+<p>There is a third gap, and it is the one that catches almost everyone. GitHub's Pages quickstart warns that <q>it can take up to 10 minutes for changes to your site to publish after you push the changes to GitHub</q>.<sup class="cite"><a href="#src-quick">[6]</a></sup> So the boring explanation for "my change is missing" is usually time. Check again before you start changing files.</p>
+<p>Two more causes are worth knowing, because they look identical from the outside.</p>
+<p><strong>Your browser reused an old copy.</strong> The HTTP cache <q>stores a response associated with a request and reuses the stored response for subsequent requests</q>.<sup class="cite"><a href="#src-cache">[7]</a></sup> That is normal and useful, and it means a plain reload can show you a page from before your deploy. A private window, or a reload that bypasses the cache, asks the host again.</p>
+<p><strong>The address is not the one you think.</strong> A project site lives under the repository name, so leaving out <code>/my-app/</code> lands somewhere else entirely.<sup class="cite"><a href="#src-pages">[1]</a></sup> Pages looks for <code>index.html</code> as the entry file, and <q>The name of the index.html file is case sensitive</q>.<sup class="cite"><a href="#src-404">[8]</a></sup> A 404 can be a typo, a file at the wrong level, or a capital letter. And a 404 <q>only indicates that the resource is missing without indicating if this is temporary or permanent</q><sup class="cite"><a href="#src-mdn404">[9]</a></sup> — so one 404 right after a deploy is a hint, not a verdict.</p>
+
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>Do not ask "did it work?" Ask "what does the exact URL return, right now, in a window that has never seen this site before?" That question has an answer you can see.</p>
+</div>
+
+<h2>A pattern from real sessions</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to put a small gallery online for friends who do not use code hosting, and to put the link where those friends would look. In about a quarter of an hour the agent had opened a pull request, watched the automated checks finish, and merged it. Then it kept going: it waited for the deployment run, opened the public address, searched the page for one item that only existed in the new version, and repeated that until the new version actually appeared. Only then did it write the link into the project's front page.</p>
+  <p>In a longer session with the same shape, every merge was followed by three separate looks: the checks, the Pages deployment, and the real address. One merge went green while the site still served the previous build for a couple of minutes. A report written at the green tick would have been wrong, and nobody would have noticed until a visitor did.</p>
+</div>
+
+<h2>What a checkable report sounds like</h2>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Weak</span>
+    <p>"The pull request is merged and the build passed, so the site is updated."</p>
+    <p>Three states, one word. Nothing here tells you what an address returns.</p>
+  </div>
+  <div class="good">
+    <span class="label">Strong</span>
+    <p>"I fetched <code>https://YOUR_USERNAME.github.io/my-app/</code>. It returned 200 and shows "Version 2" in the heading. I loaded it in a private window after the deployment run finished."</p>
+    <p>An address, a status, and a line that only exists in the new version.</p>
+  </div>
+</div>
+
+<h2>Check it yourself in about a minute</h2>
+<div class="doit">
+  <span class="label">Do it now — on your own site, or on any URL</span>
+  <ol>
+    <li><label><input type="checkbox"> Write down the exact URL you intend to send, including the <code>/repository-name/</code> part.</label></li>
+    <li><label><input type="checkbox"> Open it in a private or incognito window, so no old cached copy can answer for the host.</label></li>
+    <li><label><input type="checkbox"> Look for the one thing you changed — a heading, a date, a new button — not merely "a page appeared".</label></li>
+    <li><label><input type="checkbox"> Ask for the status line: <code>curl -sI "https://YOUR_USERNAME.github.io/my-app/" | head -n 1</code>. You want <code>HTTP/2 200</code> (or <code>HTTP/1.1 200</code>).</label></li>
+    <li><label><input type="checkbox"> Find the run for the commit you merged: the repository's Actions tab, or <code>gh run list --limit 5</code>. A run that is still going is not a finished deploy.</label></li>
+    <li><label><input type="checkbox"> Only now say "live" — and say which address and what you saw on it.</label></li>
+  </ol>
+  <div class="expect">
+    <p>200, and your new text visible in the private window. A 404 means nothing is being served at that path — check the repository name and the file name's capitalisation. The old text means the deployment has not taken effect yet, or the host is answering from an older build; wait, then re-check. For comparison, here is the same check run against a throwaway page on a local machine, not GitHub Pages:</p>
+    <pre><code>$ curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8766/
+200
+$ curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8766/versoin-2/
+404
+$ curl -sI http://localhost:8766/ | head -n 1
+HTTP/1.0 200 OK</code></pre>
+    <p>The shape is the same for any web address: 200 for found, 404 for absent. The first URL was real, the second had a typo, and no amount of staring at the files would have told you which was which.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Your agent can check the address too — with one more approval</h2>
+<p>Fetching a URL is a tool call like any other, so it goes through the same permission rules you set in lesson 0.6. The three agents differ here, and the differences matter exactly when you are waiting on a deploy.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Claude Code has a web fetch tool, and the permissions table says approval is required for it — <q>Yes, except a built-in set of preapproved documentation domains</q>.<sup class="cite"><a href="#src-cc">[10]</a></sup> So expect a prompt naming the address before it can look at your site. Approve that one, and keep the rest of your prompts on.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Codex runs its commands in a sandbox, and <q>By default, the agent runs with network access turned off.</q><sup class="cite"><a href="#src-cx">[11]</a></sup> A check of your public URL may therefore need an approval or a network setting. Let it ask; do not turn the sandbox off to save one click.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>In omp's <code>write</code> approval mode, the things that prompt include <q>Executable actions such as bash, eval, browser control, and task</q>.<sup class="cite"><a href="#src-omp">[12]</a></sup> Its built-in default is <code>yolo</code>, which prompts for nothing by tier, so check which mode you are in before asking it to browse. <a href="0006-approvals-and-permissions.html">Lesson 0.6</a> covers changing that safely.</p>
+  </div>
+</div>
+<span class="sidenote">If approvals are getting in the way of a simple check, open the URL yourself. Your browser needs no permission and shows you the same page.</span>
+
+<h2>Ask for proof, not a status word</h2>
+<p>This prompt works in any of the three agents. It turns "is it live?" into an answer you can check in one glance.</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>After you merge, do not tell me the site is live until you have fetched the public URL yourself.
+
+Then reply with:
+1. the exact URL you fetched;
+2. the HTTP status you got;
+3. one line of text from the page that only exists in the new version;
+4. if the old version is still served, wait and check again up to three times, then tell me what is still missing and stop.
+
+Do not make unrelated edits while waiting. Keep approval prompts on.</pre></div>
+<p>The fourth line matters as much as the first. Without a stopping rule, "check until it is live" becomes an open-ended loop that can run for an hour and drift into other work. <a href="0057-stop-conditions.html">Lesson 4.3</a> covers stop conditions; this is the deploy-shaped version of one.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three states a change passes through after you merge it, and say what single piece of evidence proves the third one. Write it in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Merged</strong> (the change is on main), <strong>deployed</strong> (a deployment run finished), <strong>live</strong> (the public URL serves the new content). The evidence for the third is that you loaded the exact address — ideally in a private window — and saw text that only exists in the new version, with a 200 status to match. A merged pull request and a green deployment run prove the first two, and nothing more.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your pull request says Merged and its checks are green. The public URL still shows the old page. What is the best description?</p>
+  <button class="opt" type="button">The merge worked; publishing is a separate, later step.</button>
+  <button class="opt" type="button">The merge failed; that pull request needs reopening again.</button>
+  <button class="opt" type="button">The deployment ran; only your browser still shows old.</button>
+  <button class="opt" type="button">The page broke; the repository must be made public.</button>
+  <div class="why"><p>Merging changes main. Publishing is a workflow run, and the site is served separately; none of that follows from a green pull request.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which one of these is evidence that your friends can see the new version?</p>
+  <button class="opt" type="button">A green check on the pull request you merged.</button>
+  <button class="opt" type="button">A finished deploy run shown in the Actions list.</button>
+  <button class="opt" type="button">The public URL showing the new text when loaded.</button>
+  <button class="opt" type="button">A commit sitting on main with the right message.</button>
+  <div class="why"><p>Only what the address returns counts. Checks, runs and commits describe the pipeline; the URL describes what a visitor gets.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You open your public URL and see last week's page. What should you try first?</p>
+  <button class="opt" type="button">Delete the repository and then deploy the site again.</button>
+  <button class="opt" type="button">Reload in a private window, then wait and check.</button>
+  <button class="opt" type="button">Merge that pull request again, then reload the page.</button>
+  <button class="opt" type="button">Rename index.html to Index.html and then push it now.</button>
+  <div class="why"><p>A cached copy or a deployment that has not finished are the common causes. Publishing can take minutes; a private window and a short wait separate both from a real fault.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/troubleshooting-404-errors-for-github-pages-sites">Troubleshooting 404 errors for GitHub Pages sites</a> — GitHub's own checklist for the moment a URL answers with nothing. Read it once now, so that a 404 later reads as a known list of causes instead of a mystery.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure what your address should be? Ask the agent that gave you this course. Try: <em>"My repository is called my-app and my username is YOUR_USERNAME. What is the exact URL, and what should I see there when my change is live?"</em> or <em>"Here is what my URL shows. Is this the old version, a cache problem, or a wrong address?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-pages">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages">What is GitHub Pages?</a> (default site location for project sites: <code>http(s)://&lt;owner&gt;.github.io/&lt;repositoryname&gt;</code>). Retrieved 2026-11-02.</li>
+  <li id="src-merge">GitHub, <a href="https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/merging-a-pull-request">Merging a pull request</a>. Retrieved 2026-11-02.</li>
+  <li id="src-source">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">Configuring a publishing source for your GitHub Pages site</a>. Retrieved 2026-11-02.</li>
+  <li id="src-workflow">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages">Using custom workflows with GitHub Pages</a> (deployment environment <code>github-pages</code>; <code>pages: write</code> and <code>id-token: write</code> permissions). Retrieved 2026-11-02.</li>
+  <li id="src-dp">GitHub, <a href="https://github.com/actions/deploy-pages">actions/deploy-pages</a> (README: outputs and inputs, including the default ten-minute timeout). Retrieved 2026-11-02.</li>
+  <li id="src-quick">GitHub, <a href="https://docs.github.com/en/pages/quickstart">Quickstart for GitHub Pages</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cache">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching">HTTP caching</a>. Retrieved 2026-11-02.</li>
+  <li id="src-404">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/troubleshooting-404-errors-for-github-pages-sites">Troubleshooting 404 errors for GitHub Pages sites</a>. Retrieved 2026-11-02.</li>
+  <li id="src-mdn404">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/404">404 Not Found</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cc">Anthropic, <a href="https://code.claude.com/docs/en/permissions">Claude Code permissions</a> (tool table, Web fetch row). Retrieved 2026-11-02.</li>
+  <li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/docs/agent-approvals-security">Agent approvals &amp; security</a>. Retrieved 2026-11-02.</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/approvals">omp tool approvals</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> tell a merge from a deployment from a live page, and prove which version the public URL serves before you share it.</p>
+  <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0013-github-pages.html">Previous: GitHub Pages</a> · <a href="0015-ship-a-hello-world-page.html">Next: Ship a hello world page</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

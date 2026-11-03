@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>When two changes collide: conflicts, rebase, cherry-pick</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control as the safety net · Lesson 3.9</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.9</p>
+  <h1>When two changes collide</h1>
+  <p class="lede">Sooner or later two branches change the same line, and Git stops and asks you to choose. That stop is not a failure. It is the moment the tool refuses to guess about your app.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0044-branch.html">3.5 Branch</a></span><span>Win: you can read a conflict, resolve or back out of it, and tell your agent which way to bring changes across</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your app is built from <code>main</code>. Your work happens on a branch, and <code>main</code> keeps moving while you work, because you or your agent merged something else. When the two lines of work touch the same part of the same file, Git cannot combine them on its own, and the pull request that would ship your change is blocked.</p>
+<p>GitHub says it plainly: <q>If your pull request has a merge conflict between the compare branch and base branch, the Merge pull request button is deactivated until the conflicts are resolved.</q><sup class="cite"><a href="#src-gh-conflicts">[1]</a></sup> Nothing is broken and nothing is lost. But the merge button is now a locked door, and only a decision you make opens it.</p>
+
+<h2>What a conflict actually is</h2>
+<p>Most of the time Git merges by itself: different files, or different lines of one file, combine without help. A <span class="term" title="A line Git cannot combine automatically because two branches changed the same place in different ways">conflict</span> is the remaining case. GitHub's reference names the usual causes: <q>Merge conflicts often happen when people make different changes to the same line of the same file, or when one person edits a file and another person deletes the same file.</q><sup class="cite"><a href="#src-gh-conflicts">[1]</a></sup></p>
+<p>When that happens, Git stops halfway and writes both versions into the file, fenced by markers. The git manual describes the layout: <q>The part before the ======= is typically your side, and the part afterwards is typically their side.</q><sup class="cite"><a href="#src-git-merge">[2]</a></sup> "Your side" means the branch you are on right now. The other label names whatever you are bringing in.</p>
+<pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+&lt;p&gt;Contact: support@example.com&lt;/p&gt;
+=======
+&lt;p&gt;Contact: cook@example.com&lt;/p&gt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; new-contact</code></pre>
+<p>Three markers, two blocks. Between <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> and <code>=======</code> is what your current branch has; between <code>=======</code> and <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; new-contact</code> is what the other branch has. The names are labels for humans. Git does not care what you leave between the markers, only that they are gone when you finish.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: in a conflict block, which side is <code>HEAD</code>, and what does the word after the last marker name?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><code>HEAD</code> is the branch you have checked out — your side. The word after <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> labels the other side, usually the branch or commit you are merging, rebasing or cherry-picking into your branch.</p></div>
+</div>
+
+<h2>Resolving: a decision, then two commands</h2>
+<p>Resolving means choosing the final text: your side, their side, or a blend neither branch contained. The git manual gives the procedure: <q>Edit the files into shape and git add them to the index. Use git commit or git merge --continue to seal the deal.</q><sup class="cite"><a href="#src-git-merge">[2]</a></sup> Delete the three marker lines as part of the edit. A file with markers still in it is not resolved; it is a file with stray arrows that will reach your live site.</p>
+<p>Staging is how you tell Git "this file is settled". That is the same <code>git add</code> you met in <a href="0043-commit-messages.html">3.4</a>, doing a different job here. If you change your mind entirely, there is a clean exit: <q>git merge --abort</q> will <q>Abort the current conflict resolution process, and try to reconstruct the pre-merge state.</q><sup class="cite"><a href="#src-git-merge">[2]</a></sup> Backing out is allowed and cheap. Starting over with a clearer head beats forcing a resolution you do not believe.</p>
+
+<div class="transcript">
+  <div class="row tool"><span class="who">tool</span><span>$ git merge new-contact<br>Auto-merging index.html<br>CONFLICT (content): Merge conflict in index.html<br>Automatic merge failed; fix conflicts and then commit the result.</span></div>
+  <div class="row tool"><span class="who">tool</span><span>$ git status<br>You have unmerged paths.<br>&nbsp;&nbsp;(fix conflicts and run "git commit")<br>&nbsp;&nbsp;(use "git merge --abort" to abort the merge)<br>Unmerged paths:<br>&nbsp;&nbsp;both modified:&nbsp;&nbsp; index.html</span></div>
+  <div class="row you"><span class="who">you</span><span>Keep the support address; it is the one customers already write to.</span></div>
+  <div class="row tool"><span class="who">tool</span><span>$ git add index.html<br>$ git commit -m "Merge new-contact, keep support address"</span></div>
+  <div class="row note"><span class="note">Run in a throwaway repository on this machine. The status output is the real text from git 2.56.0.</span></div>
+</div>
+
+<p>The status output names the file, its state, and the two ways forward. If you read one block of Git output, read this one. GitHub's walkthrough adds the consequence a beginner feels first: <q>You cannot push the merged result until you resolve the conflict and commit the resolution.</q><sup class="cite"><a href="#src-gh-cli">[6]</a></sup></p>
+
+<h2>Rebase: replaying your commits somewhere else</h2>
+<p>Merging ties two histories together and adds a merge commit. <span class="term" title="Replaying the commits of one branch on top of a different starting point, producing new commits with a linear history">Rebase</span> does something different, and Pro Git describes it exactly: <q>you can take all the changes that were committed on one branch and replay them on a different branch.</q><sup class="cite"><a href="#src-progit-rebase">[3]</a></sup> Your own git agrees: <q>Transplant a series of commits onto a different starting point.</q><sup class="cite"><a href="#src-git-rebase-help">[4]</a></sup></p>
+<p>The end result can be identical. Pro Git is careful: <q>There is no difference in the end product of the integration, but rebasing makes for a cleaner history.</q><sup class="cite"><a href="#src-progit-rebase">[3]</a></sup> Only the shape changes: instead of a fork that rejoins, you get one line where your work appears to have happened after everything on <code>main</code>.</p>
+<p>That rewriting has a price, and Pro Git states the rule in one line: <q>Do not rebase commits that exist outside your repository and that people may have based work on.</q><sup class="cite"><a href="#src-progit-rebase">[3]</a></sup> Rebase is <q>abandoning existing commits and creating new ones that are similar but different</q><sup class="cite"><a href="#src-progit-rebase">[3]</a></sup>, so anyone holding the old ones holds something that no longer exists upstream. The practical rule: rebase your own branch when you are its only user, and never a branch a teammate works from.</p>
+<p>A rebase can hit conflicts too, one commit at a time. The loop is the merge loop with different verbs: fix the file, <code>git add</code> it, then <code>git rebase --continue</code>. Your own help page lists the other two exits: <code>--skip</code> drops the commit that would not apply, and <code>--abort</code> puts the branch back where it started<sup class="cite"><a href="#src-git-rebase-help">[4]</a></sup>.</p>
+<div class="warn">
+  <span class="label">The rebase trap for beginners</span>
+  <p>If the branch was already pushed, rebasing means the pushed copy no longer matches, and updating it requires a force push that overwrites history. Ask your agent, before it starts, "will this need a force push?" If the answer is yes and you do not understand why, ask for the merge instead. Lesson <a href="0050-undo.html">3.11</a> covers recovering from a rewrite that went wrong.</p>
+</div>
+
+<h2>Cherry-pick: one commit, copied elsewhere</h2>
+<p><span class="term" title="Copying the change made by one specific commit onto the branch you are on, as a new commit">Cherry-pick</span> is the narrow tool. The manual defines it as: <q>Given one or more existing commits, apply the change each one introduces, recording a new commit for each.</q><sup class="cite"><a href="#src-git-cherry-pick">[5]</a></sup> You point at one commit and say "that change, here".</p>
+<p>The everyday beginner case is a fix that landed on the wrong branch. Your agent fixed a broken link on a feature branch, and you need that fix on <code>main</code> now, without the rest of the feature. Cherry-pick copies the change and leaves the original commit where it was. It is not a move and it does not clean up the branch you took it from; if the fix should not stay there, that is a separate decision.</p>
+<p>The copy is a new commit with a new identity, so doing the same change twice leaves both copies in the history. Use it for one deliberate commit, not to move a whole branch; merge and rebase are for that. Conflicts work as before, with <code>--continue</code>, <code>--skip</code> and <code>--abort</code>.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user had a pull request that could no longer merge, because <code>main</code> had moved underneath it. Their instruction was one sentence: rebase the branch onto <code>main</code>, resolve the conflicts, run the full check suite quietly, and push it ready for review. The agent hit four conflicts and resolved every one by keeping both sides. The checks passed, the pull request went green, and the agent reported which commit it had dropped along the way. That last sentence is what made the run trustworthy. "Keep both" is a guess about intent, and it is right only when both changes were meant to coexist.</p>
+</div>
+
+<h2>What to ask your agent</h2>
+<p>An agent will resolve a conflict for you, often correctly. The risk is that it resolves by pattern — keep both, take the newer one — when the right answer depends on what your app is supposed to do. So ask for the decision, not only the result.</p>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Hands off the wheel</span>
+    <p>"Fix the conflicts and merge it."</p>
+    <p>You will learn what happened only if something breaks later.</p>
+  </div>
+  <div class="good">
+    <span class="label">Keeps the decision</span>
+    <p>"Show me each conflicted block, say what each side was trying to do, and recommend a resolution. Wait for my answer before you stage anything."</p>
+    <p>The agent does the reading; you keep the intent.</p>
+  </div>
+</div>
+<p>Make two questions routine. "Did you check that the app still runs after resolving?" catches a resolution that is syntactically fine and behaviourally wrong. "Did anything get dropped?" catches a <code>--skip</code> or a lost commit, the quiet loss that shows up as a missing feature a week later. The habit from <a href="0030-claims-vs-evidence.html">2.2</a> applies: "resolved" is a claim until the file and the running app agree.</p>
+
+<h2>Do it: make a conflict on purpose, then back out</h2>
+<p>Practice somewhere harmless: a throwaway repository, a forced conflict, and an undo, with the agent's approval prompts left on.</p>
+<div class="prompt"><pre>In a new folder called conflict-practice, create a tiny git repository with one HTML file that has a contact line.
+Make two branches that each change that same line differently, then merge them so the merge stops with a conflict.
+Do not resolve it and do not touch any other folder.
+Show me the file with the conflict markers and explain which side is which.</pre></div>
+<div class="doit">
+  <span class="label">Your turn</span>
+  <ol>
+    <li><label><input type="checkbox"> Paste the prompt and approve the commands it needs. It should stop at a failed merge.</label></li>
+    <li><label><input type="checkbox"> Open the conflicted file. Find all three marker lines and say out loud which block is yours.</label></li>
+    <li><label><input type="checkbox"> Ask: "Which branch is HEAD here, and what does the label after the last marker name?"</label></li>
+    <li><label><input type="checkbox"> Now ask it to resolve by keeping only your side, stage the file, and finish the merge. Watch which command finishes it.</label></li>
+    <li><label><input type="checkbox"> Run <code>git log --oneline --graph</code> and find the merge commit with two parents.</label></li>
+    <li><label><input type="checkbox"> Repeat the setup, then run <code>git merge --abort</code> instead. Confirm <code>git status</code> says the working tree is clean.</label></li>
+  </ol>
+  <button class="btn reveal" type="button">What you should see</button>
+  <div class="expect"><p>The first merge exits with a conflict message naming one file. The file holds a <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> block, a <code>=======</code> line and a <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> line with a branch name. After resolving, <code>git add</code> plus <code>git commit</code> (or <code>git merge --continue</code>) creates a commit with two parents, visible in the graph as a fork that rejoins. After <code>git merge --abort</code>, status reports a clean tree and the log is back to what it was before the merge.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Inside a conflicted file, what does the block under <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> contain?</p>
+  <button class="opt" type="button">The version that will be removed after you resolve</button>
+  <button class="opt" type="button">The version from the branch you have checked out</button>
+  <button class="opt" type="button">The automatic merge that Git wrote in the file</button>
+  <button class="opt" type="button">The oldest version kept from their common base commit</button>
+  <div class="why"><p><code>HEAD</code> is the branch you are on, so the first block is your side. The block after <code>=======</code> is the side being brought in, labelled after the final marker.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A branch you already pushed is shared with a teammate. What is the safe way to bring new <code>main</code> changes into it?</p>
+  <button class="opt" type="button">Rebase it onto main, then force push over it</button>
+  <button class="opt" type="button">Cherry-pick main into it one commit at a time</button>
+  <button class="opt" type="button">Merge main into it and push the new commits</button>
+  <button class="opt" type="button">Delete the branch and rebuild it from main now</button>
+  <div class="why"><p>Rebasing rewrites commits, so a shared branch would need a force push that discards the copy your teammate may be building on. Merging adds commits and is safe to push.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A fix landed on the wrong branch. What does <code>git cherry-pick</code> do?</p>
+  <button class="opt" type="button">Copies one commit's change onto your branch now</button>
+  <button class="opt" type="button">Moves the whole branch onto a newer base</button>
+  <button class="opt" type="button">Deletes the commit from the place it landed</button>
+  <button class="opt" type="button">Merges both branches and keeps every last commit</button>
+  <div class="why"><p>Cherry-pick applies the change that one commit introduced and records a new commit on your branch. The original stays where it was, so nothing is moved or cleaned up.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/pull-requests/reference/merge-conflicts">Merge conflicts</a> — GitHub's short reference on why conflicts block a merge and where to resolve them. Read it together with the command-line walkthrough linked from it; the page's own example uses the same markers you just practised on.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Confused by a conflict in your own project? Ask the agent: <em>"Read this conflicted file and tell me what each side was trying to do, without changing anything."</em> Then decide. If you cannot explain the resolution in one sentence, you are not ready to stage it.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-gh-conflicts">GitHub, <a href="https://docs.github.com/en/pull-requests/reference/merge-conflicts">Merge conflicts</a>. Retrieved 2026-11-02.</li>
+  <li id="src-git-merge">Git project, <a href="https://git-scm.com/docs/git-merge">git-merge documentation</a> (page states last updated in 2.54.0). Retrieved 2026-11-02.</li>
+  <li id="src-progit-rebase">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Branching-Rebasing">Pro Git, 3.6 Rebasing</a>. Retrieved 2026-11-02.</li>
+  <li id="src-git-rebase-help">Local command: <code>git help rebase</code> (git 2.56.0 on this machine). Retrieved 2026-11-02.</li>
+  <li id="src-git-cherry-pick">Git project, <a href="https://git-scm.com/docs/git-cherry-pick">git-cherry-pick documentation</a> (page states last updated in 2.56.0). Retrieved 2026-11-02.</li>
+  <li id="src-gh-cli">GitHub, <a href="https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/resolving-a-merge-conflict-using-the-command-line">Resolving a merge conflict using the command line</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> read a conflict block, resolve it or abort it, and say when to merge, rebase or cherry-pick.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Previous: <a href="0047-merge-vs-squash.html">3.8 Merge vs squash</a></span><span>Next: <a href="0049-worktrees.html">3.10 Worktrees</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

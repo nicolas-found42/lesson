@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What a test is, and what pass, fail and skipped mean</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.3</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.3</p>
+  <h1>What a test is</h1>
+  <p class="lede">A test is a check a machine can repeat: set up an input, ask the app for a result, compare it with the result you expected. Three words come back with it — pass, fail, skipped — and only two of them tell you anything.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0003-your-project-is-a-folder.html">0.3 Your project is a folder</a></span><span>Win: you can read a test run and say what it proves</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Every check you make by hand works once. A test is the same check written down in a file, so it works again tomorrow, after every change, and without you watching. That matters because your agent will make most of the changes: you need a check it can run by itself and read the answer from. Anthropic's guidance for coding agents states the trade plainly: <q>If you give it something that comes back pass or fail, Claude can close that loop itself.</q><sup class="cite"><a href="#src-a1">[1]</a></sup></p>
+<p>You met the difference between a claim and its evidence in lesson <a href="0030-claims-vs-evidence.html">2.2</a>. A test run is one of the cheapest kinds of evidence you can ask for, and also one of the easiest to misread. "All tests passed" and "2 passed, 1 skipped" sound similar and mean different things.</p>
+
+<h2>Three parts, in a file</h2>
+<p>The Python documentation gives the cleanest short definition I know: a test case <q>checks for a specific response to a particular set of inputs.</q><sup class="cite"><a href="#src-py">[2]</a></sup> Unpacked, every test you will meet has the same three parts.</p>
+<ol>
+  <li><strong>An input you control.</strong> Prices <code>[2, 3, 5]</code>. An empty list. A name with an accent in it.</li>
+  <li><strong>An action.</strong> Call the function, load the page, press the button.</li>
+  <li><strong>An expected result, written down.</strong> The total should be <code>10</code>. Then a comparison, which is what makes it a test rather than a demonstration.</li>
+</ol>
+<p>Here is a small one, from a practice folder holding two files: <code>cart.js</code>, which adds up prices, and <code>cart.test.js</code>, which checks it. The test file uses a runner that ships with Node, the same program that runs the app's JavaScript.</p>
+<pre><code>import test from 'node:test';
+import assert from 'node:assert';
+import { total } from './cart.js';
+
+test('adds up three prices', () =&gt; {
+  assert.strictEqual(total([2, 3, 5]), 10);
+});
+
+test('an empty cart costs nothing', () =&gt; {
+  assert.strictEqual(total([]), 0);
+});
+
+test('applies a coupon', { skip: 'coupons not built yet' }, () =&gt; {
+  assert.strictEqual(total([10], 'SAVE5'), 5);
+});</code></pre>
+<p>Three tests. The first two compare a real answer with an expected one. The third is deliberately marked <code>skip</code>, with the reason written next to it.</p>
+
+<h2>Running it, and reading the three words</h2>
+<p>Run <code>node --test</code> in that folder and the runner prints one line per test, then a small summary. I ran exactly this in a scratch folder on 2026-11-02 and copied the output below.</p>
+<pre><code>✔ adds up three prices (0.30ms)
+✔ an empty cart costs nothing (0.03ms)
+﹣ applies a coupon (0.02ms) # coupons not built yet
+ℹ tests 3
+ℹ pass 2
+ℹ fail 0
+ℹ skipped 1</code></pre>
+<p>Now the three words, one at a time.</p>
+<table class="ref">
+  <tr><th>Word</th><th>What happened</th><th>What it proves</th></tr>
+  <tr><td><strong>pass</strong></td><td>The code ran and produced the expected result, for this input, right now.</td><td>That one case works. Nothing about other cases.</td></tr>
+  <tr><td><strong>fail</strong></td><td>It ran and the result differed — or it crashed before comparing.</td><td>A real difference exists. The output usually shows both values.</td></tr>
+  <tr><td><strong>skipped</strong></td><td>It was not run at all. Someone marked it, or a condition was not met.</td><td>Nothing. It is a note about the run, not a result.</td></tr>
+</table>
+<p>The Node documentation for the built-in runner says the same in one line: <q>Individual tests can be skipped by passing the skip option to the test.</q><sup class="cite"><a href="#src-node">[3]</a></sup> Python's framework offers the same idea through a decorator or a call from inside the test.<sup class="cite"><a href="#src-py">[2]</a></sup> The wording differs, the meaning does not: skipped means not executed.</p>
+<p>When one of those checks breaks, the runner does not only say "fail". I changed one line in <code>cart.js</code> so it kept only the last price, then ran the same command. The summary became one pass, one fail, one skipped, and underneath it printed the actual comparison:</p>
+<pre><code>✖ adds up three prices
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  5 !== 10</code></pre>
+<p>That <code>5 !== 10</code> is the whole value of a test. It names the input's real answer and the expected answer, side by side, with no opinion in between. I restored the file afterwards.</p>
+
+<div class="compare">
+  <div class="bad"><span class="label">What the summary says</span><p>"All good, the checks ran."</p><p>Nothing here can be false in a way you could detect. It is a claim wearing a test's clothes.</p></div>
+  <div class="good"><span class="label">What the output says</span><p>"tests 3 · pass 2 · fail 0 · skipped 1."</p><p>You can count it, rerun it, and see which test was left out and why.</p></div>
+</div>
+
+<h2>Pass and fail are also a number</h2>
+<p>Under the human-readable lines there is one more signal, and it is the one your agent reads. A test command ends with an <span class="term" title="A number a program returns when it finishes; 0 usually means success and anything else means failure.">exit code</span>. The Node documentation is explicit: <q>If any tests fail, the process exit code is set to 1.</q><sup class="cite"><a href="#src-node">[3]</a></sup> A clean run ends with 0. I checked both in the scratch folder: the passing run returned 0, the broken one returned 1.</p>
+<p>This is why tests fit an agent so well. The agent does not have to interpret your mood or guess at quality; it runs a command, reads a number, and keeps working or stops. Lesson <a href="0076-background-processes-exit-codes-waiting-vs.html">5.9</a> goes further into exit codes and long-running commands.</p>
+
+<h2>Skipped is where the surprises hide</h2>
+<p>Beginners read "0 failed" and stop. The line that matters is often the skipped one, because a skipped test is a check that did not happen — and the reason is usually environmental, which means it may behave differently on another machine.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked their agent whether a project was in good shape. The agent ran the project's checks and reported 127 passed, 3 skipped, nothing failed. The three skipped checks needed a 3D tool that was not installed on that laptop, so the runner had quietly left them out and said so.</p>
+  <p>Days later the same checks ran on the hosting service, where that tool was present. Two of the three failed and pointed at real bugs in files the laptop had never examined. The first report was not a lie. It was a true statement about a smaller set of checks than the user assumed, and the word "skipped" was the only clue.</p>
+</div>
+<p>So when you read a run, count all three numbers. Passed tells you what held. Failed tells you what broke. Skipped tells you what nobody looked at, and that is usually the list you want next. Lesson <a href="0046-local-vs-ci.html">2.12</a> takes up the local-versus-cloud version of this, and lesson <a href="0039-checker-can-be-wrong.html">2.11</a> covers the harder case where a passing test is itself unreliable.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three parts of a test, and say what a skipped test proves. Then say which number tells your agent that the run went badly.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>An input you control, an action, and an expected result that gets compared with the real one. A skipped test was never run, so it proves nothing — it is a gap. The exit code tells the agent how the run went: 0 for success, a non-zero value such as 1 when a test failed.</p></div>
+</div>
+
+<h2>What a test does not do</h2>
+<p>A green run is evidence about the cases somebody wrote down. It is not evidence that the page looks right, that the flow makes sense, or that the app works for a stranger. Anthropic's own guidance pairs the two checks rather than replacing one with the other: after the tests, it suggests having the agent <q>build and run the app and look at the result</q>, because that <q>catches the kind of problem that tests and typechecks miss.</q><sup class="cite"><a href="#src-a1">[1]</a></sup></p>
+<p>That is why lesson <a href="0029-run-yourself.html">2.1</a> came before this one, and why lesson <a href="0035-real-vs-simulated.html">2.7</a> comes after it. Tests narrow the space where you have to look. They do not look for you.</p>
+<p>One more caution, because it shapes how much a green tick is worth. Google's testing blog defines a flaky result as <q>a test that exhibits both a passing and a failing result with the same code</q>, and reports that about 1.5% of their test runs were flaky.<sup class="cite"><a href="#src-g">[4]</a></sup> A pass is always a statement about one run of one check. Repeating the run costs little, and it is the honest way to find out whether the result sticks.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in your project folder, with approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</label></li>
+    <li><label><input type="checkbox"> Send the prompt below. It asks for facts about what exists, not for new work.</label></li>
+    <li><label><input type="checkbox"> Read the answer and find the three counts: passed, failed, skipped. Write them down yourself.</label></li>
+    <li><label><input type="checkbox"> Ask the agent to run one single test by name, and paste its raw output.</label></li>
+    <li><label><input type="checkbox"> If anything is skipped, ask for the reason given in the output — not a guess.</label></li>
+  </ol>
+  <div class="prompt">
+    <button class="copy" type="button">Copy</button>
+    <pre>Do not change any files. Look at this project folder and answer four things, quoting the exact commands and output.
+1. Does this project have any automated tests? Which folder are they in?
+2. What command runs them here? If the project documents it, quote the line that says so.
+3. Run that command once and paste the full summary: how many tests, passed, failed, skipped.
+4. For every skipped test, quote the reason the runner printed. If there is no reason, say so plainly.
+
+If there are no tests at all, say that instead of inventing a command, and list the three things you would test first in this app.</pre>
+  </div>
+  <div class="expect"><p>You should see a real command, a real summary with the three counts, and at least one sentence that begins with a number rather than an adjective. If the agent answers "all tests pass" with no command, ask again: "Paste the command you ran and its raw output." A project with no tests is a normal answer at this stage; the useful part is the list of what should be tested first, which lesson <a href="0032-regression-test.html">2.4</a> builds on.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">A run reports "3 tests, 2 passed, 0 failed, 1 skipped". What do you know?</p>
+  <button class="opt" type="button">One check never ran, so one gap remains unseen.</button>
+  <button class="opt" type="button">All three checks ran, so the run is complete.</button>
+  <button class="opt" type="button">Two checks failed, but the run still counted fine.</button>
+  <button class="opt" type="button">One check passed, so every check has passed now.</button>
+  <div class="why"><p>Skipped means not executed. Two checks produced a result and one produced none, so one area of the app is untested by this run.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which of these is a test rather than a description of one?</p>
+  <button class="opt" type="button">A short note listing every bug the agent fixed.</button>
+  <button class="opt" type="button">A command installing every library that the app needs.</button>
+  <button class="opt" type="button">A check that compares real output to expected output.</button>
+  <button class="opt" type="button">A setting that makes the finished app run faster.</button>
+  <div class="why"><p>The comparison against an expected result is what makes it a test. Installing libraries and changing settings are setup, and a bug list is a report about the past.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">The test command returns exit code 1. What does that mean?</p>
+  <button class="opt" type="button">Every test in that run has passed quite cleanly.</button>
+  <button class="opt" type="button">At least one test in that run has failed.</button>
+  <button class="opt" type="button">The test runner could not start on this machine.</button>
+  <button class="opt" type="button">One skipped test was counted as a real failure.</button>
+  <div class="why"><p>Node's documentation states that a failure sets the exit code to 1, and 0 means success. Skipped tests do not fail a run on their own.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.python.org/3/library/unittest.html">unittest — Unit testing framework</a>, the "Basic example" and "Skipping tests and expected failures" sections. Python is not the language of your app, and that does not matter: the three parts of a test and the meaning of a skip are the same everywhere. Read the two short sections; the rest is for later.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure whether something counts as a test? Ask. Try: <em>"Is checking that a page loads a test?"</em> or <em>"Why would anyone write a test they know will be skipped?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>, section "Give Claude a check to run". Retrieved 2026-11-02.</li>
+  <li id="src-py">Python Software Foundation, <a href="https://docs.python.org/3/library/unittest.html">unittest — Unit testing framework</a>. Retrieved 2026-11-02.</li>
+  <li id="src-node">Node.js contributors, <a href="https://nodejs.org/api/test.html">Test runner (node:test)</a>. Retrieved 2026-11-02. The output shown above was produced locally with Node v24.22.2 in a scratch folder.</li>
+  <li id="src-g">John Micco, <a href="https://testing.googleblog.com/2016/05/flaky-tests-at-google-and-how-we.html">Flaky Tests at Google and How We Mitigate Them</a>, Google Testing Blog, 2016. Retrieved 2026-11-02. Older post; the definition it uses still matches current practice.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> describe a test's three parts, read a run's pass, fail and skipped counts, and say what each one proves.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a></p>
+  <div class="pager"><a href="0030-claims-vs-evidence.html">Previous: 2.2 Claims versus evidence</a> · <a href="0032-regression-test.html">Next: 2.4 Regression tests</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

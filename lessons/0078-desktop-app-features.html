@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desktop apps vs the terminal: buttons, cards, and checklists</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 5 · How agents work · Lesson 5.11</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 5 · Lesson 5.11</p>
+  <h1>Desktop apps vs the terminal: buttons, cards, and checklists</h1>
+  <p class="lede">The same agent can live in a window full of clickable controls or in a terminal where you type everything. The loop underneath is identical; only the surface changes. Knowing both lets you pick the right one for the moment.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="../lessons/0002-the-three-agents.html">0.2 The three agents</a></span><span>Win: you can choose between the desktop app and the terminal on purpose, and know what each adds</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>Your mission is to ship an app by directing an agent, and you will direct it many times a day. Lesson 0.2 introduced the three agents; each of them can appear in more than one shell. Claude Code runs in the terminal and in a desktop app. Codex runs in the terminal and inside the ChatGPT desktop app. omp runs in the terminal. Choosing the shell is not about power — the agent underneath is the same — it is about how you prefer to steer, approve, and watch the work.</p>
+
+<h2>Same agent, two surfaces</h2>
+<p>In the terminal, everything is text: you type a <strong>prompt</strong>, the agent types back, and approvals arrive as questions you answer by typing. In a desktop app, the same session is drawn as a window: a prompt box, a list of sessions, diffs you can scroll, and buttons for common replies. Anthropic's desktop documentation describes the Code tab directly: <q>launch Claude, sign in, and click the Code tab</q>, where <q>the sidebar lists your sessions and lets you run several in parallel.</q><sup class="cite"><a href="#src-cc-desktop">[1]</a></sup></p>
+<p>None of this changes what the agent can do. The read-act-verify loop from lesson 0.1 runs exactly the same. What changes is how you interact with it: clicking instead of typing.</p>
+
+<h2>What a desktop app adds</h2>
+<p>Desktop apps turn frequent actions into visible controls. In Claude Code's desktop app, for example, you can <q>click the stop button to interrupt immediately</q>, attach files via <q>the + button next to the prompt box</q>, and accept a <q>suggested next prompt</q> that the app offers in gray text.<sup class="cite"><a href="#src-cc-desktop">[1]</a></sup> When the agent needs a decision, <q>a permission card appears and Claude waits for your choice: Allow once, Always allow, or Deny.</q><sup class="cite"><a href="#src-cc-desktop">[1]</a></sup> When work is ready to publish, a changes card shows the pull request with its CI status and lets you <q>turn on Auto-fix or Merge when ready.</q><sup class="cite"><a href="#src-cc-desktop">[1]</a></sup></p>
+<p>The diff view is the clearest example of this difference. After the agent edits your code, the diff view <q>lets you review modifications file by file before creating a pull request</q>.<sup class="cite"><a href="#src-cc-desktop">[1]</a></sup> In the terminal you get the same information from <code>git diff</code>, one screenful at a time. Neither view changes the code; both let you check it before anyone else sees it.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user finished a task in a desktop app and the agent ended with a button reading "Commit and open the pull request?" One click sent that exact reply, and the agent committed, pushed, and opened the pull request. In another session, a "Fix the two compile errors" button did the same thing with one click instead of a typed sentence. In a third, the user flipped an Auto-fix toggle and the app woke the agent whenever a review comment arrived — no polling, no typing. The work was identical to what the terminal does; only the clicking differed.</p>
+</div>
+
+<h2>The plan checklist lives in both shells</h2>
+<p>One feature beginners often miss is the agent's own to-do list. In the terminal, Claude Code's interactive-mode docs define it plainly: <q>The task list is Claude's to-do checklist: items Claude created to plan multi-step work, with indicators showing what's pending, in progress, or complete</q> — toggled with <code>Ctrl+T</code>.<sup class="cite"><a href="#src-cc-im">[2]</a></sup> A desktop app shows the same plan visually, and its Plan mode lets you approve the approach before any edit: <q>Start complex tasks in Plan so Claude maps out an approach before making changes. Once you approve the plan, switch to Accept edits or Manual to execute it.</q><sup class="cite"><a href="#src-cc-desktop">[1]</a></sup> So the checklist is not a desktop-only luxury; if you live in the terminal, <code>Ctrl+T</code> is the same window.</p>
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name two things a desktop app turns into clickable controls that you would otherwise type in the terminal, and one feature that exists in both shells.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Clickable examples: the stop button, the + attachments button, permission-card choices (Allow once / Always allow / Deny), Auto-fix or Merge-when-ready toggles, and canned reply buttons like "Commit and open the PR?". The plan checklist exists in both: <code>Ctrl+T</code> in the terminal, shown visually in a desktop app.</p></div>
+</div>
+
+<h2>What each of the three agents offers</h2>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Terminal (<code>claude</code>) <em>and</em> a desktop app: <q>launch Claude, sign in, and click the Code tab.</q> The desktop adds the sidebar, browser pane, diff view, cards, and buttons described above.<sup class="cite"><a href="#src-cc-desktop">[1]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Terminal (<code>codex</code>) <em>and</em> the ChatGPT desktop app: the app docs say you <q>Choose ChatGPT or Codex</q> after signing in.<sup class="cite"><a href="#src-cx-app">[3]</a></sup> In the terminal, approvals and questions are answered by typing.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Terminal only in this course: its quickstart has you <code>cd</code> into the project and run <code>omp</code>. Sessions, resume pickers, and approvals all happen as typed commands like <code>omp --resume</code>.<sup class="cite"><a href="#src-omp-quickstart">[4]</a></sup> Single-vendor docs — check anything surprising with your teacher.</p>
+  </div>
+</div>
+
+<h2>Desktop app or terminal? A field guide</h2>
+<div class="compare">
+  <div>
+    <span class="label">Use the desktop app when</span>
+    <p>You want to run several sessions side by side, review diffs by scrolling, click approval cards, watch CI on a card, or let Auto-fix react to review comments while you do something else.</p>
+  </div>
+  <div>
+    <span class="label">Use the terminal when</span>
+    <p>You are scripting, working over a remote connection, following a guide that says "type this", or you prefer typing. Every approval is a typed answer, and <code>Ctrl+T</code> still shows the checklist.</p>
+  </div>
+</div>
+<p>The honest summary: the desktop app adds convenience and visibility, not capability. If a desktop-only button confuses you, the same action always exists as words you can type — and if a terminal command feels obscure, the desktop app usually has a button for it. You can also switch shells between sessions; omp's docs note sessions are recorded per folder, so <code>omp --resume</code> brings the same work back in the terminal.<sup class="cite"><a href="#src-omp-quickstart">[4]</a></sup></p>
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>When the agent asks you something — in a card or in text — answer the question, not the format. A button is a pre-typed reply, nothing more. Keep approval prompts on either surface (lesson 0.6).</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">In a desktop app, the agent shows a "Commit and open a PR?" button. What does clicking it do?</p>
+  <button class="opt" type="button">It sends that exact canned reply as your next message.</button>
+  <button class="opt" type="button">It deletes the branch and starts the whole task over.</button>
+  <button class="opt" type="button">It closes the app and shuts your computer down now.</button>
+  <button class="opt" type="button">It reruns all checks but never commits anything at all.</button>
+  <div class="why"><p>A button in a desktop app is a pre-typed reply. One click sends exactly the words on the button, just as if you had typed them in the terminal.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">Which of these does a desktop app add that the terminal lacks?</p>
+  <button class="opt" type="button">A printer that prints your final source code on paper.</button>
+  <button class="opt" type="button">A second keyboard that types twice as fast as yours.</button>
+  <button class="opt" type="button">A sidebar of sessions you can run several in parallel.</button>
+  <button class="opt" type="button">A webcam that watches you while the agent is working.</button>
+  <div class="why"><p>The desktop doc says the sidebar lists sessions and lets you run several in parallel — a visible layout the text-only terminal does not have. The agent's capabilities are otherwise the same.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Where can you see the agent's to-do checklist for a multi-step task?</p>
+  <button class="opt" type="button">Only in desktop apps; terminal users never see any checklist.</button>
+  <button class="opt" type="button">In the terminal via Ctrl+T, and visually in desktop apps.</button>
+  <button class="opt" type="button">Only on the vendor's website after the session has ended.</button>
+  <button class="opt" type="button">Nowhere at all; the checklist lives only in private thoughts.</button>
+  <div class="why"><p>The task list is the same checklist in both shells: Ctrl+T toggles it in the terminal, and a desktop app displays it as part of the window.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">You are in the terminal and the agent asks "Merge now, or wait?" What do you do?</p>
+  <button class="opt" type="button">The agent can never ask anything without a desktop app.</button>
+  <button class="opt" type="button">Restart the machine and hope it reappears as a button.</button>
+  <button class="opt" type="button">Unplug the network cable so the agent asks more politely.</button>
+  <button class="opt" type="button">Type your yes as a reply to the agent's question.</button>
+  <div class="why"><p>Terminal approvals are typed answers. The desktop app's buttons are just pre-typed versions of the same replies, so both shells can answer any question.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/desktop">Claude Code desktop app</a> — Anthropic's own page listing what the window adds: sidebar, browser pane, diff view, permission cards, Auto-fix. Skim the first sections only.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Which shell should I use for my next task, and why?"</em> or <em>"Show me the plan checklist in my agent."</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-cc-desktop">Anthropic, <a href="https://code.claude.com/docs/en/desktop">Claude Code desktop app</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cc-im">Anthropic, <a href="https://code.claude.com/docs/en/interactive-mode">Claude Code interactive mode</a> (task list, Ctrl+T). Retrieved 2026-11-02.</li>
+  <li id="src-cx-app">OpenAI, <a href="https://learn.chatgpt.com/docs/app">ChatGPT desktop app</a> (hosts Codex). Retrieved 2026-11-02.</li>
+  <li id="src-omp-quickstart">Stencil Labs, <a href="https://omp.sh/docs/quickstart">omp quickstart</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain what a desktop app adds over the terminal (buttons, cards, sidebar, checklist view), find the plan checklist in either shell, and pick the surface that fits the task.</p>
+  <p>Quick reference: <a href="../reference/setup.html">Setup</a> · <a href="../reference/agent-loop.html">The agent loop (one page)</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 6.2 Build step (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

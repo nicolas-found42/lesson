@@ -89,19 +89,19 @@ the rest alone.</pre>
 
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
     <p>Run <code>/output-style explanatory</code>, or run <code>/config</code> and choose <strong>Output style</strong>. With no argument, <code>/output-style</code> lists the styles and marks the current one. Switch back with <code>/output-style default</code>; the change applies from your next message.<sup class="cite"><a href="#src-a3">[4]</a></sup></p>
     <p>You can still ask about a single word at any time. The style only changes what you get without asking.</p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
     <p>I found no documented equivalent style in Codex's docs, so use a standing instruction in your prompt instead: <em>"After each change, add one sentence in plain words explaining what changed and why."</em></p>
     <p>To ask while it is still working, <q>Press Enter while Codex is working to inject new instructions into the current turn.</q><sup class="cite"><a href="#src-b2">[6]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
     <p>omp's docs describe no equivalent style. Its guidance is that <q>A steering message is for now; a follow-up is for after the agent yields.</q><sup class="cite"><a href="#src-c1">[7]</a></sup> Pressing Enter while it works steers the current turn; one documented example of a queued follow-up is <q>After that, explain the migration risk.</q><sup class="cite"><a href="#src-c1">[7]</a></sup></p>
     <p>omp's documentation comes only from its own authors, so check anything surprising against your installed version.</p>
   </div>

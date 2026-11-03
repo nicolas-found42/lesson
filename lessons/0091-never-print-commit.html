@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Never print, never commit</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.3</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.3</p>
+  <h1>Never print, never commit</h1>
+  <p class="lede">A secret key that appears on your screen or in your project's history is a key a stranger can use. This lesson gives you two habits — never print a secret, never commit one — and one repair move: rotate a leaked key immediately.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="../lessons/0089-secrets.html">8.1 Secrets</a></span><span>Win: you can explain why deleting a key file is not enough, and rotate a leaked key</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>By now your app may talk to a paid service: a map provider, an image generator, a database. Each of those hands you a <em>secret</em> — a long password that proves to the service that the requests come from your account. Lesson 8.1 taught you what secrets are and why they do not belong in code. This lesson is about the two ways secrets escape anyway, both of which happen quietly while an agent works: the secret gets <em>printed</em> into output you and the agent can see, or it gets <em>committed</em> into your project's git history. A stranger who finds a leaked key does not hack anything; they log in as you, on your account, on your credit card. Rotating — replacing the key with a new one so the old one stops working — is the only real fix.</p>
+
+<h2>Rule one: never print a secret</h2>
+<p>"Printing" means making text appear: in your terminal, in a log file, or in your agent's transcript. The danger is that these are not fleeting. Agent sessions are saved. When you resume yesterday's session — Claude Code with <code>claude -c</code>, which its quickstart describes as <q>Continue most recent conversation in current directory</q><sup class="cite"><a href="#src-a2">[3]</a></sup>, or omp with <code>omp -c</code><sup class="cite"><a href="#src-c3">[4]</a></sup> — everything the session printed is still there. omp's own documentation is blunt about the storage: <q>The local database is not encrypted at rest.</q><sup class="cite"><a href="#src-c7">[5]</a></sup> Anything printed once has been written to disk.</p>
+<p>This matters extra with an agent, because the agent reads everything in the session to decide what to do next. A secret printed in step 3 is sitting in the agent's attention in step 40, and may be copied into a summary, a commit message, or a report later without anyone noticing.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user was setting up a sign-in service for their app, with the agent driving the setup commands. One command printed the new key's value straight into the output. Later in the same day, a screenshot the agent took of a setup page caught another secret in plain view. The user treated both as leaked: every exposed key was replaced with a fresh one, and the setup steps were redone so that key values moved through files and the clipboard instead of ever appearing as text. Nothing bad happened — because the response was fast and the keys were rotated.</p>
+</div>
+<p>The fix in that story was not clever. It was: assume anything printed is public, and swap the key.</p>
+
+<h2>Rule two: never commit a secret</h2>
+<p>Git remembers <em>every committed version of every file</em>, forever. The Pro Git book explains the model: <q>Git thinks of its data more like a series of snapshots of a miniature filesystem.</q><sup class="cite"><a href="#src-d2">[6]</a></sup> Each commit is one full snapshot. Deleting the file in a later commit does not reach back and edit the earlier snapshot; it only changes the newest one.</p>
+<p>You can prove this to yourself in one minute (you will, below). The short version: put a file with a fake key in a git repository and commit it. Delete the file and commit again. Ask git to show the file from the <em>older</em> commit — and there it is, intact. The delete never touched it.</p>
+<p>Once a secret is committed and pushed to a remote like GitHub, it is no longer only on your machine. Anyone who cloned or forks the repository has the whole history, secrets included. GitHub tries to help at the front door: its push protection feature is <q>designed to prevent hardcoded credentials, such as secrets or tokens, from ever being pushed to your repository</q><sup class="cite"><a href="#src-gh2">[2]</a></sup> — but it only recognizes common secret formats, and it does not exist everywhere you might push. The habit has to be yours.</p>
+
+<h2>If a key leaks, rotate first</h2>
+<p>So the file slipped through: it was printed, or committed, or both. Here is the order of operations, and the order matters.</p>
+<ol>
+<li><strong>Rotate the key at the provider.</strong> Sign in to the service that issued the key, revoke the old one, and create a new one. GitHub's own guidance puts this first: <q>as a first step you need to revoke and/or rotate that secret</q><sup class="cite"><a href="#src-gh1">[1]</a></sup> — because once that is done, <q>it can no longer be used for access, and that may be sufficient to solve your problem.</q><sup class="cite"><a href="#src-gh1">[1]</a></sup></li>
+<li><strong>Only then clean up the project.</strong> Remove the secret from the current files (lesson 8.2's <code>.env</code> pattern), check <code>.gitignore</code> covers it (lesson 3.3), and tell your agent what happened so it can check for other copies.</li>
+</ol>
+<p>Why rotate first? Because scrubbing a secret out of git history is genuinely hard — GitHub describes it as something you can do <q>if you can carefully coordinate with everyone who has cloned it and you are willing to manage the side effects</q><sup class="cite"><a href="#src-gh1">[1]</a></sup> — while rotation takes two minutes and works even if copies already exist somewhere you will never find. A key that no longer opens anything is harmless, wherever it sits.</p>
+<div class="callout">
+  <span class="label">Telling your agent, without leaking again</span>
+  <p>When you ask the agent to help with a leak, do not paste the secret into the prompt — that prints it again, into a brand-new transcript. Name the file instead:</p>
+</div>
+<pre class="prompt">The file keys.txt contains a leaked API key. Do not display, print,
+or echo its contents. Steps:
+1. Confirm the file exists and note only its size and date.
+2. Remove the file from the working tree.
+3. Remind me which provider console I need to visit to revoke the key.
+4. Check .gitignore covers it, and tell me whether it was ever committed.</pre>
+<p>Notice what the agent is and is not asked to do. It inspects and cleans up; the revocation itself happens in the provider's web console, which is a step you do as the human (lesson 5.10 covers human-only steps like this).</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>You committed a key by mistake, deleted the file, and committed the deletion. A teammate says "it's fine now." What two things are wrong with that, and what is the correct first action?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Wrong, twice: the key still exists in the earlier commit's snapshot (git history keeps every version), and if it was pushed, copies exist beyond your machine. The first action is to rotate the key at the provider, so the leaked value stops working. Cleaning the files comes second.</p></div>
+</div>
+
+<h2>See the history trap yourself</h2>
+<div class="doit">
+  <span class="label">Do it: prove a deleted file survives in history</span>
+  <p>You will build a tiny throwaway git repository, leak a <em>fake</em> key into it, delete the file, and then watch git hand the "deleted" secret right back. Nothing here touches your real project or any remote.</p>
+  <p>In your terminal, one line at a time:</p>
+  <pre><code>mkdir history-demo &amp;&amp; cd history-demo
+git init
+echo "API_KEY=PASTE_YOUR_KEY_HERE" &gt; .env
+git add .env
+git commit -m "add config"
+rm .env
+git commit -am "remove key"
+git show HEAD~1:.env</code></pre>
+  <div class="expect"><p>The last command prints <code>API_KEY=PASTE_YOUR_KEY_HERE</code> — the file you deleted one commit ago, served straight out of history. Run <code>git log --oneline</code> and you will see both commits listed. The deletion changed the newest snapshot only.</p></div>
+  <p>When you are done, <code>cd</code> out and delete the <code>history-demo</code> folder. Then check your real project: if your keys live in a <code>.env</code> file, ask your agent "is .env covered by .gitignore, and has it ever been committed in this repo?" — a safe question, because it asks for a yes/no, not for the contents.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">A teammate committed and pushed a real API key by accident. What should happen first?</p>
+  <button class="opt" type="button">Someone rewrites the entire git history right away.</button>
+  <button class="opt" type="button">Everyone deletes their own local copies right away.</button>
+  <button class="opt" type="button">The key gets revoked at the provider first.</button>
+  <button class="opt" type="button">The team adds the filename to .gitignore now.</button>
+  <div class="why"><p>Rotation comes first because a revoked key is useless to an attacker even while copies still exist. History rewriting is slow, needs coordination with everyone who cloned the repo, and GitHub's guidance says revoking may be sufficient on its own.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You delete a key file and commit the deletion. Where can the key still be found?</p>
+  <button class="opt" type="button">It lives in the earlier commit's snapshot.</button>
+  <button class="opt" type="button">Nowhere, since the latest commit lacks it.</button>
+  <button class="opt" type="button">Only inside the commit message of today.</button>
+  <button class="opt" type="button">Only inside the working tree's hidden files.</button>
+  <div class="why"><p>Git stores every commit as a full snapshot. The deletion created a new snapshot without the file; the older snapshot is untouched and still contains the key — you proved this with <code>git show HEAD~1:.env</code>.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Why is "never print a secret" a rule even on your own machine?</p>
+  <button class="opt" type="button">Printing slows down the agent's tool calls.</button>
+  <button class="opt" type="button">Saved transcripts keep the words you printed.</button>
+  <button class="opt" type="button">The terminal erases output after every command.</button>
+  <button class="opt" type="button">Printing shortens the key into another form.</button>
+  <div class="why"><p>Agent sessions are saved and resumable, and their storage is not necessarily encrypted. Once a secret is printed it lives on disk and can resurface in summaries, reports, or commits later.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository">Removing sensitive data from a repository</a> — GitHub's official guidance. It explains why revoking the secret comes before any history cleanup. Read the warning section only; the cleanup tools are for a later day, with help.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Try: <em>"Why is rotating a key safer than deleting the file that holds it?"</em> or <em>"Walk me through rotating a key for a service I use, without printing the old or new value."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-gh1"><a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository">Removing sensitive data from a repository</a> — GitHub Docs, retrieved 2026-11-02.</li>
+  <li id="src-gh2"><a href="https://docs.github.com/en/code-security/secret-scanning/push-protection-for-repositories-and-organizations">Push protection for repositories and organizations</a> — GitHub Docs, retrieved 2026-11-02.</li>
+  <li id="src-a2"><a href="https://code.claude.com/docs/en/quickstart">Quickstart</a> — Anthropic Claude Code Docs, retrieved 2026-11-02.</li>
+  <li id="src-c3"><a href="https://omp.sh/docs/quickstart">Quickstart</a> — omp Docs (single-vendor; omp has no independent documentation), retrieved 2026-11-02.</li>
+  <li id="src-c7"><a href="https://omp.sh/docs/secrets">Secrets and auth</a> — omp Docs (single-vendor), retrieved 2026-11-02.</li>
+  <li id="src-d2"><a href="https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F">Getting Started: What is Git?</a> — Pro Git, 2nd ed., Chacon &amp; Straub, git-scm.com, retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> keep secrets out of printed output and commits, explain why git history preserves deleted secrets, and rotate a leaked key as the first response.</p>
+  <p>Quick reference: <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a></p>
+  <div class="pager"><span>Next: 8.4 Third-party API keys</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

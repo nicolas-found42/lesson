@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From spec to tickets: the dependency frontier</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 9 · Working at scale · Lesson 9.1</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 9 · Lesson 9.1</p>
+  <h1>From one big spec to a frontier of tickets</h1>
+  <p class="lede">When your app grows past what fits in one prompt, you stop asking for "the app" and start asking for one ticket at a time. The pipeline is: spec, then tickets, then the dependency graph — and the frontier tells you what is safe to build next.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0055-definition-done-acceptance-criteria.html">4.1 Definition of done</a></span><span>Win: you can split a big spec into tickets and always name the next ticket that is safe to start</span></div>
+</header>
+<main>
+
+<h2>Why one big prompt breaks down</h2>
+<p>Your mission is to ship a real app, and a real app is never one prompt. Your first page was small, but the next version of your app will have a gallery, a form, a second page — each a change you want to see, check, and undo on its own. One giant prompt produces one giant change you cannot review piece by piece, and a single "done" you have to trust whole (lesson 4.1 covered why that is risky).</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user had written a roadmap of about eighty items across several earlier sessions, then sent the agent a single line: "implement the spec." The sentence that saved the week was the second one: "stop when items 10, 11 and 88 are merged and closed." The agent worked through the items one at a time, several in parallel where that was safe, and stopped exactly where the user said. The roadmap was the spec, the sentence was the stop condition, and together they replaced a multi-day sprawl with one bounded run.</p>
+</div>
+
+<h2>Spec, then tickets</h2>
+<p>A <strong>spec</strong> is the whole picture: what the app does, for whom, and what must be true at the end. It is too big to hand over as one job. A <strong>ticket</strong> is one small piece of the spec that a single run can finish: a title, a one-sentence goal, a "depends on" list, and "done when" checks you can verify by looking (the acceptance criteria from lesson 4.1).</p>
+<p>Tickets do not need a special tool. A plain file in your project works, and the agent can read and update it. If you already use GitHub, issues are the natural home — GitHub's documentation describes issues as a way to <q>track ideas, feedback, tasks, or bugs.</q><sup class="cite"><a href="#src-gh1">[3]</a></sup> Either way, keep each ticket small enough to read in one screen:</p>
+<table class="ref">
+  <thead><tr><th>Ticket field</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr><td>Title</td><td>"Photo grid on the home page"</td></tr>
+    <tr><td>Goal</td><td>"Visitors see all six photos without scrolling sideways."</td></tr>
+    <tr><td>Depends on</td><td>"Shared page layout"</td></tr>
+    <tr><td>Done when</td><td>"At phone width all six photos show in one column, and the project's check command passes."</td></tr>
+  </tbody>
+</table>
+
+<h2>The dependency graph and the frontier</h2>
+<p>Tickets point at each other. When ticket B lists ticket A under "depends on", B is <strong>blocked</strong> until A is done — starting B earlier means guessing at code that does not exist yet. Drawn with arrows, the tickets form a <strong>dependency graph</strong>. The <strong>frontier</strong> is the set of unfinished tickets whose dependencies are all finished: the only tickets that are safe to start right now.</p>
+<p>GitHub has the same idea built in. Its documentation on issue dependencies says you can <q>see which issues are blocked by, or blocking, other work,</q> with a "Mark as blocked by" option in the sidebar.<sup class="cite"><a href="#src-gh2">[4]</a></sup> Whether your tickets live in GitHub issues or in a plain file, the graph and the frontier are the same.</p>
+<p>A useful habit is to ask the agent for the graph out loud: <em>"Which tickets are on the frontier, which are blocked and by what, and what is the shortest path to the next shippable piece?"</em> The answer is a short list, not a wall of text — and it tells you what to say "go" to.</p>
+<p>A small example shows how the frontier moves. Five tickets, each listing what it depends on:</p>
+<table class="ref">
+  <thead><tr><th>Ticket</th><th>Depends on</th><th>State</th></tr></thead>
+  <tbody>
+    <tr><td>A — Shared page layout</td><td>nothing</td><td>done</td></tr>
+    <tr><td>B — Photo grid</td><td>A</td><td>done</td></tr>
+    <tr><td>C — Contact form</td><td>A</td><td>ready</td></tr>
+    <tr><td>D — Photo captions</td><td>B</td><td>ready</td></tr>
+    <tr><td>E — Gallery search</td><td>C, D</td><td>blocked</td></tr>
+  </tbody>
+</table>
+<p>At the start, only A was on the frontier, so A was the only safe first move. Once A and B were done, C and D became ready at the same time. E stays blocked until both C and D finish. The frontier is not the whole of the remaining work; it is the moving edge of work that is unblocked right now.</p>
+<p>Expect the graph to change as you learn. A ticket that looked independent may turn out to need a shared piece, and that piece becomes a new ticket with its own dependencies. When that happens, add the ticket, re-run the pipeline, and read the frontier again. Redrawing the graph is a normal step, not a failure of planning.</p>
+
+<span class="sidenote">Dependencies are not only between tickets. In one real session, two helpers built at the same time wrote their compiled output into the same shared build folder, and each overwrote the other; the project's own checks caught the mismatch and refused the result. The fix was giving each helper its own build folder. Shared files and folders are dependencies too — lesson <a href="0111-parallel-agents-shared-build-folders.html">9.3</a> covers this.</span>
+
+<h2>Run it as a pipeline</h2>
+<p>You do not have to invent this structure yourself — the agent can build it from your spec. This prompt works in any of the three agents:</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Read my spec in SPEC.md. Split it into tickets, each small enough to finish in one run.
+For every ticket write four lines: Title; Goal (one sentence); Depends on (titles of other tickets); Done when (checks I can verify by looking).
+Then draw the dependency graph and list the frontier: the unfinished tickets whose dependencies are all done.
+Do not start any ticket yet. If two tickets would write to the same file or folder at the same time, say so explicitly.</pre></div>
+<p>Once you have the frontier, hand the agent one ticket — with the stop condition from lesson 4.3 attached:</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Work on the frontier ticket "&lt;ticket title&gt;" and on nothing else.
+Stop when its "done when" checks pass and the changes are committed — and stop there.
+Report one line per check: what you ran or looked at, and what you saw.</pre></div>
+<p>The two prompts keep the scales separate: the first is planning, the second is one bounded run. Planning every ticket up front is not required — you can also split off the next slice of the spec and re-run the pipeline when the frontier empties.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what is the frontier of a dependency graph, and why must a blocked ticket wait?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The <strong>frontier</strong> is the set of unfinished tickets whose dependencies are all finished — the only tickets safe to start now. A <strong>blocked</strong> ticket waits because its "depends on" tickets are not done yet; starting it would mean building on something that may still change.</p></div>
+</div>
+
+<h2>Do it on your own app</h2>
+<p>Run the pipeline once on your real project. It takes one session and gives you a list you can reuse.</p>
+<div class="doit">
+  <span class="label">Your turn — about 10 minutes</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your project folder and start your agent in it, with approval prompts still on.</label></li>
+    <li><label><input type="checkbox"> Write five to ten lines in a file called SPEC.md describing the next chunk of your app, or ask the agent to draft it from your goal.</label></li>
+    <li><label><input type="checkbox"> Send the first pipeline prompt above and read the tickets. Check that each one has a "depends on" line and "done when" checks.</label></li>
+    <li><label><input type="checkbox"> Ask "which tickets are on the frontier right now?" and write the answer down.</label></li>
+    <li><label><input type="checkbox"> Send the second prompt for one frontier ticket, including the "and stop there" sentence.</label></li>
+    <li><label><input type="checkbox"> When it reports back, verify one "done when" check yourself by looking at the real result.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should get a numbered or bulleted list of small tickets, then a short frontier list — often one to three tickets. The agent works on exactly one ticket and stops. Its final report has one line per check. If a check says "failed" or "not verified", that is the system working, not failing.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your spec has ten tickets. Three have no unfinished dependencies. Which tickets form the frontier?</p>
+  <button class="opt" type="button">The three tickets with no unfinished dependencies.</button>
+  <button class="opt" type="button">Everything once the spec is fully approved.</button>
+  <button class="opt" type="button">Whichever unfinished ticket looks the most appealing.</button>
+  <button class="opt" type="button">Whichever ticket seems the most appealing now.</button>
+  <div class="why"><p>The frontier is defined by the graph, not by approval, file order, or taste: it is exactly the unfinished tickets whose dependencies are all done. Here that is the three.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Ticket B lists ticket A under "depends on", and A is not finished. What should you do?</p>
+  <button class="opt" type="button">Start B anyway and fix the clash later.</button>
+  <button class="opt" type="button">Merge A and B into one single ticket.</button>
+  <button class="opt" type="button">Wait on B and start a frontier ticket.</button>
+  <button class="opt" type="button">Delete A so B is no longer blocked.</button>
+  <div class="why"><p>B is blocked until A is done, so the safe move is to start a ticket on the frontier instead. Starting B anyway builds on something that may change; deleting A just hides the dependency.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Why does every ticket carry its own "done when" checks?</p>
+  <button class="opt" type="button">So each piece is verified by looking, not by trust.</button>
+  <button class="opt" type="button">So you can check each ticket without trusting the run.</button>
+  <button class="opt" type="button">So the agent can skip running any of the checks.</button>
+  <button class="opt" type="button">Because the spec says tickets must stay small and ordered.</button>
+  <div class="why"><p>Small checks keep every ticket independently verifiable, so one big "done" never has to be trusted whole. The other options describe the opposite of what checks are for.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/creating-issue-dependencies">Creating issue dependencies — GitHub Docs</a>. If you track tickets as GitHub issues, this page shows the native "blocked by / blocking" relationships that make the frontier visible.</p>
+</div>
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure your spec splits well? Ask the agent that gave you this course: <em>"Here is my SPEC.md. Split it into tickets with dependencies and show me the frontier — then tell me which split you would change and why."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-bea">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as outdated). Retrieved 2026-11-02.</li>
+  <li id="src-cxbp">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gh1">GitHub Docs, <a href="https://docs.github.com/en/issues/tracking-your-work-with-issues/learning-about-issues/about-issues">About issues</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gh2">GitHub Docs, <a href="https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/creating-issue-dependencies">Creating issue dependencies</a>. Retrieved 2026-11-02.</li>
+  <li id="src-ccbp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> split a spec into tickets with dependencies, draw the dependency graph, name the frontier, and hand the agent one bounded ticket with a stop condition.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: <a href="0110-integration-branch-vs-per-ticket-branches.html">9.2 Integration branch vs per-ticket branches</a> (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backends: hosting vs functions vs database</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.9</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.9</p>
+  <h1>Backends: hosting vs functions vs database</h1>
+  <p class="lede">Your static site is served by a host that only hands over files. Once your app needs shared data or secrets, three different pieces appear — and they are not the same thing. Knowing which is which saves you from paying for the wrong one.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0012-static-vs-dynamic.html">6.1 Static vs dynamic</a></span><span>Win: you can name the three backend pieces and say which ones your idea needs</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>In lesson 6.1 you learned that a static host sends stored files exactly as they are. That works until one visitor's action must change what the next visitor sees. At that point your app stops being one thing and becomes three: a place for files, a place for code that runs on demand, and a place for data that must persist. These three are often sold together under one brand, which is exactly why beginners confuse them. This lesson separates them.</p>
+
+<h2>Recap: the host only hands over files</h2>
+<p>MDN describes the two kinds of server plainly: <q>A dynamic web server consists of a static web server plus extra software, most commonly an application server and a database.</q><sup class="cite"><a href="#src-mdn-server">[1]</a></sup> So "the server" is not one object. The static part is the host you already use. The extra software is what this lesson is about.</p>
+
+<h2>The three pieces</h2>
+<p>A backend is the part of your app that visitors never see but every visitor depends on. It comes in three distinct pieces:</p>
+<table class="ref">
+  <tr><th>Piece</th><th>What it does</th><th>Analogy</th></tr>
+  <tr><td><span class="term" title="A machine kept on and reachable that sends your site's files to visitors.">Hosting</span></td><td>Sends stored files unchanged, any time, to anyone.</td><td>A library shelf: it hands you the book it already has.</td></tr>
+  <tr><td><span class="term" title="A small program that runs only when a request arrives at its address, without you keeping a machine on.">Serverless function</span></td><td>Runs your code once per request, then stops. You never keep a machine awake for it.</td><td>A librarian who is only called when someone asks a question.</td></tr>
+  <tr><td><span class="term" title="An organized store of data that outlives any single visit, managed by a database management system.">Database</span></td><td>Stores, retrieves and edits data so it survives after the visitor closes the browser.</td><td>The library's catalogue and archive, not only the shelf.</td></tr>
+</table>
+<p>Hosting you already have. The other two are what "going dynamic" actually means.</p>
+
+<h2>Functions: code without a kept-alive machine</h2>
+<p>A traditional server is a program that runs all the time, waiting. A <em>serverless function</em> is the opposite: it exists as a file, and the platform starts it only when a request arrives at its address, then stops it again. You pay for the running moments, not for the waiting ones. Cloudflare describes its Workers platform as <q>a serverless platform for building, deploying, and scaling apps across Cloudflare's global network with a single command — no infrastructure to manage</q><sup class="cite"><a href="#src-cf-workers">[2]</a></sup></p>
+<p>That is why the name is "serverless": there is no server <em>you</em> manage. There is still a machine somewhere — the platform's — but starting, stopping and scaling it is not your job. Typical uses are checking a login, calling a third-party API with a secret key, or processing a form submission.</p>
+<span class="sidenote">"Serverless" refers to who manages the machine, not to whether machines exist. The trade-off is that a function must be short and stateless: it cannot remember anything between two requests, which is what the database is for.</span>
+
+<h2>Database: the memory that outlives the visit</h2>
+<p>When a visitor closes the browser, everything in that browser is gone. A database is the place data lives on your side instead. AWS defines it as <q>an electronically stored, systematic collection of data</q>, managed by <q>software called a database management system (DBMS) to store, retrieve, and edit data.</q><sup class="cite"><a href="#src-aws-db">[3]</a></sup> MDN shows the classic use: on a dynamic website, <q>HTML pages are normally created by inserting data from a database into placeholders in HTML templates.</q><sup class="cite"><a href="#src-mdn-ss">[4]</a></sup></p>
+<p>Comments, accounts, orders, scores: anything one visitor creates and another must later see belongs in a database. A database also holds the access rules — who may read what — which is why it needs a secret credential, covered in lesson 8.1.</p>
+
+<h2>A real pattern, anonymized</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user had a small team app: a web page served from a static host, a handful of small server-side functions that handled sign-in and calls to outside services, and a database holding the team's shared records. During deployment, the page went live first while the functions still returned "not found" — the functions were a separate deploy step that had not run yet. The user learned to treat "the site is up" and "the backend is up" as two different checks, and to probe each function's address directly after deploying.</p>
+</div>
+<p>The pattern: hosting, functions and database are deployed and billed separately, and each can be up while another is not. When something fails, ask which piece is actually missing before changing code.</p>
+
+<h2>Which pieces does your idea need?</h2>
+<p>Use the three questions from lesson 6.1. If no visitor's action changes another visitor's page and nothing needs a secret, you need <strong>hosting only</strong>. If you need to run code per request — a login check, a payment call, a webhook — add <strong>functions</strong>. If data must survive the visit — comments, accounts, orders — add a <strong>database</strong>, and the functions are what read and write it safely. Most small apps that go dynamic need all three, but they are chosen one at a time, and each addition is a new thing to secure and a new line on the bill.</p>
+<div class="warn">
+  <span class="label">Do not buy the bundle reflexively</span>
+  <p>Platforms sell "hosting + functions + database" as one product because that is the common case, not because every app needs all three. Start from what your idea actually does, and add pieces only when a real user need demands them. Lesson 8.10 covers the related trap of testing against a local copy instead of the real deployed pieces.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three backend pieces, and say in one sentence what each one is for.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Hosting</strong> sends stored files to visitors. A <strong>serverless function</strong> runs your code once per request without a machine you keep on. A <strong>database</strong> stores data so it survives after the visitor leaves, with access rules.</p></div>
+</div>
+
+<h2>Do it: have your agent map your idea</h2>
+<p>Ask your agent to classify your app idea against the three pieces. This works the same in all three tools; keep approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Here is my app idea: (describe it in one or two sentences).
+Answer in plain words:
+1. Could it ship as static hosting alone? What fact would make it dynamic?
+2. If it needs code to run per request, what would that code do? (login, payment, webhook, something else?)
+3. Does any data need to survive after a visitor closes the browser? What data?
+Then say which of the three pieces — hosting, functions, database — my idea actually needs, and which piece I should add first and why.</pre>
+</div>
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in your project folder, with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Paste the prompt above with your real idea and send it. Approve read-only commands only.</label></li>
+    <li><label><input type="checkbox"> Check that the answer names your idea's actual features, not generic examples.</label></li>
+    <li><label><input type="checkbox"> Ask one follow-up: "What would break first if I added a database but no functions?"</label></li>
+  </ol>
+  <div class="expect"><p>You should get a verdict per piece — hosting only, plus functions, plus database — each with a reason tied to your idea. The follow-up should get an answer like: visitors could read data but nobody could safely add or change it, because only server-side code should hold the database credential.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">A visitor adds a comment that the next visitor reads. Where does the comment live between the two visits?</p>
+  <button class="opt" type="button">In the database on the web server</button>
+  <button class="opt" type="button">In the first visitor's own web browser</button>
+  <button class="opt" type="button">In a stored page file on host</button>
+  <button class="opt" type="button">In the agent's saved chat history log</button>
+  <div class="why"><p>The comment must survive after the first visitor leaves and be readable by someone else, so it lives in the database on the server side — not in any visitor's browser or in a static file.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">What is the main difference between static hosting and a serverless function?</p>
+  <button class="opt" type="button">Hosting is free; functions always cost money</button>
+  <button class="opt" type="button">Hosting stores data; functions only style pages</button>
+  <button class="opt" type="button">Hosting sends files; a function runs code</button>
+  <button class="opt" type="button">Functions run nightly; hosting answers each click</button>
+  <div class="why"><p>Hosting hands over stored files unchanged; a function is your code, started only when a request arrives. The other options get the division backwards or invent a price rule.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Your app needs a shared leaderboard and user logins. Which pieces do you add beyond static hosting?</p>
+  <button class="opt" type="button">Nothing extra; the browser can store the scores</button>
+  <button class="opt" type="button">Only a database, nothing else is ever needed</button>
+  <button class="opt" type="button">A database for scores plus functions for login</button>
+  <button class="opt" type="button">A bigger host with more disk space alone</button>
+  <div class="why"><p>Shared scores must persist, so they need a database; logins must run code with a secret, so they need functions. The browser cannot share data between visitors, and disk space alone runs no code.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">When does a serverless function actually run?</p>
+  <button class="opt" type="button">Once at deploy time, then never again</button>
+  <button class="opt" type="button">Only when a request hits its address</button>
+  <button class="opt" type="button">Every night at midnight on a schedule</button>
+  <button class="opt" type="button">Whenever a developer opens up the project</button>
+  <div class="why"><p>The platform starts the function when a request arrives at its URL and stops it afterwards. Deploying only uploads the code; it does not run it.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/First_steps/Introduction">Introduction to the server side — MDN</a>. The clearest plain-language tour of what server-side code can do, in five short sections. Pair it with <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_web_server">What is a web server?</a> from lesson 6.1.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure which pieces your idea needs? Ask the agent that gave you this course. Try: <em>"My app idea is … Which of hosting, functions, and a database does it need, and what would break if I skipped one?"</em> Bring the answer to the next lesson.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-mdn-server">MDN Web Docs (Mozilla), <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_web_server">What is a web server?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cf-workers">Cloudflare, <a href="https://developers.cloudflare.com/workers/">Cloudflare Workers</a> documentation. Retrieved 2026-11-02.</li>
+  <li id="src-aws-db">Amazon Web Services, <a href="https://aws.amazon.com/what-is/database/">What is a Database?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-mdn-ss">MDN Web Docs (Mozilla), <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/First_steps/Introduction">Introduction to the server side</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name hosting, serverless functions, and a database as three separate pieces, and say which ones your own idea needs and why.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a></p>
+  <div class="pager"><span>Next: 8.10 Emulator vs production — <a href="0098-emulator-vs-production.html">emulator vs production</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

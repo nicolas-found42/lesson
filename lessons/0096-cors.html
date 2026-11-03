@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CORS: why tests pass and the real click fails</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.8</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.8</p>
+  <h1>CORS: why tests pass and the real click fails</h1>
+  <p class="lede">Your app's page and the service it calls live at different addresses. Browsers only allow that when the service explicitly says so — and only a real browser enforces the rule, which is why every test can be green while the first real click fails.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0095-oauth-pieces.html">8.7 OAuth in pieces</a>, <a href="0035-real-vs-simulated.html">2.7 Real vs simulated</a></span><span>Win: you can read a CORS error in the browser console and point the fix at the server, not the page</span></div>
+</header>
+<main>
+
+<h2>Two addresses are two countries</h2>
+<p>Every address on the web has an <span class="term" title="The combination of scheme (http/https), host name, and port — e.g. https://example.com:443. Two pages are 'same origin' only if all three match.">origin</span>: the scheme, the host name, and the port. MDN states the rule plainly: <q>Two URLs have the same origin if the protocol, port (if specified), and host are the same.</q><sup class="cite"><a href="#src-sop">[2]</a></sup> So <code>http://localhost:5173</code>, <code>http://localhost:8080</code>, and <code>https://you.github.io/my-app</code> are three different origins, even though they are all "your app".</p>
+<p>Browsers enforce the <span class="term" title="A browser security rule: a page may freely read responses only from its own origin.">same-origin policy</span>: <q>a critical security mechanism that restricts how a document or script loaded by one origin can interact with a resource from another origin.</q><sup class="cite"><a href="#src-sop">[2]</a></sup> And <q>for security reasons, browsers restrict cross-origin HTTP requests initiated from scripts.</q><sup class="cite"><a href="#src-cors">[1]</a></sup> The key word is <em>browsers</em>. The rule lives in the browser, not in your code and not in the API.</p>
+
+<h2>What CORS actually is</h2>
+<p><span class="term" title="Cross-Origin Resource Sharing: a way for a server to tell the browser which other origins may read its responses, via HTTP response headers.">CORS</span> (Cross-Origin Resource Sharing) is the escape hatch. MDN defines it as <q>an HTTP-header based mechanism that allows a server to indicate any origins (domain, scheme, or port) other than its own from which a browser should permit loading resources.</q><sup class="cite"><a href="#src-cors">[1]</a></sup> In plain words: the API answers with a header such as <code>Access-Control-Allow-Origin: https://you.github.io</code>, which means "the page at this address is allowed to read my responses." If the header is missing or names the wrong origin, the browser throws the response away before your JavaScript ever sees it.</p>
+<p>Some requests get an extra check first. If your page sends an <code>Authorization</code> header (which OAuth access tokens do), the browser first sends a <span class="term" title="An automatic OPTIONS request the browser sends before certain cross-origin calls, asking the server whether the real request is allowed.">preflight request</span> — MDN: browsers make a preflight request to the server hosting the cross-origin resource, <q>in order to check that the server will permit the actual request</q>.<sup class="cite"><a href="#src-cors">[1]</a></sup> The server must answer that too, or the real request is never sent.</p>
+<span class="sidenote">One sharp edge: if the request carries credentials (like an OAuth token), the server must name an explicit origin. MDN: the server <q>must not specify the * wildcard for the Access-Control-Allow-Origin response-header value, but must instead specify an explicit origin.</q><sup class="cite"><a href="#src-cors">[1]</a></sup></span>
+
+<h2>One call, two origins</h2>
+<p>Take a page at <code>http://localhost:5173</code> and an API at <code>https://api.example.com</code>. Compare two calls from that page. Nothing in your script changes. Only the address changes.</p>
+<p><strong>Same origin.</strong> The page calls <code>http://localhost:5173/api/notes</code>. The scheme, host, and port all match. The browser sends the request, reads the reply, and hands the data to your script. No CORS header is involved. This is the ordinary case, and it is why a local app can work with no extra setup.</p>
+<p><strong>Different origin.</strong> The page calls <code>https://api.example.com/notes</code>. The scheme differs. The host differs. The port is implied rather than written, and it still counts. The browser sends the request. The server answers it. What changes is the step after that answer. Before your code may read the reply, the browser looks for <code>Access-Control-Allow-Origin</code>.</p>
+<p>That detail explains most of the confusion. The block is not a network failure. The bytes did travel. Open the Network tab and you may see the full reply, with the status you expected, followed by an error from your own call. The reply arrived, and the browser held it back.</p>
+<table class="ref">
+  <thead><tr><th>Call</th><th>What the browser checks</th><th>What you see</th></tr></thead>
+  <tbody>
+    <tr><td>Same origin</td><td>Nothing extra</td><td>The reply reaches your script</td></tr>
+    <tr><td>Cross-origin, header names this page</td><td><code>Access-Control-Allow-Origin</code> matches</td><td>The reply reaches your script</td></tr>
+    <tr><td>Cross-origin, header missing or wrong</td><td>No match</td><td>Reply discarded, console error</td></tr>
+  </tbody>
+</table>
+<p>A preflight puts one round trip in front of the last two rows. The browser asks first, with an <code>OPTIONS</code> request, whether the real call will be allowed. The server replies with the same headers. Only then does your call go out. A server that handles the real call but not the preflight fails at the earlier step, and from the page the two failures look alike.</p>
+
+<h2>Why the tests passed anyway</h2>
+<p>A test that calls the API from a script runs outside any browser, so no same-origin policy is watching. An emulator or a same-origin setup never triggers the check either. Only a real page in a real browser enforces it — the same lesson as <a href="0035-real-vs-simulated.html">2.7</a>: a green test suite proves the API works, not that a browser may talk to it. And when the block happens, the page gets nothing: <q>CORS failures result in errors but for security reasons, specifics about the error are not available to JavaScript.</q><sup class="cite"><a href="#src-cors">[1]</a></sup> The error text appears in the browser's developer-tools console, not on the page.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user's dashboard let each teammate connect an outside account with per-user sign-in. Every automated test and the local emulator run was green, so the agent reported the feature done. The first real click on the connect button in a signed-in browser failed silently in the page — the popup could not reach the service. The cause was on the server: it had never been configured to allow the dashboard's origin, and the missing header only surfaced as a console error in a real browser. The fix was a server setting, not a line of page code.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: your page calls an API at a different origin and the call fails. Who enforces the rule, where do you see the error message, and which side — page or API — usually needs the fix?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The <strong>browser</strong> enforces the same-origin policy. The error appears in the <strong>developer-tools console</strong>, not in the page's own text. The fix almost always belongs on the <strong>API server</strong>: it must send CORS headers naming the page's origin.</p></div>
+</div>
+
+<h2>See it yourself, then fix the right side</h2>
+<p>The reliable loop is: reproduce in a real browser, read the console, fix the server, re-click. Do this in your own app:</p>
+<div class="doit">
+  <ol>
+    <li><label><input type="checkbox"> Start your app and open the page in a real browser (not the test runner), then open the browser's developer tools and its <strong>Console</strong> tab.</label></li>
+    <li><label><input type="checkbox"> Click the control that calls the other service (for example, the connect or sign-in button).</label></li>
+    <li><label><input type="checkbox"> Read the console: you should see an error mentioning CORS, and the failed request listed in the Network tab with no <code>Access-Control-Allow-Origin</code> response header.</label></li>
+    <li><label><input type="checkbox"> Give your agent the prompt below and ask it to change the <em>server's</em> CORS configuration, not the page.</label></li>
+    <li><label><input type="checkbox"> Click again in the same browser and confirm the call now succeeds in the console and on the page.</label></li>
+  </ol>
+  <div class="expect"><p>What you should see: the console shows a CORS error before the fix, the API's response is missing <code>Access-Control-Allow-Origin</code>, and after the server change the same click completes with no CORS error.</p></div>
+  <p class="progress"></p>
+</div>
+
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>My page at http://localhost:5173 calls my API at https://api.example.com. A real browser click fails with a CORS error in the devtools console, but all tests pass. Inspect the API server's CORS configuration and tell me exactly which response header is missing or wrong, and what origin value it must send for my page. Do not change the page's code.</pre>
+</div>
+<p>Note the placeholder addresses: use your page's real address (including its port) and your API's real address. With OAuth from lesson <a href="0095-oauth-pieces.html">8.7</a>, the token travels in an <code>Authorization</code> header, so expect a preflight — the server must allow your origin on that too, and <code>*</code> will not do.</p>
+
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>"Tests pass" means the API works. "It works in a real browser" means the browser was allowed to talk to it. When a feature involves another origin, the real-browser click is the test that counts.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">Your page calls an API at a different origin. Tests pass, but a real browser click fails. What is the most likely cause?</p>
+  <button class="opt" type="button">The server sent no CORS headers for this page origin.</button>
+  <button class="opt" type="button">The tests ran too slowly and missed the real failure.</button>
+  <button class="opt" type="button">The browser cache was cleared by the automated test suite.</button>
+  <button class="opt" type="button">The API needs a much faster internet connection to work.</button>
+  <div class="why"><p>The browser blocked the response because the API never sent CORS headers naming the page's origin. Tests pass because scripts are not browsers and no same-origin policy applies.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">Why do automated tests often stay green while the real click fails?</p>
+  <button class="opt" type="button">The browser blocks the test runner from making calls.</button>
+  <button class="opt" type="button">Automated tests always call the live production API server.</button>
+  <button class="opt" type="button">Tests do not run inside a browser's security checks.</button>
+  <button class="opt" type="button">The real click sends a different kind of request.</button>
+  <div class="why"><p>Test scripts and emulators do not enforce the same-origin policy; only a real page in a real browser does. That gap is exactly what lesson 2.7 warns about.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">When do two addresses count as the same origin?</p>
+  <button class="opt" type="button">Only the host name matches the other address.</button>
+  <button class="opt" type="button">The scheme, host, and port all match exactly.</button>
+  <button class="opt" type="button">The port and path of the URL match.</button>
+  <button class="opt" type="button">The scheme and the URL path both match.</button>
+  <div class="why"><p>Origin = scheme + host + port. That is why localhost:5173 and your live https://you.github.io address are different origins even though both are "your app".</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">Your API replies with Access-Control-Allow-Origin: * but the browser still blocks a call that carries an OAuth token. Why?</p>
+  <button class="opt" type="button">The wildcard works only for images, not calls.</button>
+  <button class="opt" type="button">The header must be sent twice by server.</button>
+  <button class="opt" type="button">The browser needs this header on all responses.</button>
+  <button class="opt" type="button">A credentialed call can never use a wildcard.</button>
+  <div class="why"><p>Credentialed requests (like ones with an Authorization header) require an explicit origin, never *. The server must name your page's exact origin.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary sources)</span>
+  <p><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS">MDN: Cross-Origin Resource Sharing (CORS)</a> — what CORS is, preflights, and the <code>Access-Control-Allow-Origin</code> header, with examples. Also read <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy">MDN: Same-origin policy</a> for the origin definition.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a CORS error? Ask the agent that gave you this course. Try: <em>"My console shows a CORS error on a call from localhost:5173 to my API — paste the exact header the server must send."</em> or <em>"Explain preflight requests with a phone-call analogy."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-cors">MDN (Mozilla), <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS">Cross-Origin Resource Sharing (CORS)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-sop">MDN (Mozilla), <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy">Same-origin policy</a>. Retrieved 2026-11-02.</li>
+  <li id="src-fetch">WHATWG, <a href="https://fetch.spec.whatwg.org/#http-cors-protocol">Fetch standard, section 4.1: CORS protocol</a> (request modes include <code>"same-origin"</code> and <code>"cors"</code>). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain why a cross-origin call fails only in a real browser, read the CORS error in the devtools console, and direct the fix at the server's response headers.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0095-oauth-pieces.html">Previous: 8.7 OAuth in pieces</a> · <a href="0097-backends.html">Next: 8.9 Backends</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

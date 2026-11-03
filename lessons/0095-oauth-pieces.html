@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OAuth in pieces: what a sign-in button sets up</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.7</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.7</p>
+  <h1>OAuth in pieces: what a "Sign in with…" button sets up</h1>
+  <p class="lede">When your app wants to read a user's data from another service, you never ask for their password. OAuth is the standard handshake that lets the user grant your app limited access instead — and it comes down to five pieces you can name.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0094-logins-token-expiry.html">8.6 Logins and token expiry</a></span><span>Win: you can name the five pieces of an OAuth sign-in and say which values must stay secret</span></div>
+</header>
+<main>
+
+<h2>Why this matters for your app</h2>
+<p>Your mission is to ship a small public app. Sooner or later it will want something from another service: read a user's files, post to their calendar, list their tasks. The wrong way to get that is to ask users for their password on that other service — you would then be responsible for protecting it, and users should never hand passwords to a second app. OAuth exists so the other service can give your app a limited, revocable key instead. <q>OAuth 2.0 is the industry-standard protocol for authorization.</q><sup class="cite"><a href="#src-2">[2]</a></sup></p>
+<p>Lesson 8.6 taught you that sign-in tokens expire. OAuth is the mechanism behind most of those sign-ins, so this lesson takes it apart piece by piece. The pieces are the same for every provider; only the web addresses differ.</p>
+
+<h2>The cast</h2>
+<p>Four roles appear in every OAuth exchange. <strong>You</strong> are the resource owner: the person whose data is at stake. <strong>Your app</strong> is the client: it wants the access but cannot be trusted with the password. <strong>The provider</strong> (the other service) runs the authorization server: it authenticates the user and issues keys. <strong>The provider's API</strong> is where your app later presents the key. RFC 6749, the OAuth 2.0 standard, names these pieces in its sections on the client identifier, client authentication, and the authorization endpoint.<sup class="cite"><a href="#src-3">[3]</a></sup></p>
+
+<h2>Piece 1: the client ID and client secret</h2>
+<p>Before anything else, you register your app with the provider, and the provider issues credentials. Google's OAuth documentation describes obtaining <q>OAuth 2.0 credentials such as a client ID and client secret that are known to both Google and your application.</q><sup class="cite"><a href="#src-1">[1]</a></sup></p>
+<p>The <span class="term">client ID</span> is a public name for your app. It travels in every request so the provider knows who is asking. The <span class="term">client secret</span> is a password for your app itself. It may exist only when your app has a backend server that can keep it away from users: <q>a JavaScript application does not require a secret, but a web server application does.</q><sup class="cite"><a href="#src-1">[1]</a></sup> A browser-only app has nowhere safe to put a secret — every visitor can read shipped code — so providers do not issue one to it. This is the same rule as lessons 8.1–8.3: a value embedded in front-end code is not a secret. Keep server-side secrets in environment variables, never in the repo.</p>
+
+<h2>Piece 2: scopes</h2>
+<p>When your app asks for access, it lists what it wants to do — read files, create events. Each item is a <span class="term">scope</span>. Google's docs put it exactly: <q>A variable parameter called scope controls the set of resources and operations that an access token permits.</q><sup class="cite"><a href="#src-1">[1]</a></sup></p>
+<p>Scopes are how you keep access small. Ask for read-only when you only read; ask for one thing at a time. Google states the best practice plainly: <q>It is generally a best practice to request scopes incrementally, at the time access is required, rather than up front.</q><sup class="cite"><a href="#src-1">[1]</a></sup> That is the same "smallest thing that works" habit as the scope ladder in lesson 4.2.</p>
+
+<h2>Piece 3: the redirect URI</h2>
+<p>OAuth happens partly in the user's browser. Your app sends the user to the provider's page, and afterwards the provider must bring them back to your app. The <span class="term">redirect URI</span> is the exact address in your app that the provider sends the browser back to, and it must be registered with the provider in advance so a stranger cannot redirect the result somewhere else. It is not a secret — it is a destination, visible in the URL — but it is part of your app's identity with the provider.</p>
+
+<h2>Piece 4: the consent screen</h2>
+<p>Between sign-in and the redirect sits the <span class="term">consent screen</span>: the provider's own page listing the scopes your app requested, where the user approves or denies. Google calls this step <q>user consent</q><sup class="cite"><a href="#src-1">[1]</a></sup>: <q>the user is asked whether they are willing to grant one or more permissions that your application is requesting.</q><sup class="cite"><a href="#src-1">[1]</a></sup> Nothing is granted until the user clicks approve. This screen is why you never see the user's password: they type it only into the provider.</p>
+
+<h2>Piece 5: per-user tokens vs shared tokens</h2>
+<p>The result of the flow is an <span class="term">access token</span>, a short-lived key your app presents to the provider's API. <q>Access tokens have limited lifetimes</q><sup class="cite"><a href="#src-1">[1]</a></sup> — that expiry is the token expiry of lesson 8.6, and the refresh flow there is how the app gets a new one.</p>
+<p>There are two ways to hold such a key. A <strong>per-user token</strong> is obtained through the consent flow above and acts <em>as one signed-in user</em>: it carries that user's scopes and can be revoked for that user alone. A <strong>shared token</strong> belongs to the app itself, not to any person — for server-to-server work Google says: <q>use service accounts. No OAuth Client ID is required.</q><sup class="cite"><a href="#src-1">[1]</a></sup> A shared token is convenient (no sign-in popups) but dangerous: it usually has wide powers, and if it leaks, everyone is affected at once.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A small team app read a project-management tool using one shared token, pasted into a config file. During a browser session, a page snapshot exposed that value in plain text, and the team had to rotate it immediately. They then moved to per-user OAuth: each teammate clicked "Connect", approved a narrow read-only scope in their own popup, and the app stored each person's token server-side only. When one teammate left, their access was revoked without touching anyone else's.</p>
+</div>
+
+<h2>The whole flow, in order</h2>
+<p>Put the pieces together and every "Sign in with…" button runs this sequence. Try ordering the steps yourself:</p>
+<div class="order" data-items>
+  <span class="label">Click the steps in the right order</span>
+  <button class="item" type="button" data-pos="4">Your backend exchanges the code (plus the client secret) for an access token.</button>
+  <button class="item" type="button" data-pos="2">The user signs in and sees the consent screen listing the requested scopes.</button>
+  <button class="item" type="button" data-pos="5">Your app calls the provider's API with the access token, and refreshes it when it expires.</button>
+  <button class="item" type="button" data-pos="1">Your app redirects the user's browser to the provider, sending client ID, scopes, and redirect URI.</button>
+  <button class="item" type="button" data-pos="3">The user approves, and the provider redirects the browser back to your redirect URI with a code.</button>
+  <p class="status" aria-live="polite"></p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the five pieces of an OAuth sign-in, and say which value must live only on your server.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The five pieces: client ID, client secret, scopes, redirect URI, consent screen — ending in an access token (per-user) or a shared service-account token. The client secret must live only on your server, never in shipped browser code.</p></div>
+</div>
+
+<h2>Asking your agent to set this up</h2>
+<p>You will not wire OAuth by hand; you will direct your agent. The skill is demanding the pieces by name and keeping secrets in their place:</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Add "Sign in with a provider" to my app. Plan first, do not code yet.
+Name the OAuth pieces we need: client ID and secret, scopes, redirect URI,
+consent screen, and per-user tokens. For each value, say where it will live —
+server-side secrets go in environment variables (lesson 8.2), never in code
+the browser downloads. Request the narrowest scopes, added incrementally.
+Then show me how we will verify it with a real browser sign-in, and stop.</pre></div>
+<span class="sidenote">The plan gate from lesson 1.7 applies here too: OAuth setup touches credentials, so a human "go" before any code is written is worth the thirty seconds.</span>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">Your app gets a client ID and client secret from a provider. Where may the secret safely live?</p>
+  <button class="opt" type="button">In the browser code every visitor can download.</button>
+  <button class="opt" type="button">On your server only, never in browser code.</button>
+  <button class="opt" type="button">In a public README so teammates can test.</button>
+  <button class="opt" type="button">Inside the redirect URI you registered with them.</button>
+  <div class="why"><p>Providers issue a secret only to apps with a backend, because anything shipped to the browser is readable by every visitor. The client ID is the public one.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">A provider asks "this app wants to read your contacts". What is being decided?</p>
+  <button class="opt" type="button">The scope: which access the user is granting.</button>
+  <button class="opt" type="button">The password the user types into your app.</button>
+  <button class="opt" type="button">The redirect address the provider sends results to.</button>
+  <button class="opt" type="button">The model your coding agent should use next.</button>
+  <div class="why"><p>That list of requested permissions is the scope set. It is shown on the consent screen, and it controls what the resulting access token permits.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Why does a per-user token beat one shared token for a team app?</p>
+  <button class="opt" type="button">Shared tokens are always free and never need consent screens.</button>
+  <button class="opt" type="button">Per-user tokens never expire, so nobody ever signs in again.</button>
+  <button class="opt" type="button">A user's own access can be revoked without breaking others.</button>
+  <button class="opt" type="button">It makes the provider show a different logo each time.</button>
+  <div class="why"><p>A per-user token acts as that one person, so removing one teammate's access touches nobody else. A leaked shared token affects everyone at once and usually carries wider powers.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">Why must the redirect URI be registered with the provider in advance?</p>
+  <button class="opt" type="button">So the token stays fully encrypted and unreadable to anyone.</button>
+  <button class="opt" type="button">So the consent screen can be skipped during local testing.</button>
+  <button class="opt" type="button">So the client secret can be printed safely into URLs.</button>
+  <button class="opt" type="button">So the provider knows where to send the user back.</button>
+  <div class="why"><p>The redirect URI is the destination the provider sends the browser (and the result) back to. Registering it first means a stranger cannot point your sign-in somewhere else.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://developers.google.com/identity/protocols/oauth2">Using OAuth 2.0 to access Google APIs</a> — one provider's end-to-end description of credentials, scopes, consent, tokens, and refresh. The five pieces are identical at every provider; only the addresses differ. Also see the standard itself, <a href="https://datatracker.ietf.org/doc/html/rfc6749">RFC 6749</a>.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Explain the OAuth flow again using a library-card analogy"</em> or <em>"Why can't my app just ask users for their other-service password?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-1">Google, <a href="https://developers.google.com/identity/protocols/oauth2">Using OAuth 2.0 to access Google APIs</a>. Retrieved 2026-11-02.</li>
+  <li id="src-2">Aaron Parecki / oauth.net, <a href="https://oauth.net/2/">OAuth 2.0</a>. Retrieved 2026-11-02.</li>
+  <li id="src-3">IETF, <a href="https://datatracker.ietf.org/doc/html/rfc6749">RFC 6749 — The OAuth 2.0 Authorization Framework</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name the five pieces of an OAuth sign-in — client ID, client secret, scopes, redirect URI, consent screen — and explain per-user tokens vs shared tokens, including which values must stay on the server.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/safety-checklist.html">Safety checklist (secrets)</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Previous: <a href="0094-logins-token-expiry.html">8.6 Logins and token expiry</a></span><span>Next: <a href="0096-cors.html">8.8 CORS: why tests pass and the real click fails</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

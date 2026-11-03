@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stop conditions: decide where the run ends</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 4 · Scope &amp; stopping · Lesson 4.3</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 4 · Lesson 4.3 · First-ship path ★</p>
+  <h1>Stop conditions: decide where the run ends</h1>
+  <p class="lede">A definition of done says what finished looks like. A stop condition says where the work ends — and what the agent must not start next.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0055-definition-done-acceptance-criteria.html">4.1 Definition of done</a></span><span>Win: you can close a run with one sentence the agent can check</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your app reaches the public through runs you can end. The failures that cost a beginner an evening are rarely wrong code in the feature they asked for. They are runs that kept going: the ticket was finished, and then the agent tidied a page nobody mentioned, renamed folders, and "improved" the part you already liked. Every extra step is another change to review and another chance to break what worked.</p>
+<p>You are not trying to keep the agent busy. You are trying to reach a public URL with a small amount of work that you can check. That means the run needs an end, stated in advance, in words the agent can compare against what it sees.</p>
+
+<h2>The loop stops when the agent thinks it is done</h2>
+<p>No agent has a built-in sense of "this is enough". Anthropic's guidance for Claude Code says it plainly: <q>Claude stops when the work looks done.</q><sup class="cite"><a href="#src-ccbp">[1]</a></sup> And when there is no check to run: <q>If it has nothing to run that tells it whether the work actually is done, “looks done” is all it has to go on.</q><sup class="cite"><a href="#src-ccbp">[1]</a></sup></p>
+<p>Lesson <a href="0055-definition-done-acceptance-criteria.html">4.1</a> gave you acceptance criteria: a list of things that must be true before you call the result good. That list sharpens the agent's judgement, but it does not tell the agent to put the tools down. A result can meet every criterion and still be followed by ten minutes of unrequested polishing. Anthropic's essay on building agents notes that a task <q>often terminates upon completion, but it’s also common to include stopping conditions (such as a maximum number of iterations) to maintain control.</q><sup class="cite"><a href="#src-bea">[3]</a></sup></p>
+
+<h2>Two questions, not one</h2>
+<p>A <span class="term" title="A sentence that names the state in which the agent must stop working, and the adjacent work it must not begin">stop condition</span> answers a different question from acceptance criteria. Keep them apart and both get easier to write.</p>
+<table class="ref">
+  <thead><tr><th></th><th>Acceptance criteria (4.1)</th><th>Stop condition (this lesson)</th></tr></thead>
+  <tbody>
+    <tr><td>Question</td><td>Is the result good enough?</td><td>Is the run over?</td></tr>
+    <tr><td>Example</td><td>The page loads on a phone; links work</td><td>Stop once that page is live; leave the form alone</td></tr>
+    <tr><td>Written as</td><td>A short checklist of observable facts</td><td>A finish line plus a boundary</td></tr>
+    <tr><td>Fails when</td><td>It is vague ("looks nice")</td><td>It is missing ("keep improving it")</td></tr>
+  </tbody>
+</table>
+<p>A stop condition has two halves, and beginners usually write only the first. The <strong>finish line</strong> names the state that ends the run. The <strong>boundary</strong> names the neighbouring work that is out of bounds. In one sentence: "Stop when the pull request is merged, and do not start the next ticket."</p>
+<p>Codex's prompting guide builds the same idea into its four-part prompt, asking for a line called <q>Done when: What should be true before the task is complete, such as tests passing, behavior changing, or a bug no longer reproducing?</q><sup class="cite"><a href="#src-cxbp">[2]</a></sup> That is the finish line. The boundary is the sentence you add after it.</p>
+
+<h2>Prefer an event to an adjective</h2>
+<p>"Merged" is a fact on a pull request page. "Polished" is an opinion, and the agent's opinion of its own work is the least reliable part of the run. The more your finish line names something a second person could look up, the less room the agent has to decide it has done enough.</p>
+<p>Good finish lines are events you can already see in your project: a pull request showing as merged, the live URL returning the new page, a check command exiting successfully, a screenshot at phone width with no overlap. Each one has a yes or no answer that does not depend on the agent's mood. "Stop when the deploy is live" is a real boundary. "Stop when it feels finished" is an invitation to keep going.</p>
+<div class="callout">
+  <span class="label">The test for a stop condition</span>
+  <p>Could a stranger read it, look at the project, and say "yes, that happened" or "no, not yet"? If not, it is a wish, not a stop condition.</p>
+</div>
+
+<h2>"And stop there" is doing real work</h2>
+<p>The second half is short and easy to skip, which is why it is the half that saves the most time. An agent that has only now finished a task is still in its loop. The next obvious improvement is right there, and helpfulness pushes it to take one more step. Naming that step as forbidden costs five words and prevents a second review.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user handed an agent a roadmap of roughly eighty small tasks with a one-line prompt, plus the sentence "stop work when items 10, 11 and 88 are merged and closed". Three helpers worked in parallel; the run ended when those three pull requests were merged, and not after. Later, asking for cleanup, the same user wrote: preserve the evidence, archive it, delete the merged branches, "and stop there". The agent produced a checksum-verified archive before deleting anything, then stopped instead of continuing into the next piece of work.</p>
+</div>
+<p>Notice what the sentence did not do. It did not explain the whole plan, and it did not name every file. It named the last useful action and drew a line immediately after it. That is enough, because the agent can compare its next intended step against a sentence it was given.</p>
+
+<h2>Same task, two endings</h2>
+<div class="compare">
+  <div class="bad">
+    <span class="label">No finish line, no boundary</span>
+    <p>"Make the gallery page nicer and keep improving it until it feels right."</p>
+    <p>Every word is a judgement call. There is no state to reach and no neighbouring work to avoid, so "one more improvement" is always permitted.</p>
+  </div>
+  <div class="good">
+    <span class="label">One event, one fence</span>
+    <p>"Change only the caption layout. Stop when the live URL shows the new captions with no overlap at phone width. Do not resize the images or touch the data files."</p>
+    <p>The finish line is visible in a browser. The fence names the two things most likely to get "improved" along the way. You can check both in under a minute.</p>
+  </div>
+</div>
+
+<h2>Where to put it</h2>
+<p>Put the stop condition at the end of the prompt, after the request, so it is the last instruction the agent reads before it starts. If you are already mid-run, the same sentence works as a steering message; lesson <a href="0025-steering-mid-run.html">1.10</a> covers how each agent accepts one while it works. What you should not do is bury it in the middle of a long paragraph of context, where it reads as background rather than as a rule.</p>
+<p>There is a second, blunter version for the moment the agent sails past the line: "You have reached the stop condition. Stop now and report what is done." It is not a punishment and it is not a new task. It is the boundary being repeated in the present tense, which is often all a run needs.</p>
+
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Task: [the one change you want, in one or two sentences].
+
+Done when: [the observable state — page live at the URL, check
+command passing, screenshot at phone width with no overlap].
+
+Stop when that is true. Then stop: do not start the next task,
+do not refactor neighbouring files, and do not "improve" anything
+I did not ask about.
+
+If you cannot reach the done state, stop anyway and tell me what
+blocked it, what you tried, and what you would need from me.</pre>
+</div>
+
+<p>The last paragraph matters as much as the fence. Without it, "stop when X" can turn into "try anything until X", which is how a small change becomes a rewrite. Lesson <a href="0058-budgets.html">4.4</a> adds caps on time and attempts for the runs where even a clear finish line is not enough.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the two halves of a stop condition, and why is an event like "merged" stronger than a word like "polished"? Write it in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A finish line (the state that ends the run) and a boundary (the neighbouring work that must not start). An event can be checked by someone else against the project; "polished" is a judgement, and the agent is judging its own work.</p></div>
+</div>
+
+<h2>Making the condition stick</h2>
+<p>A sentence in the prompt is enough for most short runs. When a run is long, or you will not be watching, each agent offers a way to hold a condition beyond the current turn. These are optional; the plain sentence works everywhere, including versions released after this course.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Inside a session, <code>/goal</code> <q>sets a condition that a separate model checks against the conversation after every turn</q>, and Claude keeps going until the condition is met.<sup class="cite"><a href="#src-ccbp">[1]</a></sup> A separate check means the agent is not the only judge of whether it has arrived. For unattended runs, the same page lists a Stop hook, which sends the agent back to work while a check command keeps failing.<sup class="cite"><a href="#src-ccbp">[1]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p><code>/goal &lt;objective&gt;</code> gives Codex <q>a persistent target to track while a larger task runs</q>; <code>/goal</code> alone shows it, and <code>/goal pause</code>, <code>/goal resume</code>, <code>/goal clear</code> manage it.<sup class="cite"><a href="#src-cxgoal">[4]</a></sup> The objective is text, so write it as the same event you would put in the prompt, not as a mood.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp's documentation names Goal mode as one of its specialised workflows and warns that <q>Goal, Vibe, Prewalk, Loop, Fast, and related controls are specialized workflows</q> — start with ordinary messages and choose them deliberately.<sup class="cite"><a href="#src-ompusing">[5]</a></sup> omp has only single-vendor documentation, so treat anything surprising there as something to check with your teacher rather than a promise.</p>
+  </div>
+</div>
+<span class="sidenote">Lesson <a href="0072-goal-mode-persistent-objectives.html">5.5</a> covers persistent goals and their failure modes in detail. This lesson only needs the sentence you write before the run.</span>
+
+<div class="doit">
+  <span class="label">Do it now: close one small run</span>
+  <ol>
+    <li><label><input type="checkbox"> Pick one small change you actually want in your project — a caption, a heading, a colour.</label></li>
+    <li><label><input type="checkbox"> Write the stop condition before you type anything: one finish line you can see, one boundary you can name.</label></li>
+    <li><label><input type="checkbox"> Send the prompt with the stop condition as its last paragraph, and ask the agent to repeat the condition back in one line before it starts.</label></li>
+    <li><label><input type="checkbox"> When it reports done, check the finish line yourself. If it keeps working, send the present-tense line: "You have reached the stop condition. Stop now and report."</label></li>
+    <li><label><input type="checkbox"> Write down which half failed, if either: the finish line was unclear, or the boundary was missing.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see the agent restate the condition in its own words, then stop at the named event rather than drifting into a second task. The report should name the evidence for the finish line — the URL you can open, the command and its output, the screenshot. If it repeats the condition but still continues, your finish line was probably an adjective in disguise; replace it with an event and run the same prompt again.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Which line is a stop condition rather than an acceptance criterion?</p>
+  <button class="opt" type="button">The page must load on any phone.</button>
+  <button class="opt" type="button">Stop when the pull request has merged.</button>
+  <button class="opt" type="button">A friend opens the link without errors.</button>
+  <button class="opt" type="button">The form saves each entry to storage.</button>
+  <div class="why"><p>Only this line names a state that ends the run. The others describe what must be true of the result, which is the job of acceptance criteria.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">The agent finished the ticket, then began restyling a page you never mentioned. What was missing?</p>
+  <button class="opt" type="button">A stop line naming exactly where the work ends.</button>
+  <button class="opt" type="button">A slower model reading every file before it edits.</button>
+  <button class="opt" type="button">A cheaper model running with a much smaller context.</button>
+  <button class="opt" type="button">A screenshot taken before and after every small edit.</button>
+  <div class="why"><p>The run had a job but no boundary. A finish line plus "do not start the next task" is what keeps a completed ticket from turning into extra work.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Which finish line can a stranger check against your project?</p>
+  <button class="opt" type="button">When the page looks calm and polished enough.</button>
+  <button class="opt" type="button">When every colleague agrees the design is perfect.</button>
+  <button class="opt" type="button">When the pull request page shows it merged.</button>
+  <button class="opt" type="button">When the agent feels the result is good.</button>
+  <div class="why"><p>Merge status is visible on the pull request page to anyone. The other lines depend on taste, consensus, or the agent's own opinion of its work.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> — read the sections "Give Claude a check to run" and "Let Claude run without you". The five questions near the end are a compact checklist for any run you will not watch. It is written for one tool, but the questions apply to all three.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure whether your sentence is an event or an adjective? Ask the agent that gave you this course: <em>"Here is my stop condition. Could a stranger check it, and what would they look at?"</em> Then ask it to rewrite the sentence as an event if the answer is no.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-ccbp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cxbp">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-bea">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as outdated). Retrieved 2026-11-02.</li>
+  <li id="src-cxgoal">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex developer commands</a>. Retrieved 2026-11-02.</li>
+  <li id="src-ompusing">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> write a stop condition as a finish line plus a boundary, choose an event over an adjective, and end a run that tries to continue.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 4.4 Budgets (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

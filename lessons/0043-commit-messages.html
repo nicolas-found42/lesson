@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Commit messages, and what a commit includes</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control · Lesson 3.4</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.4</p>
+  <h1>Commit messages, and what a commit includes</h1>
+  <p class="lede">A commit is a labelled save point. The label is the only part you will read six weeks from now, and the label can lie about what the commit holds. This lesson fixes both halves.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0010-repo-working-tree-uncommitted-change.html">3.2 Repository, working tree, uncommitted change</a></span><span>Win: you can choose what goes into a commit and name it honestly</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>When your app breaks after an agent's long run, the commit history is the list of doors you can step back through. A message like <em>update</em> gives you twenty identical doors and no way to choose. A message like <em>Move the gallery filter into its own file</em> tells you where the change you want to undo began.</p>
+<p>There is a second problem, quieter than a bad label. A commit can contain more than the work you asked for. If you say "commit all", the save point may also hold half-finished experiments, a scratch file, or a change from a different task. Then undoing your mistake undoes someone else's work too.</p>
+
+<h2>The message: a title, then a reason</h2>
+<p>Git's own manual gives the shape. It is <q>a good idea to begin the commit message with a single short (no more than 50 characters) line summarizing the change, followed by a blank line and then a more thorough description.</q><sup class="cite"><a href="#src-gc">[1]</a></sup> Everything before the first blank line is the <span class="term" title="The first line of a commit message; git and every hosting site show it in the log.">title</span>, and git uses it wherever it shows a commit in a list.<sup class="cite"><a href="#src-gc">[1]</a></sup></p>
+<p>GitHub's beginner guide says what the message is for: it is <q>a description explaining why a particular change was made</q>, so other people can understand <q>what you've done and why.</q><sup class="cite"><a href="#src-gh">[2]</a></sup> That "why" is the part beginners skip. The diff already shows <em>what</em> lines moved. Only you can say what you were trying to achieve.</p>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Message you will regret</span>
+    <p><code>update</code></p>
+    <p><code>fix</code></p>
+    <p><code>changes from agent</code></p>
+    <p>None of these lets you tell two commits apart, and none records a reason.</p>
+  </div>
+  <div class="good">
+    <span class="label">Message that survives</span>
+    <p><code>Show a friendly message when the list is empty</code></p>
+    <p><code>Stop the header covering the page title on phones</code></p>
+    <p>One line, plain words, and the effect a user would notice.</p>
+  </div>
+</div>
+<p>Write the title as the outcome, not the mechanics. "Rename util.js to helpers.js" tells you what happened but not why; "Move shared helpers out of the page script" tells a reader the intent. Both are honest. The second is more useful when you are deciding which commit to undo.</p>
+<p>Keep the body for the things a reader cannot see: what was broken, what you ruled out, what is still not handled. Two or three sentences is plenty for a small app. If the body would need a page, the commit is probably doing too much — which is the next section.</p>
+
+<h2>Staging: choosing what the commit contains</h2>
+<p>The <span class="term" title="The list of changes picked for the next commit; also called the index.">staging area</span> is git's waiting room. Git's manual for <code>git add</code> describes it as <q>what you use to prepare the contents of the next commit</q>.<sup class="cite"><a href="#src-ga">[3]</a></sup> A plain <code>git commit</code> records only what is in that waiting room. That is the whole mechanism, and it is why a commit can be smaller than your working tree.</p>
+<p>Pro Git suggests a better way to read the command than its name: think of <code>git add</code> <q>more as "add precisely this content to the next commit" rather than "add this file to the project".</q><sup class="cite"><a href="#src-pg">[4]</a></sup> It stages the file as it is at the moment you run it. Edit the file afterwards and the newer edit is <em>not</em> staged; you would run <code>git add</code> again.<sup class="cite"><a href="#src-pg">[4]</a></sup></p>
+<p>So the safe habit is three moves, in order: look, pick, check.</p>
+<pre><code>$ git status --short
+ M index.html
+ M style.css
+?? ideas.txt
+
+$ git add index.html
+
+$ git diff --staged
+diff --git a/index.html b/index.html
+--- a/index.html
++++ b/index.html
+@@ -1 +1 @@
+-&lt;h1&gt;Hello again&lt;/h1&gt;
++&lt;h1&gt;Hello, friends&lt;/h1&gt;</code></pre>
+<p><code>git diff --staged</code> shows exactly what is waiting to be committed, which is what <code>git commit</code> will record.<sup class="cite"><a href="#src-gh2">[5]</a></sup> Read those <code>+</code> and <code>-</code> lines before you commit. If something is in there that you did not mean to include, <code>git restore --staged &lt;file&gt;</code> takes it back out without touching your file on disk.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user finished a long task and typed "commit all" into their agent. The agent staged everything in the folder, wrote a short message, and made one commit. The commit held roughly thirty-five files: the finished work, but also the user's own unfinished edits from earlier in the day and a folder of experiments. Nothing was lost. But when a problem appeared two days later, that single save point could not be undone without also undoing work the user still wanted.</p>
+</div>
+
+<h2>"Commit all" and the two commands behind it</h2>
+<p>People say "commit all" to mean at least two different things, and the tools behave differently for each.</p>
+<p><strong><code>git commit -a</code></strong> stages every tracked file that was modified or deleted, then commits. The manual is precise about the gap: <q>new files you have not told Git about are not affected.</q><sup class="cite"><a href="#src-gc">[1]</a></sup> That sentence is the trap. You add a new page, ask for a commit with <code>-a</code>, and the commit is missing the page. The save point looks complete and is not.</p>
+<p><strong><code>git add -A</code></strong> stages everything in the working tree, including files git has never seen.<sup class="cite"><a href="#src-ga">[3]</a></sup> Now the opposite problem: scratch notes, a downloaded sample, and a config file with a key in it can enter the history alongside your fix.</p>
+<p>Pro Git warns about the first form in plain words: <q>This is convenient, but be careful; sometimes this flag will cause you to include unwanted changes.</q><sup class="cite"><a href="#src-pg">[4]</a></sup> The same caution applies with more force to <code>git add -A</code>, because it reaches files that were never part of the project.</p>
+<div class="callout">
+  <span class="label">The rule of thumb</span>
+  <p>One commit, one intention. If you cannot describe the commit in one title line without using "and", split it. Two small commits are easier to read, easier to undo, and easier to review than one large one.</p>
+</div>
+
+<h2>Asking your agent for a commit</h2>
+<p>All three agents will run these commands for you. That makes the wording of your request matter more, not less: "commit" is not a precise instruction. Say which work you mean, and ask to see the list first.</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Show me `git status --short` before you stage anything.
+
+Then stage only the files changed for the empty-list message.
+Show me `git diff --staged`, and propose a one-line commit message
+plus a two-sentence body. Do not commit until I say go.</pre></div>
+<p>The last sentence keeps the decision with you, which is the same approval habit the earlier lessons asked for. When the list appears, look for files you do not recognise. A name you cannot explain is a reason to ask, not a reason to continue.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what does <code>git commit -a</code> include, and what does it leave out? Then say what <code>git add -A</code> adds that <code>-a</code> does not.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><code>-a</code> stages tracked files that were modified or deleted. It leaves out every new file git has not been told about. <code>git add -A</code> also picks up those new, untracked files — which is why it can sweep in notes, downloads and stray experiments.</p></div>
+</div>
+
+<h2>Try it in your own project</h2>
+<div class="doit">
+  <span class="label">Do this now (about 5 minutes)</span>
+  <ol>
+    <li><label><input type="checkbox"> In your project folder, run <code>git status --short</code> and read the two columns.</label></li>
+    <li><label><input type="checkbox"> Choose <em>one</em> file that belongs to a single intention, and run <code>git add</code> with that file name.</label></li>
+    <li><label><input type="checkbox"> Run <code>git diff --staged</code>. Confirm every added line belongs to that intention.</label></li>
+    <li><label><input type="checkbox"> Commit with a title under 50 characters: <code>git commit -m "Describe the user-visible change"</code>.</label></li>
+    <li><label><input type="checkbox"> Run <code>git log -1 --stat</code> and check that only that file is listed.</label></li>
+  </ol>
+  <div class="expect">
+    <p>Your last step should look like this, with your own file name and message:</p>
+    <pre><code>$ git log -1 --stat
+commit 3f0ceaa...
+Author: You &lt;you@example.com&gt;
+
+    Change the greeting to mention friends
+
+ index.html | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)</code></pre>
+    <p>One file, one line changed, one clear title. The other modified files are still in your working tree, untouched — and <code>git status</code> will say so.</p>
+  </div>
+</div>
+
+<h2>How the three agents handle it</h2>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Anthropic's overview says it <q>works directly with git. It stages changes, writes commit messages, creates branches, and opens pull requests.</q><sup class="cite"><a href="#src-cc">[6]</a></sup> Because it writes the message itself, read the message before you accept it. A vague title from an agent is still a vague title in your history.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Codex has a review command for exactly this moment: <code>codex review --uncommitted</code> gives <q>a non-interactive review of uncommitted changes</q>, and its options say it covers <q>staged, unstaged, and untracked changes.</q><sup class="cite"><a href="#src-cx">[7]</a></sup> Run it before committing if you want a second read of what is about to go in.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp's docs are clear that committing is your decision: changes <q>are not committed unless you ask for a commit.</q><sup class="cite"><a href="#src-omp">[8]</a></sup> Its documentation comes only from its own authors, so check anything surprising with your teacher.</p>
+  </div>
+</div>
+<span class="sidenote">The commands are the same in all three. Only the wording you use to request them differs.</span>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Why keep one commit focused on one change?</p>
+  <button class="opt" type="button">So each save point can be understood and undone alone.</button>
+  <button class="opt" type="button">So git runs much faster when it stores the history.</button>
+  <button class="opt" type="button">So the agent needs far fewer approvals for each edit.</button>
+  <button class="opt" type="button">So the file names stay short inside the project folder.</button>
+  <div class="why"><p>A focused commit has one honest title and one reason. When something breaks, you can step back over exactly that change without dragging unrelated work with it.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">What does <code>git commit -a</code> include?</p>
+  <button class="opt" type="button">Every single untracked file anywhere in the whole project folder.</button>
+  <button class="opt" type="button">Tracked files that changed, but never a brand-new untracked file.</button>
+  <button class="opt" type="button">Only the files you have already staged for this commit.</button>
+  <button class="opt" type="button">All files, including any your gitignore rules quietly leave out.</button>
+  <div class="why"><p>The manual says new files git has not been told about <q>are not affected</q>. That is how a commit can look complete while a freshly created page is missing from it.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">What belongs in the title line of a commit message?</p>
+  <button class="opt" type="button">A full copy of the entire diff pasted from your terminal.</button>
+  <button class="opt" type="button">The names of every single file the commit happens to touch.</button>
+  <button class="opt" type="button">A short summary of the change, written in very plain words.</button>
+  <button class="opt" type="button">The date and time when the agent finished the whole task.</button>
+  <div class="why"><p>Git recommends a single short line summarizing the change, then a blank line and a fuller description. File names and timestamps are already stored by git; the title should say what changed for a person.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, chapter 2.2: Recording Changes to the Repository</a> — the clearest free walk through staging and committing, with the same commands you just ran. Stop after "Skipping the Staging Area"; that section is the warning this lesson is built on.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Look at my last three commit messages and tell me which one would confuse me in a month"</em> or <em>"Show me what <code>git commit -a</code> would include right now, without running it."</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-gc">Git project, <a href="https://git-scm.com/docs/git-commit">git-commit(1)</a>. Retrieved 2026-11-02. Used for the message shape, and for what <code>-a</code> does and does not stage. Also checked locally with <code>git help commit</code> (git 2.56.0).</li>
+  <li id="src-gh">GitHub, <a href="https://docs.github.com/en/get-started/start-your-journey/hello-world">Hello World</a>. Retrieved 2026-11-02. Used for what a commit message explains.</li>
+  <li id="src-ga">Git project, <a href="https://git-scm.com/docs/git-add">git-add(1)</a>. Retrieved 2026-11-02. Used for the staging area as the preparation for the next commit, and for <code>-A</code>.</li>
+  <li id="src-pg">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, 2.2 Git Basics — Recording Changes to the Repository</a>, git-scm.com. Retrieved 2026-11-02. Used for "add precisely this content", the re-add rule, and the warning about <code>-a</code>.</li>
+  <li id="src-gh2">GitHub, <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository">Removing sensitive data from a repository</a>. Retrieved 2026-11-02. Used for <code>git diff --cached</code> as the review of what is staged.</li>
+  <li id="src-cc">Anthropic, <a href="https://code.claude.com/docs/en/overview">Claude Code overview</a>. Retrieved 2026-11-02. Used for the claim that it stages changes and writes commit messages.</li>
+  <li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands">Codex developer commands</a>. Retrieved 2026-11-02. Used for <code>codex review --uncommitted</code>.</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source. Used for "not committed unless you ask".</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> write a commit message someone else could act on, stage only the files that belong to one change, and see what a "commit all" would sweep in before you ask for it.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure modes</a></p>
+  <div class="pager"><a href="0042-gitignore.html">Previous: 3.3 .gitignore</a> · <a href="0044-branch.html">Next: 3.5 Branch</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

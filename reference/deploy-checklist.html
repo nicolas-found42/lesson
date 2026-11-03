@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deploy checklist: reference</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb">Reference · from <a href="../lessons/0014-deploy-merge-live.html">Lesson 6.6</a></nav>
+<header class="lesson-head">
+  <p class="kicker">Reference card</p>
+  <h1>Deploy checklist</h1>
+  <p class="lede">Open this before you merge, while the deploy runs, and again at the public URL.</p>
+</header>
+<main>
+
+<div class="callout"><span class="label">Remember</span><p>Merge ≠ deploy ≠ live — open the URL. Merging changes main; deploying hands the host a package; only the public address proves a visitor gets your work. <a href="../lessons/0014-deploy-merge-live.html">Lesson 6.6</a></p></div>
+
+<h2>Before</h2>
+<div class="doit">
+<ol>
+  <li><label><input type="checkbox"> <strong>Build passes.</strong> Run the project's build command, not just the dev server, and read the last lines. A stale output folder is the classic blank page. <a href="../lessons/0079-build-step.html">6.2</a></label></li>
+  <li><label><input type="checkbox"> <strong>Checks are green on the pull request</strong>, not only on your laptop. The CI machine is empty, so it is the stricter opinion. <a href="../lessons/0046-local-vs-ci.html">2.12</a></label></li>
+  <li><label><input type="checkbox"> <strong>No skipped test is counted as a pass.</strong> Look for skip lines in the log, not just the green tick. <a href="../lessons/0046-local-vs-ci.html">2.12</a></label></li>
+  <li><label><input type="checkbox"> <strong>Secrets are set in the host's secret store, never in the repo.</strong> An unset GitHub secret becomes an empty string, so the step runs and the sign-in fails quietly. <a href="../lessons/0102-deploy-blockers.html">8.14</a></label></li>
+  <li><label><input type="checkbox"> <strong><code>.env</code> is gitignored; <code>.env.example</code> is committed</strong> with the same names and no real values. <a href="../lessons/0090-env-vars.html">8.2</a></label></li>
+  <li><label><input type="checkbox"> <strong>No secret appears in the workflow file, README, log, or chat.</strong> Once it reaches the repository, history keeps it. <a href="../lessons/0089-secrets.html">8.1</a></label></li>
+  <li><label><input type="checkbox"> <strong>Measure the publish folder</strong> with <code>du -sh .</code>. A published Pages site may be no larger than 1 GB. <a href="../lessons/0080-size-limits-big-files.html">6.4</a></label></li>
+  <li><label><input type="checkbox"> <strong>No single file over 100 MiB</strong> — the push is blocked, with a warning from 50 MiB. <a href="../lessons/0080-size-limits-big-files.html">6.4</a></label></li>
+  <li><label><input type="checkbox"> <strong>Big files are hosted elsewhere</strong> (a release, a raw file URL pinned to a commit, another host) and linked by absolute URL. <a href="../lessons/0080-size-limits-big-files.html">6.4</a></label></li>
+  <li><label><input type="checkbox"> <strong>Internal links are relative.</strong> No leading slash: a project site lives under <code>/repository-name/</code>, and a leading slash skips it. <a href="../lessons/0013-github-pages.html">6.3</a></label></li>
+  <li><label><input type="checkbox"> <strong>The build's base path matches that subpath.</strong> A build that assumes the top of a domain loads a page whose every asset 404s. <a href="../lessons/0079-build-step.html">6.2</a></label></li>
+  <li><label><input type="checkbox"> <strong><code>index.html</code> sits at the top level and the name is exactly lowercase.</strong> <code>Index.html</code> is not found. <a href="../lessons/0013-github-pages.html">6.3</a></label></li>
+  <li><label><input type="checkbox"> <strong>The README's first line and the About → Website field hold the verified live URL</strong>, including the repository part. <a href="../lessons/0082-readme-repo-description.html">6.7</a></label></li>
+</ol>
+</div>
+
+<h2>Deploy</h2>
+<div class="doit">
+<ol>
+  <li><label><input type="checkbox"> <strong>Merge only after the checks pass.</strong> "Merge" means "merge if green". <a href="../lessons/0014-deploy-merge-live.html">6.6</a></label></li>
+  <li><label><input type="checkbox"> <strong>Know what your deploy is triggered by:</strong> a push to the Pages source branch, a Pages workflow run, or each push on another host. It is a setting you can read. <a href="../lessons/0081-actions-workflow.html">6.5</a> · <a href="../lessons/0083-other-hosts.html">6.8</a></label></li>
+  <li><label><input type="checkbox"> <strong>Watch the Actions tab:</strong> run → job → log. A red run means a step failed on GitHub's fresh machine; read the first error line before changing anything. <a href="../lessons/0081-actions-workflow.html">6.5</a></label></li>
+  <li><label><input type="checkbox"> <strong>A green deploy job is only a claim.</strong> It says the package was accepted and gives a URL; it does not show a visitor's view. <a href="../lessons/0014-deploy-merge-live.html">6.6</a></label></li>
+  <li><label><input type="checkbox"> <strong>App reads a new secret? Compare the host's list with the app's needs</strong> (<code>gh secret list</code>, or the host's secrets page). A missing name blocks the whole deploy. <a href="../lessons/0102-deploy-blockers.html">8.14</a></label></li>
+  <li><label><input type="checkbox"> <strong>Expect publish lag of up to 10 minutes</strong> on Pages; wait rather than start editing. <a href="../lessons/0014-deploy-merge-live.html">6.6</a></label></li>
+  <li><label><input type="checkbox"> <strong>Re-run only a flake.</strong> If the log names a real error, fix the code or the recipe. <a href="../lessons/0081-actions-workflow.html">6.5</a></label></li>
+</ol>
+</div>
+
+<h2>After</h2>
+<div class="doit">
+<ol>
+  <li><label><input type="checkbox"> <strong>Open the real public URL</strong> — not localhost, not the repository page. <a href="../lessons/0014-deploy-merge-live.html">6.6</a></label></li>
+  <li><label><input type="checkbox"> <strong>Use a private window or a hard refresh.</strong> The browser cache can serve yesterday's page from a normal reload. <a href="../lessons/0014-deploy-merge-live.html">6.6</a></label></li>
+  <li><label><input type="checkbox"> <strong>Find one text fragment only the new version has.</strong> A page that looks right may still be the old build. <a href="../lessons/0084-rollback.html">6.9</a></label></li>
+  <li><label><input type="checkbox"> <strong>Narrow the window to phone size.</strong> Drag it narrow or use the browser's phone-sized view, and check nothing overflows. <a href="../lessons/0029-run-yourself.html">2.1</a></label></li>
+  <li><label><input type="checkbox"> <strong>Walk the main action end to end</strong> — the one thing the app is for, clicked through to the end. <a href="../lessons/0014-deploy-merge-live.html">6.6</a></label></li>
+  <li><label><input type="checkbox"> <strong>Load one big file through its external link</strong> and confirm it arrives. <a href="../lessons/0080-size-limits-big-files.html">6.4</a></label></li>
+  <li><label><input type="checkbox"> <strong>Read the response, not the tick:</strong> a status code and a line of page text. One 404 right after a deploy is a hint, not a verdict. <a href="../lessons/0014-deploy-merge-live.html">6.6</a></label></li>
+  <li><label><input type="checkbox"> <strong>Click the repository page's Website link and the README link.</strong> Both must reach the page you just checked. <a href="../lessons/0082-readme-repo-description.html">6.7</a></label></li>
+  <li><label><input type="checkbox"> <strong>On a custom domain, confirm the padlock</strong> and that the address shows your app, not a parking page. DNS can take up to 24 hours. <a href="../lessons/0085-custom-domains.html">6.10</a></label></li>
+</ol>
+</div>
+
+<h2>If it breaks: rollback</h2>
+<div class="doit">
+<ol>
+  <li><label><input type="checkbox"> <strong>Establish which side is ahead:</strong> <code>git log --oneline -5</code> for main, a private window on the URL for live. Evidence, not memory. <a href="../lessons/0084-rollback.html">6.9</a></label></li>
+  <li><label><input type="checkbox"> <strong>Way 1 — revert the code:</strong> open a revert pull request, merge it, and let a fresh workflow run publish the corrected copy. Main and live agree again. <a href="../lessons/0084-rollback.html">6.9</a></label></li>
+  <li><label><input type="checkbox"> <strong>Way 2 — roll the host back</strong> if it keeps earlier deployments. Seconds, but main still holds the bad change, so the bug returns with the next deploy. <a href="../lessons/0084-rollback.html">6.9</a></label></li>
+  <li><label><input type="checkbox"> <strong>Never force-push main to rewind it.</strong> A revert moves forward honestly; force-push can make the remote lose commits. <a href="../lessons/0084-rollback.html">6.9</a></label></li>
+</ol>
+</div>
+
+</main>
+<footer class="lesson-foot"><p><a href="../lessons/0014-deploy-merge-live.html">Back to lesson 6.6</a></p></footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

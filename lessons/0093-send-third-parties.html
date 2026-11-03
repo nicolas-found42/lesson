@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What you send to third parties</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.5</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.5</p>
+  <h1>What you send to third parties</h1>
+  <p class="lede">Every prompt you type and every request your app makes can leave your machine. Before you ship an app that leans on outside services, you should know exactly what leaves, where it goes, and who is allowed to keep it.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="../lessons/0092-third-party-api-keys.html">8.4 Third-party API keys</a></span><span>Win: you can list what leaves your machine in a run, and check a provider's data policy before sending it anything</span></div>
+</header>
+<main>
+
+<h2>Why this matters when you ship</h2>
+<p>Your mission is to ship a working public app. The moment your app calls an outside service — a model API, a maps API, a review service, anything from lesson 8.4 — your users' data starts travelling. And it is not only your app: the coding agent you direct every day is itself an outside service. The point of this lesson is not to scare you off third parties. They are how modern apps get smart. The point is to make the flow visible, so you decide what leaves instead of discovering it later.</p>
+
+<h2>Your agent already sends data out</h2>
+<p>When you chat with a coding agent, your messages do not stay on your machine. To answer, the agent sends your prompt — and often the contents of the files it reads — to the company that runs the model. That is how the tool works; it is the same reason a plain AI chat works at all. What happens to that data afterwards depends on the provider's policy and on your account type.</p>
+<p>Anthropic's privacy center is direct about consumer accounts. It lists its condition as <q>if: You choose to allow us to use your chats and coding sessions to improve Claude</q>, and says it will then use those chats and coding sessions, including to improve its models.<sup class="cite"><a href="#src-2">[2]</a></sup> In other words, on a personal plan your sessions can be used for training if you allow it — worth checking once in your privacy settings. For commercial products such as the API, Anthropic's platform docs state the opposite default: <q>Retained data is never used for model training without your express permission</q> and <q>Conversation content (your prompts and Claude's outputs) is not retained by default.</q><sup class="cite"><a href="#src-1">[1]</a></sup></p>
+<p>There is also a local copy. Claude Code's documentation notes that <q>each message, tool use, and result is written to a plaintext JSONL file</q> on your own machine.<sup class="cite"><a href="#src-4">[4]</a></sup> omp's own docs add that its local credential database <q>is not encrypted at rest</q>.<sup class="cite"><a href="#src-5">[5]</a></sup> So the flow has two ends: a copy on your disk, and a copy at the provider. Both deserve the same care as a secret (lesson 8.1).</p>
+<p>Consumer plans also offer a narrower escape hatch. The same privacy center states that <q>Your Incognito chats are not used to improve Claude, even if you have enabled Model Improvement</q>.<sup class="cite"><a href="#src-2">[2]</a></sup> The text still travels to the provider so a reply can come back; what changes is what the provider may do with it afterwards. Use that mode for a session that contains a customer's words or your own key, and read the setting as one more layer rather than a substitute for judgment.</p>
+
+<h2>What your app sends to the services it calls</h2>
+<p>Lesson 8.4 covered the key you use to call a third-party API. The key is only half the story: every request also carries <em>data</em> — the text a user typed, a file they uploaded, a question your app asks. Once that request arrives, the provider's own rules apply, not yours. Providers differ widely here. Some keep requests for a fixed period, for example <q>store: true retains the completed session recording for 30 days</q>,<sup class="cite"><a href="#src-3">[3]</a></sup> and some offer a stricter arrangement called <strong>zero data retention</strong>, where prompts and outputs are not stored at all.<sup class="cite"><a href="#src-1">[1]</a></sup></p>
+<p>Take one concrete request, from an app that summarises reviews. The body might hold the review text, the star rating, and an identifier for the shop. The key in the header gets the request through the door; the body is the part that carries other people's words. Read a request body the way you read a form before signing it: which fields are personal, which are yours, and which would you mind seeing in a support ticket?</p>
+<p>The same applies to tools wired into your agent. OpenAI's data-controls page puts it plainly: <q>MCP servers are third-party services. Data sent to an MCP server is subject to its data residency policies.</q><sup class="cite"><a href="#src-3">[3]</a></sup> An MCP server is another outside company; anything your agent sends it is governed by that company's policy.</p>
+<span class="sidenote">Read the provider's privacy or data-usage page before you send it anything real. Look for three words: retention (how long they keep it), training (whether they learn from it), and an opt-out or zero-retention option.</span>
+
+<h2>A real pattern, anonymized</h2>
+<div class="vignette">
+  <span class="label">From a real session, details changed</span>
+  <p>A user was building a small game whose generator should match a catalog of roughly 1,400 real vehicle entries. The agent proposed sending those entries — pictures and specifications — to a third-party review service that scores content automatically. Before running anything, the agent asked whether sending the data out was allowed, and the user agreed with a $5 cap on the paid experiments. The data left the user's machine only because a human said yes, with a price limit attached — and the agent asked instead of assuming.</p>
+</div>
+<p>That is the pattern to copy: <strong>the agent should surface egress, and you should price it.</strong> The spend cap from lesson 8.4 is the cost half; this lesson is the privacy half.</p>
+
+<h2>The habit: ask "where does this go?"</h2>
+<p>Before any run that touches an outside service, make the agent inventory the flow. This prompt works in any agent — copy it:</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Before we run this plan, list every outside service that will receive data (the model provider, any APIs, any MCP servers). For each one, state exactly what will be sent: prompts, file contents, user data, or keys. Flag anything containing personal data or secrets. Then stop and wait for my go-ahead.</pre></div>
+<div class="callout">
+  <span class="label">Rule of thumb</span>
+  <p>If you did not write it, treat it as data, not instructions. And if it leaves your machine, someone else's policy now applies to it. Check the policy before the first real run, not after.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the two places your data goes when you use a coding agent, and say in one sentence who decides what happens to each copy.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>One copy stays on your machine (a local transcript, plaintext on disk). The other goes to the model provider, whose policy — and your account's privacy settings — decide retention and training. When your app calls a third-party API, a third copy goes to that provider under its policy.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">What leaves your computer when you chat with a coding agent?</p>
+  <button class="opt" type="button">Your prompts and the files it reads</button>
+  <button class="opt" type="button">Nothing at all, it all stays local</button>
+  <button class="opt" type="button">Only the code that you wrote yourself</button>
+  <button class="opt" type="button">Just the last message you sent it</button>
+  <div class="why"><p>Your prompts and any files the agent reads are sent to the model provider so it can answer. A local transcript also stays on your disk. Nothing about the chat is purely local.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">A provider says it may retain API requests for 30 days. That means:</p>
+  <button class="opt" type="button">The provider deletes all data instantly always</button>
+  <button class="opt" type="button">Retention only ever applies to other companies</button>
+  <button class="opt" type="button">Your requests may be stored there temporarily</button>
+  <button class="opt" type="button">The data is encrypted so nobody reads</button>
+  <div class="why"><p>Retention means the provider may keep what you sent for that period. It is not instant deletion, and encryption in transit is a different matter from storage policy.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Before a long agent run that calls outside services, the best question is:</p>
+  <button class="opt" type="button">Which outside services get which data now</button>
+  <button class="opt" type="button">How much will this entire project cost</button>
+  <button class="opt" type="button">What data will leave my machine here</button>
+  <button class="opt" type="button">Which exact model version will be used</button>
+  <div class="why"><p>Cost matters (lesson 8.4), but the privacy question comes first: which services receive what. Asking it makes the agent inventory the flow before anything is sent.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">Your app sends users' messages to a third-party API. The main privacy risk is:</p>
+  <button class="opt" type="button">It may crash on very long messages</button>
+  <button class="opt" type="button">The key might expire without any warning</button>
+  <button class="opt" type="button">The requests can never be traced back</button>
+  <button class="opt" type="button">The provider may store or reuse them</button>
+  <div class="why"><p>Once user messages reach the provider, its retention and training policy applies to them. That is why you check the provider's data policy — and prefer zero-retention options when users' words are involved.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://platform.claude.com/docs/en/manage-claude/api-and-data-retention">Anthropic: API and data retention</a> — what the Claude API keeps, and the zero data retention arrangement. Pair it with the privacy-center article below for consumer accounts.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Try: <em>"List every outside service my current project could send data to, and what each would receive"</em> or <em>"Does my account's plan allow my chats to be used for training, and how do I turn that off?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-1">Anthropic, <a href="https://platform.claude.com/docs/en/manage-claude/api-and-data-retention">API and data retention — Claude Platform Docs</a>. Retrieved 2026-11-02.</li>
+  <li id="src-2">Anthropic Privacy Center, <a href="https://privacy.claude.com/en/articles/10023580-is-my-data-used-for-model-training">Is my data used for model training?</a> (consumer products, March 2026). Retrieved 2026-11-02.</li>
+  <li id="src-3">OpenAI, <a href="https://developers.openai.com/api/docs/guides/your-data">Data controls in the OpenAI platform</a>. Retrieved 2026-11-02.</li>
+  <li id="src-4">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a> (local session transcripts). Retrieved 2026-11-02.</li>
+  <li id="src-5">Stencil Labs, <a href="https://omp.sh/docs/secrets">omp secrets and auth documentation</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name what leaves your machine in an agent run or an API call, read a provider's retention/training policy, and ask the "where does this go?" question before a run.</p>
+  <p>Quick reference: <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Prev: <a href="../lessons/0092-third-party-api-keys.html">8.4 Third-party API keys</a></span> · <span>Next: <a href="../lessons/0094-logins-token-expiry.html">8.6 Logins and token expiry</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

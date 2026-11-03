@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Worktrees: two checkouts, one repository</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control as the safety net · Lesson 3.10</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.10</p>
+  <h1>Worktrees: two checkouts, one repository</h1>
+  <p class="lede">A worktree gives you a second folder showing a different branch of the same project at the same time. It removes the need to keep switching, and it creates a new way to lose track of where the agent is typing.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0044-branch.html">3.5 Branch</a></span><span>Win: you can keep two checkouts straight and tell your agent which one to edit</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Once your app is live, you often want two things at once: fix a bug in the version people are using, and build a feature that is not ready. Lesson <a href="0044-branch.html">3.5</a> gave you branches for that, but a branch only helps while you are standing on it. One folder holds one branch at a time, so every switch rearranges the files under the agent that is working in them.</p>
+<p>A worktree removes that shuffling. You get a second folder on disk, checked out to another branch, sharing the same history. The benefit is real and the hazard is specific: two folders that look almost identical, and an agent that will edit whichever one it was pointed at. This lesson is about the second half.</p>
+
+<h2>One repository, more than one folder</h2>
+<p>Git's reference defines it in two sentences: <q>Manage multiple working trees attached to the same repository.</q> and <q>A git repository can support multiple working trees, allowing you to check out more than one branch at a time.</q><sup class="cite"><a href="#src-git-worktree">[1]</a></sup> You keep your original folder, called the main worktree, and add others. Each extra one is a linked worktree.</p>
+<p>I ran this in a throwaway project with one page and one commit:</p>
+<pre><code>$ git worktree add ../my-app-dark -b dark-mode
+Preparing worktree (new branch 'dark-mode')
+HEAD is now at af5932e Add home page
+
+$ git worktree list
+/…/my-app       af5932e [main]
+/…/my-app-dark  af5932e [dark-mode]</code></pre>
+<p>There are now two folders, <code>my-app</code> on <code>main</code> and <code>my-app-dark</code> on <code>dark-mode</code>, both holding the same one page. Nothing was duplicated except the files themselves, which are small. The history, the branches, and the remote live once, in the main repository.</p>
+<div class="callout">
+  <span class="label">The mental picture</span>
+  <p>A branch is a label on a commit. A worktree is a folder that has one of those labels checked out. You can have many labels and many folders, and the folders are what an editor or an agent actually touches.</p>
+</div>
+
+<h2>The files really are separate</h2>
+<p>Editing in one folder leaves the other alone. I added a line in the second checkout and asked both folders what changed:</p>
+<pre><code>$ cd ../my-app-dark &amp;&amp; git status --short
+ M index.html
+
+$ cd ../my-app &amp;&amp; git status --short
+(no output)
+
+$ cat index.html
+&lt;h1&gt;My Recipe Box&lt;/h1&gt;
+&lt;ul&gt;&lt;li&gt;Soup&lt;/li&gt;&lt;/ul&gt;</code></pre>
+<p>The edit exists in one folder and not the other, and the second folder is not "behind": it is a different branch. That is the whole point, and it is also where beginners lose time. A change you can see in one window is invisible in the other, so a screenshot taken from the wrong folder proves something about the wrong app.</p>
+
+<h2>Two rules git enforces</h2>
+<p>The first rule is that a branch can be checked out in only one place. OpenAI's Codex documentation spells out why: <q>Git only allows a branch to be checked out in one place at a time.</q><sup class="cite"><a href="#src-cx-worktrees">[2]</a></sup> Git's reference says the add command <q>refuses to create a new worktree when &lt;commit-ish&gt; is a branch name and is already checked out by another worktree</q>.<sup class="cite"><a href="#src-git-worktree">[1]</a></sup> I tried it:</p>
+<pre><code>$ git worktree add ../another main
+Preparing worktree (checking out 'main')
+fatal: 'main' is already used by worktree at '/…/my-app'</code></pre>
+<p>That refusal is a gift. It means two folders can never quietly write to the same branch, so the worst case is a change in the wrong folder, not two agents overwriting each other's commits.</p>
+<p>The second rule concerns removal. A linked worktree can be removed with <code>git worktree remove</code>, and Git's reference restricts it: <q>Only clean worktrees (no untracked files and no modification in tracked files) can be removed.</q><sup class="cite"><a href="#src-git-worktree">[1]</a></sup> Uncommitted work is protected unless you force it. Removing the folder does not delete the branch; in my run <code>dark-mode</code> survived with its commit, ready to be checked out again in a new folder.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what does a worktree add to a project, and what does git refuse to do with a branch that is already checked out somewhere? Answer in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A worktree adds a second folder, checked out to a different branch, sharing the same repository history. Git refuses to check the same branch out in two worktrees at once, so no two folders can commit to one branch.</p></div>
+</div>
+
+<h2>The failure this creates</h2>
+<p>An agent does not have a map of your disk. It has a working directory: the folder it was started in, which it treats as the project. Every relative path it edits is resolved against that one folder. Two checkouts of the same repository are, to the agent, two unrelated places, and only one of them is "here".</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user's repository had a rule: do the work in a worktree, never in the main checkout. An agent ignored it, edited the main checkout directly, and reported the change as committed. A reviewer caught it, and moving those commits into the worktree took extra steps. In a different session the same class of mistake repeated more than five times: the agent's file tools resolved paths against the session's working folder rather than the checkout being prepared for release. Each edit looked successful and changed the other copy. The only signals were a diff that did not match the summary and a reviewer asking why a file was unchanged.</p>
+</div>
+<p>Notice the shape of the failure. Nothing errors. The edit lands, the tool call succeeds, the agent's summary is confident, and the file you care about did not change. This is why the habit in lesson <a href="0030-claims-vs-evidence.html">2.2</a> matters more here than anywhere else in this unit: a claim about a file is not a reading of that file.</p>
+
+<h2>Tell the agent where work happens</h2>
+<p>You do not need the agent to understand your folder layout. You need to remove the ambiguity before it starts, and check it after. Four sentences do most of the work:</p>
+<ol>
+  <li><strong>Name the folder, not the project.</strong> "Work in <code>/…/my-app-dark</code>" beats "work on the dark mode branch". The first is a place; the second is a label the agent must resolve.</li>
+  <li><strong>Ask it to prove where it is.</strong> "Run <code>pwd</code> and <code>git worktree list</code> before editing." Both are read-only and take a second.</li>
+  <li><strong>Ask for the diff, not the summary.</strong> "Show <code>git status --short</code> in that folder after the edit" turns an invisible success into evidence you can read.</li>
+  <li><strong>Say which copy must not change.</strong> "Do not edit the main checkout at <code>/…/my-app</code>" gives a reviewer something concrete to check against.</li>
+</ol>
+<p>For larger work, the same rule can live in the project rules file from lesson <a href="0027-project-rules-file.html">1.12</a>, so it applies to every session rather than the one where you remembered.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Commit whatever is in progress, so both folders start from a known state. Run <code>git status</code> and expect a clean working tree.</label></li>
+    <li><label><input type="checkbox"> Keep approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>) and start your agent inside the original project folder.</label></li>
+    <li><label><input type="checkbox"> Give it the prompt below and read each result before approving the next step.</label></li>
+    <li><label><input type="checkbox"> Open both folders yourself afterwards. The edit should appear in the second one only.</label></li>
+  </ol>
+  <div class="prompt">
+    <button class="copy" type="button">Copy</button>
+    <pre>Before changing anything, run `pwd`, `git status --short`, and `git branch --show-current`, and show me the output.
+
+Create a second checkout with:
+
+    git worktree add ../my-app-experiment -b experiment
+
+Then work ONLY in the new folder ../my-app-experiment. Do not edit any file in the folder you started in.
+
+In the new folder, change the main heading in index.html to "My Recipe Box (experiment)" and commit it with a one-line message.
+
+Afterwards, show me `pwd`, `git status --short`, and the first line of index.html in the new folder, then run `git worktree list`.
+
+Stop there. Do not merge, do not push, and do not remove the worktree.</pre>
+  </div>
+  <div class="expect"><p><code>git worktree list</code> shows two paths, the original on <code>main</code> and the new one on <code>experiment</code>. The heading is changed in the new folder only. In the original folder, <code>git status --short</code> prints nothing and <code>index.html</code> still has the old heading. If the original changed instead, the agent edited the wrong checkout even though its message said otherwise.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>How the three agents create one</h2>
+<p>Each tool can make the second checkout for you, and each names it differently. None of them changes the underlying rule: the agent edits the folder it is running in.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Starting with <code>--worktree</code> or <code>-w</code> creates an isolated checkout and runs the session there. The docs say it is created <q>under .claude/worktrees/&lt;name&gt;/ at your repository root, on a new branch named worktree-&lt;name&gt;</q>.<sup class="cite"><a href="#src-cc-worktrees">[3]</a></sup> A fresh checkout is not a complete copy of your setup: <q>gitignored files like .env aren't there and dependencies aren't installed.</q><sup class="cite"><a href="#src-cc-bp">[4]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Codex has a <code>--worktree</code> option that will <q>Start in a new managed Git worktree.</q><sup class="cite"><a href="#src-cx-cmd">[5]</a></sup> Its worktree page describes the second copy plainly: <q>A worktree allows you to create a second copy ("checkout") of your repository.</q><sup class="cite"><a href="#src-cx-worktrees">[2]</a></sup> In the desktop app the same choice appears as <strong>Worktree</strong> in the new chat view.<sup class="cite"><a href="#src-cx-worktrees">[2]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp ships a command for this. <code>omp worktree --help</code> on the installed 18.16.0 reports <code>omp worktree add ../feature</code> and <code>omp worktree list</code>, and the parent help calls it <q>Add, list, or clear git worktrees</q>.<sup class="cite"><a href="#src-omp-help">[6]</a></sup> omp's documentation comes only from its authors, so treat the flags as observed behaviour of the version you installed.</p>
+  </div>
+</div>
+<div class="warn">
+  <span class="label">A missing .env is not a bug</span>
+  <p>Because a worktree is a fresh checkout, files git is told to ignore are absent. A key file or local settings file will not be there, and an app that needs one may fail for that reason alone. Say so in the prompt, and let the agent tell you what is missing instead of pasting secrets into a new folder.</p>
+</div>
+
+<h2>When a worktree is worth it</h2>
+<p>For a one-page site, switching branches is fine and cheaper to reason about. A worktree earns its keep when you want both versions present at once: a bug fix against the live app while a redesign continues; a second agent reviewing a change without touching the first agent's files; a long build or test run in one folder while you keep editing in the other. The cost is one more path to keep straight, and one more place an agent can put an edit.</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">What does adding a worktree give you?</p>
+  <button class="opt" type="button">A second copy of the remote server</button>
+  <button class="opt" type="button">A backup of every branch on disk</button>
+  <button class="opt" type="button">A folder checked out on a branch</button>
+  <button class="opt" type="button">A fresh commit with no parent link</button>
+  <div class="why"><p>A worktree is a second checkout of the same repository, on its own branch. The history is shared; the files are separate.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Your agent reports a committed fix, but your main folder is unchanged. What is the likely cause?</p>
+  <button class="opt" type="button">The edit landed in a different checkout</button>
+  <button class="opt" type="button">The commit was rejected by the server</button>
+  <button class="opt" type="button">Git deleted the branch during the commit</button>
+  <button class="opt" type="button">The browser cached the older page contents</button>
+  <div class="why"><p>With two checkouts, an agent works in whichever folder it was started in. The edit succeeds somewhere real, just not in the folder you were looking at.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You ask git to check out main in a second worktree. What happens?</p>
+  <button class="opt" type="button">Git silently makes a second main branch</button>
+  <button class="opt" type="button">Git copies main to another checkout folder</button>
+  <button class="opt" type="button">Git deletes an older worktree folder now</button>
+  <button class="opt" type="button">Git refuses a branch already checked out</button>
+  <div class="why"><p>One branch, one checkout. Git's add command refuses a branch that another worktree already holds, which keeps two folders from committing to the same line.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://git-scm.com/docs/git-worktree">git-worktree</a> — the complete reference for adding, listing and removing these folders. Read the description and the <code>add</code> and <code>remove</code> options; the path-resolution details in "DETAILS" are for when something has gone wrong. Pair it with lesson <a href="0044-branch.html">3.5</a> if "checked out" still feels abstract.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"List my worktrees and tell me which branch each folder has, in plain words"</em> or <em>"Which folder is your current working directory, and how can you prove it?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-git-worktree">Git project, <a href="https://git-scm.com/docs/git-worktree">git-worktree documentation</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cx-worktrees">OpenAI, <a href="https://learn.chatgpt.com/docs/environments/git-worktrees">Worktrees</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cc-worktrees">Anthropic, <a href="https://code.claude.com/docs/en/worktrees">Run parallel sessions with worktrees</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cc-bp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cx-cmd">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands">Codex CLI: developer commands</a>. Retrieved 2026-11-02.</li>
+  <li id="src-omp-help">Stencil Labs, <code>omp --help</code> and <code>omp worktree --help</code>, omp 18.16.0, run locally 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><a href="../index.html">Course index</a> · <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <p>Lesson 3.10 of <em>Building apps with a coding agent</em>. Next: <a href="0050-undo.html">3.11 Undo</a>.</p>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

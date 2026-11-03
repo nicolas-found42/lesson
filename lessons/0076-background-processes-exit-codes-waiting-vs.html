@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Background processes: started is not finished</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 5 · How agents work · Lesson 5.9</nav>
+<header class="lesson-head">
+<p class="kicker">Unit 5 · Lesson 5.9</p>
+<h1>Background processes: started is not finished</h1>
+<p class="lede">A command can keep working after the agent speaks. Learn what to wait for, what an exit code tells you, and when checking again helps.</p>
+<div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0004-the-terminal-in-five-commands.html">the terminal</a></span><span>Win: distinguish a running job from a completed result</span></div>
+</header>
+<main>
+<h2>Why this matters for your app</h2>
+<p>Shipping your app involves commands that take time: preparing files, checking them, or starting a preview. If you mistake “started” for “finished,” you can publish before the check ends. If you restart every quiet command, you can create duplicate work. Your job is not to demand constant chatter. It is to ask for the right evidence at the right point.</p>
+<p>A <strong>process</strong> is a running instance of a program. A <strong>background process</strong> keeps running while control returns to the place that launched it. In Bash, a shell that interprets terminal commands, ending a command with <code>&amp;</code> starts it in the background: the shell does not wait for the command to finish.<sup class="cite"><a href="#src-lists">[1]</a></sup> You do not need to add that symbol yourself for this lesson. An agent may manage background work through its own tools.</p>
+
+<h2>Keep three questions separate</h2>
+<p>First: <em>did it start?</em> Second: <em>has it ended?</em> Third: <em>did it achieve your goal?</em> Those are different questions. A job identifier, a label used to refer to one run, answers which job you mean. It is not a passing result.</p>
+<table class="ref">
+<thead><tr><th>Evidence</th><th>What you can conclude</th></tr></thead>
+<tbody>
+<tr><td>Job started; identifier returned</td><td>There is a run to track, not yet a result.</td></tr>
+<tr><td>Still running; progress output</td><td>Work continues; completion remains unknown.</td></tr>
+<tr><td>Finished; exit code recorded</td><td>The program ended and reported a status.</td></tr>
+<tr><td>Expected page or report checked</td><td>You have evidence about the requested outcome.</td></tr>
+</tbody>
+</table>
+<p>The distinction matters even when you see a zero immediately after launching work. Bash documents that starting an asynchronous command returns status zero without waiting for it.<sup class="cite"><a href="#src-lists">[1]</a></sup> That zero belongs to launching the background command, not proof of its eventual success. Ask which command and which stage a reported status describes.</p>
+
+<h2>Read the exit code, then read the result</h2>
+<p>An <strong>exit code</strong>, also called an exit status, is a number a program reports when it ends. For the shell, zero means success and a nonzero number means failure. The Bash manual states the rule plainly: a non-zero exit status indicates failure.<sup class="cite"><a href="#src-exit">[2]</a></sup> A running job does not yet have its final exit code. “No error yet” is not the same as “finished successfully.”</p>
+<p>Do not treat every nonzero code as the same diagnosis. Ask for the number and the relevant output: the text the program produced. Conversely, a zero only tells you the program reported success according to its own rules. It cannot tell you whether the page looks right or whether the requested report actually exists.</p>
+<div class="vignette">
+<span class="label">Worked example · anonymized</span>
+<p>A user asked an agent to run a long visual check of an app. The run ended with code zero, but the expected images were missing. The cause was not established. The user required progress and images to be saved during the run, rather than discovering an empty result at the end.</p>
+<p>The better report was not “passed.” It was “the process ended with zero; the expected images are missing; the requested check is not proven.” That wording preserves both facts without inventing a cause.</p>
+</div>
+<p>For your app, specify the expected result before starting. A finite check should finish and provide its summary. A preview server, a program that serves your page while you use it, has a different goal: be ready and remain running. Ask the agent to name a readiness check rather than waiting for that server to exit. A process that stays alive is not automatically stuck.</p>
+
+<div class="recall">
+<span class="label">Recall before revealing</span>
+<p>A command has a job identifier and has printed no errors. What two facts are still missing before you call its check successful?</p>
+<textarea aria-label="Your answer"></textarea>
+<button type="button" class="btn reveal">Reveal</button>
+<div class="answer">Whether that run has finished, including its final exit code, and whether the expected result was actually produced. An identifier and silence prove neither.</div>
+</div>
+
+<h2>Waiting is not repeated checking</h2>
+<p><strong>Polling</strong> means repeatedly asking whether work has finished. <strong>Waiting</strong>, here, means leaving that work alone until a completion signal arrives. A completion notification is a message that a run has ended. Progress output describes what has happened so far; it need not mean the job is over.</p>
+<p>Prefer a completion notification or a tool's wait facility when available. That is a workflow recommendation, not a claim that every agent has the same button. If notifications are unavailable, agree on spaced status checks and a limit in advance. Asking every few seconds cannot make a slow job finish sooner.</p>
+<p>There is a separate reason to inspect an ongoing run: catching a bad result early. For a ten-minute visual check, an early sample image can show that the wrong page opened. That is an evidence checkpoint, not a loop that asks “done yet?” without learning anything new.</p>
+<p>Keep a timeout, a limit on how long an operation may wait, separate from a diagnosis. If a tool reports a timeout, ask whether the underlying process ended, was stopped, or remains running. Do not launch another copy while that state is unknown. If work must stop, request confirmation that the specific job stopped before restarting it.</p>
+
+<h2>Ask for state, not reassurance</h2>
+<div class="prompt"><button type="button" class="copy">Copy</button><pre>Keep approval prompts on. Before starting a long command, tell me whether it should finish or stay running, what evidence will show success, and how we will learn its state. Track the same job; do not restart it because it is quiet. Prefer completion notifications or a wait facility over repeated polling. If neither exists, propose a bounded checking interval. Report the final exit code and expected result separately. If interrupted or timed out, establish whether the process still runs.</pre></div>
+<p>Use the same request in all three agents. Where you inspect the work depends on your interface:</p>
+<div class="agent-tabs">
+<div role="tablist" aria-label="Agent"><button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button><button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button><button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button></div>
+<div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude"><p>In Claude Code's desktop app, open <strong>Background tasks</strong> from the title bar's menu once background work exists. The documentation says: <q>Click any entry to see its output in the subagent pane or stop it.</q><sup class="cite"><a href="#src-desktop">[3]</a></sup> In another interface, ask for the current job and its output rather than assuming the desktop controls exist.</p></div>
+<div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden><p>Ask Codex to identify the current run, its available completion signal, and how to inspect its output in your interface. This lesson does not assume a particular background-task button. Keep “running,” “ended,” and “verified” separate in its report.</p></div>
+<div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden><p>Ask omp (oh-my-pi) to identify the current run and explain its available wait or notification mechanism before starting. Do not copy another agent's interface instructions. Require the final status and expected evidence for that same run.</p></div>
+</div>
+<p>Before doing the practice, keep approval prompts on; <a href="0006-approvals-and-permissions.html">lesson 0.6</a> explains the settings. Approval to start a command is not approval to launch unlimited copies or leave unwanted work running.</p>
+
+<h2>Practice: observe one harmless run</h2>
+<div class="doit">
+<ol>
+<li><label><input type="checkbox"> In your agent, ask for a harmless demonstration that waits briefly, prints a short completion message, and exits. Require no file edits, installation, network requests, or persistent server. Ask it to explain the command before you approve it.</label></li>
+<li><label><input type="checkbox"> Before approving, identify what will count as completion. Ask whether this demonstration will run in the foreground, where you wait for its response, or in the background.</label></li>
+<li><label><input type="checkbox"> Approve only the explained command. Let that one run finish. If it runs in the background, ask the agent to use its completion mechanism instead of launching another copy.</label></li>
+<li><label><input type="checkbox"> Ask for the command's final exit code and the printed completion message. State which proves that it ended and which is the expected output.</label></li>
+</ol>
+<div class="expect">You should see one completed run, its short message, and a final exit code. If it ran in the foreground, there may be no background identifier or notification. That is not a failure: you have still separated starting, ending, and checking the output.</div>
+<p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+<p class="q">A background check returns a job identifier. What should happen next?</p>
+<button type="button" class="opt">Declare the check passed without its result.</button>
+<button type="button" class="opt">Await the check result using that identifier.</button>
+<button type="button" class="opt">Launch the check again without that identifier.</button>
+<div class="why">Track the same run and obtain its completion result. Starting is not passing, and a duplicate can make the evidence harder to interpret.</div>
+</div>
+<div class="quiz" data-correct="0">
+<p class="q">A run ends with zero, but the expected report is absent. Which conclusion fits?</p>
+<button type="button" class="opt">The process succeeded; the outcome remains unproven.</button>
+<button type="button" class="opt">The process succeeded; the outcome became irrelevant.</button>
+<button type="button" class="opt">The process failed; the outcome remains irrelevant.</button>
+<div class="why">Zero reports program success, not fulfillment of your whole request. The missing report must remain visible as a gap in the evidence.</div>
+</div>
+<div class="quiz" data-correct="2">
+<p class="q">Completion notifications are available for a slow check. Which approach is better?</p>
+<button type="button" class="opt">Repeat the command while awaiting its completion.</button>
+<button type="button" class="opt">Request more reassurance while awaiting its completion.</button>
+<button type="button" class="opt">Await notification while leaving that command running.</button>
+<div class="why">A completion signal answers the state question without repeated polling. An early evidence checkpoint may still be useful, but repeated reassurance adds no proof.</div>
+</div>
+<p class="quiz-score" aria-live="polite"></p>
+<div class="source-box"><span class="label">Read next</span><p><a href="https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html">Bash Reference Manual: Exit Status</a> explains precisely what zero and nonzero mean, so you can read a command's result without mistaking it for proof of your whole goal.</p></div>
+<div class="ask"><span class="label">Ask your teacher</span><p>Ask: “Should this command finish, or stay running?” or “What would distinguish a quiet healthy run from a stuck one in my app?” Bring the job's output and current state, not only the agent's summary.</p></div>
+<h2>Sources</h2>
+<ol class="cite">
+<li id="src-lists"><a href="https://www.gnu.org/software/bash/manual/html_node/Lists.html">GNU Bash Reference Manual: Lists of Commands</a>, Free Software Foundation. Retrieved 2026-11-02. Background execution and the launch status, distinct from final completion.</li>
+<li id="src-exit"><a href="https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html">GNU Bash Reference Manual: Exit Status</a>, Free Software Foundation. Retrieved 2026-11-02. Zero, nonzero, and command results.</li>
+<li id="src-desktop"><a href="https://code.claude.com/docs/en/desktop#watch-background-tasks">Desktop application: Watch background tasks</a>, Anthropic. Retrieved 2026-11-02, from the course's cached official page. Desktop task output and stopping controls; not a universal agent interface.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+<p>You can now: distinguish a running job from a completed result, and ask for the right completion evidence.</p>
+<p><a href="../reference/glossary.html">Glossary</a> · <a href="../reference/agent-loop.html">Agent loop</a> · <a href="../reference/failure-modes.html">Failure modes</a></p>
+<div class="pager"><a href="0075-stale-invented-claims.html">← Previous: stale or invented claims</a><a href="0077-human-only-steps.html">Next: human-only steps →</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

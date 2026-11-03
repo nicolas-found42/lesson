@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logs and telemetry: enough to diagnose?</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.9</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.9</p>
+  <h1>Logs and telemetry: enough to diagnose?</h1>
+  <p class="lede">When something goes wrong, a screenshot shows you the symptom. A log shows you what the app was doing at that moment. Without one, every fix is a guess.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0030-claims-vs-evidence.html">2.2 Claims versus evidence</a></span><span>Win: you can tell whether a bug is diagnosable before you try to fix it</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You will not be sitting in front of every visitor. When a friend writes "it broke after I clicked Pay", you get a sentence and maybe a photo. The app itself has to have written down what happened, or nobody can reconstruct it. That written record is what this lesson is about, and asking whether it exists is a skill you can use before you spend an hour on a fix.</p>
+
+<h2>A log is a record with a time on it</h2>
+<p>A <span class="term" title="A timestamped message that a running program writes about something it did or something that happened to it.">log</span> is a message the program writes while it runs. OpenTelemetry, the open standard for this kind of data, defines one as <q>a timestamped text record, either structured (recommended) or unstructured, with optional metadata.</q><sup class="cite"><a href="#src-o1">[1]</a></sup> Python's documentation puts the purpose in one line: <q>Logging is a means of tracking events that happen when some software runs.</q><sup class="cite"><a href="#src-p1">[2]</a></sup></p>
+<p><span class="term" title="Data a running system emits about its own behaviour: logs, plus counts and timings.">Telemetry</span> is the wider word for that kind of self-report. OpenTelemetry says <q>Telemetry refers to data emitted from a system and its behavior.</q><sup class="cite"><a href="#src-o2">[3]</a></sup> A professional setup also collects counts and timings (metrics) and the path of a single request (traces). You do not need those yet. You need logs, and you need to know when they are missing.</p>
+
+<h2>What makes a log line usable</h2>
+<p>Three things have to be in a line before it can help you: <em>when</em> it happened, <em>what</em> happened, and <em>which values</em> were involved. A line that says only "error" is nearly useless an hour later, because every error in the session looks identical.</p>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Not diagnosable</span>
+    <p><code>console.log("error")</code></p>
+    <p>No time, no run, no values. If this appears twelve times, you cannot tell which click produced which line, or what the numbers were.</p>
+  </div>
+  <div class="good">
+    <span class="label">Diagnosable</span>
+    <p><code>console.log("checkout", {run: 42, step: "pay", items: 2, total: 14.5})</code></p>
+    <p>A label, a run number, the step, and the values. Anyone reading it later can tell what the app believed at that moment.</p>
+  </div>
+</div>
+<p>Separating the values into named fields is what people mean by <span class="term" title="A log written as named fields (level, run, values) rather than one free sentence, so a tool can sort and filter it.">structured</span> logging. OpenTelemetry's guidance is that <q>OpenTelemetry accepts any log format, but not all formats are equally useful for analysis.</q><sup class="cite"><a href="#src-o1">[1]</a></sup> For a beginner app, structured means little more than: put the numbers in the line, and give each one a name.</p>
+<span class="sidenote">A log without a time is a note. A log with a time, a label and the values is evidence you can sort, count and compare between runs.</span>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three things a usable log line should contain, and say what is wrong with a line that only says "error".</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>When</strong> it happened, <strong>what</strong> happened, and <strong>which values</strong> were involved. "error" on its own has no time, no label and no numbers, so two occurrences cannot be told apart and nothing can be compared between runs.</p></div>
+</div>
+
+<h2>The question to ask before you fix anything</h2>
+<p>Here is the move this lesson is built around. When something misbehaves, before asking for a fix, ask the agent:</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Do you have enough logs or state history to diagnose this?
+Answer first, before changing any code:
+1. What does the app currently record, and where does that output go?
+2. At the moment the bug appears, what would you need to see?
+3. Which of those things is missing today?
+4. What is the smallest temporary log line or export that would fill the gap?
+
+Do not guess at a cause yet. If the answer is "not enough", say so plainly.</pre>
+</div>
+<p>Notice that this asks for honesty about the instrumentation, not for a theory. An agent that has no logs will still produce a confident-sounding cause; that cause is a guess wearing a lab coat. Asking the question first turns a guess into a short, bounded job: add the missing line, reproduce, read it.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user was building a small simulation: dots that learn to move around a screen, scored by how far they get. After a long run the dots froze at the same point and then behaved strangely. The user did not ask for a fix. They asked whether the agent had <em>enough logs and state history to diagnose it</em>. The agent said no: nothing was being recorded, so the only evidence was the user's description.</p>
+  <p>So the next task was not "fix the freeze" but "add diagnostics": a counter panel, an export of the run, and a replay of the last few seconds. The following run exported real data, and the cause was visible in it: a number that had been healthy for a hundred rounds collapsed at a specific point. The agent reproduced that collapse first, then fixed it. The fix took one pass, because the evidence had already narrowed the search.</p>
+</div>
+<p>The order matters. Instrument, reproduce, read, then fix. Skipping the first step does not save time; it moves the cost into a series of guesses, and each guess needs its own test.</p>
+
+<h2>Too little, and too much</h2>
+<p>Logs carry a <span class="term" title="How serious a log event is: debug, info, warning, error, critical.">level</span>, and the level decides what actually gets printed. Python's documentation gives the plain meanings: debug is <q>Detailed information, typically of interest only when diagnosing problems</q>, while info is <q>Confirmation that things are working as expected.</q><sup class="cite"><a href="#src-p1">[2]</a></sup> The same page notes that <q>the default level is WARNING</q>, so debug and info lines silently disappear unless someone turns them on.<sup class="cite"><a href="#src-p1">[2]</a></sup></p>
+<p>That default explains the most common surprise in this lesson: a programmer adds a careful diagnostic line, runs the app, and sees nothing. The line is not broken. The level is filtering it out. Before you conclude "the code never runs", check which level is being shown.</p>
+<p>The opposite failure is noise: a line inside a loop that repeats thousands of times, burying the one line you need. The habit that keeps both problems small is to log at the few points where the app makes a decision, not on every step it takes.</p>
+<div class="warn">
+  <span class="label">Never log secrets</span>
+  <p>Logs get copied into chat windows, issue trackers and screenshots. Never ask for passwords, API keys or personal details to be written into a log line. Lesson <a href="0089-secrets.html">8.1</a> covers what counts as a secret; lesson <a href="0091-never-print-commit.html">8.3</a> covers what happens after one leaks.</p>
+</div>
+
+<h2>Where the logs actually are</h2>
+<p>There are three places to look, and beginners often look in the wrong one.</p>
+<ul>
+  <li><strong>The browser console</strong> is where a web page's own messages and errors appear. MDN describes it as the place that <q>reports the errors encountered as the browser tries to execute your code</q>.<sup class="cite"><a href="#src-m1">[4]</a></sup> On a Mac, open the developer tools with <kbd>⌘</kbd>+<kbd>⌥</kbd>+<kbd>I</kbd>, then choose the Console tab.<sup class="cite"><a href="#src-m1">[4]</a></sup> The <code>console</code> object itself <q>provides access to the debugging console</q>, with methods for plain messages, warnings and errors.<sup class="cite"><a href="#src-m3">[5]</a></sup></li>
+  <li><strong>The terminal</strong> is where a program that runs on your machine prints its output, including crashes. If you started a local server, its messages land in the window that is running it.</li>
+  <li><strong>The host's build log</strong> is where a deployed site reports what happened while it was being published. On GitHub, <q>Logs include the status for each job and step in a workflow</q>, under the Actions tab.<sup class="cite"><a href="#src-g1">[6]</a></sup></li>
+</ul>
+<p>One more distinction, because it causes real confusion. Your agent's session transcript, the list of tool calls it made, is <em>not</em> your app's log. It records what the agent did while building; it says nothing about what your app did when a visitor clicked. When a bug appears at runtime, the evidence has to come from the running app.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open the project you ran in lesson 2.1, with approval prompts on, and start the page as usual.</label></li>
+    <li><label><input type="checkbox"> Open the developer tools (<kbd>⌘</kbd>+<kbd>⌥</kbd>+<kbd>I</kbd> on a Mac) and select the Console tab. Leave it open.</label></li>
+    <li><label><input type="checkbox"> Click the thing in your page that misbehaves, and watch whether any line appears in the console.</label></li>
+    <li><label><input type="checkbox"> Send the four-question prompt above. Do not let the agent edit anything yet.</label></li>
+    <li><label><input type="checkbox"> If something is missing, ask for exactly one log line at the moment of the click, with a label and the values. Reproduce the click yourself and read the line.</label></li>
+  </ol>
+  <div class="expect"><p>You should end with either a console line that describes the failing click, or a clear statement from the agent that no such line exists. A good line names the action and shows the numbers involved, for example a label plus the item count and the total. If the console stays empty after the click, check that you are looking at the same tab that shows your page, and that the message is not being filtered out by its level.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your app freezes on one button and nothing has been printed anywhere. What should you ask first?</p>
+  <button class="opt" type="button">Which button should I press next?</button>
+  <button class="opt" type="button">Do we have logs for this?</button>
+  <button class="opt" type="button">Can you make it load faster?</button>
+  <button class="opt" type="button">Why is the page so ugly?</button>
+  <div class="why"><p>Before any cause can be tested, you need to know whether the app recorded anything about the failing moment. If it did not, the first task is to add that record, not to guess.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A log line contains only the single word "error". Which addition helps most?</p>
+  <button class="opt" type="button">The time, the run, and the values</button>
+  <button class="opt" type="button">A larger font and one bright color</button>
+  <button class="opt" type="button">A shorter message with far fewer words</button>
+  <button class="opt" type="button">A friendly tone and one smiling face</button>
+  <div class="why"><p>Time, a run identifier and the values are what let you match a line to a moment and compare runs. Presentation and tone change nothing about what can be diagnosed.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You ask about a bug. The agent says it has no logs. What comes next?</p>
+  <button class="opt" type="button">Ask it to hide the bug from the users</button>
+  <button class="opt" type="button">Ask it to guess and patch the likely cause</button>
+  <button class="opt" type="button">Ask it to add logging, then reproduce the bug</button>
+  <button class="opt" type="button">Ask it to rewrite the entire app from scratch</button>
+  <div class="why"><p>Instrument, reproduce, read, then fix. Guessing produces a change you cannot check, and a rewrite throws away the very behaviour you are trying to observe.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://opentelemetry.io/docs/concepts/observability-primer/">Observability primer</a> — the shortest honest explanation of logs, metrics and traces. Read the sections on reliability and on logs; you can skip tracing for now. It is written for teams running servers, so ignore the tooling names and keep the definitions, which apply to a one-page site just as well.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure whether the thing on your screen is a log or an error message? Ask. Try: <em>"Is the red line in my console a log or a crash?"</em> or <em>"Which log line would have caught this bug?"</em> Lesson <a href="0041-reading-screenshots-diagnostics-from-real-user.html">2.14</a> takes this further, when the evidence arrives from someone else's screen.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-o1">OpenTelemetry, <a href="https://opentelemetry.io/docs/concepts/signals/logs/">Logs</a>. Retrieved 2026-11-02.</li>
+  <li id="src-p1">Python Software Foundation, <a href="https://docs.python.org/3/howto/logging.html">Logging HOWTO</a>. Retrieved 2026-11-02 (page served as version 3.15.2).</li>
+  <li id="src-o2">OpenTelemetry, <a href="https://opentelemetry.io/docs/concepts/observability-primer/">Observability primer</a>. Retrieved 2026-11-02.</li>
+  <li id="src-m1">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/What_are_browser_developer_tools">What are browser developer tools?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-m3">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Web/API/console">console</a>. Retrieved 2026-11-02.</li>
+  <li id="src-g1">GitHub Docs, <a href="https://docs.github.com/en/actions/how-tos/monitor-workflows/view-workflow-run-history">Viewing workflow run history</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> say what a log is, tell a diagnosable line from a useless one, and ask whether the app recorded enough to explain a bug before anyone tries to fix it.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a></p>
+  <div class="pager"><a href="0036-screenshots-as-evidence.html">Previous: 2.8 Screenshots as evidence</a><a href="0038-independent-reviewer.html">Next: 2.10 Independent reviewer</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

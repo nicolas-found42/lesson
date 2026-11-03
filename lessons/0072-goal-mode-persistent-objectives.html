@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Goal mode and persistent objectives</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 5 · How agents work · Lesson 5.5</nav>
+<header class="lesson-head">
+<p class="kicker">Unit 5 · Lesson 5.5</p>
+<h1>Goal mode and persistent objectives</h1>
+<p class="lede">Keeping a target active can help an agent finish a long task. It can also keep a bad task running long after you expected it to stop.</p>
+<div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0057-stop-conditions.html">4.3 Stop conditions</a></span><span>Win: you can bound a persistent objective before activating it</span></div>
+</header>
+<main>
+<h2>A reminder is not a finish line</h2>
+<p>To ship your app, you need completed work, not an agent that stays busy. A persistent objective can help keep a larger task in view. But making an instruction last longer does not make it clearer. Before you activate one, you need to know both what counts as success and what should happen when success is out of reach.</p>
+<p>A <strong>persistent objective</strong> is a target kept active while work continues, rather than left only in an earlier message. <strong>Goal mode</strong> is a tool feature for managing that target. OpenAI describes the Codex feature as keeping the goal attached to the active session while work continues; omp describes setting or replacing a persistent objective.<sup class="cite"><a href="#src-cx">[1]</a></sup><sup class="cite"><a href="#src-omp">[2]</a></sup> The controls differ. Do not assume the same slash command has the same meaning everywhere.</p>
+<p>This is different from the ordinary agent loop. Even without goal mode, an agent can read, act, and check repeatedly after one prompt. Anthropic names those phases “gather context, take action, and verify results.”<sup class="cite"><a href="#src-cc">[3]</a></sup> A persistent target helps manage continuing work; it is not what first gives an agent the ability to use tools.</p>
+
+<h2>What persistence does not settle</h2>
+<p>Consider “make the gallery reliable.” Reliable for whom? Which parts must work? Can the agent change the design? Should it publish changes? Persistence answers none of those questions. You still own the product decision and the definition of done: the observable result that counts as finished.</p>
+<p>Your <a href="0057-stop-conditions.html">stop condition</a> also needs a failure branch. “Stop when the page works” says nothing about the fifth unsuccessful repair. Add a limit and a useful report: “After two unsuccessful attempts, stop and show the evidence and remaining blocker.” That is not permission to claim success. It is permission to return an honest incomplete result instead of continuing without a boundary.</p>
+<p>Keep approval prompts on, using <a href="0006-approvals-and-permissions.html">lesson 0.6</a> if needed. Persistence is not a reason to grant broader permissions. An instruction to avoid paid services is also not a technical spending lock. For this lesson's practice, do not authorize paid calls at all.</p>
+
+<h2>Two runs with different boundaries</h2>
+<div class="vignette">
+<span class="label">A real pattern, anonymized</span>
+<p>A user approved an app redesign, made it a persistent objective, then asked for testing with no remaining problems. The feature work took a small part of the run. Most of the next half-day went into repeated checking and repair. Some failures came from the checker itself. More work kept appearing, a paid service ran out of credit, and the user eventually interrupted. The app had not reached the intended live acceptance result.</p>
+<p>In another run, a user turned a specific list of unchecked behavior into an objective with a small spending cap and instructions for unavailable services. The agent found real defects and completed a finite set of changes. That run still had mistakes, including a test touching real saved data. A bounded target helped, but did not replace safe testing or review.</p>
+</div>
+<p>The difference to borrow is not “persistent goals are good” or “persistent goals are bad.” It is that a finite list can be completed, while an undefined search for perfection can always produce another task. Repeating a weak instruction more reliably can make its weakness more expensive.</p>
+
+<h2>Recognize the failure modes</h2>
+<p><strong>The target keeps expanding.</strong> Fixing one button becomes redesigning the whole page. Ask whether each new change is necessary for the original observable result. Put unrelated discoveries in a report; do not silently add them to the objective.</p>
+<p><strong>Activity replaces progress.</strong> Another test run is not progress if it produces the same failure without new evidence. Require the agent to explain what changed and why the next attempt is different. A limit on attempts gives you a chance to decide rather than funding repetition.</p>
+<p><strong>The checker becomes the project.</strong> A failing check might reveal an app defect, a broken check, or an unavailable service. Do not authorize the agent to weaken the check until it passes. Ask it to distinguish those possibilities and show evidence. If it cannot, stopping with uncertainty is better than redefining success.</p>
+<p><strong>The objective becomes stale.</strong> You decide to leave publishing for later, but the active target still includes publishing. Revise or remove that target explicitly. A message about your new preference should not leave an older objective contradicting it.</p>
+<div class="recall">
+<span class="label">Recall before revealing</span>
+<p>A goal says “keep fixing until everything works.” Name two missing boundaries and explain why a persistent reminder cannot supply them.</p>
+<textarea aria-label="Your answer"></textarea><button class="btn reveal" type="button">Reveal answer</button>
+<div class="answer"><p>It needs a finite definition of done and a stop condition for failure or exhausted attempts. It also needs allowed scope. Persistence keeps a target present; it does not decide what “everything” includes or when further work needs your decision.</p></div>
+</div>
+
+<h2>Write the target before choosing the control</h2>
+<p>Use a bounded instruction that could stand alone. Start with a small result, not the whole app. Include the evidence you want back and the things the agent must not do.</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Objective: repair the gallery's Next button so one click advances one image.
+Keep the current layout and all other behavior unchanged.
+Use only local checks and disposable test data. Keep approval prompts on.
+Do not publish, use paid services, or touch real saved data.
+Done when: a browser check shows one click advances one image, and the existing relevant checks pass.
+Allow at most two repair attempts. Stop earlier if a required tool is unavailable or the scope must change.
+At either stopping point, report evidence, changed files, remaining gaps, and whether the objective was met. Do not redefine success.</pre></div>
+<p>This prompt is a teaching example; adapt the button and result to your app. The attempt limit is a requested boundary, not a guarantee enforced by every tool. Stay present for the first run. If you need budgeting details, revisit <a href="0058-budgets.html">lesson 4.4</a>.</p>
+
+<h2>Manage the active target deliberately</h2>
+<div class="agent-tabs">
+<div role="tablist" aria-label="Agent">
+<button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+<button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+<button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+</div>
+<div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude"><p>For this exercise, use the ordinary prompt above rather than assuming a matching goal-mode command. Claude Code already works through its read, act, and check loop.<sup class="cite"><a href="#src-cc">[3]</a></sup> A prompt requesting boundaries is useful without a dedicated persistent-goal feature.</p></div>
+<div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden><p>The documented controls are <code>/goal &lt;objective&gt;</code> to set a target and <code>/goal</code> to view it. Use <code>/goal edit</code> to revise, <code>/goal pause</code> to pause, <code>/goal resume</code> to resume, and <code>/goal clear</code> to remove it.<sup class="cite"><a href="#src-cx">[1]</a></sup> View the stored target before resuming; do not resume an obsolete objective.</p></div>
+<div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden><p>omp (oh-my-pi) documents <code>/goal set &lt;objective&gt;</code>, <code>/goal show</code>, <code>/goal pause</code>, <code>/goal resume</code>, and <code>/goal drop</code>. Its slash-command page says goal mode requires <code>goal.enabled</code> and cannot start during plan or vibe mode.<sup class="cite"><a href="#src-omp">[2]</a></sup> These are single-vendor docs. Do not change settings to force activation for this exercise.</p></div>
+</div>
+<p>Pausing a persistent objective and interrupting a running operation are different concerns. Do not assume a goal-management command cancels work already in flight. Use the verified steering guidance in <a href="0025-steering-mid-run.html">lesson 1.10</a> when you need to intervene.</p>
+
+<h2>Practice without starting a long run</h2>
+<div class="doit">
+<span class="label">Do it in your own session</span>
+<ol>
+<li><label><input type="checkbox"> With approval prompts on, choose one small behavior in your app and write a bounded objective using the example.</label></li>
+<li><label><input type="checkbox"> Send the review-only prompt below in your agent. Do not activate goal mode yet.</label></li>
+<li><label><input type="checkbox"> Revise your objective until it names success, scope, an attempt limit, and what happens when blocked.</label></li>
+</ol>
+<div class="expect">You should see a critique of the objective, not changed files or a running implementation. Keep the revised text for a future supervised task. If a proposed boundary needs a decision only you can make, make it before activation.</div>
+<p class="progress"></p>
+</div>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Review the proposed objective below. Do not implement it, activate goal mode, edit files, or run commands. Identify any unclear success condition, expanding scope, or missing failure stop. Suggest a bounded rewrite. Keep approval prompts on.
+
+Proposed objective:
+PASTE_YOUR_OBJECTIVE_HERE</pre></div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1"><span class="label">Question 1 of 3</span><p class="q">A persistent goal keeps producing new improvements. What should you inspect first?</p>
+<button class="opt" type="button">Whether the agent needs a bigger context window.</button>
+<button class="opt" type="button">Whether the objective has a finite stopping point.</button>
+<button class="opt" type="button">Whether the session needs a different color theme.</button>
+<div class="why"><p>A target without a finish line can keep generating work. More capacity does not define success or limit scope.</p></div></div>
+<div class="quiz" data-correct="0"><span class="label">Question 2 of 3</span><p class="q">You no longer want the publishing step in an active goal. What is safest?</p>
+<button class="opt" type="button">Revise the stored objective before resuming the work.</button>
+<button class="opt" type="button">Resume the stored objective while discussing new ideas.</button>
+<button class="opt" type="button">Trust the stored objective to infer your plans.</button>
+<div class="why"><p>Make the active target agree with your decision. Do not leave conflicting instructions for the agent to resolve by guessing.</p></div></div>
+<div class="quiz" data-correct="2"><span class="label">Question 3 of 3</span><p class="q">The attempt limit is reached without success. What report should you require?</p>
+<button class="opt" type="button">A success claim with the original checks quietly removed.</button>
+<button class="opt" type="button">A larger plan with the original limit quietly discarded.</button>
+<button class="opt" type="button">A blocker report with the remaining gaps clearly stated.</button>
+<div class="why"><p>Reaching a failure stop is not completing the objective. Report evidence and gaps so you can choose what happens next.</p></div></div>
+<p class="quiz-score" aria-live="polite"></p>
+<div class="source-box"><span class="label">Read this next (primary source)</span><p><a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli#cli-set-or-view-a-task-goal-with-goal">Codex: set or view a task goal</a> — a short example of explicit set, view, revise, pause, and remove controls.</p></div>
+<div class="ask"><span class="label">Ask your teacher</span><p>Try: “Does this objective have a real finish line?” or “Which discoveries should be reported rather than added to my goal?”</p></div>
+<h2>Sources</h2>
+<ol class="cite">
+<li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Developer commands: CLI goals</a>. Retrieved 2026-11-02.</li>
+<li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/slash">Slash commands: goal subcommands</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+<li id="src-cc">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot"><p><strong>You can now:</strong> bound a persistent objective with a finite result, a failure stop, and an evidence report before activating it.</p><p>Quick reference: <a href="../reference/agent-loop.html">Agent loop</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a></p><div class="pager"><a href="0071-subagents.html">Previous: 5.4 Subagents</a><a href="0073-models-effort.html">Next: 5.6 Models and effort</a></div></footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

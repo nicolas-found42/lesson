@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Budgets: time, attempts, dollars</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 4 · Scope &amp; stopping · Lesson 4.4</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 4 · Lesson 4.4 · First-ship path ★</p>
+  <h1>Budgets: time, attempts, dollars</h1>
+  <p class="lede">A stop condition tells the agent what success looks like. A budget tells it how much effort you authorize before it must return control to you.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0057-stop-conditions.html">4.3 Stop conditions</a></span><span>Win: you can set limits on a run and define what happens when they are reached</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your mission is a public app, not a perfect app. In lesson <a href="0057-stop-conditions.html">4.3</a> you learned to end a run with a condition like <q>stop when the page is deployed and I can open the link</q>. That answers <em>what does finished look like</em>. It does not answer <em>what happens if the agent never gets there</em>. Agents are patient; they will keep trying, and every try costs something you own: your time, your attempts at a fix, and your money if the run uses a paid API. Before you press Enter on any big request, you should be able to say the three numbers.</p>
+
+<h2>Three budgets, three currencies</h2>
+<p>A <strong>budget</strong> is a limit you set before work starts. Make it measurable, and agree how you will track it. There are three useful kinds:</p>
+<ul>
+<li><strong>Time</strong>: how long the run may take. <q>Give up after 20 minutes of work and report.</q></li>
+<li><strong>Attempts</strong>: how many tries at the same problem. <q>Try at most three fixes; if it still fails, stop and tell me what you learned.</q></li>
+<li><strong>Dollars</strong>: how much paid API spend the run may cause. <q>Spend no more than two dollars on external calls.</q></li>
+</ul>
+<p>Each budget needs a <em>handoff rule</em>: what the agent should do when it reaches the limit. Ask it to stop starting new work, preserve the current files, and report what is unfinished. Do not require a new commit at the deadline: unfinished changes need review, and a blanket commit could include unrelated work. Define an attempt too: here it means one proposed fix followed by its check, whether or not that check passes.</p>
+
+<h2>Why <q>until no issues remain</q> never ends</h2>
+<p>The problem is not that tests can never pass. A fixed list of checks can pass and end a run. The problem is leaving <em>issues</em> undefined: does it include every possible bug, every design preference, or every suggestion a reviewer makes? Each fix can expose another problem. If another model judges the output, its findings can vary too. Without a fixed set of cases or a budget, the agent may keep looking instead of returning control.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked for a feature, then added an instruction to keep testing and repairing everything discovered. The implementation took around ten minutes, but the session stretched across roughly half a day and hundreds of checks and repairs. Some complaints came from the model judging the output, not the app. Paid-service credits ran out along the way. When the user eventually interrupted, the changes were still in a draft pull request rather than shipped.</p>
+</div>
+<p>A budget would not have made the feature pass. It would have limited how long the agent could keep trying before asking you to decide. That distinction matters: reaching the budget means <em>paused with work remaining</em>, not <em>done</em>. Success can end the run early; otherwise the first limit reached ends the authorized work.</p>
+<span class="sidenote">Anthropic advises: <q>Give it a cap on turns or spend, and have a person approve the result at the end.</q><sup class="cite"><a href="#src-a7">[1]</a></sup> Treat a number in a prompt as an instruction, not an automatic enforcement mechanism.</span>
+
+<h2>A bounded request, side by side</h2>
+<div class="compare">
+  <div class="bad">
+    <span class="label">No budget — the run can drift</span>
+    <p><q>Fix the page layout. Run checks and keep improving everything you find. Don't stop early.</q></p>
+  </div>
+  <div class="good">
+    <span class="label">Budgeted — a defined return point</span>
+    <p><q>Make the title readable at phone width. Stop when that check passes, or after three fix-and-check attempts or 20 minutes, whichever comes first. At the limit, preserve the files and report the remaining problem. Do not widen the task.</q></p>
+  </div>
+</div>
+<p>The second request names the same goal, an attempt, a time limit, and what to hand back. Set your own timer too: a prompt is not a timer that will cancel a running command.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three budgets, and say why <q>until no issues remain</q> cannot end a run on its own.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The three budgets are <strong>time</strong> (how long), <strong>attempts</strong> (how many tries), and <strong>dollars</strong> (how much paid spend). An undefined search for every possible issue has no clear endpoint. State the cases to check, and return control when success or the first budget limit is reached.</p></div>
+</div>
+
+<h2>An instruction is not a hard cap</h2>
+<p>A <strong>hard cap</strong> is enforced by software, rather than relying on the agent to remember a sentence. Even software caps have scope: an agent's estimate may not include another paid service it calls. Keep approval prompts on and check which account and services a dollar limit covers.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Claude Code documents <code>--max-turns</code> and <code>--max-budget-usd</code> for print mode: runs started with <code>claude -p</code> rather than an interactive session. The dollar flag uses an estimate that can differ from your bill, and spend can pass the cap.<sup class="cite"><a href="#src-a8">[2]</a></sup> These are not a universal spending switch for every paid service. Anthropic also documents monthly API spend limits at the organization level; those are a different scope from one task.<sup class="cite"><a href="#src-a9">[3]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Codex's guide recommends stating what must be true before a task is complete.<sup class="cite"><a href="#src-b7">[4]</a></sup> Add the budget and handoff alongside that success condition. OpenAI's API documentation distinguishes a spend alert, which lets traffic continue, from a hard spend limit, which rejects affected requests.<sup class="cite"><a href="#src-b10">[5]</a></sup> Those are API organization/project controls, not a claim that your Codex subscription has a per-task dollar switch. No per-run CLI cap is assumed in this exercise.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp documents count- or duration-bounded repetition with <code>/loop</code>: <q>A positive integer limits iterations</q>. It also warns: <q>Plain prose is an unbounded inline prompt.</q><sup class="cite"><a href="#src-c6">[6]</a></sup> An iteration is one repetition of the task, not one bug fix or a dollar amount. You do not need loop mode for this exercise; use an ordinary prompt. This is a single-vendor source, from omp's own authors.</p>
+  </div>
+</div>
+<p>Two other anonymized sessions show why the number alone is not enough. One user agreed to a small dollar ceiling before paid experiments began; the available record did not establish whether it was enforced. Another user set a one-dollar limit, and the agent later reported spending about half of it. That report is useful evidence, but it does not prove the limit was monitored throughout. Ask which meter is used, what it covers, and whether the amount is measured, estimated, or unavailable. If spend cannot be checked, do not authorize paid calls for a strict-budget exercise.</p>
+
+<h2>Do it in your own project</h2>
+<div class="doit">
+  <span class="label">Do it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Choose a small visible issue, such as a label or broken link. Write one check that would show it is fixed.</label></li>
+    <li><label><input type="checkbox"> Keep approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>). Fill in the issue and check below, then send the prompt.</label></li>
+    <li><label><input type="checkbox"> Set your own 15-minute timer. Count each proposed fix followed by its check as one attempt.</label></li>
+    <li><label><input type="checkbox"> At the limit, use the controls for your tool from <a href="0025-steering-mid-run.html">1.10 Steering mid-run</a> if needed. Ask for the handoff, not another attempt.</label></li>
+  </ol>
+  <div class="prompt">
+    <button class="copy" type="button">Copy</button>
+    <pre>Fix this small issue: NAME_THE_ISSUE.
+Success check: DESCRIBE_THE_VISIBLE_RESULT.
+
+Stop when the check passes, or when the first limit is reached: 3 fix-and-check attempts or 15 minutes elapsed. Do not use paid external services. Do not change my approval settings.
+
+Before starting another attempt, check the limits. At the limit, start no new work. Preserve the current files; do not commit, publish, or widen the task. Report what changed, which checks passed or failed, attempts used, and what remains. Do not call unfinished work done.</pre>
+  </div>
+  <div class="expect"><p>You should receive either evidence that the named check passed, or a clearly unfinished handoff when a limit was reached. Compare the attempt count with what you watched. If the first attempt succeeds, stopping early is correct; there is no need to use the whole allowance.</p></div>
+</div>
+
+<div class="warn">
+  <span class="label">The trap to avoid</span>
+  <p>Do not automatically answer a stalled run by raising its budget. Read the handoff first. If you choose to continue, authorize a new bounded attempt with a reason: a new clue, a narrower task, or a different check. The agent must not grant itself more time or money.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You ask for repairs to continue until every possible issue is gone. Why is that risky?</p>
+  <button class="opt" type="button">New findings can keep expanding the work.</button>
+  <button class="opt" type="button">More checks always make the app flawless.</button>
+  <button class="opt" type="button">Longer runs always cost the same amount.</button>
+  <button class="opt" type="button">One failure means the whole app breaks.</button>
+  <div class="why"><p>Without a fixed set of cases, findings can keep widening the task. Passing agreed checks is meaningful; proving the absence of every possible issue is not a useful run boundary.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which sentence gives the agent a budget instead of just a goal?</p>
+  <button class="opt" type="button">Fix the bug until no issues remain.</button>
+  <button class="opt" type="button">Try at most three fixes, then stop.</button>
+  <button class="opt" type="button">Make the button blue and bold now.</button>
+  <button class="opt" type="button">Ship it when the link works live.</button>
+  <div class="why"><p>Only the second sentence sets a number (three attempts) and a handoff (then stop). The others are goals or stop conditions with no limit on effort.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">The third allowed attempt fails. Your prompt says to stop and report at three. What should happen?</p>
+  <button class="opt" type="button">Increase the allowance and attempt another repair.</button>
+  <button class="opt" type="button">Claim success and publish the unfinished changes.</button>
+  <button class="opt" type="button">Preserve files and report the remaining failures.</button>
+  <button class="opt" type="button">Discard files and conceal the remaining failures.</button>
+  <div class="why"><p>The attempt allowance is exhausted. Return control with an honest handoff. The user, not the agent, decides whether new evidence warrants another bounded attempt.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>Every big request gets three numbers — time, attempts, dollars — and one handoff rule: stop, preserve the work, report. A success condition defines the desired result; a budget limits authorized effort if that result is not reached. Use both.</p>
+</div>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> — Anthropic's own list of the five questions to ask before an unattended run, including <q>What stops it?</q>. Written for one tool, but the questions apply to all three.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Give me a budget template I can paste into any request"</em> or <em>"Why is my agent's dollar cap an estimate and not my real bill?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a8">Anthropic, <a href="https://code.claude.com/docs/en/cli-reference">Claude Code CLI reference</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a9">Anthropic, <a href="https://platform.claude.com/docs/en/api/rate-limits">Rate limits (spend limits)</a>, Claude Platform docs. Retrieved 2026-11-02.</li>
+  <li id="src-b7">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b10">OpenAI, <a href="https://developers.openai.com/api/docs/guides/rate-limits">Rate limits and spend limits</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c6">Stencil Labs, <a href="https://omp.sh/docs/slash">omp slash commands (/loop)</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> set time, attempt, and dollar limits; distinguish a prompt from an enforced cap; and require an honest handoff when a limit is reached.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns (budget lines)</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><a href="0057-stop-conditions.html">← 4.3 Stop conditions</a><a href="0059-root-cause-vs-workaround.html">4.5 Root cause vs workaround →</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

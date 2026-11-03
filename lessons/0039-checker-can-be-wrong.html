@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The checker can be wrong</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.11</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.11</p>
+  <h1>The checker can be wrong</h1>
+  <p class="lede">A green check is a claim too. Tests can pass without testing anything, the same test can give two answers for one unchanged file, and an AI asked to judge your work has good days and bad days. The skill is telling a real pass from a quiet one.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0031-test.html">2.3 What a test is</a>, <a href="0038-independent-reviewer.html">2.10 The independent reviewer</a></span><span>Win: you can prove a check can fail before you believe it</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>The evidence that your app works comes from checks: your tests, your agent's review command, a browser run, a model grading the result. Lesson <a href="0030-claims-vs-evidence.html">2.2</a> taught you to ask for evidence instead of a claim. This lesson is the uncomfortable next step: evidence can be wrong too. A check that always says yes is worse than none, because it removes your reason to look. The fix is not to distrust every check, but to learn the three ways a check goes quiet and to run one small experiment that exposes each.</p>
+
+<h2>Three ways a check lies to you</h2>
+<table class="ref">
+  <thead><tr><th>The check</th><th>What you see</th><th>What actually happened</th></tr></thead>
+  <tbody>
+    <tr><td>Vacuous</td><td>"pass", every time, in green</td><td>It never compared anything, so it could not fail</td></tr>
+    <tr><td>Flaky</td><td>Fail now, pass on the next run</td><td>Something outside the code differed between runs</td></tr>
+    <tr><td>Noisy judge</td><td>A score, a verdict, a finding</td><td>A model's opinion, with real variance and bias</td></tr>
+  </tbody>
+</table>
+
+<h2>First: can this check fail at all?</h2>
+<p>The cheapest question about a check is whether you have ever seen it go red. If the answer is "not yet", you do not know whether it guards anything. Scientists have a name for the deliberate version: a <span class="term" title="A test you break on purpose, expecting the check to notice, so that a passing check means something.">negative control</span> is an input you know should produce a failure; in one reference's words, <q>Negative controls are one type of falsification tests.</q><sup class="cite"><a href="#src-ctrl">[1]</a></sup> Software has a heavier version, mutation testing: <q>Mutation testing involves making small changes to the program being tested</q>, and <q>In this way, the tests are tested.</q><sup class="cite"><a href="#src-mut">[2]</a></sup> You need the habit, once per check, not the tool.</p>
+<p>Here is a two-line function that adds prices, with one test, run by Node's built-in runner.</p>
+<pre><code>export function total(prices) {
+  let sum = 0;
+  for (const p of prices) sum += p;
+  return sum;
+}
+
+test('adds up three prices', () =&gt; {
+  assert.strictEqual(total([2, 3, 5]), 10);
+});</code></pre>
+<p>The run is green: <code>pass 1</code>, exit code 0. Now the control. I changed one character so the function starts from <code>1</code>, and ran the same command:</p>
+<pre><code>✖ adds up three prices
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  11 !== 10</code></pre>
+<p>It exited with status 1 and named both numbers, so it compared something real. I restored the file, then removed the comparison but kept the call:</p>
+<pre><code>test('adds up three prices', () =&gt; {
+  total([2, 3, 5]);
+});</code></pre>
+<p>This test cannot fail: it calls the function and throws the answer away, which is what a <span class="term" title="A check that runs code but never compares the result with an expected one, so it passes regardless.">vacuous check</span> does. It still printed <code>✔</code> and exited 0, with the broken function on disk. The green tick measured only that no exception was thrown. A third version costs an afternoon: a filter that matches nothing still exits 0, because <q>Tests that are not executed are omitted from the test runner output.</q><sup class="cite"><a href="#src-node">[3]</a></sup> Read the counts, not the colour of the last line.</p>
+
+<div class="callout">
+  <span class="label">The one-sentence habit</span>
+  <p>Before you trust a green check, break something on purpose and watch it turn red. If it stays green, the problem is the check, not your app.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what is a negative control, and what does a green run prove if you have never seen the check fail? Answer in your own words, then compare.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A negative control is a deliberately broken input that the check should reject. If it goes red, the check is connected to the thing it measures. If you have never seen it fail, green only proves the check ran — a test with no comparison, or a filter that matched nothing, passes while checking nothing.</p></div>
+</div>
+
+<h2>Second: one file, two answers</h2>
+<p>A <span class="term" title="A check that passes and fails on the same unchanged code, because something outside the code differs between runs.">flaky test</span> changes its result without the code changing. Google, which runs a very large number of tests, keeps a working definition: <q>We define a "flaky" test result as a test that exhibits both a passing and a failing result with the same code.</q><sup class="cite"><a href="#src-flaky">[4]</a></sup></p>
+<p>Flakiness is not a beginner's problem. Google measured <q>about 1.5% of all test runs reporting a "flaky" result</q>, said <q>Almost 16% of our tests have some level of flakiness associated with them!</q><sup class="cite"><a href="#src-flaky">[4]</a></sup> The same post names the human cost: <q>It is human nature to ignore alarms when there is a history of false signals coming from a system.</q><sup class="cite"><a href="#src-flaky">[4]</a></sup></p>
+<p>Common causes are timing, a network call, a file another program is also writing, test order, or a value that changes every run, such as the current date. None of them mean the app is wrong. So the response to a single red run is not to edit the app. Rerun the same check on unchanged code and see whether the answer moves.</p>
+<div class="compare">
+  <div class="bad"><span class="label">What a flaky check tempts you to do</span><p>"It failed, so change the code until it passes."</p><p>You are now editing working code to satisfy a coin flip.</p></div>
+  <div class="good"><span class="label">What to do instead</span><p>"Rerun it unchanged, note both results, then look for the cause."</p><p>Two answers from one file is a fact about the environment.</p></div>
+</div>
+<p>There is a quieter version. Node lets you mark a test <code>todo</code>: <q>TODO tests are executed, but are not treated as test failures, and therefore do not affect the process exit code.</q><sup class="cite"><a href="#src-node">[3]</a></sup> I ran one with a false comparison on purpose. It printed <code>⚠</code> and exited 0. That is honest when temporary and labelled, and a hiding place when the reason is "this one is annoying". A suspended check still counts in the total, so write why it is off and what would switch it back on.</p>
+
+<h2>Third: the judge is a model too</h2>
+<p>Lesson <a href="0038-independent-reviewer.html">2.10</a> added a second agent that reads your work with fresh eyes. That helps, and it is still not an oracle. When a model grades anything, its answer is a sample, not a measurement.</p>
+<p>Research on models as judges names the failure modes: <q>position, verbosity, and self-enhancement biases</q>, plus limited reasoning.<sup class="cite"><a href="#src-judge">[5]</a></sup> A separate study flipped the ranking of two answers without changing either one's content: <q>the quality ranking of candidate responses can be easily hacked by simply altering their order of appearance in the context</q>.<sup class="cite"><a href="#src-fair">[6]</a></sup> Longer answers score higher; so do answers placed first. The same answer graded twice can score differently.</p>
+<p>The vendors say this themselves. omp's review docs warn about their verdict: <q>Correct means no correctness bugs or blockers were established under this review contract</q><sup class="cite"><a href="#src-omp">[7]</a></sup>, and <q>Findings: none is not a substitute for your own domain-specific checks.</q><sup class="cite"><a href="#src-omp">[7]</a></sup> Anthropic's guidance names the reviewer's incentive: <q>A reviewer that's asked to find problems will always find something.</q><sup class="cite"><a href="#src-bp">[8]</a></sup> Ignoring reviewers is not the answer; repeating the measurement is.</p>
+
+<h2>Telling the three apart in your own agent</h2>
+<p>You need two runs, or a swap. The agents differ in how you ask for a repeat and what the report says about its certainty.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p><code>/code-review</code> takes an effort level. At <code>low</code> it <q>reports the findings it's most confident in, so you see fewer false positives</q>; from <code>medium</code> up it broadens coverage.<sup class="cite"><a href="#src-ccr">[9]</a></sup> Run it twice at one level and keep only findings that appear both times.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p><code>/review</code> <q>summarizes issues it finds in your working tree, focusing on behavior changes and missing tests</q>, and it <q>uses the current session model unless you set review_model</q>.<sup class="cite"><a href="#src-cx">[10]</a></sup> The reviewer's quality is a setting you control, not a constant.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p><code>/review</code> returns <code>correct</code> or <code>incorrect</code> with a confidence, and its docs say plainly: <q>Confidence is not severity.</q><sup class="cite"><a href="#src-omp">[7]</a></sup> Read the cited lines before acting on any finding.</p>
+  </div>
+</div>
+<span class="sidenote">All three reviews are read-only, so a wrong verdict costs reading time rather than a broken file.</span>
+
+<div class="vignette">
+  <span class="label">Two real patterns, anonymized</span>
+  <p>An agent building a slide generator wrote its own layout checker. It compared every pair of boxes and reported no overlaps, run after run. Then the agent overlapped a heading with a paragraph and ran it again. Still no overlaps. The checker skipped element types added later, so it approved the pages it could not see.</p>
+  <p>In another project the acceptance check was a model with a rubric. A page description scored 0.82, then 0.79, then 0.81 with nothing changed. Larger text scored lower; a reworded description scored higher. The agent measured the spread across repeated grades and reported a plateau: the remaining movement was noise.</p>
+</div>
+
+<h2>What this looks like as a habit</h2>
+<ol>
+  <li><strong>Have I seen this check fail?</strong> If not, break something on purpose and look — in a scratch copy, never in the files you are about to ship.</li>
+  <li><strong>Does it give the same answer twice?</strong> Rerun on unchanged code. Two answers means the check is measuring the environment as much as the app.</li>
+  <li><strong>How much does the judge move?</strong> Grade the same thing twice, and swap the order if you compare two versions. Only a difference larger than that movement is worth acting on.</li>
+</ol>
+<p>None of these steps requires reading code. Each produces a sentence for another person: "the test fails when I break the total", or "the grader moved with no edits". That turns a check from a ritual into evidence.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in your practice project, with approval prompts on. Ask it to make a scratch copy of one small function and its test, outside the shipping files.</label></li>
+    <li><label><input type="checkbox"> Paste: <em>"In the scratch copy only, break one line so the function returns the wrong value, run the test for it, and paste the full output including the exit code. Do not touch any other file."</em></label></li>
+    <li><label><input type="checkbox"> Read the output. If it says pass and exits 0, the check cannot see that kind of break: fix the test, not the code.</label></li>
+    <li><label><input type="checkbox"> Ask: <em>"Restore the scratch copy, then run the same test three times in a row and paste all three results. Did any run disagree with the others?"</em></label></li>
+    <li><label><input type="checkbox"> If you use a reviewer or a grading rubric, run the same review twice and write down which findings appeared both times.</label></li>
+  </ol>
+  <div class="expect"><p>You should see a red run with a real comparison in it, such as two numbers that differ, and exit code 1. That is your negative control working. On the three reruns, three identical summaries mean the check is steady; a disagreement means you have found a flaky check, and the next step is to name what differed. From the double review, expect some findings to appear once and vanish. If your agent says it broke the code and everything still passed, do not accept "the tests are fine" — ask which test it ran and paste the command.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your tests all pass. How do you find out whether the suite can fail?</p>
+  <button class="opt" type="button">Run the whole suite twice and compare both pass counts.</button>
+  <button class="opt" type="button">Break one line and rerun the same suite once again.</button>
+  <button class="opt" type="button">Delete the test file and check the project still loads.</button>
+  <button class="opt" type="button">Ask the agent whether these tests would catch a bug.</button>
+  <div class="why"><p>That is a negative control: a break you know should be caught. Two identical green runs only show the check is stable, deleting the file shows nothing, and the agent's opinion is another claim to test.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A test failed, then passed on an identical rerun. What is the right next step?</p>
+  <button class="opt" type="button">Edit the app until the failing test passes once again.</button>
+  <button class="opt" type="button">Mark it skipped, then move on to the next task.</button>
+  <button class="opt" type="button">Delete the test because a flaky test cannot be trusted.</button>
+  <button class="opt" type="button">Rerun it once more on the unchanged code before edits.</button>
+  <div class="why"><p>Two results from one unchanged file is a fact about the environment, not yet a bug in the app. Repeat before you edit; deleting or skipping hides the signal instead of explaining it.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">An AI grader scored your page 6, then 8, with no edits. What now?</p>
+  <button class="opt" type="button">Repeat the grade, then swap the order and repeat again.</button>
+  <button class="opt" type="button">Treat the higher score as proof that the page improved.</button>
+  <button class="opt" type="button">Rewrite all the captions until the grader awards a nine.</button>
+  <button class="opt" type="button">Assume the grader is broken and stop measuring the page.</button>
+  <div class="why"><p>A model judge has real variance and known order and length biases. Repeating, and swapping which version comes first, shows how much of the difference is noise. Neither chasing the score nor abandoning measurement follows from two numbers.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://testing.googleblog.com/2016/05/flaky-tests-at-google-and-how-we.html">Flaky Tests at Google and How We Mitigate Them</a> by John Micco. A short engineering post from 2016; the numbers are old, but the definition and the list of causes have not changed.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Ask the agent that gave you this course. Try: <em>"Show me a test that passes but checks nothing, in my own project"</em> or <em>"Why would a test pass on my laptop and fail in the cloud?"</em> The second one is lesson <a href="0046-local-vs-ci.html">2.12</a>.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-ctrl">Wikipedia, <a href="https://en.wikipedia.org/wiki/Scientific_control">Scientific control</a>. Retrieved 2026-11-02. Used only for the definition of a negative control.</li>
+  <li id="src-mut">Wikipedia, <a href="https://en.wikipedia.org/wiki/Mutation_testing">Mutation testing</a>. Retrieved 2026-11-02. Used for the idea of breaking code to test the tests.</li>
+  <li id="src-node">Node.js contributors, <a href="https://nodejs.org/api/test.html">Test runner (node:test)</a>. Retrieved 2026-11-02. The commands above were run locally on Node v24.22.2 in a scratch folder on 2026-11-02.</li>
+  <li id="src-flaky">John Micco, <a href="https://testing.googleblog.com/2016/05/flaky-tests-at-google-and-how-we.html">Flaky Tests at Google and How We Mitigate Them</a>, Google Testing Blog, 2016. Retrieved 2026-11-02. Older post; the definition still matches current practice.</li>
+  <li id="src-judge">Lianmin Zheng and others, <a href="https://arxiv.org/abs/2306.05685">Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena</a>, arXiv:2306.05685, NeurIPS 2023. Retrieved 2026-11-02.</li>
+  <li id="src-fair">Peiyi Wang and others, <a href="https://arxiv.org/abs/2305.17926">Large Language Models are not Fair Evaluators</a>, arXiv:2305.17926. Retrieved 2026-11-02.</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/review">Code review (omp docs)</a>. Retrieved 2026-11-02. Single-vendor source; no independent documentation exists.</li>
+  <li id="src-bp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-ccr">Anthropic, <a href="https://code.claude.com/docs/en/code-review">Code review (Claude Code docs)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex developer commands</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> prove a check can fail before trusting it, tell a flaky result from a real bug, and judge an AI review by how much it moves.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0038-independent-reviewer.html">Previous: 2.10 The independent reviewer</a> · <a href="0040-be-first-time-user.html">Next: 2.13 Be a first-time user</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

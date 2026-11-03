@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Let the agent schedule the work</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 9 · Working at scale · Lesson 9.6</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 9 · Lesson 9.6</p>
+  <h1>Let the agent schedule the work</h1>
+  <p class="lede">For big tasks you stop typing the steps and start handing over goals with a finish line. The agent becomes the scheduler. And when your prompting feels off, you can ask the agent to critique it — that is a meta-prompt.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0028-outcome-sized-prompts-vs-micro-managing.html">1.13 Outcome-sized prompts</a></span><span>Win: you can hand over a goal and its finish line, and get useful critique on how you prompt</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Unit 1 taught you to size a prompt to one outcome you can check (lesson <a href="0028-outcome-sized-prompts-vs-micro-managing.html">1.13</a>). Real apps are bigger than one outcome. The new question is not "how small should this prompt be" but "who keeps the order of the work?" For anything larger than a single sitting, the answer is: let the agent schedule.</p>
+
+<h2>One goal in, a schedule out</h2>
+<p>When you treat the agent as a <span class="term" title="the role where the agent decides the order, splitting and sequencing of steps itself">scheduler</span>, you stop naming steps. You hand over four things: the goal, the context it needs, the boundaries, and what "done" looks like. The agent then decides what to read first, what to change, what to check, and in what order — and it may hand pieces to helper agents (subagents, lesson <a href="0071-subagents.html">5.4</a>) that work in parallel, like the swarm in lesson <a href="0113-swarm-research-reconciling-contradictory-reports.html">9.5</a>.</p>
+<p>Anthropic's prompting guide describes this directly: the latest models <q>orchestrate subagents natively</q> and <q>recognize when tasks would benefit from delegating work to specialized subagents and do so proactively without requiring explicit instruction.</q><sup class="cite"><a href="#src-p1">[1]</a></sup> Anthropic's engineering essay draws the line you are crossing: <q>Workflows are systems where LLMs and tools are orchestrated through predefined code paths,</q> while agents are <q>LLMs using tools based on environmental feedback in a loop.</q><sup class="cite"><a href="#src-d1">[2]</a></sup> When you type the steps one by one, <em>you</em> are the predefined code path. When you hand over a goal, the agent runs the loop.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user had a written roadmap of more than eighty small items and sent the agent a single line: implement the roadmap — plus one guardrail sentence naming exactly which items to stop at. The agent read the plan, split the work, and ran several helpers in parallel on separate copies of the project, merging each piece as it finished. Because the finish line was named, the run ended instead of sprawling. Hours later the same user asked the agent to critique their own prompting. The honest answer: they had been acting as project manager between every step, and would get further by handing over one bigger deliverable — for example "deliver a review-ready change, own the sequencing and cleanup, and stop before merging" — instead of a series of instructions.</p>
+</div>
+
+<h2>What the scheduler is doing while you wait</h2>
+<p>Behind the scenes the agent still runs a loop, not a straight line. Anthropic's description of its coding agent names three phases: <q>it works through three phases: gather context, take action, and verify results.</q><sup class="cite"><a href="#src-a3">[4]</a></sup> When it schedules, it decides how many times to repeat that loop and what to read before each pass. You can see the phases in the transcript: reads first, then edits, then a test or a diff.</p>
+<p>That is also where a bad plan shows up. If the agent keeps gathering and never acts, the context line was too broad. If it edits before it reads, the goal was too vague to check. Both are prompt problems you can fix in the next message.</p>
+
+<h2>The scheduler still needs a finish line</h2>
+<p>Scheduling only works with a stop condition (lesson <a href="0057-stop-conditions.html">4.3</a>). "Implement the roadmap" with no finish line means "work until nothing is left", which never happens. Codex's best-practices page frames the same shape as four lines: <strong>Goal:</strong> what are you trying to change or build, <strong>Context:</strong> which files and facts matter, <strong>Constraints:</strong> what it must follow, <strong>Done when:</strong> what must be true before it is complete.<sup class="cite"><a href="#src-b7">[3]</a></sup> A scheduled task is an outcome-sized prompt whose outcome happens to be large — the four lines still decide whether it ever stops.</p>
+<div class="callout">
+  <span class="label">The division of labour</span>
+  <p>You own the goal, the boundaries and the finish line. The agent owns the sequence, the splitting and the checking. If you find yourself naming files again mid-task, you have slipped back into scheduling — rewrite the next message as a result instead.</p>
+</div>
+
+<h2>Keep steering, not scheduling</h2>
+<p>Handing over the sequence does not mean walking away. omp's own docs put the human role plainly: <q>Intervene when needed. Send a steering message while it works, answer a question, or reject an unsafe action.</q><sup class="cite"><a href="#src-c1">[5]</a></sup> The difference is what your message contains. "Change the error text and then run the tests" is scheduling. "The empty state looks wrong; the fix should keep the existing button styling" is steering: you name the constraint and leave the order to the agent.</p>
+
+<h2>Meta-prompting: critique how you prompt</h2>
+<p>A <span class="term" title="a prompt whose subject is your prompting: you ask the agent to review or rewrite the way you ask">meta-prompt</span> is a prompt about your prompts. You paste your own recent messages — or describe your habit — and ask the agent what is costing you time. Anthropic's guide endorses the same review habit on the agent's side: the common pattern is to <q>generate a draft, review it against criteria, then refine based on the review,</q> and to <q>regularly self-critique your approach and plan.</q><sup class="cite"><a href="#src-p1">[1]</a></sup> Pointing that loop at <em>yourself</em> is the meta-prompt: the agent reviews your instructions the way it would review its own draft.</p>
+<div class="warn">
+  <span class="label">The critique is advice, not a verdict</span>
+  <p>Like a second reviewer's report (lesson <a href="0038-independent-reviewer.html">2.10</a>), the critique is advisory. Agents can flatter, so ask for concrete, session-specific changes — not praise. You decide which habits to keep; product intent is yours (lesson <a href="0021-when-override-recommendation.html">1.6</a>).</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the four things you hand over when the agent acts as scheduler? And in one sentence, what is a meta-prompt?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Goal, context, constraints, and done-when (the finish line). A meta-prompt is a prompt about your prompting — you ask the agent to critique how you have been asking, and to suggest concrete changes.</p></div>
+</div>
+
+<h2>A meta-prompt you can paste</h2>
+<p>Send this at the end of any session where the prompting felt clumsy. It changes nothing in your files.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Look at this session. Critique how I have been prompting you:
+which of my messages were step-by-step instructions I should have
+handed over as one bigger outcome, and which were too vague to act on?
+Give me three concrete changes I can make in my next prompt.
+Quote my own words where you can. Do not change any files.</pre>
+</div>
+<p>Read the answer as a report, then choose. If the agent says "hand over bigger outcomes", test that once on a real task before changing your habits everywhere.</p>
+
+<h2>Do it: run a meta-prompt on your own session</h2>
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your practice project with approval prompts still on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>), in the same agent you have been using.</label></li>
+    <li><label><input type="checkbox"> Do one small task the way you normally would, even if it means two or three short messages.</label></li>
+    <li><label><input type="checkbox"> Paste the meta-prompt above and send it as a new message.</label></li>
+    <li><label><input type="checkbox"> Write down the one change you will actually try on the next task.</label></li>
+  </ol>
+  <div class="expect"><p>You should see the agent quote or paraphrase your own earlier messages and name specific habits — for example that you listed steps, or that you never said what done meant. Expect it to suggest handing over a bigger outcome with a written finish line. If it only gives generic praise, ask again with "quote my own words where you can".</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You hand the agent a big goal with a written finish line. What does "the agent as scheduler" mean?</p>
+  <button class="opt" type="button">You type each step in order.</button>
+  <button class="opt" type="button">It picks the order of steps.</button>
+  <button class="opt" type="button">It asks you before every step.</button>
+  <button class="opt" type="button">You review the work after merging.</button>
+  <div class="why"><p>The agent decides the sequence, splitting and checking itself. Typing the steps yourself is the opposite — that makes you the scheduler.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which of these is a meta-prompt?</p>
+  <button class="opt" type="button">A shorter prompt about prompts.</button>
+  <button class="opt" type="button">A very long prompt block.</button>
+  <button class="opt" type="button">A prompt about your prompts.</button>
+  <button class="opt" type="button">A prompt sent by email.</button>
+  <div class="why"><p>A meta-prompt's subject is your prompting — you ask the agent to review how you have been asking. Length and delivery channel have nothing to do with it.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A meta-prompt tells you that you micro-manage: nine messages, one step each. What is the best move?</p>
+  <button class="opt" type="button">Ignore it; keep sending tiny steps.</button>
+  <button class="opt" type="button">Hand over one bigger outcome next.</button>
+  <button class="opt" type="button">Ask the agent to work alone.</button>
+  <button class="opt" type="button">Stop using an agent from now.</button>
+  <div class="why"><p>The critique is advisory: test its suggestion once by handing over one bigger outcome with a finish line. Ignoring it or quitting both waste what the critique is for.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">Anthropic's prompting best practices</a> — see "Subagent orchestration" for the agent-as-scheduler behaviour and the "review, then refine" pattern behind meta-prompting. Tool-specific in places, but the review habit transfers to any agent.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Want to check a habit before changing it? Ask the agent that gave you this course. Try: <em>"Here are my last five prompts. Which one should I have sent as a single bigger outcome, and what would its done-when line be?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-p1">Anthropic, <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">Prompting best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-d1">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as outdated). Retrieved 2026-11-02.</li>
+  <li id="src-b7">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a3">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> hand a big task to the agent as goal + context + constraints + done-when and let it schedule the steps, and run a meta-prompt to get concrete critique on how you prompt.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/agent-loop.html">The agent loop</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0113-swarm-research-reconciling-contradictory-reports.html">Previous: Swarm research</a> · <a href="0115-handoff-docs-long-sessions.html">Next: Handoff docs for long sessions</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

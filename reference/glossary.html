@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary: reference</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb">Reference · from <a href="../lessons/0001-what-a-coding-agent-is.html">Lesson 0.1</a></nav>
+<header class="lesson-head">
+  <p class="kicker">Reference card</p>
+  <h1>Glossary</h1>
+  <p class="lede">The course's working vocabulary, one line each, with the lesson that teaches it.</p>
+</header>
+<main>
+<p>Grouped by first letter, not by unit. Near-synonyms are listed in brackets; the definition is the course's own.</p>
+
+<h2>A</h2>
+<p><strong>Absolute URL</strong> (absolute vs relative path, relative link, subpath): a URL with scheme and host, like an absolute path measured from the disk's top; a relative link resolves against the page, and a project site lives at a subpath. Taught in <a href="../lessons/0003-your-project-is-a-folder.html">lesson 0.3</a>.</p>
+<p><strong>Acceptance criteria</strong> (observable check, done when, evidence (of done)): pass-or-fail checks for one change, written before work starts; evidence is a rerunnable result. Taught in <a href="../lessons/0055-definition-done-acceptance-criteria.html">lesson 4.1</a>.</p>
+<p><strong>Access token</strong> (refresh token, token expiry, re-login (re-authentication), organization re-login policy, credential store): the short-lived credential sent with each request; a refresh token gets a new one, and an admin policy can force re-login. Taught in <a href="../lessons/0094-logins-token-expiry.html">lesson 8.6</a>.</p>
+<p><strong>Accessibility</strong> (target size, keyboard accessibility, focus indicator, reduced motion): an app that works for people who see, move or hear differently; controls need reachable targets, visible focus and respect for reduced motion. Taught in <a href="../lessons/0108-accessibility-basics.html">lesson 8.20</a>.</p>
+<p><strong>Agent loop</strong> (coding agent, context, turn): the gather–act–verify cycle a coding agent repeats; one turn from you can trigger many actions, and context is what it can see. Taught in <a href="../lessons/0001-what-a-coding-agent-is.html">lesson 0.1</a>.</p>
+<p><strong>Agent shell</strong> (harness): the vendor-specific program around the model — start command, interface, settings, rules-file name. Taught in <a href="../lessons/0002-the-three-agents.html">lesson 0.2</a>.</p>
+<p><strong>Amendment</strong> (batch yes, read-back, amendment inside the go): a numbered change inside a one-line acceptance of every recommendation; the agent reads decisions back before editing. Taught in <a href="../lessons/0020-yes-all.html">lesson 1.5</a>.</p>
+<p><strong>Asset</strong> (license (file), Creative Commons license, reverse engineering): a non-code file someone owns; a license states what others may do, Creative Commons letters spell the permission. Taught in <a href="../lessons/0106-assets-licensing.html">lesson 8.18</a>.</p>
+<p><strong>Auto-fix</strong> (auto-merge, review bot, pending (check), required check, late comment): standing permission to react to failing checks or review comments, never to merge; a late comment needs a new pull request. Taught in <a href="../lessons/0112-pr-babysitting-auto-fix.html">lesson 9.4</a>.</p>
+
+<h2>B</h2>
+<p><strong>Background process</strong> (polling, completion notification, timeout): a program still running after control returns; poll it or wait for a completion notification, under a timeout. Taught in <a href="../lessons/0076-background-processes-exit-codes-waiting-vs.html">lesson 5.9</a>.</p>
+<p><strong>Backend</strong> (serverless function, database, application server): the parts visitors never see — hosting, functions, data; a serverless function runs per request, and a database outlives a visit. Taught in <a href="../lessons/0097-backends.html">lesson 8.9</a>.</p>
+<p><strong>Branch</strong> (default branch, feature branch, Switch (checkout)): a movable label on one commit; switching updates the folder to match another branch. Taught in <a href="../lessons/0044-branch.html">lesson 3.5</a>.</p>
+<p><strong>Branch protection rule</strong> (protected branch, bypass setting, ruleset, GH006): a setting that refuses pushes or merges unless requirements such as a pull request and passing checks are met. Taught in <a href="../lessons/0054-branch-protection-prs-only-convention.html">lesson 3.15</a>.</p>
+<p><strong>Budget</strong> (attempt, spend limit, hard cap): a measurable limit on time, attempts or dollars, plus the rule for returning control; a hard cap is enforced by software. Taught in <a href="../lessons/0058-budgets.html">lesson 4.4</a>.</p>
+<p><strong>Build step</strong> (source, build output, build output folder, base path): a program that turns source into a fresh folder of deployable files; the base path is the address prefix in their links. Taught in <a href="../lessons/0079-build-step.html">lesson 6.2</a>.</p>
+
+<h2>C</h2>
+<p><strong>Capstone</strong> (project card, fallback example, shippable idea): the final project, run end to end on an idea you chose; a project card records idea, audience and finish line. Taught in <a href="../lessons/0086-choose-idea.html">lesson 7.1</a>.</p>
+<p><strong>Changelog</strong> (release notes, deprecation page): the provider's own dated list of changes and end-of-life notices, and the authoritative source on third-party churn. Taught in <a href="../lessons/0103-third-party-churn.html">lesson 8.15</a>.</p>
+<p><strong>CI</strong> (continuous integration (CI), workflow (GitHub Actions workflow), trigger (event), job, runner, action (GitHub Action), workflow run, status check, Check (status check), skipped (test or check), flaky (check)): checks run on a shared server at every push; a trigger starts a job on a fresh runner, and its status can be pending, passing, failing, skipped or flaky. Taught in <a href="../lessons/0046-local-vs-ci.html">lesson 2.12</a>.</p>
+<p><strong>Client ID</strong> (client secret, scope, redirect URI, consent screen): the public name of a registered app; the secret stays server-side, scopes are requested permissions, and the redirect URI is the registered return address. Taught in <a href="../lessons/0095-oauth-pieces.html">lesson 8.7</a>.</p>
+<p><strong>Commit</strong> (checkpoint, save point, snapshot, version control, history, commit message, commit title): a recorded snapshot of all tracked files with a message and a parent link; history is the chain of them. Taught in <a href="../lessons/0009-why-save-points-exist.html">lesson 3.1</a>.</p>
+<p><strong>Conflicting requirements</strong> (trade-off): requirements that cannot all hold; name the trade-off and let the human choose. Taught in <a href="../lessons/0060-conflicting-requirements.html">lesson 4.6</a>.</p>
+<p><strong>Container</strong> (image, volume, port): a runnable instance of a read-only image; changes vanish unless kept in a volume, and publishing a port lets the host reach it. Taught in <a href="../lessons/0100-docker.html">lesson 8.12</a>.</p>
+<p><strong>Context window</strong> (compaction, resume, fork, handoff): the limited space holding what the agent can attend to; compaction summarizes older turns, and resume, fork or a handoff carry work forward. Taught in <a href="../lessons/0068-context-window.html">lesson 5.1</a>.</p>
+<p><strong>CORS</strong> (Cross-Origin Resource Sharing, origin, same-origin policy, preflight request, Access-Control-Allow-Origin): headers naming which origins may read a response; the same-origin policy is the rule, and a preflight checks permission first. Taught in <a href="../lessons/0096-cors.html">lesson 8.8</a>.</p>
+
+<h2>D</h2>
+<p><strong>Definition of done</strong> (done when, acceptance criteria, evidence of done): what must be true for work to count as finished, ideally checkable by a command. Taught in <a href="../lessons/0028-outcome-sized-prompts-vs-micro-managing.html">lesson 1.13</a>.</p>
+<p><strong>Dependency</strong> (timeout, output limit, backoff (exponential backoff), JSON shape, fallback): something needed at runtime but not controlled; give calls a timeout and output limit, retry with backoff, validate the JSON shape and plan a fallback. Taught in <a href="../lessons/0104-llm-calls-as-dependency.html">lesson 8.16</a>.</p>
+<p><strong>Deploy</strong> (publish, deployment run, live site, cache, verification): one attempt by the host to build and serve files; the live site is the URL returning the new content, and a stale cache can show the old. Taught in <a href="../lessons/0014-deploy-merge-live.html">lesson 6.6</a>.</p>
+<p><strong>Deploy blocker</strong> (secret manager, environment secret, empty string): anything stopping a new version going live, usually a missing secret; an unset expression yields a silent empty string. Taught in <a href="../lessons/0102-deploy-blockers.html">lesson 8.14</a>.</p>
+<p><strong>Deprecation</strong> (third-party churn, HTTP 404 Not Found, HTTP 410 Gone, dead link / link rot, changelog): a provider's dated end-of-life notice; 404 means not found now, 410 permanently gone, and the changelog is authoritative. Taught in <a href="../lessons/0103-third-party-churn.html">lesson 8.15</a>.</p>
+<p><strong>Derail</strong> (interrupt, parked branch, fresh goal, draft pull request): a run drifted from the goal; stop it, commit, park the work, restart with a smaller fresh goal. Taught in <a href="../lessons/0064-recovering-derail.html">lesson 4.10</a>.</p>
+<p><strong>Desktop app (of an agent)</strong> (plan checklist, button reply, permission card): the windowed interface, where steps show as a checklist and approvals as cards. Taught in <a href="../lessons/0078-desktop-app-features.html">lesson 5.11</a>.</p>
+<p><strong>Domain</strong> (registrar, DNS (Domain Name System), DNS record, apex domain, subdomain): the site's readable address; a registrar sells it, DNS maps names to servers, and an apex domain has no prefix. Taught in <a href="../lessons/0085-custom-domains.html">lesson 6.10</a>.</p>
+<p><strong>Done (as a claim)</strong> (claim, verification, not verified): the agent's report that it finished, which is not proof; verification looks at real evidence, and "not verified" names what was skipped. Taught in <a href="../lessons/0030-claims-vs-evidence.html">lesson 2.2</a>.</p>
+
+<h2>E</h2>
+<p><strong>Emulator</strong> (production (backend), rehearsal room / stage (metaphor)): a local imitation of a hosted backend, safe to break; production holds real data, quotas and billing. Taught in <a href="../lessons/0098-emulator-vs-production.html">lesson 8.10</a>.</p>
+<p><strong>Environment variable</strong> (.env, .env.example): a named value read at runtime and kept out of code; .env holds real values and is git-ignored, while .env.example commits the names only. Taught in <a href="../lessons/0090-env-vars.html">lesson 8.2</a>.</p>
+<p><strong>Evidence</strong> (screenshot, screenshot as evidence, black frame, negative control, frontmost window, screen-recording permission): an artifact that would differ if the work were wrong; a black frame means the capture or app failed, so test a known-good negative control. Taught in <a href="../lessons/0036-screenshots-as-evidence.html">lesson 2.8</a>.</p>
+<p><strong>Exit code</strong> (exit status, one-command gate, package script, Makefile): the number a command returns, zero meaning success; a gate puts every check behind one. Taught in <a href="../lessons/0031-test.html">lesson 2.3</a>.</p>
+
+<h2>F</h2>
+<p><strong>Failure mode</strong> (retrospective): a named recurring way runs go wrong; a retrospective matches each problem to one and writes a prevention rule. Taught in <a href="../lessons/0088-retrospective.html">lesson 7.3</a>.</p>
+<p><strong>First-time user</strong> (first-time-user walk, think-aloud, usability problem): someone without the builder's memory; a walk with think-aloud exposes usability problems where expectation and screen disagree. Taught in <a href="../lessons/0040-be-first-time-user.html">lesson 2.13</a>.</p>
+<p><strong>Fixture</strong> (test double, mock, stub, fake, wire test, live test): a saved sample input or output; a stub returns canned answers, a mock records calls, a fake is a working simplification, a wire test uses the real protocol, and a live test the real service. Taught in <a href="../lessons/0101-mocks-vs-live-tests.html">lesson 8.13</a>.</p>
+<p><strong>Flaky test</strong> (vacuous check, todo/skipped test, AI-as-judge): a test that passes and fails on unchanged code; a vacuous check never compares, and AI grading carries noise. Taught in <a href="../lessons/0039-checker-can-be-wrong.html">lesson 2.11</a>.</p>
+<p><strong>Fork</strong> (upstream repository, personal access token, 403 Forbidden, 404 Not Found): a separate repo connected to the original; GitHub access uses a personal access token, and 403 or 404 can mean insufficient permission. Taught in <a href="../lessons/0051-permission-errors.html">lesson 3.12</a>.</p>
+<p><strong>Force push</strong> (force with lease, reset, reflog): a push that replaces remote history; --force-with-lease refuses if the remote moved, and the reflog can recover commits. Taught in <a href="../lessons/0050-undo.html">lesson 3.11</a>.</p>
+<p><strong>Frames per second (fps)</strong> (benchmark, bottleneck, parallel worker, profiling): images drawn each second; a benchmark measures repeatably and profiling finds the bottleneck. Taught in <a href="../lessons/0107-performance.html">lesson 8.19</a>.</p>
+<p><strong>Free plan</strong> (usage limit (guardrail), credits, bandwidth (data transfer), size limit): a host's no-cost tier with published caps on builds, traffic and files. Taught in <a href="../lessons/0083-other-hosts.html">lesson 6.8</a>.</p>
+
+<h2>G</h2>
+<p><strong>GitHub Pages</strong> (user site, project site): free static hosting; a user site lives at owner.github.io, a project site at owner.github.io/repository. Taught in <a href="../lessons/0013-github-pages.html">lesson 6.3</a>.</p>
+<p><strong>Glossary</strong> (re-pitch, output style): plain-word definitions kept where both of you can read them; a re-pitch asks again in a different form, and an output style sets tone. Taught in <a href="../lessons/0018-ask-word-means.html">lesson 1.3</a>.</p>
+<p><strong>Goal</strong> (audience, method, constraint): the outcome that should exist at the end and who it serves; naming only the method leaves the goal to guesswork. Taught in <a href="../lessons/0016-goal-audience-not-method.html">lesson 1.1</a>.</p>
+<p><strong>Go (the gate)</strong> (plan, plan mode, edit, blast radius, gate (human "go")): your approval between a written plan and the first edit; plan mode stays read-only while drafting. Taught in <a href="../lessons/0022-plan-then-human-go.html">lesson 1.7</a>.</p>
+<p><strong>Goodhart's law</strong> (proxy, reward hacking, specification gaming, negative control): optimizing a measure stops it tracking the outcome; a proxy is the stand-in, and reward hacking improves it while harming the goal. Taught in <a href="../lessons/0061-reward-hacking-goodhart.html">lesson 4.7</a>.</p>
+
+<h2>H</h2>
+<p><strong>Host (web host)</strong> (hosting, static site, dynamic site, client-side code, web server, published site): a service serving files to browsers; a static site is served as stored, a dynamic site generates responses. Taught in <a href="../lessons/0012-static-vs-dynamic.html">lesson 6.1</a>.</p>
+<p><strong>HTML</strong> (CSS, JavaScript, stylesheet, web page): the structural language of a page; CSS styles it, JavaScript adds behaviour, and the page is a bundle of files that must find each other. Taught in <a href="../lessons/0008-anatomy-of-a-web-page.html">lesson 0.8</a>.</p>
+<p><strong>Human-only step</strong> (runbook, attestation): a step needing your identity or word; the runbook lists them, and an attestation is a statement only you can make. Taught in <a href="../lessons/0077-human-only-steps.html">lesson 5.10</a>.</p>
+
+<h2>I</h2>
+<p><strong>In-folder question</strong> (outside-the-folder question, pointer answer, check instead of guess): one answerable from the project; an outside question needs your fact, a pointer sends the agent to the path, and an unanswerable one becomes a check. Taught in <a href="../lessons/0066-questions-agent-cant-answer-vs-ones.html">lesson 4.12</a>.</p>
+<p><strong>Install</strong> (sign in, version check, credential, PATH): copying the program so its command exists; sign-in stores a credential, and a version check proves PATH finds it. Taught in <a href="../lessons/0005-install-and-sign-in.html">lesson 0.5</a>.</p>
+<p><strong>Integration branch</strong> (per-ticket branch): a holding branch collecting several tickets before the batch merges to main; a per-ticket branch carries one. Taught in <a href="../lessons/0110-integration-branch-vs-per-ticket-branches.html">lesson 9.2</a>.</p>
+<p><strong>Interview</strong> (numbered reply, recommended answer, recommendation, override, product intent, mechanism, recommendation test, spec): numbered questions with one recommendation each; you reply by number, override product decisions, and the record becomes the spec. Taught in <a href="../lessons/0019-interview.html">lesson 1.4</a>.</p>
+
+<h2>L</h2>
+<p><strong>Local server</strong> (localhost, port, address, start and open, preview, refresh, look): a program serving a folder at an address such as localhost:8000; refresh re-fetches, and "look" is your own check. Taught in <a href="../lessons/0007-first-prompt-to-a-page.html">lesson 0.7</a>.</p>
+<p><strong>Log</strong> (telemetry, structured log, log level, diagnosable): a timestamped message about behaviour; structured logs use named fields, and levels rank severity so a bug is diagnosable. Taught in <a href="../lessons/0037-logs-telemetry.html">lesson 2.9</a>.</p>
+
+<h2>M</h2>
+<p><strong>Merge</strong> (merge commit, squash merge, merged, base branch, head branch, rebase, cherry-pick): bringing a branch's commits into another; a merge commit records the join, and squash makes one new commit. Taught in <a href="../lessons/0047-merge-vs-squash.html">lesson 3.8</a>.</p>
+<p><strong>Merge conflict</strong> (conflict marker, merge --abort): a pause where two branches changed the same place differently; Git writes both versions between conflict markers and waits. Taught in <a href="../lessons/0048-merge-conflicts.html">lesson 3.9</a>.</p>
+<p><strong>Model</strong> (effort (reasoning effort), model switch, cheaper-for-building pattern): the reasoning brain; effort controls how long it thinks, and a model switch changes it mid-session. Taught in <a href="../lessons/0073-models-effort.html">lesson 5.6</a>.</p>
+
+<h2>O</h2>
+<p><strong>Orient first</strong> (read-only question, plan mode, map): read what exists before changing anything; ask read-only, use plan mode, and keep the map of files and risks. Taught in <a href="../lessons/0017-orient-first.html">lesson 1.2</a>.</p>
+<p><strong>Outcome-sized prompt</strong> (micro-managing, vague prompt): a request naming one checkable result and leaving steps to the agent; a vague prompt is safe only where the repo defines "works". Taught in <a href="../lessons/0028-outcome-sized-prompts-vs-micro-managing.html">lesson 1.13</a>.</p>
+
+<h2>P</h2>
+<p><strong>Permission mode</strong> (approval prompt, auto mode / bypass / yolo, sandbox, defense in depth): the setting deciding which actions run without asking; a sandbox bounds the damage. Taught in <a href="../lessons/0006-approvals-and-permissions.html">lesson 0.6</a>.</p>
+<p><strong>Plan</strong> (reference, baseline, copy list, skip list, bar): a written proposal of steps and checks; a reference is the model to match, a baseline your own accepted minimum. Taught in <a href="../lessons/0023-reference-as-spec.html">lesson 1.8</a>.</p>
+<p><strong>Project folder</strong> (file path, file extension, working directory, path): the folder you point an agent at; paths route to files, and relative paths resolve from the working directory. Taught in <a href="../lessons/0003-your-project-is-a-folder.html">lesson 0.3</a>.</p>
+<p><strong>Prompt caching</strong> (token, cache hit / cache miss, cache lifetime (TTL)): a provider storing the processed start of a request for cheaper reuse; a cache hit reuses it, a miss reprocesses it, and the TTL is how long it survives. Taught in <a href="../lessons/0069-tokens-cost-caching.html">lesson 5.2</a>.</p>
+<p><strong>Prompt injection</strong> (untrusted content): instructions hidden in text an agent reads, hoping it obeys them; anything you did not write is data, not orders. Taught in <a href="../lessons/0074-prompt-injection.html">lesson 5.7</a>.</p>
+<p><strong>Provenance</strong> (unit, evidence status): where a value came from and when; its unit is its scale, and evidence status says measured, sourced, estimated or unknown. Taught in <a href="../lessons/0105-data-dont-own.html">lesson 8.17</a>.</p>
+<p><strong>Pull request (PR)</strong> (base branch, head branch, draft pull request, merge box): a host page proposing to merge a head branch into a base branch; a draft cannot merge yet. Taught in <a href="../lessons/0045-pull-request.html">lesson 3.7</a>.</p>
+<p><strong>Push</strong> (remote, origin, tracking branch, remote-tracking branch, remote-tracking reference, upstream branch, prune): copying commits to a remote; a tracking branch records its counterpart, and prune drops references to deleted branches. Taught in <a href="../lessons/0011-remote-origin-push.html">lesson 3.6</a>.</p>
+
+<h2>Q</h2>
+<p><strong>Question cap</strong> (over-asking, blocker): an agreed maximum on interview rounds before the agent summarizes decisions and unresolved blockers. Taught in <a href="../lessons/0065-over-asking.html">lesson 4.11</a>.</p>
+
+<h2>R</h2>
+<p><strong>Rate limit</strong> (HTTP 429, HTTP 402, credits, spend cap): a provider's request cap per time window, answered with HTTP 429; 402 often signals billing, and a spend cap rejects further calls. Taught in <a href="../lessons/0092-third-party-api-keys.html">lesson 8.4</a>.</p>
+<p><strong>Real browser</strong> (simulated environment, headless browser, rendering, layout): an actual browser showing the page; a simulated environment never paints, and layout depends on window size. Taught in <a href="../lessons/0035-real-vs-simulated.html">lesson 2.7</a>.</p>
+<p><strong>README</strong> (repository description, website field (homepage), about box, topic): the repo's front page file; description, website and topics fill the About box. Taught in <a href="../lessons/0082-readme-repo-description.html">lesson 6.7</a>.</p>
+<p><strong>Regression</strong> (regression test, failing test first, red / green, fails for the wrong reason): a feature that worked and stopped; its test fails first on the broken version and passes after the fix. Taught in <a href="../lessons/0032-regression-test.html">lesson 2.4</a>.</p>
+<p><strong>Release</strong> (raw file URL, pinned commit): a repo page with downloadable files; a raw URL serves bytes, and a pinned commit keeps them unchanged. Taught in <a href="../lessons/0080-size-limits-big-files.html">lesson 6.4</a>.</p>
+<p><strong>Repository (repo)</strong> (working tree, .gitignore, ignored file, untrack, generated file): the project folder plus its history; .gitignore excludes patterns, and untrack removes a file from the index only. Taught in <a href="../lessons/0010-repo-working-tree-uncommitted-change.html">lesson 3.2</a>.</p>
+<p><strong>Revert</strong> (rollback, main, live site): a new commit cancelling an earlier change; a site rollback republishes a working version. Taught in <a href="../lessons/0084-rollback.html">lesson 6.9</a>.</p>
+<p><strong>Root cause</strong> (symptom, workaround): the mechanism producing a failure; the symptom is its sign, and a workaround avoids it without repairing it. Taught in <a href="../lessons/0059-root-cause-vs-workaround.html">lesson 4.5</a>.</p>
+<p><strong>Rules file</strong> (project rules file, standing instruction, checkable rule, loaded instruction source): a plain-text file read at session start, named CLAUDE.md or AGENTS.md; it holds standing, checkable instructions. Taught in <a href="../lessons/0027-project-rules-file.html">lesson 1.12</a>.</p>
+
+<h2>S</h2>
+<p><strong>Scheduler (agent as scheduler)</strong> (orchestration, meta-prompt, done-when (finish line)): the role where you give goal and finish line and the agent sequences the work; a meta-prompt asks it to critique your prompting. Taught in <a href="../lessons/0114-agent-as-scheduler.html">lesson 9.6</a>.</p>
+<p><strong>Scope</strong> (personal access token, OAuth scope): a named access limit on a token, such as a personal access token's permissions; an OAuth scope is one requested permission. Taught in <a href="../lessons/0051-permission-errors.html">lesson 3.12</a>.</p>
+<p><strong>Scope creep</strong> (scope ladder, rung, promotion, scope cut, deferral note, out-of-scope line): work growing through small additions nobody chose; a deliberate cut is recorded in a deferral note. Taught in <a href="../lessons/0056-scope-creep-scope-ladder.html">lesson 4.2</a>.</p>
+<p><strong>Secret</strong> (API key, token (login), connection string, private key file, rotate (a key), print (a secret), credential store, Git history): a value that lets its holder act as you; a credential store keeps tokens locally, so never print or commit one, and rotate if leaked — history keeps it. Taught in <a href="../lessons/0089-secrets.html">lesson 8.1</a>.</p>
+<p><strong>Session</strong> (resume, fork, handoff, handoff doc, fresh session): one saved run tied to a working directory; resume reopens it, fork branches it, and a handoff doc lets a fresh session continue. Taught in <a href="../lessons/0002-the-three-agents.html">lesson 0.2</a>.</p>
+<p><strong>Skill (agent skill)</strong> (slash command, @-mention, skill description): a folder of instructions loaded when a request matches its description; slash commands start saved prompts. Taught in <a href="../lessons/0026-skills-slash-commands-mentions.html">lesson 1.11</a>.</p>
+<p><strong>Source of truth</strong> (stale claim, invented claim, unverified claim): the authoritative place a claim is checked against; a stale claim described the past, and an unverified claim was never checked. Taught in <a href="../lessons/0075-stale-invented-claims.html">lesson 5.8</a>.</p>
+<p><strong>Spec</strong> (ticket, dependency graph, frontier, blocked): one document describing the app; tickets split it into run-sized pieces, arrows form the dependency graph, and the frontier is unfinished tickets with finished dependencies. Taught in <a href="../lessons/0109-spec-tickets-dependency-graph.html">lesson 9.1</a>.</p>
+<p><strong>Staging area</strong> (stage (a file), staged, commit all, uncommitted change, modified, untracked, uncommitted work): what the next commit records; a modified file is tracked and edited, an untracked one was never committed. Taught in <a href="../lessons/0010-repo-working-tree-uncommitted-change.html">lesson 3.2</a>.</p>
+<p><strong>Static check</strong> (formatter, linter, lint rule, type, type checker): a tool reading source without running it; a formatter rewrites appearance, a linter reports patterns, and a type checker verifies kinds. Taught in <a href="../lessons/0033-linter-formatter-type-checker.html">lesson 2.5</a>.</p>
+<p><strong>Stop condition</strong> (boundary, "and stop there", present-tense stop, persistent goal, goal mode, persistent objective): where a run ends and what it must not start; the finish line and boundary are its halves, and a persistent goal keeps checking one condition across turns. Taught in <a href="../lessons/0057-stop-conditions.html">lesson 4.3</a>.</p>
+<p><strong>Subagent</strong> (parent agent, independent reviewer, read-only contract, cross-checking, review finding, advisory, review scope): a helper with its own context; a read-only contract forbids edits, and findings are advisory within the review scope. Taught in <a href="../lessons/0038-independent-reviewer.html">lesson 2.10</a>.</p>
+<p><strong>Swarm research</strong> (report, reconciliation, contradiction, unverified claim): one question sent to helpers on disjoint slices, then reports merged; reconciliation returns to the source when they contradict. Taught in <a href="../lessons/0113-swarm-research-reconciling-contradictory-reports.html">lesson 9.5</a>.</p>
+
+<h2>T</h2>
+<p><strong>Terminal</strong> (shell, command, prompt (terminal), CLI (command-line interface)): the window where you type a command; the shell runs it, the prompt is the ready marker. Taught in <a href="../lessons/0004-the-terminal-in-five-commands.html">lesson 0.4</a>.</p>
+<p><strong>Test</strong> (assertion, test runner, pass / fail / skipped): a stored check comparing real and expected; an assertion compares, the runner reports, and a skipped test proves nothing. Taught in <a href="../lessons/0031-test.html">lesson 2.3</a>.</p>
+<p><strong>Third-party churn</strong> (deprecation, dead link, link rot): changes by services you do not run — deprecations, removed endpoints, moved or deleted docs — that break an app depending on the old behavior. Taught in <a href="../lessons/0103-third-party-churn.html">lesson 8.15</a>.</p>
+<p><strong>Third-party service</strong> (data retention, zero data retention (ZDR), model training opt-out, egress): an outside company receiving your data; know its retention, ZDR and training policy, and what egress leaves. Taught in <a href="../lessons/0093-send-third-parties.html">lesson 8.5</a>.</p>
+<p><strong>Tool call</strong> (read-before-edit, sandbox, tool output): one use of one tool, whose output is what the agent perceives next; edits apply only to text read first. Taught in <a href="../lessons/0070-tools.html">lesson 5.3</a>.</p>
+<p><strong>Triage</strong> (report, steps to reproduce, console, network panel): reading a report before changing code; reproducible steps make it testable, and the console and network panel show the rest. Taught in <a href="../lessons/0041-reading-screenshots-diagnostics-from-real-user.html">lesson 2.14</a>.</p>
+<p><strong>Triage prompt</strong> (diagnosis, recommendation, stale branch): a saved read-only prompt diagnosing state and ranking recommendations with exact commands; a stale branch is merged or abandoned work. Taught in <a href="../lessons/0116-triage-prompt.html">lesson 9.8</a>.</p>
+<p><strong>Turn</strong> (queue (a message), interrupt, continue, state question): one message plus the agent's whole response; queue adds without cancelling, interrupt stops the current action. Taught in <a href="../lessons/0018-ask-word-means.html">lesson 1.3</a>.</p>
+
+<h2>U</h2>
+<p><strong>Unsupervised run</strong> (evidence checkpoint, progress log): a long task done while you are away; demand an early evidence checkpoint and a progress log. Taught in <a href="../lessons/0063-long-unsupervised-runs.html">lesson 4.9</a>.</p>
+
+<h2>W</h2>
+<p><strong>Workload identity</strong> (OIDC token (id-token), trust relationship (OIDC trust), short-lived token): a CI job logging in with a short-lived signed token instead of a key; the provider checks it against a trust rule. Taught in <a href="../lessons/0099-ci-logging-without-key-file.html">lesson 8.11</a>.</p>
+<p><strong>Worktree</strong> (linked worktree, main worktree, checkout, working directory (of an agent), race condition, parallel agents, build output folder): a second folder checked out to another branch; parallel agents each need one, or they race on the same build output. Taught in <a href="../lessons/0049-worktrees.html">lesson 3.10</a>.</p>
+</main>
+<footer class="lesson-foot"><p><a href="../lessons/0001-what-a-coding-agent-is.html">Back to lesson 0.1</a></p></footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mocks vs live tests: what each one can catch</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.13</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.13</p>
+  <h1>Mocks vs live tests: what each one can catch</h1>
+  <p class="lede">A test that talks to a pretend service is fast and free, but it can only catch problems in your own code. A test that goes live can catch the opposite. This lesson is about knowing which is which, and asking for the right mix.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0031-test.html">2.3 What a test is</a></span><span>Win: you can read a test suite and say which checks pretend, which go over the wire, and which go live</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>In lesson <a href="0031-test.html">2.3</a> a test was a machine-repeatable check: input in, result compared. So far the examples only exercised your own code. But a real app also calls things outside itself: a payment service, a login provider, a database, an email API. For those, you now have two very different kinds of test, and a green run does not mean the same thing in each.</p>
+<p>The stakes are concrete. A mocked test can pass while the real call would fail. A live test can fail while your code is fine. Knowing which kind you are reading is what turns "all tests passed" from a slogan into evidence.</p>
+
+<h2>Pretend objects: mocks, stubs, fakes</h2>
+<p>When a test replaces a real outside thing with a pretend one, the pretend object is called a <span class="term" title="Any pretend object used in place of a real object during a test.">test double</span>. Martin Fowler, who popularised the vocabulary, defines it as <q>the generic term for any kind of pretend object used in place of a real object for testing purposes.</q><sup class="cite"><a href="#src-f">[1]</a></sup> The common kinds, in plain words:</p>
+<ul>
+  <li>A <span class="term" title="A pretend object with a working but simplified implementation, such as an in-memory database.">fake</span> actually works, but takes a shortcut — Fowler's example is an in-memory database: <q>Fake objects actually have working implementations, but usually take some shortcut.</q><sup class="cite"><a href="#src-f">[1]</a></sup></li>
+  <li>A <span class="term" title="A pretend object that returns pre-programmed answers and nothing else.">stub</span> only answers: <q>Stubs provide canned answers to calls made during the test.</q><sup class="cite"><a href="#src-f">[1]</a></sup></li>
+  <li>A <span class="term" title="A pretend object that also records how it was called, so the test can check the calls themselves.">mock</span> additionally checks <em>how</em> it was called — Fowler contrasts them directly: <q>the stub uses state verification while the mock uses behavior verification.</q><sup class="cite"><a href="#src-f">[1]</a></sup></li>
+</ul>
+<p>None of these touch the real service. That is what makes them fast, free, and repeatable — and what limits what they can prove.</p>
+
+<h2>Fixtures: the saved sample a test runs against</h2>
+<p>A <span class="term" title="A saved sample input or expected output that a test uses, kept in a file so every run uses the same data.">fixture</span> is the fixed sample a test uses: a saved request, a saved response, a saved file. Anthropic's own guidance lists <q>a script that diffs output against a fixture</q> as an example of a check an agent can run by itself.<sup class="cite"><a href="#src-a7">[4]</a></sup> Fixtures make runs comparable — same input every time — but they are still pretend data. A fixture copied from a real response last month can go stale without anyone noticing (see lesson <a href="0075-stale-invented-claims.html">5.8</a> for that habit).</p>
+
+<h2>Wire tests: the real path, the fake destination</h2>
+<p>Between fully-mocked and fully-live sits the <span class="term" title="A test that sends real requests over the real protocol (like HTTP) to a local fake server, so the whole path is exercised.">wire test</span>. Your app really builds the request, really sends it over HTTP, and really reads the response — but the destination is a small fake server running on your own machine. Microsoft's integration-testing docs describe exactly this shape: <q>Integration tests are conducted using the Microsoft.AspNetCore.TestHost, which includes the TestServer,</q> and the page's summary is that <q>integration tests ensure that an app's components function correctly at the infrastructure level.</q><sup class="cite"><a href="#src-ms">[2]</a></sup> A wire test catches the wiring bugs mocks cannot see: wrong URL, wrong header, wrong shape of the real request.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked their agent to push a project's checks further. The mocked tests all passed — the fake service accepted everything, because a stub answers whatever it is programmed to answer. When the agent finally ran the same flow against the real service, every request failed: the app was sending a setting the real service rejects. The pretend object had been too polite to say no, and only a live call exposed it.</p>
+  <p>In the same project, one "unit" test secretly called a real outside API. It passed on the laptop, then failed in the hosted checks and cost a rerun; the fix was to mock it. The lesson: tests that quietly go live are flaky by nature, and tests that quietly pretend prove less than they seem.</p>
+</div>
+
+<h2>What pretending cannot catch</h2>
+<p>Google's testing blog puts the caution plainly: <q>it can seem easy to ignore your code's dependencies by mocking them out,</q> and over-mocked tests pass while the real integration is broken.<sup class="cite"><a href="#src-g">[3]</a></sup> So use mocks for what they are good at — fast checks of your own logic — and do not let them be the only thing standing between you and a real outage. Lesson <a href="0035-real-vs-simulated.html">2.7</a> makes the same point for screens: simulated checks passed while the real page was wrong.</p>
+
+<h2>Live tests cost real things</h2>
+<p>A <span class="term" title="A test that calls the real outside service, with real keys and real data.">live test</span> is the only kind that proves the real service accepts your real request. But it is slow, it needs real credentials, it can hit rate limits, and — the dangerous one — it can touch real data. The same audit behind this lesson caught a test that started the app against the user's real saved data and added fake entries to it; the fix was to rerun against a throwaway copy. Say the rule up front when you ask for live tests: <em>never touch my real data or real accounts</em>, give a spend cap (lesson <a href="0058-budgets.html">4.4</a>), and mark live tests so they can be skipped where no key exists — you know the word <code>skipped</code> from lesson <a href="0031-test.html">2.3</a>. Lesson <a href="0100-docker.html">8.12</a> shows one more way to keep live-ish tests isolated.</p>
+
+<div class="compare">
+  <div class="bad"><span class="label">A mocked test says</span><p>"My code produced the right request."</p><p>It says nothing about whether the real service accepts it, is up, or changed its rules.</p></div>
+  <div class="good"><span class="label">A wire or live test says</span><p>"The request went out over the real path and came back accepted."</p><p>Wire tests prove the path against a local fake; live tests prove it against the real service, at real cost.</p></div>
+</div>
+
+<h2>The mix to ask for</h2>
+<p>You do not choose one kind for everything. Ask for a small pyramid: many mocked tests for your own logic, a wire test for each outside seam (the request your app really sends), and a few live tests, budgeted and isolated, marked so they skip when no key is present. When you read a run, count what each kind proved — and treat the live-test column as the one that can still surprise you (lesson <a href="0039-checker-can-be-wrong.html">2.11</a>).</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three kinds of test this lesson contrasted, and say one thing a fully mocked test can never catch.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Mocked tests (pretend objects answering canned replies, with fixtures), wire tests (real requests over the real protocol to a local fake server), and live tests (real calls to the real service). A mocked test can never prove the real service will accept your real request.</p></div>
+</div>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in your project folder, with approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</label></li>
+    <li><label><input type="checkbox"> Send the prompt below. It asks for a classification of what exists, not for new work yet.</label></li>
+    <li><label><input type="checkbox"> Read the answer: each test labelled mocked, wire, or live, with a quoted line as evidence.</label></li>
+    <li><label><input type="checkbox"> Ask for one wire test to be proposed for the outside call your app cares most about. Approve it only if it uses a local fake, not a real key.</label></li>
+    <li><label><input type="checkbox"> Run the test command once and paste the summary: how many passed, failed, skipped.</label></li>
+  </ol>
+  <div class="prompt">
+    <button class="copy" type="button">Copy</button>
+    <pre>Do not change any files yet. Look at this project folder and answer, quoting exact lines from the test files as evidence.
+1. List each test file and label it: mocked (uses a pretend object or fixture), wire (sends real HTTP to a local fake server), or live (calls a real outside service).
+2. For every live test, quote the line showing the real URL or key it uses.
+3. Name the one outside call this app depends on most (API, login, database).
+4. Propose one wire test for that call, using a local fake server. Show the exact commands you would run. Then wait for my go-ahead before writing anything.</pre>
+  </div>
+  <div class="expect"><p>You should see each test labelled with a quoted line, not a claim like "all tests are unit tests". At least one live test should be exposed by its quoted URL or key line — if the agent cannot tell which tests are live, that itself is the finding, and you should ask it to add labels. The proposed wire test must use a local fake server and must not contain a real key; if it does, say "no real keys in tests" and ask again. A project with no tests at all is a normal answer; the useful output is then the proposal in step 4.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">A test replaces the real payment service with a fake that always replies "ok", and the test passes. What does that prove?</p>
+  <button class="opt" type="button">Only your own code ran; the real service was never contacted.</button>
+  <button class="opt" type="button">The real service approved the payment, so checkout is safe now.</button>
+  <button class="opt" type="button">The test runner printed green, so the app is fully correct.</button>
+  <button class="opt" type="button">Nothing at all, since the test can never prove anything useful.</button>
+  <div class="why"><p>A fake answers whatever it is programmed to answer. The green run proves your code built the expected call; it says nothing about the real service accepting it. That is what wire and live tests are for.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which of these is a wire test?</p>
+  <button class="opt" type="button">A check that calls one function and then compares two numbers.</button>
+  <button class="opt" type="button">A check sending real HTTP requests to a local fake server.</button>
+  <button class="opt" type="button">A check that opens your app in a real browser, clicking.</button>
+  <button class="opt" type="button">A check that reads a saved file and diffs the output.</button>
+  <div class="why"><p>A wire test exercises the real path — the app really sends an HTTP request — but the destination is a fake server on your own machine. The browser-click check is a real-vs-simulated check (lesson 2.7); the other two are mocked-style checks with fixtures.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A live test passed on your laptop but failed in the hosted checks. What is the most useful next step?</p>
+  <button class="opt" type="button">Delete the test now, because disagreeing tests are always broken.</button>
+  <button class="opt" type="button">Trust the laptop result, since your machine matters most here.</button>
+  <button class="opt" type="button">Rerun it several times and keep the most frequent result.</button>
+  <button class="opt" type="button">Inspect what differs: keys, real service state, data, or network.</button>
+  <div class="why"><p>Live tests depend on the environment: credentials, the real service's state, real data. A disagreement between machines is a clue about that difference, not noise to vote away. Mocking the outside call usually removes the flakiness (see the vignette above).</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://martinfowler.com/articles/mocksArentStubs.html">Mocks Aren't Stubs</a> — Martin Fowler's essay defining test doubles, stubs, fakes and mocks. It is written for professional developers; read only the section "Test Doubles" and stop there.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure whether one of your tests is mocked or live? Ask the agent that gave you this course. Try: <em>"Show me the exact line in my test that proves whether it calls the real service."</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-f">Martin Fowler, <a href="https://martinfowler.com/articles/mocksArentStubs.html">Mocks Aren't Stubs</a> (2007). Retrieved 2026-11-02.</li>
+  <li id="src-ms">Microsoft Learn, <a href="https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests">Integration tests in ASP.NET Core</a> (TestServer / TestHost). Retrieved 2026-11-02.</li>
+  <li id="src-g">Google Testing Blog, <a href="https://testing.googleblog.com/2013/05/testing-on-toilet-dont-overuse-mocks.html">Testing on the Toilet: Don't Overuse Mocks</a> (2013). Retrieved 2026-11-02 via search snippet; the direct page fetch was blocked by a browser extension, so treat the quote as snippet-level.</li>
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>, section on giving the agent a check to run ("a script that diffs output against a fixture"). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> tell mocked, wire and live tests apart, read what each kind proves, and ask your agent for the right mix with live tests budgeted and isolated.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Previous: <a href="0100-docker.html">8.12 Docker</a></span><span>Next: <a href="0102-deploy-blockers.html">8.14 Deploy blockers</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

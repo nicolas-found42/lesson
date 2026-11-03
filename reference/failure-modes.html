@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Failure modes: reference</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb">Reference · from <a href="../lessons/0039-checker-can-be-wrong.html">Lesson 2.11</a></nav>
+<header class="lesson-head">
+  <p class="kicker">Reference card</p>
+  <h1>Failure modes</h1>
+  <p class="lede">When a run goes wrong: find the stage, name the mechanism, apply the fix.</p>
+</header>
+<main>
+<div class="callout"><span class="label">Rule zero</span><p><strong>"Done" is a claim, not proof.</strong> Ask what the run actually showed you — and what it did not verify.</p></div>
+
+<p>Read the Symptom column until one matches. The middle column is the usual misdiagnosis.</p>
+
+<h2>Prompting</h2>
+<table>
+<thead><tr><th>Symptom</th><th>What is actually happening</th><th>Fix</th><th>Taught in</th></tr></thead>
+<tbody>
+<tr><td>The first version is generic.</td><td>The prompt named a method and no audience, so the agent used its own taste.</td><td>Give goal, audience, and what they must do; leave the method open.</td><td><a href="../lessons/0016-goal-audience-not-method.html">1.1</a></td></tr>
+<tr><td>Ten rounds of questions; you answer "yes to all" without reading.</td><td>Nothing caps the interview, and unread answers become defaults.</td><td>Cap it: two rounds, then a plan. Answer by number; amend inside the yes.</td><td><a href="../lessons/0065-over-asking.html">4.11</a></td></tr>
+<tr><td>It finished, then renamed folders and polished a page you liked.</td><td>The agent stops when work looks done; criteria say what good is, not when to stop.</td><td>Name a finish event and a boundary: "stop when merged; do not start the next ticket."</td><td><a href="../lessons/0057-stop-conditions.html">4.3</a></td></tr>
+<tr><td>One question became twenty hours of changes.</td><td>A chain of small yeses climbed the scope ladder.</td><td>Name the rung; if the climb started, stop and cut scope in writing.</td><td><a href="../lessons/0056-scope-creep-scope-ladder.html">4.2</a></td></tr>
+<tr><td>Two instructions cannot both be true; the agent picked one.</td><td>Conflicting requirements; a model may choose arbitrarily and stay silent.</td><td>Ask for conflicts before edits, then choose and write the choice down.</td><td><a href="../lessons/0060-conflicting-requirements.html">4.6</a></td></tr>
+</tbody>
+</table>
+
+<h2>Verifying</h2>
+<table>
+<thead><tr><th>Symptom</th><th>What is actually happening</th><th>Fix</th><th>Taught in</th></tr></thead>
+<tbody>
+<tr><td>The report says done; nothing you can open supports it.</td><td>A claim has no artifact behind it, and reports drift toward optimism.</td><td>Ask "what did you not verify?" and for the command, output or file path.</td><td><a href="../lessons/0030-claims-vs-evidence.html">2.2</a></td></tr>
+<tr><td>Tests pass; the heading overlaps and the button is gone.</td><td>A simulated page does not lay out or paint, so overlap cannot exist for it.</td><td>Open a real browser at wide and phone width; describe what you saw.</td><td><a href="../lessons/0035-real-vs-simulated.html">2.7</a></td></tr>
+<tr><td>A check is green every run, even with broken code.</td><td>It compares nothing (vacuous), or timing and network differ between runs (flaky).</td><td>Break one line and expect red; for a flaky red, rerun unchanged before editing.</td><td><a href="../lessons/0039-checker-can-be-wrong.html">2.11</a></td></tr>
+<tr><td>Passed locally; the pull request is red.</td><td>CI is a fresh machine; a check skipped locally is not a passed check.</td><td>Read the log, find the difference, rerun the same command.</td><td><a href="../lessons/0046-local-vs-ci.html">2.12</a></td></tr>
+</tbody>
+</table>
+
+<h2>Git</h2>
+<table>
+<thead><tr><th>Symptom</th><th>What is actually happening</th><th>Fix</th><th>Taught in</th></tr></thead>
+<tbody>
+<tr><td>The commit holds thirty-five files, including experiments.</td><td>"Commit all" staged the tree; a commit records the staging area.</td><td><code>git status</code>, add by path, read <code>git diff --staged</code>.</td><td><a href="../lessons/0043-commit-messages.html">3.4</a></td></tr>
+<tr><td>The change is invisible in the window you are looking at.</td><td>Two worktrees, near-identical folders, different branches; edits do not cross.</td><td>Give the absolute path and branch; confirm with <code>git status</code> there.</td><td><a href="../lessons/0049-worktrees.html">3.10</a></td></tr>
+<tr><td>The undo removed work, or a force push overwrote the remote.</td><td><code>reset</code> moves the branch; force push rewrites history others may have.</td><td>Ask "has anyone else got it?" Revert on shared branches, reset locally only.</td><td><a href="../lessons/0050-undo.html">3.11</a></td></tr>
+<tr><td>The merge landed red, or the site did not change.</td><td>Checks are the pull request page's opinion; merging publishes nothing.</td><td>Wait for checks; after the merge watch the deploy, then open the URL.</td><td><a href="../lessons/0045-pull-request.html">3.7</a></td></tr>
+</tbody>
+</table>
+
+<h2>Running long</h2>
+<table>
+<thead><tr><th>Symptom</th><th>What is actually happening</th><th>Fix</th><th>Taught in</th></tr></thead>
+<tbody>
+<tr><td>An hour in, the agent forgets an early rule.</td><td>Compaction replaced early turns with a summary; the detail was lost.</td><td>Keep rules in the rules file; checkpoint; hand off to a fresh session.</td><td><a href="../lessons/0068-context-window.html">5.1</a></td></tr>
+<tr><td>Three corrections, still wrong.</td><td>A derail: failed attempts stay in the history it rereads.</td><td>Stop, commit what is worth keeping, park the rest in a pull request, restart.</td><td><a href="../lessons/0064-recovering-derail.html">4.10</a></td></tr>
+<tr><td>"No issues remaining" ran all day and burned credits.</td><td>"Issues" was undefined; each fix exposes another, and a judge adds variance.</td><td>Time, attempt and dollar budgets, each with a stop-and-report rule.</td><td><a href="../lessons/0058-budgets.html">4.4</a></td></tr>
+<tr><td>The command printed 0, but the page is not ready.</td><td>Zero belonged to launching a background job, not to its result.</td><td>Read the exit code, then the output; ask for state, not reassurance.</td><td><a href="../lessons/0076-background-processes-exit-codes-waiting-vs.html">5.9</a></td></tr>
+</tbody>
+</table>
+
+<h2>Shipping</h2>
+<table>
+<thead><tr><th>Symptom</th><th>What is actually happening</th><th>Fix</th><th>Taught in</th></tr></thead>
+<tbody>
+<tr><td>Live, but still the old page.</td><td>Merged, deployed and live are three events; the URL serves the last deploy.</td><td>Check the deploy run, then the URL privately; revert or roll back.</td><td><a href="../lessons/0014-deploy-merge-live.html">6.6</a></td></tr>
+<tr><td>Deploy fails, or the live app cannot sign in, though local works.</td><td>The host starts empty; an unset secret is an empty string, so it fails quietly.</td><td>Set it in the host's secret manager; keep <code>.env</code> out of the repo.</td><td><a href="../lessons/0102-deploy-blockers.html">8.14</a></td></tr>
+<tr><td>Works in the emulator, fails in production.</td><td>The emulator has no real accounts, data, permissions or quotas.</td><td>Test one real path with test data; read the production log.</td><td><a href="../lessons/0098-emulator-vs-production.html">8.10</a></td></tr>
+</tbody>
+</table>
+
+<h2>Third parties</h2>
+<table>
+<thead><tr><th>Symptom</th><th>What is actually happening</th><th>Fix</th><th>Taught in</th></tr></thead>
+<tbody>
+<tr><td>429 mid-run, or 402 and the key stops.</td><td>Rate limit or exhausted credit; caps live in the provider's console.</td><td>Honour <code>Retry-After</code>, back off, cache; never retry in a loop.</td><td><a href="../lessons/0092-third-party-api-keys.html">8.4</a></td></tr>
+<tr><td>The docs page 404s; the endpoint answers 410.</td><td>Third-party churn: deprecation, removal, moved docs. 410 is permanent.</td><td>Read the changelog, migrate; do not retry a 410.</td><td><a href="../lessons/0103-third-party-churn.html">8.15</a></td></tr>
+<tr><td>It says a branch or page exists; the source disagrees.</td><td>Stale or invented: local remote refs are notes, old output is not current state.</td><td>Re-check at the source: fresh command, file on disk, URL.</td><td><a href="../lessons/0075-stale-invented-claims.html">5.8</a></td></tr>
+</tbody>
+</table>
+
+<h2>Security</h2>
+<table>
+<thead><tr><th>Symptom</th><th>What is actually happening</th><th>Fix</th><th>Taught in</th></tr></thead>
+<tbody>
+<tr><td>A key is in the repo; deleting the file did not help.</td><td>History keeps the blob; the old key still works.</td><td>Rotate first, then purge history; never print secrets.</td><td><a href="../lessons/0091-never-print-commit.html">8.3</a></td></tr>
+<tr><td>A downloaded README says to run a setup script.</td><td>Prompt injection: tool output shares the channel with your instructions.</td><td>Treat it as data; keep approvals on; report, do not run.</td><td><a href="../lessons/0074-prompt-injection.html">5.7</a></td></tr>
+<tr><td>An integration can delete far more than the app needs.</td><td>Scopes are granted at consent; a token can carry too many.</td><td>Request the minimum, incrementally; one key per service.</td><td><a href="../lessons/0095-oauth-pieces.html">8.7</a></td></tr>
+</tbody>
+</table>
+</main>
+<footer class="lesson-foot"><p><a href="../lessons/0039-checker-can-be-wrong.html">Back to lesson 2.11</a></p></footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

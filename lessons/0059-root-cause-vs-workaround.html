@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Root cause versus workaround</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 4 · Scope &amp; stopping · Lesson 4.5</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 4 · Lesson 4.5</p>
+  <h1>Root cause versus workaround</h1>
+  <p class="lede">A red message can be silenced in a second or understood in an hour. Only one of those leaves your app working, and you get to choose which you asked for.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0055-definition-done-acceptance-criteria.html">4.1 Definition of done</a></span><span>Win: you can tell a repair from a disguise, and say which one you will accept</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Shipping your app means sending a link to people who cannot fix it themselves. A blank page or a button that does nothing needs a repair, not a disguise. A <span class="term" title="A change that avoids or reduces a problem without removing its cause.">workaround</span> can make your demonstration succeed while the original failure remains possible.</p>
+<p>Your job is to choose which result you will accept. Your <a href="0055-definition-done-acceptance-criteria.html">definition of done</a> says what must work. Add a second line: what shortcuts are not acceptable?</p>
+
+<h2>Two words, one difference</h2>
+<p>The <strong>symptom</strong> is what you observe: the page is blank, the save button spins forever, the photo is see-through. The <strong>root cause</strong> is the thing in the system that produces that observation: the code reads a field that the data never sets, the request goes to the wrong address, the colour is stored in a format the page does not expect.</p>
+<p>Fixing the root cause changes the mechanism producing the failure. A workaround avoids or reduces its effects without removing that mechanism. Hiding a broken element is one example. Retrying can also be a workaround, although retries may be legitimate handling of an outside service's temporary failure. Judge the change against your requirement, not its name.</p>
+<p>The distinction is not about size or effort. A one-line change can be a real fix, and a page of new code can be a workaround. It is about <em>where</em> the change lands relative to the cause.</p>
+
+<h2>Why agents reach for the workaround</h2>
+<p>An agent can mistake a visible improvement for completion. Anthropic's prompting guide recommends asking for logic that works across valid inputs rather than only the supplied test cases.<sup class="cite"><a href="#src-pe">[1]</a></sup> It also suggests telling the agent to report infeasible tasks or incorrect tests rather than work around them. Make an honest "not solved yet" an acceptable answer.</p>
+<span class="sidenote">The same guide notes that an agent may <q>focus too heavily on making tests pass</q> instead of producing a solution that generalises.<sup class="cite"><a href="#src-pe">[1]</a></sup> Lesson <a href="0061-reward-hacking-goodhart.html">4.7</a> is about that failure in detail.</span>
+
+<h2>A real pattern, anonymized</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user noticed missing parts in a 3D gallery. The agent found that the viewer's rule for see-through surfaces was discarding parts that should remain visible. It first forced those parts to look solid across about ninety models, while acknowledging that the original rendering rule remained unresolved.</p>
+  <p>The user rejected that destination: they wanted the original behaviour, not a solid-looking preview. After finding the missing reference files, the agent recovered the actual rule. The visible improvement and the requested repair were different outcomes.</p>
+</div>
+<p>Notice what made the rejection work. It named the unacceptable outcome — an approximation shown as if it were the answer — and it named what would count instead. It did not say "try harder".</p>
+
+
+<h2>The first question is not "how do we fix it?"</h2>
+<p>First ask what is happening. Anthropic's workflow guide recommends providing steps to reproduce the error and saying whether it happens consistently.<sup class="cite"><a href="#src-cw">[2]</a></sup> Its overview describes the intended sequence as tracing the issue through the code, identifying the root cause, and implementing a fix.<sup class="cite"><a href="#src-ov">[3]</a></sup> Ask for an explanation supported by observations, not a plausible story.</p>
+<p>Three questions separate a repair from a disguise. Ask them after any fix that surprises you:</p>
+<ol>
+  <li><strong>What did you change, and why does that address the cause?</strong> Ask for the connection between the edit and the observed failure. An unclear explanation is a reason to investigate, not proof that the patch is a workaround.</li>
+  <li><strong>If I run my original steps again, what would still be broken?</strong> This finds the cases the patch skipped.</li>
+  <li><strong>Does this hide the problem anywhere?</strong> Suppressed errors, removed checks and skipped tests are not fixes. They are the failure made quieter.</li>
+</ol>
+<div class="callout">
+  <span class="label">The sentence to keep</span>
+  <p><strong>"Name the cause before you change anything. If you cannot name it, say so and stop."</strong></p>
+</div>
+
+<h2>When a workaround is the right answer</h2>
+<p>For this course, accept a workaround only when it is <em>bounded</em> (its limits are clear), <em>temporary</em> (there is a replacement or review point), and <em>labelled</em> (what remains broken is written down). You must approve that tradeoff. These are decision rules, not a promise that every workaround is safe.</p>
+<p>For example, showing a clear "temporarily unavailable" message might be acceptable while an outside service is broken. Showing "saved" when nothing was stored is not. Ask who might be harmed or misled by the shortcut. A deadline does not make inaccurate results acceptable.</p>
+
+<h2>Say what is not acceptable</h2>
+<p>Here is the part beginners skip. A definition of done usually lists what must be true. The workaround problem is solved by adding what must <em>not</em> be true. Anthropic's best-practices page recommends naming the file, describing the symptom, and saying <q>what “fixed” looks like up front</q>.<sup class="cite"><a href="#src-bp">[4]</a></sup> OpenAI's Codex guidance calls the same slot <q>Done when</q>: <q>What should be true before the task is complete</q>.<sup class="cite"><a href="#src-cx">[5]</a></sup> Neither phrasing is special. The habit is.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Something is wrong: [what you see, and the exact steps that show it].
+
+Before changing anything:
+1. Reproduce it, and show me the command and its output.
+2. Tell me the cause in one sentence, in plain words.
+3. If you cannot name a cause, stop there and tell me what you need.
+
+Then fix the cause, not the symptom.
+
+Not acceptable, even if it makes the symptom disappear:
+- deleting, skipping, or weakening a check or a test
+- hiding an error, or catching it and carrying on silently
+- special-casing the one input I gave you
+- a temporary patch presented as the real fix
+
+If a proper fix is out of reach today, say so, and propose the smallest honest stopgap and what it leaves undone.</pre>
+</div>
+<p>The final paragraph gives the agent a safe alternative to pretending it succeeded. Keep the investigation bounded to this failure; "fix the cause" does not mean redesigning the whole app. If requirements collide, use <a href="0060-conflicting-requirements.html">4.6 Conflicting requirements</a>.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what is the difference between a symptom and a root cause? Name the three conditions that make a workaround acceptable, and the one thing that is never acceptable.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The symptom is what you observe; the root cause is the thing producing it. A workaround is acceptable when it is <strong>bounded</strong>, <strong>temporary</strong> and <strong>labelled</strong>. What is never acceptable is a workaround presented as a fix — including deleted checks, swallowed errors and special-cased inputs.</p></div>
+</div>
+
+<h2>Give the agent room to investigate</h2>
+<p>Use a planning step before edits. Keep approval prompts on; <a href="0006-approvals-and-permissions.html">0.6</a> explains the settings.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Start with <code>claude --permission-mode plan</code>. Plan mode tells Claude to <q>research and propose changes without making them</q>.<sup class="cite"><a href="#src-pm">[6]</a></sup> Do not enable bypass permissions. Ask for the diagnosis before approving edits.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Codex documents planning first for ambiguous tasks. Toggle plan mode with <code>/plan</code> or <kbd>Shift+Tab</kbd>.<sup class="cite"><a href="#src-cx">[5]</a></sup> Include the unacceptable shortcuts in the prompt.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp's plan mode <q>explores and proposes without changing the working tree until you approve it.</q><sup class="cite"><a href="#src-omp">[7]</a></sup> These are its authors' docs, not independent confirmation.</p>
+  </div>
+</div>
+
+<div class="warn">
+  <span class="label">Never accept these as a fix</span>
+  <p>Deleting, skipping or loosening a check. Catching an error and continuing silently. Special-casing the exact input you reported. Disabling a feature and calling it repaired. Each one makes the next report less trustworthy, because you can no longer tell what the checks still cover.</p>
+</div>
+
+<h2>Do it in your own agent</h2>
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your practice app with approval prompts on. Pick a small visible bug. If none is known, ask the agent to review a previous fix without changing files; do not introduce a bug into your app.</label></li>
+    <li><label><input type="checkbox"> Send the diagnosis-only instruction: "Reproduce this and tell me the cause in one sentence. Do not change any file yet."</label></li>
+    <li><label><input type="checkbox"> Read the answer. If it describes an edit instead of a cause, reply: "That is a change. What produces the symptom?"</label></li>
+    <li><label><input type="checkbox"> Paste the prompt above with your own "not acceptable" list, and let it fix the cause.</label></li>
+    <li><label><input type="checkbox"> Repeat your original steps. Then ask: "What would still be broken if I did this a different way?" Write the answer down.</label></li>
+  </ol>
+  <div class="expect"><p>You should get an explanation tied to an observation and a proposed check. Repeat the original failing steps after the repair, then try a related case. Neither a confident explanation nor a changed screenshot alone proves the cause is gone. If the cause remains unknown, keep that status explicit rather than approving a disguised workaround.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">Your save button spins and nothing is stored. Which reply asks for a cause?</p>
+  <button class="opt" type="button">Hide the error with a style rule</button>
+  <button class="opt" type="button">Find out why the save step fails</button>
+  <button class="opt" type="button">Say the save step is fixed now</button>
+  <button class="opt" type="button">Add code that retries the save step</button>
+  <div class="why"><p>The second reply asks the agent to investigate what produces the failure. Hiding, retrying without diagnosis, or declaring success does not identify a cause.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">You want to challenge a proposed explanation, not request another assurance. Which question helps?</p>
+  <button class="opt" type="button">Can you promise the patch is correct?</button>
+  <button class="opt" type="button">How long will the next change take?</button>
+  <button class="opt" type="button">What would disprove the cause you named?</button>
+  <button class="opt" type="button">Would a different colour look better here?</button>
+  <div class="why"><p>A check that could disprove the explanation makes it testable. A promise repeats the agent's confidence; time and colour do not test the explanation.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">A check keeps failing and nobody knows why. What should you tell the agent?</p>
+  <button class="opt" type="button">Hide the symptom for now and say nothing more</button>
+  <button class="opt" type="button">Add a quick temporary patch, then carry on normally</button>
+  <button class="opt" type="button">Rename the button so that the error cannot appear</button>
+  <button class="opt" type="button">Stop, name the cause, and report back to me</button>
+  <div class="why"><p>A failing check is information. Silencing it, patching around it or renaming things destroys the information and leaves the cause in place. Stopping to name the cause is the honest move.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">What makes "hide the broken row" a workaround rather than a repair?</p>
+  <button class="opt" type="button">It hides the symptom but leaves its cause</button>
+  <button class="opt" type="button">It always edits far too many files here</button>
+  <button class="opt" type="button">It costs slightly more tokens than a repair</button>
+  <button class="opt" type="button">It only works on a developer's own machine</button>
+  <div class="why"><p>The test is where the change lands, not its size or cost. Hiding a row changes what you see while whatever produced the empty row keeps running.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/common-workflows">Common workflows</a> — Anthropic's short recipe for fixing a bug: share the error, ask for options, then apply one. The useful part for this lesson is the tip list about reproducing the issue and saying whether it is intermittent. It is written for one tool, and the order of work applies to all three.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a bug you cannot classify? Ask: <em>"Is this a cause or a workaround? Show me the evidence either way."</em> Or: <em>"Explain the difference using a leaky tap."</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-pe">Anthropic, <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">Prompting best practices</a>, section "Avoid focusing on passing tests and hardcoding". Retrieved 2026-11-02.</li>
+  <li id="src-cw">Anthropic, <a href="https://code.claude.com/docs/en/common-workflows">Common workflows</a>, section "Fix bugs efficiently". Retrieved 2026-11-02.</li>
+  <li id="src-ov">Anthropic, <a href="https://code.claude.com/docs/en/overview">Claude Code overview</a>. Retrieved 2026-11-02.</li>
+  <li id="src-bp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Best practices</a> (Codex). Retrieved 2026-11-02.</li>
+  <li id="src-pm">Anthropic, <a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a>. Retrieved 2026-11-02.</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> tell a symptom from its cause, ask for the cause before the patch, list what you will not accept, and allow a bounded workaround only when it is labelled as one.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Previous: <a href="0058-budgets.html">4.4 Budgets</a></span> · <span>Next: <a href="0060-conflicting-requirements.html">4.6 Conflicting requirements</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docker: run tests in a throwaway box, not on your real data</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.12</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.12</p>
+  <h1>Docker: run tests in a throwaway box, not on your real data</h1>
+  <p class="lede">Once your app has a backend, every test can write to a database. Docker lets you start a private, disposable copy of that backend so tests never touch what is real. Four words cover it: image, container, volume, port.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Needs: <a href="0076-background-processes-exit-codes-waiting-vs.html">5.9 Background processes, exit codes, waiting vs polling</a></span><span>Win: you can ask for an isolated test run that cannot touch your real data</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>So far your app was a static page, and running it was harmless. In this unit your app may gain a backend with a database (lesson 8.9). From that moment, every test that starts the app can also <em>write to that database</em>. If the test uses the same database as your real app, a test can add fake entries, overwrite settings, or delete rows you care about. Docker is the standard way to say: <em>start a separate copy, used only for this test, and throw it away afterwards.</em> You still check the result yourself; Docker makes the playground safe.</p>
+
+<h2>The four words</h2>
+<p>You only need four words. Docker's own documentation defines the first two plainly.</p>
+<table class="ref">
+  <tr><th>Word</th><th>What it is</th><th>One-liner command</th></tr>
+  <tr><td><span class="term">image</span></td><td><q>An image is a read-only template with instructions for creating a Docker container.</q><sup class="cite"><a href="#src-1">[1]</a></sup> Think of it as a recipe plus a frozen snapshot of the software.</td><td><code>docker build</code> makes one from a Dockerfile; <code>docker pull</code> downloads one</td></tr>
+  <tr><td><span class="term">container</span></td><td><q>A container is a runnable instance of an image.</q><sup class="cite"><a href="#src-1">[1]</a></sup> A running copy. <q>By default, a container is relatively well isolated from other containers and its host machine.</q><sup class="cite"><a href="#src-1">[1]</a></sup></td><td><code>docker run</code> = <q>create and run a new container from an image</q><sup class="cite"><a href="#src-3">[3]</a></sup></td></tr>
+  <tr><td><span class="term">volume</span></td><td><q>Volumes are persistent data stores for containers, created and managed by Docker.</q><sup class="cite"><a href="#src-2">[2]</a></sup> Data in a volume survives even when its container is removed.</td><td><code>docker run -v my-data:/app/data …</code> = <q>bind mount a volume</q><sup class="cite"><a href="#src-3">[3]</a></sup></td></tr>
+  <tr><td><span class="term">port</span></td><td>A door number. A container has its own private network; publishing a port opens a door from your computer to inside the container.</td><td><code>docker run -p 8080:80 …</code> = <q>publish a container's port(s) to the host</q><sup class="cite"><a href="#src-3">[3]</a></sup></td></tr>
+</table>
+<p>One property makes containers worth the trouble for tests. Docker says they are lightweight and hold everything the application needs to run. So a container does not rely on what happens to be installed on your machine. A check that passes inside it is passing against the same setup every time, not against a lucky local install.</p>
+
+<h2>Why a container is not enough on its own</h2>
+<p>A container alone is disposable in the wrong way: Docker warns that <q>when a container is removed, any changes to its state that aren't stored in persistent storage disappear.</q><sup class="cite"><a href="#src-1">[1]</a></sup> That is exactly what you want for a test — the fake data vanishes with the container. But your app's <em>real</em> data must live in a <em>volume</em>, which <q>exist[s] outside the lifecycle of a given container</q> and is <q>persisted even if the container using it is removed.</q><sup class="cite"><a href="#src-2">[2]</a></sup> So the rule is simple: real data gets a named volume; tests get a throwaway volume or none at all.</p>
+<span class="sidenote">Ports work the same way. The real app might listen on port 5432 on your machine; the test copy should use a different published port, like <code>-p 15432:5432</code>, so the two never collide.</span>
+
+<h2>Named volumes and anonymous ones</h2>
+<p>Docker's volume page draws a distinction you will use often. A volume can be <em>named</em>, with a name you choose, or <em>anonymous</em>, with a random name Docker picks. Both outlive the container that used them. There is one exception: the <code>--rm</code> flag destroys the anonymous volume attached to that container when the container exits.</p>
+<p>That exception is why <code>--rm</code> belongs in test commands. A test container with an anonymous volume leaves nothing behind, so the fake rows vanish with the container. A named volume stays even when no container is running, which is what real data needs.</p>
+<p>Unused volumes are not cleaned up on their own either. Docker keeps them until you run <code>docker volume prune</code>. That is a cleanup command, not a test command. Run it only when you are sure which volumes are disposable, and never when a real data volume happens to be sitting unattached.</p>
+
+<h2>A real pattern, anonymized</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked their agent to check whether their project worked. The agent ran the project's checks, including a start-the-app smoke test. That test started the app in a container pointed at the user's <em>real</em> saved-data volume, and it wrote fake entries into it. A second reviewer agent noticed, the agent disclosed it, cleaned up the fake entries, and re-ran the test against a throwaway volume on a different port. Afterwards the user made it a standing rule: <em>never touch my real data or real ports in a test.</em></p>
+</div>
+
+<div class="compare">
+  <div class="bad">
+    <span class="label">Without isolation</span>
+    <p>Test starts the app against the real volume and the real port. Fake rows land next to real ones. If the test crashes midway, real data is already changed. You find out later, or never.</p>
+  </div>
+  <div class="good">
+    <span class="label">With a throwaway container</span>
+    <p>Test starts a fresh container with its own temporary volume and a spare port (<code>--rm</code> deletes it when done). Nothing real is reachable. The test can fail as badly as it wants — nothing to clean up.</p>
+  </div>
+</div>
+
+<h2>Run in the background, then check once</h2>
+<p>Lesson 5.9 covered waiting vs polling for commands your agent runs. Containers follow the same idea: start one in the background with <code>-d</code> (<q>run container in background and print container ID</q><sup class="cite"><a href="#src-3">[3]</a></sup>), then check its state once with <code>docker ps</code> (<q>list containers</q><sup class="cite"><a href="#src-3">[3]</a></sup>) instead of staring at the output. Add <code>--rm</code> and Docker will <q>automatically remove the container and its associated anonymous volumes when it exits</q>.<sup class="cite"><a href="#src-3">[3]</a></sup></p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the four Docker words, and say in one sentence why a test container should not share a volume with the real app.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Image</strong> (read-only template), <strong>container</strong> (runnable instance of an image), <strong>volume</strong> (persistent data store), <strong>port</strong> (published door to the container's network). A test container must not share the real volume, because anything the test writes there becomes real data.</p></div>
+</div>
+
+<h2>Do it: one throwaway container, by hand</h2>
+<p>Keep your approval prompts on. These commands are safe: nothing is deleted except the throwaway container itself.</p>
+<div class="doit">
+  <span class="label">Try it in your terminal</span>
+  <ol>
+    <li><label><input type="checkbox"> Type <code>docker --version</code> and read the version line.</label></li>
+    <li><label><input type="checkbox"> Type <code>docker run --rm hello-world</code> and wait for it to finish.</label></li>
+    <li><label><input type="checkbox"> Type <code>docker ps -a</code> and confirm the hello-world container removed itself.</label></li>
+    <li><label><input type="checkbox"> Ask your agent: "Write the exact docker command that runs my test suite in a throwaway container with a temporary volume and a spare port. Never touch my real data or ports." Approve it, run it, and read the output yourself.</label></li>
+  </ol>
+  <div class="expect"><p>After step 2 you should see a <q>Hello from Docker!</q> message. After step 3, <code>docker ps -a</code> lists no <code>hello-world</code> container, because <code>--rm</code> removed it. After step 4, the agent's report names the container, volume and port it used, and the test output shows pass/fail counts you can read yourself.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Say it once, in a prompt</h2>
+<p>You can paste this to any agent whenever a test might touch data:</p>
+<div class="prompt">
+  <button type="button" class="copy">Copy</button>
+  <pre>Run the tests against a throwaway Docker container with its own temporary volume and a spare published port. Never use my real data volume or my real ports. Use --rm so the container deletes itself. Report exactly which container, volume and port you used, and paste the test output.</pre>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">What is a Docker image?</p>
+  <button class="opt" type="button">A running program secretly editing your source files</button>
+  <button class="opt" type="button">A monthly subscription bill for a public website</button>
+  <button class="opt" type="button">A read-only template for building one new container</button>
+  <button class="opt" type="button">A personal folder of photos on your computer</button>
+  <div class="why"><p>Docker's docs: an image is a read-only template with instructions for creating a container. A container is the running instance of that template.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">A container is removed. What happened to the data it wrote?</p>
+  <button class="opt" type="button">Uploaded to the public cloud registry for free</button>
+  <button class="opt" type="button">Gone forever, unless stored inside a mounted volume</button>
+  <button class="opt" type="button">Safely copied into your own project folder automatically</button>
+  <button class="opt" type="button">Saved automatically inside the image it came from</button>
+  <div class="why"><p>Changes to a container's state disappear when it is removed, unless they were stored in persistent storage such as a volume.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Why publish a port with <code>-p</code> when running a container?</p>
+  <button class="opt" type="button">So the host can reach the container's port</button>
+  <button class="opt" type="button">To delete the image after the container exits</button>
+  <button class="opt" type="button">To give the container more memory and CPU</button>
+  <button class="opt" type="button">To print the container's logs to your terminal</button>
+  <div class="why"><p><code>-p</code> publishes a container's port to the host, so your browser can reach a server running inside the container. It does not change memory, logs, or the image.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">Your tests must not touch real user data. What is the best move?</p>
+  <button class="opt" type="button">Run them in a throwaway container with its own volume</button>
+  <button class="opt" type="button">Just skip the tests and trust the agent's report instead</button>
+  <button class="opt" type="button">Only run the tests on the live public website URL</button>
+  <button class="opt" type="button">Copy the real data first, then test on the copy</button>
+  <div class="why"><p>A throwaway container with a temporary volume and spare port (plus --rm) makes the test disposable. Skipping tests or running them against the live site both risk real data or real users.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.docker.com/get-started/docker-overview/">Docker overview: images, containers, and registries</a> — Docker's own introduction, about ten minutes. It is written for one tool, but the four words are the same everywhere.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Try: <em>"Explain Docker using a food-truck example"</em> or <em>"When should I use a volume instead of just a folder?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-1">Docker, <a href="https://docs.docker.com/get-started/docker-overview/">Docker overview</a> (images, containers, isolation, removal). Retrieved 2026-11-02.</li>
+  <li id="src-2">Docker, <a href="https://docs.docker.com/engine/storage/volumes/">Volumes</a> (persistent data stores, lifecycle). Retrieved 2026-11-02.</li>
+  <li id="src-3">Local command <code>docker --help</code> and <code>docker run --help</code>, Docker version 29.8.2 on this Mac; official reference: <a href="https://docs.docker.com/reference/cli/docker/container/run/">docker container run</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name image, container, volume and port; explain why tests belong in a throwaway container; and ask your agent for an isolated run that cannot touch real data.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><a href="0099-ci-logging-without-key-file.html">← 8.11 CI logging without a key file</a><a href="0101-mocks-vs-live-tests.html">Next: 8.13 Mocks vs live tests →</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

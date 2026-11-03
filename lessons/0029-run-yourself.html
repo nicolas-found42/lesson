@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run it yourself</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.1</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.1 · First-ship path ★</p>
+  <h1>Run it yourself</h1>
+  <p class="lede">The agent can change the files. Only you can see whether the change is any good. Start the app, open the address, look at the screen — then decide what happens next.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0007-first-prompt-to-a-page.html">0.7 First prompt to a page</a></span><span>Win: you can launch your app and judge a change in under a minute</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your mission ends with a page that other people open. Those people will never see your files, your terminal, or the agent's explanation. They will see a screen. So the skill that decides whether your app ships well is not reading code. It is putting the app in front of your own eyes, often, and noticing what is there.</p>
+<p>In practice this is the step beginners skip. They read the agent's summary, agree that it sounds right, and ask for the next change. Then they publish, and a friend opens the page on a phone and finds the menu off the edge of the screen. Nobody lied. Nobody checked either.</p>
+<p>This lesson covers the physical half of verification: your eyes on the running app. The next lesson, <a href="0030-claims-vs-evidence.html">2.2 Claims vs evidence</a>, takes up the other half — what the agent's words are worth.</p>
+
+<h2>The loop: change, start and open, look</h2>
+<p>After every change you make one round of the same three steps. It takes about a minute, and it is the same round whether the app is one page or fifty. Only the first round of the day also starts the server; every round after that refreshes a page that is still being served.</p>
+<figure style="margin: 1.2rem 0;">
+<svg viewBox="0 0 520 132" role="img" aria-labelledby="rl-t rl-d" style="width:100%;height:auto;max-width:520px">
+  <title id="rl-t">The run-it-yourself loop</title>
+  <desc id="rl-d">Three boxes in a cycle: change, start and open, look. An arrow returns from look to change.</desc>
+  <defs><marker id="rlah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--fg)">
+    <rect x="10" y="34" width="140" height="50" rx="6"/><rect x="190" y="34" width="140" height="50" rx="6"/><rect x="370" y="34" width="140" height="50" rx="6"/>
+    <path d="M150 59H188" marker-end="url(#rlah)"/><path d="M330 59H368" marker-end="url(#rlah)"/>
+    <path d="M440 84V112H80V86" marker-end="url(#rlah)"/>
+  </g>
+  <g fill="currentColor" font-family="system-ui,sans-serif" font-size="13" text-anchor="middle" style="color:var(--fg)">
+    <text x="80" y="56">1. Change</text><text x="80" y="73" font-size="11" opacity=".7">one small request</text>
+    <text x="260" y="56">2. Start and open</text><text x="260" y="73" font-size="11" opacity=".7">open once, then refresh</text>
+    <text x="440" y="56">3. Look</text><text x="440" y="73" font-size="11" opacity=".7">at the real screen</text>
+    <text x="260" y="128" font-size="11" opacity=".7">then decide: keep it, fix it, or ask what happened</text>
+  </g>
+</svg>
+</figure>
+<p>The agent takes part in all three steps. You type the request; it edits files; it may start the server and open a tab. Step three is the one that cannot be delegated, because the thing judged is whether the result matches what <em>you</em> meant. A report can describe a screen. Only you can say it is wrong for your reader.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Close your eyes for a second. What are the three steps of the loop, and which one belongs to you alone? Write it down before revealing.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Change, start and open, look.</strong> The agent helps with all three, but <strong>look</strong> is yours. The question is whether the screen matches what you meant, and only you hold what you meant.</p></div>
+</div>
+
+<h2>Start once, refresh after every change</h2>
+<p>Lesson <a href="0007-first-prompt-to-a-page.html">0.7</a> used the phrase <em>start and open</em>, and explained the address and the port. Here is what comes after the first time. The server keeps running, answers the same <span class="term" title="The http://localhost:PORT URL that the running server answers on.">address</span> all afternoon, and reads whatever is in the folder at that moment. So after a change you start nothing. You <span class="term" title="Asking the browser to fetch the page again from the server, without restarting anything.">refresh</span> the page: one key press.</p>
+<p>Keep the two verbs apart. <strong>Start</strong> brings the server into existence and happens once. <strong>Refresh</strong> asks the server that already exists for the page, and happens after every change. <strong>Open</strong> is the first time you point a browser at the address; after that the tab is already there, and you refresh it.</p>
+<pre><code>change  →  (server still running)  →  refresh the address  →  look</code></pre>
+<div class="compare">
+  <div class="bad"><span class="label">Restart every time</span><p>Stop the server, run the start command again, hope the port is free, open a new tab, find the page again. Four steps, one new way to fail.</p></div>
+  <div class="good"><span class="label">Start once, refresh</span><p>Leave the server in its own terminal window. Change, refresh, look. The terminal prints a line for each visit, which is your proof the page came from there.</p></div>
+</div>
+<p>Two facts make this safe. The page is read from disk on each request, so an edit shows on the next refresh with no rebuild; I checked by editing a file and asking for the same address again. And the server keeps running until you stop it, so a second copy on the same port fails — MDN's advice for a busy port is to choose another number and use it in the address.<sup class="cite"><a href="#src-m1">[1]</a></sup></p>
+<div class="warn">
+  <span class="label">If the change is not on screen</span>
+  <p>Refresh first. Still nothing? Check that the address matches the one the agent printed, port included. Then look at the terminal window: if you closed it, the server stopped and the browser will say it cannot connect. Restart the server and reload. If a recent edit still will not appear, the browser may be reusing a stored copy of the page; browsers keep responses and reuse them.<sup class="cite"><a href="#src-m3">[2]</a></sup> A new tab usually settles it.</p>
+</div>
+<span class="sidenote">Do not skip the server by double-clicking the file. The address then starts with <code>file://</code>, and browsers can block a local page's requests for its own stylesheet, pictures or script, so it looks broken for no reason you can see.<sup class="cite"><a href="#src-m1">[1]</a></sup></span>
+
+<h2>Then look — five questions, five seconds</h2>
+<p>Looking is a skill with a checklist. Run these in order, and answer to yourself.</p>
+<ol>
+  <li><strong>Is the thing I asked for there?</strong> Repeat your request in your own words, then find each part on the screen. "Bigger heading" means you can point at a bigger heading, not remember that the agent said it made one.</li>
+  <li><strong>Is anything else different?</strong> Look at the change's neighbours. A heading that grew may have pushed a button off the bottom. Most surprises live here.</li>
+  <li><strong>Does it survive a narrow window?</strong> Drag the window narrow, or use the browser's phone-sized view. Many readers arrive on a phone.</li>
+  <li><strong>Are there holes?</strong> A blank box where a picture should be, text sitting on top of other text, a doubled line, an empty space that looks like a mistake.</li>
+  <li><strong>Am I looking at the right page?</strong> Same address as the agent gave you? The page you edited, not an older copy of it?</li>
+</ol>
+<p>One change per round. Ask for five things and get three, and you cannot tell which misbehaved; if something unrelated breaks, you cannot say which change did it. Five small rounds cost five minutes and leave you able to describe what happened.</p>
+<p>And if you cannot find your change, it is not done, whatever the report says.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user ran a small app after every change; their whole ritual was two words, "start and open". One round, they asked for the controls to live inside the running app. The agent built a separate launcher window instead. The user saw it on the first look, about two minutes in, and said the controls were in the wrong window. The agent restated what it had misunderstood and fixed it in one turn. Nothing was broken; the request had been read one way and meant another, and the screen was the only place that difference showed.</p>
+</div>
+
+<h2>Say what you saw, not what you think</h2>
+<p>After looking, you send the report. The useful version describes the screen in order and compares it with what you expected. "The button is broken" sends the agent hunting. "The button is there but sits under the last paragraph; I expected it above" tells it where to look and leaves the cause to the party that can read the file.</p>
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>I looked at localhost:8000. The heading is bigger. On a narrow window the menu runs off the right edge, no scrollbar. I expected it to wrap onto two lines.</span></div>
+  <div class="row"><span class="who">agent</span><span>Checking the menu styles. The row is fixed to one line with no wrapping allowed.</span></div>
+  <div class="row you"><span class="who">you</span><span>Yes — make it wrap. Then I'll look again.</span></div>
+  <div class="row note"><span class="note">Note what the user did not do: guess at CSS, or accept "it should be fine". One observation, one fix, one more look.</span></div>
+</div>
+<p>Two sentences are enough when they are about the screen. Naming the file is the agent's job; naming the symptom is yours.</p>
+
+<h2>Asking each agent to start and open</h2>
+<p>The request is the same everywhere, and it is worth adding one clause: ask for the start command. That is what makes you independent next time.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Start the app and open it in my browser. Give me the address and the exact command you used to start it, so I can start it myself next time. Do not change any code until I have looked.</pre>
+</div>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Claude Code ships two skills for this loop. <code>/run</code> will <q>Launch and drive your app to see a change working</q>; <code>/verify</code> will <q>Build and run your app to confirm a code change does what it should</q>.<sup class="cite"><a href="#src-a1">[3]</a></sup> Its best-practices page says running the app and looking <q>catches the kind of problem that tests and typechecks miss.</q><sup class="cite"><a href="#src-a2">[4]</a></sup> Plain words work too; the skills are a shortcut.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>In the Codex CLI, browser control is not built in: <q>Browser isn't available in Codex CLI or the Codex IDE extension.</q><sup class="cite"><a href="#src-b1">[5]</a></sup> So ask Codex to start the server and print the address and command, then open the address yourself. In the ChatGPT desktop app, a built-in browser gives you and the agent <q>a shared view of websites and local web apps inside a chat</q>, to <q>preview a page</q>.<sup class="cite"><a href="#src-b1">[5]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp has its own browser tool. <code>/browser visible</code> shows the browser it controls; the bare command <q>toggles the browser between headless and visible and restarts it.</q><sup class="cite"><a href="#src-c1">[6]</a></sup> If the tab does not appear, ask omp what it did and open the address it printed. The plain request above works either way.</p>
+  </div>
+</div>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in the practice page from lesson <a href="0007-first-prompt-to-a-page.html">0.7</a>, with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Ask for exactly one small, visible change, then use the prompt above to start the app and get the command and address.</label></li>
+    <li><label><input type="checkbox"> In a second terminal window, type that start command yourself, and open the address. If a server is already running, skip the command and open the address.</label></li>
+    <li><label><input type="checkbox"> Run the five look questions. Write one sentence: "I see ___, and I expected ___."</label></li>
+    <li><label><input type="checkbox"> Send that sentence as the next request. Refresh the page and look again, without restarting the server.</label></li>
+  </ol>
+  <div class="expect"><p>The change should appear within a second of a refresh, and the terminal should print a line each time your browser asks for something. Close that terminal and reload: the address stops answering, which shows that the server, not the agent, is what puts the page on your screen.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">The agent says your heading change is in the files. What comes next?</p>
+  <button class="opt" type="button">Refresh the address and look at the heading.</button>
+  <button class="opt" type="button">Ask the agent if the heading looks correct.</button>
+  <button class="opt" type="button">Open the folder and check the edited files.</button>
+  <button class="opt" type="button">Wait until the agent reports the heading fixed.</button>
+  <div class="why"><p>The change is a claim until you have seen the screen. Refreshing the address costs a second, and your eyes settle it. Asking again collects another claim; reading files tells you the code changed, not what appears.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You opened the page by double-clicking the file. What can follow?</p>
+  <button class="opt" type="button">The editor will certainly refuse to save it.</button>
+  <button class="opt" type="button">The page can no longer be edited later.</button>
+  <button class="opt" type="button">Other local files may now fail to load.</button>
+  <button class="opt" type="button">Your folder will be copied to a server.</button>
+  <div class="why"><p>A <code>file://</code> address makes the browser treat your own pictures, styles and scripts as cross-origin requests, so they can be blocked. Serving the same folder over <code>http://localhost</code> avoids that and matches how the live site will load.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You refreshed and your change is not on the page. Best next move?</p>
+  <button class="opt" type="button">Assume the page needs a few more minutes.</button>
+  <button class="opt" type="button">Tell the agent the change is not visible.</button>
+  <button class="opt" type="button">Change a second thing and look once more.</button>
+  <button class="opt" type="button">Delete the page and start a new one.</button>
+  <div class="why"><p>Say what you see and let the agent find out why: wrong address, a stopped server, a stale copy, or an edit in another file. Making a second change before the first is explained leaves you unable to tell which one mattered.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/set_up_a_local_testing_server">How do you set up a local testing server?</a> (MDN). Short and tool-neutral: it explains why a served folder beats a double-clicked file, and gives the one-line command. Read the first three sections; skip the server-side part.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a look? Ask the agent that gave you this course. Try: <em>"Here is what I see on the page, in order: ___. Here is what I asked for: ___. What is the difference?"</em> or <em>"My address is not loading. What should I check first?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-m1">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/set_up_a_local_testing_server">How do you set up a local testing server?</a> (last modified Sep 28, 2025). Retrieved 2026-11-02.</li>
+  <li id="src-m3">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching">HTTP caching</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/skills">Extend Claude with skills</a> (section "Run and verify your app"). Retrieved 2026-11-02.</li>
+  <li id="src-a2">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/browser">Browser</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/slash">omp slash commands</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> refresh the running app after a change, check the screen against five questions, and report what you saw instead of what you assume.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0028-outcome-sized-prompts-vs-micro-managing.html">Previous: Outcome-sized prompts</a> · <a href="0030-claims-vs-evidence.html">Next: Claims vs evidence</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

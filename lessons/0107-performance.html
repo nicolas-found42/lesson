@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Performance: measuring what is slow</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.19</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.19</p>
+  <h1>Performance: measuring what is slow</h1>
+  <p class="lede">"It feels slow" is not something an agent can fix. A number can be. This lesson teaches four words — frames per second, benchmark, bottleneck, parallel worker — and how to make the agent <em>measure</em> before it <em>changes</em>.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Needs: <a href="0031-test.html">2.3 What a test is</a></span><span>Win: you can ask for a measured speed, and ask for the slowest part to be found before anything is rewritten</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>An app that works but is painful to use is not done. Friends will close a page that stutters or freezes, the same way they close a page with a broken link. The good news: speed problems are the kind of problem agents handle best, <em>if</em> you steer them with numbers instead of feelings. Everything in this lesson is one habit: turn "slow" into a measurement, then ask for the measurement to change.</p>
+
+<h2>Frames per second: the speed of "smooth"</h2>
+<p>Screens update by drawing many still images per second — each one is a <em>frame</em>. <strong>Frames per second</strong> (fps) is how many the app manages each second. Browsers redraw a page many times a second, and MDN notes that <q>The most common refresh rate is 60hz, (60 cycles/frames per second), though 75hz, 120hz, and 144hz are also widely used.</q><sup class="cite"><a href="#src-mdn-raf">[1]</a></sup> At 60 fps each frame gets about 16.67 milliseconds; if your app's work for one frame takes longer than that, frames are dropped and the motion looks like stutter.</p>
+<p>That budget gets smaller as the screen gets faster. At 120 fps a frame has about 8 milliseconds. At 144 fps it has about 7. So a page that feels smooth on one laptop can still stutter on a phone with a fast screen. Ask for frame time and for the screen rate it is held to, and you have a target you can check.</p>
+<p>For web apps, the browser calls your animation code once per frame through <code>requestAnimationFrame</code>, which <q>requests the browser to call a user-supplied callback function before the next repaint</q> — and those calls are <q>paused in most browsers when running in background tabs</q>.<sup class="cite"><a href="#src-mdn-raf">[1]</a></sup> You do not need to remember the function name. You need the idea: how fast your app runs is a <em>countable</em> thing, and your agent can print the count on screen.</p>
+
+<h2>Benchmarks: a number instead of a feeling</h2>
+<p>A <strong>benchmark</strong> is a small, repeatable measurement of how long something takes, run the same way each time so you can compare. When you say "make it faster", the agent may guess at what is slow. When you say "write a benchmark, run it before and after, show me both numbers", the agent has to prove the change helped.</p>
+<p>Here is a tiny Python benchmark — two ways of building the same list, timed. This is the actual output of running it on the course author's machine; your numbers will differ, and that is fine. The point is the <em>ratio</em>, not the absolute time.</p>
+<pre><code>way A: 0.080 s   way B: 0.114 s   B is 1.4x slower</code></pre>
+<span class="sidenote">The script used Python's built-in <code>timeit</code> module, which runs the same code many times and reports total time, so tiny one-off delays don't distort the result.</span>
+<p>One run can fool you. The first run often pays a setup cost, and other programs on your machine take turns on the same core. So run the same benchmark three times and look at the spread. If the three numbers sit close together, the measurement is stable enough to trust.</p>
+<p>Web pages can measure too: the browser provides <code>performance.now()</code>, which <q>returns a high resolution timestamp in milliseconds</q> and uses <q>a monotonic clock: its current time never decreases and isn't subject to adjustments.</q><sup class="cite"><a href="#src-mdn-pnow">[2]</a></sup></p>
+<p>A benchmark belongs in your repo next to your tests, so it runs the same way every time — the same idea as the checks you met in the test lesson.</p>
+
+<h2>Bottlenecks: fix the slowest step, not a random step</h2>
+<p>A <strong>bottleneck</strong> is the single slowest step in a piece of work — named after the narrow part of a bottle that limits how fast liquid pours. Speeding up anything else changes almost nothing until the bottleneck moves. This is why "make everything faster" is a bad prompt: the agent will rewrite code at random, risk breaking what worked, and possibly not touch the real problem.</p>
+<p>Ask the agent to <em>profile</em> — to measure each part and rank them — before it edits. A prompt that works in any agent:</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>My app is slow when I do [describe the action]. Before changing any code:
+1. Write a small benchmark that measures the current speed and prints a number.
+2. Run it and show me the number.
+3. Identify the bottleneck: the slowest single step, with evidence.
+4. Propose a fix for that step only. Do not rewrite anything else.
+Stop after step 3 and wait for my approval.</pre></div>
+<p>Notice the stop condition in the last line: measure first, get your approval, then change. That is the plan-then-go habit from earlier lessons applied to speed.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>In your own words: what is a bottleneck, and why should the agent measure before it edits? Write it down, then check.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The bottleneck is the slowest single step, and it caps the whole speed. Measuring first (a benchmark and a profile) shows where the time actually goes, so the agent fixes that step instead of guessing and rewriting code that wasn't the problem.</p></div>
+</div>
+
+<h2>Parallel workers: using the whole machine</h2>
+<p>Your computer has a brain with several cores — separate units that can each run work at the same time. A <strong>parallel worker</strong> is a piece of your app set up to run alongside the others, one per core, so a big job is split instead of done in one line. Web pages can do this with <em>Web Workers</em>: MDN explains that <q>Web Workers makes it possible to run a script operation in a background thread separate from the main execution thread</q>, <q>allowing the main (usually the UI) thread to run without being blocked/slowed down.</q><sup class="cite"><a href="#src-mdn-workers">[3]</a></sup></p>
+<p>That last part matters even when you don't care about raw speed: heavy work on the main thread freezes the buttons and scrolling. Moving it to a worker keeps the page responsive <em>and</em> can be faster.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user had a learning simulation and asked for "1000 times speed, showing every step, at 120 fps". The agent did not blindly rewrite the app. It built the speed control, measured, and reported that the requirements contradicted each other: showing every step at that speed needed more drawing than any screen refreshes. It undid the experiments that had not helped, showed the numbers, and asked which requirement to relax. The user chose, and the app shipped with a slider instead of a broken promise.</p>
+</div>
+<p>That is the goal: when the agent <em>measures</em>, it can tell you honestly that a target is impossible, and you decide the trade-off. When it only guesses, it may claim success.</p>
+
+<h2>Do it: make your agent measure something</h2>
+<div class="doit">
+  <ol>
+    <li><label><input type="checkbox"> Open your coding agent in any project folder (even a scratch folder is fine).</label></li>
+    <li><label><input type="checkbox"> Paste this prompt: <em>"Write a tiny benchmark that measures how long it takes to count to ten million, run it, and tell me the number. Don't change anything else."</em></label></li>
+    <li><label><input type="checkbox"> Ask a follow-up: <em>"Now run the same benchmark three times. Are the numbers close to each other? What would you conclude from one run alone?"</em></label></li>
+    <li><label><input type="checkbox"> Ask: <em>"How many CPU cores does my machine have, and how would you split this job across them?"</em> Have it explain, not change code.</label></li>
+  </ol>
+  <div class="expect">The agent writes and runs a small script, prints a time in seconds or milliseconds, and the three runs land near each other (within roughly a few percent). If the numbers vary wildly, ask it why — run-to-run noise is itself a lesson about benchmarks.</div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">Your animation stutters. Why does "make it faster" underperform as a prompt?</p>
+  <button class="opt" type="button">Agents treat speed prompts as unclear and refuse to start.</button>
+  <button class="opt" type="button">Screen speed is set by your hardware and never changes.</button>
+  <button class="opt" type="button">Without a measured number it rewrites code with no target.</button>
+  <button class="opt" type="button">It can only improve speed after you delete all tests.</button>
+  <div class="why"><p>With no number to aim at, the agent guesses what is slow and may rewrite working code. A benchmark gives it a target and a way to prove the fix helped.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">What is a bottleneck in your app's work?</p>
+  <button class="opt" type="button">The one slowest single step, which caps the app's speed.</button>
+  <button class="opt" type="button">The largest single file, which loads last on each page.</button>
+  <button class="opt" type="button">The very first step, which always runs before all others.</button>
+  <button class="opt" type="button">Any single step the agent has not chosen to rewrite.</button>
+  <div class="why"><p>Like the neck of a bottle, the slowest step limits the flow of everything else. Fixing other steps barely helps until that one is fixed.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">What does moving heavy work to a parallel worker mainly protect?</p>
+  <button class="opt" type="button">The battery life of phones running the page far away.</button>
+  <button class="opt" type="button">The agent's own context window from filling up too fast.</button>
+  <button class="opt" type="button">The source files from being edited by two agents concurrently.</button>
+  <button class="opt" type="button">The main thread, so the page stays responsive while working.</button>
+  <div class="why"><p>Work that blocks the main thread freezes buttons and scrolling; a background worker keeps the interface moving while the heavy job runs.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">The agent says a target speed is impossible. What is the best response?</p>
+  <button class="opt" type="button">Repeat the same prompt louder until it produces the number.</button>
+  <button class="opt" type="button">Ask for the measurements, then choose which goal to relax.</button>
+  <button class="opt" type="button">Ask it to retry the same failed approach three times.</button>
+  <button class="opt" type="button">Delete the benchmark so the limit becomes unknown once again.</button>
+  <div class="why"><p>An honest "impossible, here are the numbers" is a win: it means the agent measured. You decide which requirement to drop, as in the vignette above.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API">Web Workers API</a> — MDN's explainer of background threads in web pages. Read the intro and "Concepts and usage"; the code examples are for your agent, not for you.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Try: <em>"Explain frames per second using a flipbook example"</em> or <em>"Why can one slow step limit the whole app?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-mdn-raf">Mozilla (MDN), <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame">Window: requestAnimationFrame() method</a>. Retrieved 2026-11-02.</li>
+  <li id="src-mdn-pnow">Mozilla (MDN), <a href="https://developer.mozilla.org/en-US/docs/Web/API/Performance/now">Performance: now() method</a>. Retrieved 2026-11-02.</li>
+  <li id="src-mdn-workers">Mozilla (MDN), <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API">Web Workers API</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name what fps means, ask for a benchmark before a fix, ask for the bottleneck to be found first, and ask whether parallel workers apply.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 8.20 Accessibility basics (<a href="0108-accessibility-basics.html">coming</a>)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

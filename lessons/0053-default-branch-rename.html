@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Renaming the default branch and retiring branches</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control as the safety net · Lesson 3.14</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.14</p>
+  <h1>Renaming the default branch and retiring branches</h1>
+  <p class="lede">The name of your main line is a setting, not a law. Changing it in one place leaves three copies of that name out of step, and deleting a branch is safe only after you have checked what would be lost.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0044-branch.html">3.5 Branch</a></span><span>Win: you can rename your default branch without breaking your copy, and delete a finished branch only after checking it is merged</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>To ship your app reliably, you need to know which branch the publishing setup uses. A branch name is not proof that its contents are live. Renaming <code>master</code> to <code>main</code> is housekeeping, not a deployment. The other half of housekeeping is retiring finished branches without losing unfinished work.</p>
+
+<h2>"master" is a habit, not a rule</h2>
+<p>Both names are ordinary names. Pro Git is explicit: <q>“master” does not have any special meaning in Git</q>, and it explains where the habit came from: <q>“master” is the default name for a starting branch when you run git init</q>.<sup class="cite"><a href="#src-pg-remote">[1]</a></sup> A repository made in 2015 is not broken; it carries the name that tool used then.</p>
+<p>GitHub's branch reference says: <q>By default, GitHub names the default branch main in any new repository.</q><sup class="cite"><a href="#src-gh-branches">[2]</a></sup> An older repository named <code>master</code> does not need a rename to work. Rename when it helps your project follow one naming convention, not because the old name means the app is broken.</p>
+
+<h2>One branch, three copies of its name</h2>
+<p>The name exists in three places, and a rename touches them one at a time:</p>
+<ol>
+  <li><strong>Your local branch.</strong> A label on a commit, in your project folder (lesson <a href="0044-branch.html">3.5</a>).</li>
+  <li><strong>The branch on the server.</strong> What GitHub shows to anyone who opens the repository.</li>
+  <li><strong>Everyone else's clone.</strong> Including a second copy on your own laptop, or a folder your agent opened earlier.</li>
+</ol>
+<p>A <strong>clone</strong> is a local copy of a repository. Its <strong>upstream</strong> is the branch a local branch tracks, such as <code>origin/main</code>. Here <code>origin</code> means the remote named in <code>git remote -v</code>; confirm that it is your intended server before changing anything.</p>
+<p>The server also records which branch is the <strong>default branch</strong>: <q>the base branch for pull requests and code commits</q>.<sup class="cite"><a href="#src-gh-default">[4]</a></sup> Renaming that branch needs administrator permissions.<sup class="cite"><a href="#src-gh-rename">[5]</a></sup></p>
+<div class="callout">
+  <span class="label">Choose one route</span>
+  <p>The recommended route is GitHub's <strong>Rename branch</strong> operation on the default branch, followed by updating each clone. A different route creates a new server branch, switches the default setting to it, then deletes the old branch after comparing their commits. Do not mix the routes or delete the old name before the new default exists.</p>
+</div>
+
+<h2>Renaming without breaking your own copy</h2>
+<p>A local rename does not rename anything on the server. In this throwaway demonstration, the local <code>master</code> contained two commits not yet pushed. After renaming and pushing, the server held both names:</p>
+<pre><code>$ git branch -m master main
+$ git branch -vv
+* main 1111750 [origin/master: ahead 2] Merge feature
+$ git push -u origin main
+ * [new branch]      main -&gt; main
+branch 'main' set up to track 'origin/main'.
+$ git ls-remote --heads origin
+111175082ff0b0cbf5fa9dc3518467c777a0f39d  refs/heads/main
+653613040078d07b265a4202d4201543c4aed963  refs/heads/master</code></pre>
+<p>The tracking link still named <code>origin/master</code> after the local rename. The push with <code>-u</code> changed it to <code>origin/main</code>. Notice that the two server names point to <em>different</em> commits here. Neither the name nor the existence of both branches proves they contain the same work.</p>
+<p>For your project, prefer the host-side route: on GitHub open the branch dropdown, choose <strong>View all branches</strong>, open the menu beside <code>master</code>, and choose <strong>Rename branch</strong>. Enter <code>main</code> and review the warning. Then update each existing clone using GitHub's documented sequence, replacing the placeholders with <code>master</code> and <code>main</code>:<sup class="cite"><a href="#src-gh-rename">[5]</a></sup></p>
+<pre><code>git branch -m OLD-BRANCH-NAME NEW-BRANCH-NAME
+git fetch origin
+git branch -u origin/NEW-BRANCH-NAME NEW-BRANCH-NAME
+git remote set-head origin -a</code></pre>
+<p><code>git branch -m</code> renames the local branch; <code>fetch</code> retrieves the server's state; <code>branch -u</code> sets the tracking relationship; and <code>remote set-head</code> updates the local record of the remote's default. GitHub also suggests <code>git remote prune origin</code> to remove old tracking references.<sup class="cite"><a href="#src-gh-rename">[5]</a></sup> If <code>main</code> already exists locally, stop and compare rather than overwriting it.</p>
+<div class="warn">
+  <span class="label">A rename is not a redirect for everything</span>
+  <p>GitHub redirects ordinary file URLs, but <q>raw file URLs are not redirected</q>. Its documentation also says <q>GitHub Actions workflows do not follow renames</q>.<sup class="cite"><a href="#src-gh-rename">[5]</a></sup> Ask your agent to find settings and scripts that mention the old branch, and review them before declaring the migration complete.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: where does the branch name live, and which of those places does <code>git branch -m</code> change?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Your local branch, the server branch, and every other clone each have their own name. <code>git branch -m</code> changes only the local branch. A GitHub-side rename requires each clone to update its local name and tracking relationship.</p></div>
+</div>
+
+<h2>Retiring a branch: check, then delete</h2>
+<p>For a finished feature branch, check its commits against the branch you intend to keep. After fetching, <code>git branch --merged origin/main</code> lists local branches whose tips are contained in the server's main line. <code>git branch -r --merged origin/main</code> checks remote-tracking names.<sup class="cite"><a href="#src-git-branch">[6]</a></sup> Exclude <code>main</code> itself from your deletion candidates.</p>
+<p>These selected outputs from separate stages of the local demonstration show the difference between merged and unmerged work:</p>
+<pre><code>$ git branch -d feature
+Deleted branch feature (was c1ec207).
+$ git branch -d unmerged
+error: the branch 'unmerged' is not fully merged
+hint: If you are sure you want to delete it, run 'git branch -D unmerged'</code></pre>
+<p>The lowercase <code>-d</code> checks whether the branch is merged into its upstream, or your current branch if it has no upstream.<sup class="cite"><a href="#src-git-branch">[6]</a></sup> That upstream might be the feature branch's own server copy, not <code>main</code>, so a successful deletion alone does not prove the work reached main. Keep the explicit comparison above. If Git refuses, stop; do not replace <code>-d</code> with the force option <code>-D</code>.</p>
+<p>If the ancestry check disagrees with a pull request marked merged, preserve the branch and inspect the difference. See <a href="0047-merge-vs-squash.html">3.8 Merge versus squash</a> before deciding; a disagreement is not permission to force-delete.</p>
+<p>Local deletion does not delete a server branch. The separate command <code>git push origin --delete feature</code> removes that server name.<sup class="cite"><a href="#src-pg-remote">[1]</a></sup> In the throwaway demonstration it also accepted an unmerged branch, so do not treat remote deletion as a merge check. Require the candidate to appear in the refreshed remote merged listing and obtain approval for its exact name.</p>
+<p>A <strong>remote-tracking branch</strong>, such as <code>origin/feature</code>, is your local record of a server branch, not a live view. After someone else deletes it, <code>git fetch --prune origin</code> removes obsolete tracking references.<sup class="cite"><a href="#src-git-fetch">[7]</a></sup> Pruning does not delete server branches or your local feature branches.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to rename the default branch and tidy leftover branches. The user handled the default setting when the agent lacked permission. During cleanup, an AI report claimed a branch still existed, but that claim came from a stale local reference. The agent checked the server instead. A separate claim about unmerged work also proved wrong after comparison. Only after establishing that four branches were already merged did it delete them. The useful habit was not trusting either report without evidence.</p>
+</div>
+
+<h2>Do it in your own project</h2>
+<p>Use a repository you own. Keep approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>). The commands are ordinary Git commands, identical whichever of the three agents runs them. A repository already named <code>main</code> needs no rename.</p>
+<div class="doit">
+  <span class="label">Your turn</span>
+  <ol>
+    <li><label><input type="checkbox"> Ask the agent to inspect your branches using the prompt below. Do not approve changes during the inventory.</label></li>
+    <li><label><input type="checkbox"> If a rename is needed, perform GitHub's Rename branch operation, then approve the clone-update commands after reviewing their exact names.</label></li>
+    <li><label><input type="checkbox"> Choose at most one finished feature branch for cleanup. Review the merge evidence and approve local and server deletion separately.</label></li>
+    <li><label><input type="checkbox"> Compare the final local listing and GitHub branch list with the approved changes.</label></li>
+  </ol>
+  <div class="prompt">
+    <button class="copy" type="button">Copy</button>
+    <pre>Inspect only first. Show the project folder, git status, git branch -vv, and git remote -v. Confirm this is my intended repository and identify the server's default branch. Stop if there are uncommitted changes.
+
+If the default is master, explain GitHub's Rename branch route. Wait for me to perform it, then propose the documented clone-update commands. Do not push a second main branch, overwrite an existing local main, or delete master as part of this route.
+
+For cleanup, fetch and prune origin. Show git branch --merged origin/main and git branch -r --merged origin/main. Propose at most one feature branch, excluding main, the current branch, and branches in use elsewhere. Compare its local and server tips separately; do not infer one from the other.
+
+Show the evidence and exact deletion commands, then wait for my approval. Use git branch -d locally. Treat any refusal or missing merge evidence as a stop condition, including possible squash merges. Get separate approval before git push origin --delete for the exact server name.
+
+Do not force-delete, force-push, or merge anything. Finish by showing the local tracking names and the real server branch list.</pre>
+  </div>
+  <div class="expect"><p><strong>What you should see:</strong> after a rename, GitHub and your local branch both say <code>main</code>, and the local tracking relationship says <code>origin/main</code>. For cleanup, you see the chosen name in the refreshed merged listing before approving its deletion. No deletion occurs for a branch missing that evidence. Local and server lists change only as separately approved.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You rename the default branch on GitHub from master to main. What happens to the clone on your laptop?</p>
+  <button class="opt" type="button">It keeps the old name until you rename it</button>
+  <button class="opt" type="button">It renames itself the next time you push work</button>
+  <button class="opt" type="button">It deletes the old branch and makes a clone</button>
+  <button class="opt" type="button">It stops working until you clone it once again</button>
+  <div class="why"><p>A GitHub-side rename does not rename your local branch. Update the clone's local name and tracking relationship using GitHub's documented sequence; pushing a second branch is a different route.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">An unused local branch has no upstream. You are on main; <code>git branch -d old-idea</code> reports that it is not fully merged. What does that mean?</p>
+  <button class="opt" type="button">The name is reserved and must be changed first now</button>
+  <button class="opt" type="button">It still has uncommitted files open in the editor now</button>
+  <button class="opt" type="button">Its commits are not yet merged into the main line</button>
+  <button class="opt" type="button">It was made by your agent and not by yourself</button>
+  <div class="why"><p>The lowercase <code>-d</code> deletes only a fully merged branch. The refusal is the safety check working; <code>-D</code> removes the check, so find out what the branch holds before reaching for it.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A teammate deleted a branch on the server, but your listing still shows <code>origin/old-topic</code>. What is the honest reading?</p>
+  <button class="opt" type="button">The server still holds the branch but hides it now</button>
+  <button class="opt" type="button">Your local bookmark is stale and needs a prune now</button>
+  <button class="opt" type="button">Someone has recreated the branch since the deletion was made</button>
+  <button class="opt" type="button">Your clone is corrupted and needs to be made again</button>
+  <div class="why"><p>Remote-tracking names are your last-known picture of the server. <code>git fetch --prune</code> removes those whose branch no longer exists; nothing is wrong with the clone, and the server is not hiding anything.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/renaming-a-branch">Renaming a branch</a> — GitHub's instructions, including updating a collaborator's clone. Compare that with <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/changing-the-default-branch">changing the default branch</a>: choosing an existing branch is not the same operation as renaming one.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure whether a branch is safe to delete? Ask: <em>"Here is the output of git branch --merged and git log --oneline main..the-branch. Is any work on this branch missing from main?"</em> Paste the real lines. A branch that is not merged is not rubbish; it is work you have not decided about yet.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-pg-remote">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Branching-Remote-Branches">Pro Git, chapter 3.5: Remote Branches</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gh-branches">GitHub, <a href="https://docs.github.com/en/pull-requests/reference/branches">Branches</a>. Retrieved 2026-11-02.</li>
+  <li id="src-local">Local commands on this Mac, git 2.56.0: <code>git init</code>, <code>git branch -m</code>, <code>git branch -d</code>, <code>git push --delete</code>, <code>git fetch --prune</code>, run 2026-11-02 in a throwaway repository with a local bare server.</li>
+  <li id="src-gh-default">GitHub, <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/changing-the-default-branch">Changing the default branch</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gh-rename">GitHub, <a href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/renaming-a-branch">Renaming a branch</a>. Retrieved 2026-11-02.</li>
+  <li id="src-git-branch">Git project, <a href="https://git-scm.com/docs/git-branch">git-branch</a>. Retrieved 2026-11-02.</li>
+  <li id="src-git-fetch">Git project, <a href="https://git-scm.com/docs/git-fetch">git-fetch</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> rename a default branch across your clone and the server, update the tracking link, and delete a branch only after checking that its work is already merged.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure modes</a></p>
+  <div class="pager"><a href="0052-checkpoint-often.html">← 3.13 Checkpoint often</a><a href="0054-branch-protection-prs-only-convention.html">3.15 Branch protection →</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

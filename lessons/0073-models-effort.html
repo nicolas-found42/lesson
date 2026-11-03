@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Models and effort: picking the right brain</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 5 · How agents work · Lesson 5.6</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 5 · Lesson 5.6</p>
+  <h1>Models and effort: picking the right brain</h1>
+  <p class="lede">The agent is a shell; a model is the brain inside it. You can swap brains mid-session, and tell one how hard to think. Matching the brain to the job saves money and time without lowering quality where it matters.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="../lessons/0001-what-a-coding-agent-is.html">0.1 What a coding agent is</a></span><span>Win: you can pick a model and effort level on purpose, and pay less for routine work</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>Your mission is to ship an app by directing an agent, and every message you send runs a model that charges for its work. If you run the strongest, most expensive brain on every step — including the boring ones — you pay more and wait longer for no gain. If you run the cheapest brain on a genuinely hard design decision, you may get a wrong answer that costs an hour to undo. The skill is matching them. Lesson 5.2 covered what tokens cost; this lesson is about choosing <em>which</em> model spends them.</p>
+
+<h2>One shell, several brains</h2>
+<p>The agent program — Claude Code, Codex, or omp — is the part that reads files, edits them, and runs commands. The <strong>model</strong> is the AI that does the thinking inside that loop. Anthropic's documentation explains the trade-off plainly: <q>Sonnet handles most coding tasks well. Opus provides stronger reasoning for complex architectural decisions.</q><sup class="cite"><a href="#src-a1">[1]</a></sup> Its best-practices page adds the money side: the default model handles most coding well, while a smaller one <q>costs less on routine work.</q><sup class="cite"><a href="#src-a2">[2]</a></sup></p>
+<p>So the spectrum looks like this: big models reason better and cost more per token; small models are cheaper and faster, and are fine for mechanical work. Which names you see depends on your plan and account — open the model picker and look at what <em>your</em> account offers rather than trusting a fixed list.</p>
+
+<h2>Effort: how hard the brain thinks</h2>
+<p>Many models can also vary how long they reason before answering. That setting is usually called <strong>effort</strong> or <em>reasoning effort</em>. Higher effort means the model thinks longer before each reply: better on hard problems, slower and pricier on easy ones. Codex's overview lists it as a first-class choice: <q>Choose the model, reasoning effort, permissions, and commands that fit the task.</q><sup class="cite"><a href="#src-b1">[3]</a></sup> In Claude Code the same idea exists as an effort level for the session (<code>claude --help</code> documents <code>--effort &lt;level&gt;</code>, "Effort level for the current session").</p>
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>What are the two separate dials this lesson describes, and which direction saves money on a boring task?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Dial one:</strong> which model (brain) the session uses. <strong>Dial two:</strong> the effort level, how hard that model thinks before answering. A boring task gets cheaper by moving either dial down: pick a cheaper model, or a lower effort level — ideally without touching the ones a hard step needs.</p></div>
+</div>
+
+<h2>Switching mid-session</h2>
+<p>You do not have to restart to change your mind. All three agents let you switch models inside a running session, and the command is the same word in each: <code>/model</code>. Claude Code's docs say to <q>Switch with <code>/model</code> during a session</q>, or start with <code>claude --model &lt;name&gt;</code>.<sup class="cite"><a href="#src-a1">[1]</a></sup> Codex's command guide shows <code>/model</code> choosing the active model, and notes that <code>/model --reasoning=high</code> <q>keeps the current model and sets its reasoning effort to high if the model supports it.</q><sup class="cite"><a href="#src-b2">[4]</a></sup> And omp's quickstart tells API-key users to <q>use /model to change the current session's model.</q><sup class="cite"><a href="#src-c1">[5]</a></sup></p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Run <code>/model</code> to pick from the picker; press <code>s</code> there to switch for this session only, without saving it as your default.<sup class="cite"><a href="#src-a3">[6]</a></sup> Run <code>/effort</code> to change the effort level mid-session.<sup class="cite"><a href="#src-a3">[6]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Run <code>/model</code> and pick from the popup (the picker only shows models your account and workspace can use). You can also pass <code>--reasoning=&lt;level&gt;</code> to change effort for the current session.<sup class="cite"><a href="#src-b2">[4]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Run <code>/model</code> in the session, or start with <code>omp --model</code> <em>&lt;name&gt;</em> (it fuzzy-matches short names). Run <code>omp models</code> in a terminal to list what is available. omp also has <em>role</em> models — a fast "smol" model, a slow reasoning model, a planning model — that its features can pick per job.<sup class="cite"><a href="#src-c2">[7]</a></sup></p>
+  </div>
+</div>
+
+<h2>The pattern: expensive thinking, cheap building</h2>
+<p>The highest-value habit is splitting a job into a <em>deciding</em> part and a <em>doing</em> part, and paying for the brain accordingly. Deciding — "how should this app be organized?" — needs good judgement. Doing — "now implement the plan we agreed" — is often mechanical, and a cheaper model follows a clear plan equally well.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user with a cluttered web app asked the agent an open question: how should the project be organized? The agent spent about five minutes reading the code and official documentation, and wrote up a reorganization plan. The user read it, then switched the session to a cheaper model and typed a three-word instruction: implement the reorganization. The cheaper model moved a large block of markup into its own file, proved the moved file was byte-for-byte identical, added tests, and left every check green. The expensive thinking happened once, up front; the cheap model did the long tail of the work.</p>
+</div>
+<p>You can run this pattern by hand — ask, read the plan, switch with <code>/model</code>, then say "go" — which is lesson 1.7's plan-then-go gate with a cheaper brain behind it. omp also automates it: its help documents a mode that will <q>Switch from the active model to a fast/cheap model at the first edit/write after the plan's todo list exists.</q><sup class="cite"><a href="#src-c2">[7]</a></sup> The plan happens on the model you chose; the edits happen on a cheap one.</p>
+<div class="compare">
+  <div>
+    <span class="label">Strong model everywhere</span>
+    <p>Best judgement on every step, including routine edits. Highest cost, slowest turns. Worth it when the task is genuinely hard or you are unsure what you want.</p>
+  </div>
+  <div>
+    <span class="label">Matched to the job</span>
+    <p>Strong model for the open question and the plan; cheaper model and lower effort for executing it. Same plan, lower bill — as long as the plan was clear and somebody checks the result.</p>
+  </div>
+</div>
+
+<h2>What switching costs</h2>
+<p>Two cautions. First, switching is not free: Claude Code's caching docs note that <q>Each model has its own prompt cache, so the first request after a switch re-reads the whole conversation uncached</q>,<sup class="cite"><a href="#src-a4">[8]</a></sup> so flip-flopping between models every message wastes money. Switch at phase boundaries, not every turn. Second, a cheap model on a hard problem can cost more than it saves: wrong turns, rework, and extra messages to repair them. If a cheaper model keeps failing at a step, that step belongs to the stronger one — that is information, not defeat.</p>
+
+<h2>Try it yourself</h2>
+<div class="doit">
+  <span class="label">Do it now</span>
+  <ol>
+    <li>Open your project folder and start your agent (<code>claude</code>, <code>codex</code>, or <code>omp</code>).</li>
+    <li>Type <code>/model</code> and look at the picker. Note which models your account actually offers.</li>
+    <li>Close the picker without changing anything yet. If your tool has a status command, run it (<code>/status</code> in Claude Code and Codex) and find the line naming the current model.</li>
+    <li>Decide one thing: which job in your next session deserves the strongest model, and which could run on a cheaper one.</li>
+  </ol>
+  <div class="expect">What you should see: a list of model names offered to your account, and a status line showing the model this session is using. Nothing was changed, so nothing else moved.</div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">Your agent faces one genuinely tricky design decision. What is a good use of model choice?</p>
+  <button class="opt" type="button">Use the cheapest model for every single choice.</button>
+  <button class="opt" type="button">Use the strongest model for that one decision.</button>
+  <button class="opt" type="button">Use a random model so results stay unpredictable.</button>
+  <button class="opt" type="button">Turn effort down so answers always come fastest.</button>
+  <div class="why"><p>Hard judgement is exactly what strong models and high effort are for. Spend there; save the cheap settings for routine work.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">You switch models in the middle of a session. What is a real cost of doing that?</p>
+  <button class="opt" type="button">The agent deletes your oldest project files each time.</button>
+  <button class="opt" type="button">The agent must ask your teacher to approve swaps.</button>
+  <button class="opt" type="button">The session forgets every message you sent so far.</button>
+  <button class="opt" type="button">The first request re-reads the chat with no cache.</button>
+  <div class="why"><p>Each model has its own prompt cache, so the first request after a switch re-reads the conversation uncached. Switch at phase boundaries, not constantly.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Which order matches the cheaper-for-building pattern?</p>
+  <button class="opt" type="button">Plan on the strong model, build on a cheaper one.</button>
+  <button class="opt" type="button">Build on the strong model, plan on a cheaper one.</button>
+  <button class="opt" type="button">You should always plan and build on the strongest model.</button>
+  <button class="opt" type="button">Use one different agent app for each model you pick.</button>
+  <div class="why"><p>Judgement is needed once, at the plan; execution follows the plan and suits a cheaper model. The reverse order pays for judgement at the wrong moment.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">What does the effort (reasoning effort) setting change, exactly?</p>
+  <button class="opt" type="button">How many files the agent edits in every turn.</button>
+  <button class="opt" type="button">Which permission prompts show up before the agent acts.</button>
+  <button class="opt" type="button">How hard the model thinks before it answers you.</button>
+  <button class="opt" type="button">How many questions the agent asks you per hour.</button>
+  <div class="why"><p>Effort is about the model's thinking depth, not files or permissions. Permissions are their own dial, covered in lesson 0.6.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/model-config">Model configuration</a> (Anthropic) — the full list of models per plan and provider, how <code>/model</code> and <code>/effort</code> behave, and what switching costs. Written for one tool, but the trade-offs apply to all three.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Try: <em>"Which of my account's models would you pick for planning versus building, and why?"</em> or <em>"Show me a task where a cheap model would cost me more than it saves."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a> (section "Multiple models"). Retrieved 2026-11-02.</li>
+  <li id="src-a2">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> (on model choice and routine work). Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI overview</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b2">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands">Codex developer commands</a> (section "Set the active model with /model"). Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/quickstart">omp docs: Quickstart</a>. Retrieved 2026-11-02. omp's documentation comes only from its own authors.</li>
+  <li id="src-a3">Anthropic, <a href="https://code.claude.com/docs/en/settings">Settings</a> (the <code>/model</code> picker's session-only switch; <code>/effort</code>). Retrieved 2026-11-02.</li>
+  <li id="src-c2"><code>omp --help</code>, local read-only command, omp 18.16.0 (<code>--model</code>, <code>--smol</code>, <code>--slow</code>, <code>--plan</code>, <code>models</code>, prewalk description). Retrieved 2026-11-02.</li>
+  <li id="src-a4">Anthropic, <a href="https://code.claude.com/docs/en/prompt-caching">Prompt caching</a> (section "Switching models"). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name the two dials (model and effort), switch models mid-session in your agent, and apply the plan-on-strong-build-on-cheap pattern while knowing what switching costs.</p>
+  <p>Quick reference: <a href="../reference/agent-loop.html">The agent loop (one page)</a> · <a href="../reference/setup.html">Setup</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 5.7 Prompt injection (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

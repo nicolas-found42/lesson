@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parallel agents and the shared build folder</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 9 · Working at scale · Lesson 9.3</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 9 · Lesson 9.3</p>
+  <h1>Parallel agents and the shared build folder</h1>
+  <p class="lede">Two agents working at once can finish in half the time — or quietly overwrite each other's work. The difference is usually one folder: where the build writes its output.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0049-worktrees.html">3.10 Worktrees</a></span><span>Win: you can run two agents at once without their builds corrupting each other</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Once your app grows past a few files, every change takes longer to build and check, and you will be tempted to work on two things at once: fix the bug users hit today while building tomorrow's feature. Agents make parallel work easy to start and hard to notice when it goes wrong. This lesson is about the one specific trap that bites beginners: several agents building into the same output folder at the same time.</p>
+
+<h2>Running agents in parallel</h2>
+<p>Lesson <a href="0049-worktrees.html">3.10</a> gave you worktrees: a second folder holding another branch of the same repository. Git's own reference says it plainly: <q>A git repository can support multiple working trees, allowing you to check out more than one branch at a time.</q><sup class="cite"><a href="#src-git">[1]</a></sup> That is what makes parallel agents safe to start. Codex's documentation recommends exactly this: <q>Worktrees let Codex run multiple independent chats in the same project without interfering with each other,</q> and each worktree <q>has its own copy of every file in your repo.</q><sup class="cite"><a href="#src-cx">[2]</a></sup> Claude Code's own guide says the same thing from the session side: <q>you can run parallel Claude sessions by using git worktrees, which create separate directories for individual branches.</q><sup class="cite"><a href="#src-cc">[3]</a></sup></p>
+<p>A single agent can also split one task into parallel helpers, called subagents, that each report back a summary. omp's documentation describes it as <q>delegate independent parts of a task to subagents, such as auditing several packages at once.</q><sup class="cite"><a href="#src-omp">[4]</a></sup> Whether you start a second agent yourself or let one agent spawn helpers, the rule is identical: <strong>each worker gets its own folder.</strong></p>
+
+<h2>Where a build writes its output</h2>
+<p>A build takes your source files and produces finished files: the <code>dist/</code> folder for a typical web app, the <code>target/</code> folder for a Rust app. These output folders are one per project folder, and they are not where the race starts — the race starts when two workers share one. Vite's configuration reference states the default outright: <code>build.outDir</code> has <q>Default: dist</q>,<sup class="cite"><a href="#src-vite">[5]</a></sup> so two agents building the same checkout both write into the same <code>dist/</code>. I confirmed the same shape for Rust locally: after <code>cargo build</code> in a fresh throwaway project, the compiled program appeared at <code>target/debug/&lt;name&gt;</code>.<sup class="cite"><a href="#src-cargo">[6]</a></sup> And these folders should never be saved in git anyway: Pro Git lists <q>automatically generated files such as log files or files produced by your build system</q> among the files you ignore, because <q>they can be rebuilt.</q><sup class="cite"><a href="#src-progit">[7]</a></sup></p>
+
+<h2>The race, concretely</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to implement several independent pieces of a larger plan at once. The agent started two helpers in parallel, each in its own worktree — but both builds were configured to write their compiled program into one shared output folder. One helper's binary overwrote the other's while a check was running. The check refused the mismatched result, the capture was rejected, and the fix was to give each helper its own build folder. Roughly ten minutes lost to a race that produced no error message at all — only a finished file that belonged to the other task.</p>
+</div>
+<p>Notice the shape: nothing crashed, no tool call failed. Two processes wrote to the same path, the last writer won, and the result looked complete. Git cannot protect you here, because the output folder is gitignored — git deliberately never watches it.</p>
+<p>This is where worktrees help, and where they stop helping. A worktree gives a worker its own source tree. It does not give that worker a private build folder unless the build is told to write inside that tree. Many build tools let you point the output somewhere else. If that somewhere else is one path shared by both workers, their source is separate and their output is not.</p>
+<p>The report still sounds fine for a simple reason. Each agent judges its build by the exit code of its own command. The command exits zero, so the report says success. That answer is true for the process. It says nothing about the file on disk a minute later. A check that reads one path can only describe that path at the moment it ran.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: if two agents build the same project at the same time, which folder do both builds write into by default, and what goes wrong when they do? Answer in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Both builds write into the same output folder of the shared checkout (for example <code>dist/</code> or <code>target/</code>). The writes overwrite each other with no error, so the finished files can be a mix of both builds or belong to only one of them.</p></div>
+</div>
+
+<h2>The rule: one worker, one build folder</h2>
+<p>The fix is boring and reliable. Every agent that builds gets its own checkout (a worktree) and therefore its own output folder, or you tell it explicitly which output folder to use. The prompt below is copy-paste and works in any agent; give one copy per parallel worker, each in its own folder.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Run `pwd` and show me the output before doing anything else.
+
+Build the project, but write ALL build output into a folder named
+build-output-&lt;YOUR_BRANCH_NAME&gt; inside this checkout. Do not write
+into dist/, target/, or any shared output folder.
+
+Then show me `git status --short` and the path of the finished files.</pre>
+</div>
+<p>Two habits make this stick. First, build output stays gitignored, so a race never becomes a false commit — only a false file. Second, after any parallel run, verify per worker: the finished files exist in <em>each</em> worker's own folder, and a change you expected from worker A is not missing because worker B overwrote it.</p>
+<div class="warn">
+  <span class="label">The check that catches it</span>
+  <p>If two agents ever did share one output folder, do not trust either result. Rebuild once, alone, in a clean checkout, and compare. A mixed build looks finished but is not evidence — the same "done is a claim" habit from lesson <a href="0030-claims-vs-evidence.html">2.2</a> applies to files, not only to messages.</p>
+</div>
+
+<h2>Try it yourself</h2>
+<div class="doit">
+  <span class="label">Skills practice</span>
+  <ol>
+    <li><label><input type="checkbox"> In your project folder, run <code>git worktree add ../my-app-parallel -b parallel-test</code> and confirm with <code>git worktree list</code> that two folders now exist.</label></li>
+    <li><label><input type="checkbox"> In the new folder, ask your agent the prompt above with <code>YOUR_BRANCH_NAME</code> replaced by <code>parallel-test</code>, and keep approval prompts on.</label></li>
+    <li><label><input type="checkbox"> In the original folder, check that <code>git status --short</code> stays clean — proof the build output was ignored, not saved.</label></li>
+  </ol>
+  <div class="expect"><p><code>git worktree list</code> shows two paths on two branches. The agent's build output lands in <code>build-output-parallel-test/</code> inside the new folder only, and <code>git status --short</code> in the original folder prints nothing. If output appeared in a shared <code>dist/</code> or <code>target/</code>, the agent ignored the instruction — stop and re-ask before running a second worker.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Two agents build the same project at the same time, sharing one checkout. What is the main risk?</p>
+  <button class="opt" type="button">Two builds overwrite each other's files in the folder</button>
+  <button class="opt" type="button">Each build stays separate, so nothing can ever collide</button>
+  <button class="opt" type="button">The slower build gets deleted by the faster one</button>
+  <button class="opt" type="button">Git will refuse two agents working at once together</button>
+  <div class="why"><p>Both builds write into the same output folder of the shared checkout. The writes overwrite each other silently — no error, only wrong or mixed output files.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Why should each parallel worker build into its own output folder?</p>
+  <button class="opt" type="button">It is faster, but never safer than one shared folder</button>
+  <button class="opt" type="button">Git locks the folder while the first build is running</button>
+  <button class="opt" type="button">A shared folder lets parallel writes corrupt the output now</button>
+  <button class="opt" type="button">Builds never share the same output folder inside one project</button>
+  <div class="why"><p>Two processes writing one folder means last-writer-wins with no warning. Separate folders per worker remove the shared path entirely, so each build's output stays whole.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">After a parallel run, one agent claims its build succeeded but you suspect the shared output folder was used. What is the best next move?</p>
+  <button class="opt" type="button">Ask which folder each build wrote into and check</button>
+  <button class="opt" type="button">Trust the report, since agents never make any mistakes</button>
+  <button class="opt" type="button">Delete the whole project and start over from scratch</button>
+  <button class="opt" type="button">Rebuild it once, alone, and compare the two outputs</button>
+  <div class="why"><p>A shared-folder race leaves no error, so the claim is not proof. Rebuilding alone in a clean folder gives a trustworthy reference to compare against.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://learn.chatgpt.com/docs/environments/git-worktrees">Codex: Worktrees</a> — how one tool runs parallel chats in separate checkouts, including why the same branch cannot be checked out twice. Also see <a href="../reference/git-cheat-sheet.html">the git cheat sheet</a> for the worktree commands.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me a race condition in a build folder using two tiny scripts"</em> or <em>"When should I use one agent with subagents instead of two separate sessions?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-git">Git project, <a href="https://git-scm.com/docs/git-worktree">git-worktree(1)</a>. Retrieved 2026-11-02; also checked locally with <code>git help worktree</code> (git 2.56.0).</li>
+  <li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/docs/environments/git-worktrees">Worktrees (Codex docs)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cc">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02.</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-vite">Vite, <a href="https://vite.dev/config/build-options">Build Options — build.outDir</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cargo">Local check: <code>cargo new</code> + <code>cargo build</code> in a throwaway folder under <code>.scratch/tmp/lesson-0111/</code> on 2026-11-02; compiled binary observed at <code>target/debug/&lt;name&gt;</code>.</li>
+  <li id="src-progit">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, 2.2 — Recording Changes to the Repository</a>, git-scm.com. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> run agents in parallel using worktrees, explain why a shared build output folder races, and give each worker its own build folder.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><a href="0110-integration-branch-vs-per-ticket-branches.html">Previous: 9.2 Integration branch vs per-ticket branches</a> · <span>Next: 9.4 PR babysitting (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Be a first-time user</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.13</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.13 · First-ship path ★</p>
+  <h1>Be a first-time user</h1>
+  <p class="lede">You know where everything is, so you cannot feel what a stranger feels. Send two people through the live app with no map: your agent, then a friend. What they stumble on is your real to-do list.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0029-run-yourself.html">2.1 Run it yourself</a></span><span>Win: you can collect a newcomer's confusions and turn them into a short fix list</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your mission ends with a page that other people open. Everything you verified so far — the page loads, the button works, the change appeared — was checked by someone who already knows how the app should work. Your readers do not test it that way. They arrive not knowing which words are yours, which box is clickable, or where the thing they came for is hiding.</p>
+<p>You have stared at this app for hours, which makes you the worst judge of it. This lesson borrows two pairs of fresh eyes and writes down what they find without explaining it away.</p>
+
+<h2>You cannot be the first-time user</h2>
+<p>The problem has a name in the usability literature: <q>you are not your users</q>.<sup class="cite"><a href="#src-m1">[1]</a></sup> You remember why a label says what it says, and that the second tab is the one you want. A newcomer has none of that, and cannot say what is missing, because they do not know it should be there.</p>
+<span class="sidenote">The line comes from MDN's accessibility guide: study how other people use the web, not how you use it. It applies equally to a friendly visitor who cannot find the button.</span>
+<p>So you watch someone else. Not to test the code; the tests did that. You watch to learn what the app <em>looks like it does</em> to a person who has never seen it. The cheapest way is to ask them to think out loud while they use it.<sup class="cite"><a href="#src-n2">[2]</a></sup></p>
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Why is your own click-through a weak test of whether a stranger can use the app? Say it in one sentence before revealing.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Because you already know the map. You click the right thing without noticing you chose, so you never see the moment where a newcomer would have guessed wrong. A fresh person supplies the missing guess.</p></div>
+</div>
+
+<h2>Two stand-ins, two different jobs</h2>
+<p>You can borrow fresh eyes twice, and the two walks answer different questions.</p>
+<p><strong>The agent</strong> is fast, always available, and reads a page like a careful, literal reader. Use it first: it catches missing wayfinding, unexplained words, and warnings that do not say what they warn about.</p>
+<p><strong>A friend</strong> is slow to arrange, and worth it. They have a phone, an attention span, and no interest in your feelings. Use them second, once the obvious things are fixed. One person is enough to start: in Nielsen's research a single test user surfaces about a third of the design's usability problems, and five people find nearly all of them.<sup class="cite"><a href="#src-n1">[3]</a></sup> You are not running a study. You are looking for the first five minutes of confusion.</p>
+
+<h2>Brief the agent as a visitor, not as a builder</h2>
+<p>Two things keep the walk honest. Start a fresh session: a session keeps its own history, so a fresh one does not carry the reason the app is built this way.<sup class="cite"><a href="#src-a1">[4]</a></sup> Then give tasks in your users' words, and forbid file changes during the walk. A walk that ends in edits is a walk you cannot read: you will not know which confusion was real and which got patched before you saw it.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>You are a first-time visitor to this app, not its developer. Open https://YOUR_USERNAME.github.io/my-app/ and try these three tasks, in this order:
+
+1. Find out what this app is for.
+2. Do the main thing it seems to offer.
+3. Get back to the start.
+
+Do not read the source files first. Do not change any files in this session.
+
+For each task, tell me: where you paused, what you expected to happen, which words on the screen you did not understand, and whether you finished. Quote the exact labels you clicked. End with one list of confusions, most serious first.</pre>
+</div>
+<p>That clause matters more than it looks. An agent that has read the markup knows what each label was meant to do — the exact knowledge you are trying to remove.</p>
+
+<h2>What a walk actually produces</h2>
+<p>The output is a list of small, specific stumbles. Not "the design is unclear", but "I expected <em>Submit</em> to send the form; it only saved a draft, and nothing on the page said so."</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user had built a page that held several design drafts of the same site, one per folder, so that colleagues could open each and leave comments. Every check passed, and the user knew the page well. Then they asked the agent to browse the live page "as an uninitiated beginner" and report what it would not understand. The agent came back with eight confusions: no way back to the list of drafts, a word in the heading that meant nothing outside the team, a warning about posting publicly that never said what would be posted, and a first screen that offered eight equal choices with no suggested starting point. None of the eight was a bug. All eight were the app being read by someone who had not been in the room. The user had the agent fix them in one pass, then walked the page again.</p>
+</div>
+<p>Notice what the agent did <em>not</em> do: complain about code, propose a redesign, or ask for a feature. It reported the moment before understanding — the one moment you cannot observe yourself.</p>
+
+<h2>The friend walk: three tasks, and then silence</h2>
+<p>Hand your friend the phone or the laptop, give them three tasks as goals, and ask them to say what they are thinking as they go. Then stop talking. The method's own instruction is blunt: <q>Shut up and let the users do the talking.</q><sup class="cite"><a href="#src-n2">[2]</a></sup> Every helpful hint you give — "no, the other one", "that's only the header" — deletes the evidence you came for.</p>
+<p>Write down, as it happens:</p>
+<ul>
+  <li><strong>The pause.</strong> Where did their hand stop moving? That is a decision point you did not design for.</li>
+  <li><strong>The guess.</strong> What did they expect to happen immediately before they clicked? Their expectation, not the truth, is what the screen communicated.</li>
+  <li><strong>The words.</strong> Any label they read aloud with a question mark in their voice.</li>
+  <li><strong>The first sentence.</strong> What they say in the first ten seconds tells you what the page appears to be.</li>
+</ul>
+<div class="warn">
+  <span class="label">The one rule that keeps the data usable</span>
+  <p>Do not fix anything during the walk, and do not explain. If they ask "what does this do?", write the question down and answer "what do you think it does?" A friend who has been briefed is no longer a first-time user. Fix afterwards, from your notes.</p>
+</div>
+<p>One friend is a sample of one, and people differ. That is why both passes are worth doing, and why you repeat the walk after fixing instead of trusting a single round.<sup class="cite"><a href="#src-n1">[3]</a></sup></p>
+
+<h2>From observations to a fix list</h2>
+<p>A confusion is not yet a request. Translate each one into what the screen should have done, then rank by how early it blocks someone. The table turns each observation into a request.</p>
+<table class="ref">
+  <thead><tr><th>What you saw</th><th>What to ask for</th></tr></thead>
+  <tbody>
+    <tr><td>They hunted for a way back for twenty seconds, then used the browser button.</td><td>"Put a plain 'Back to the list' link at the top of every draft page."</td></tr>
+    <tr><td>They read the word "publish" twice and asked what it meant.</td><td>"Rename it to 'Share the page', and add one line saying who can see it."</td></tr>
+    <tr><td>They picked a random item from eight equal buttons.</td><td>"Mark the recommended starting point as 'Start here'."</td></tr>
+    <tr><td>They never noticed the comment box below the fold.</td><td>"Move the comment box above the draft, or add a visible link to it."</td></tr>
+  </tbody>
+</table>
+<p>Do not send the whole list at once. Pick the three that stop a person earliest, fix those, and walk again. Say plainly which items you are leaving alone for now. If a confusion comes from a word only your team uses, a sentence of explanation may be the fix, and that is fine.</p>
+<p>This is the same evidence habit as <a href="0030-claims-vs-evidence.html">2.2 Claims vs evidence</a>, pointed at people instead of code: "the page works" is a claim; "a stranger found the main action in four seconds" is something you watched. After a fix, the second walk is the check, and the agent's re-walk is a second opinion, not proof.</p>
+
+<h2>Where to run the walk in each agent</h2>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Clear the conversation first with <code>/clear</code>, which the quickstart lists as <q>Clear conversation history</q>, then paste the walk prompt.<sup class="cite"><a href="#src-a2">[5]</a></sup> Its docs list <q>Claude in Chrome</q> among the extensions you can configure <q>for browser interaction</q>, so ask it to open the live URL and click through the three tasks.<sup class="cite"><a href="#src-a1">[4]</a></sup> If that integration is not installed, have it read your own written notes instead — do not let it guess at screens it has not seen.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Type <code>/new</code> to <q>Start a new chat inside the same CLI session</q> before the walk, so the build conversation is out of the way.<sup class="cite"><a href="#src-b2">[6]</a></sup> One limit matters here: <q>Browser isn't available in Codex CLI or the Codex IDE extension.</q><sup class="cite"><a href="#src-b1">[7]</a></sup> Run the walk in the ChatGPT desktop app's built-in browser, or do the friend walk yourself and give Codex your notes as text.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Type <code>/new</code> for <q>a new session without deleting the current one</q>.<sup class="cite"><a href="#src-c1">[8]</a></sup> Then <code>/browser visible</code>, because the bare command <q>toggles the browser between headless and visible and restarts it</q>.<sup class="cite"><a href="#src-c1">[8]</a></sup> Visible matters: you want to watch where it pauses and corrects itself. omp's documentation comes only from its own authors, so if the browser does not appear, ask what it actually did.</p>
+  </div>
+</div>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open a new tab in your agent in the app folder, with approval prompts on, and start a fresh session.</label></li>
+    <li><label><input type="checkbox"> Paste the walk prompt above, with your real live address and three tasks written as a visitor would say them.</label></li>
+    <li><label><input type="checkbox"> Read the confusion list. Copy it somewhere you keep, and mark the two items that stop someone earliest.</label></li>
+    <li><label><input type="checkbox"> Ask one friend to do the same three tasks on their own phone, saying their thoughts out loud. Take notes and stay quiet.</label></li>
+    <li><label><input type="checkbox"> Merge the two lists. Send only the top three as one request, then walk the live page again.</label></li>
+  </ol>
+  <div class="expect"><p>You should end with a short list, not a vibe: four to eight sentences naming a screen, a label and what the person expected. At least one should surprise you, and at least one should be a word rather than a layout. On the second walk, the same task should take fewer pauses — if it does not, the fix addressed the wrong thing.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You ask the agent for a first-time-user walk. What should it do first?</p>
+  <button class="opt" type="button">Read the source files and summarise the interface</button>
+  <button class="opt" type="button">Fix layout problems it notices during the walk</button>
+  <button class="opt" type="button">Open the live app and attempt real tasks</button>
+  <button class="opt" type="button">Ask you to explain how each screen works</button>
+  <div class="why"><p>The walk is about the page as a visitor meets it. Reading the files first hands the agent your knowledge; fixing while walking destroys the evidence you asked for.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A friend uses the app while you watch. What is your job?</p>
+  <button class="opt" type="button">Stay quiet and note each pause and guess</button>
+  <button class="opt" type="button">Explain each screen before they can get lost</button>
+  <button class="opt" type="button">Fix the app while they are trying it</button>
+  <button class="opt" type="button">Ask them afterwards whether they liked the app</button>
+  <div class="why"><p>Hints and fixes delete the evidence. The pause and the wrong guess are the data; a summary of whether they liked it tells you almost nothing about where the page failed.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">The walk produced eight confusions. What next?</p>
+  <button class="opt" type="button">Fix all eight at once and ship it</button>
+  <button class="opt" type="button">Pick the ones the agent thinks matter most</button>
+  <button class="opt" type="button">Ignore them since only one friend saw them</button>
+  <button class="opt" type="button">Fix the worst few and rerun the walk</button>
+  <div class="why"><p>Small rounds keep cause and effect visible, and a second walk is the only check that a fix worked. One person finding a problem is enough reason to fix it; the second walk tells you whether the fix landed.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://www.nngroup.com/articles/thinking-aloud-the-1-usability-tool/">Thinking Aloud: The #1 Usability Tool</a> — Jakob Nielsen, NN/g. Two pages, no equipment, and it explains why watching a person talk through a page beats asking them afterwards. Read "Defining Thinking Aloud Testing" and "Benefits"; skip the sales material.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure what counts as a confusion? Ask the agent that gave you this course: <em>"Here are my notes from a friend using the app. Which of these are real usability problems, and which were them not caring?"</em> or <em>"Write three visitor tasks for my app and explain why you chose them."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-m1">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Accessibility/What_is_accessibility">What is accessibility?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-n2">Jakob Nielsen, <a href="https://www.nngroup.com/articles/thinking-aloud-the-1-usability-tool/">Thinking Aloud: The #1 Usability Tool</a>, NN/g, 15 January 2012. Retrieved 2026-11-02.</li>
+  <li id="src-n1">Jakob Nielsen, <a href="https://www.nngroup.com/articles/why-you-only-need-to-test-with-5-users/">Why You Only Need to Test with 5 Users</a>, NN/g, 18 March 2000. Retrieved 2026-11-02.</li>
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a2">Anthropic, <a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b2">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex CLI commands</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/browser">Browser</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/slash">omp slash commands</a>. Retrieved 2026-11-02. Single-vendor source: omp has no independent documentation.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> send an agent and one real person through your live app without a map, write down their confusions as observations, and turn the worst three into a fix list you can verify with a second walk.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0039-checker-can-be-wrong.html">Previous: The checker can be wrong</a> · <a href="0041-reading-screenshots-diagnostics-from-real-user.html">Next: A real user's screenshots</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

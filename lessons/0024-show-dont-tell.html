@@ -58,17 +58,17 @@
 <p>All three agents accept an image in the prompt. The mechanics differ, so pick your tab.</p>
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
-    <p>In the terminal, <q>Drag and drop an image into the Claude Code window</q>, paste one with <kbd>Ctrl</kbd>+<kbd>V</kbd> (<kbd>Alt</kbd>+<kbd>V</kbd> on Windows and WSL), or type its path in the message.<sup class="cite"><a href="#src-cw">[3]</a></sup> A pasted image is attached to that turn, not to the whole session; attach it again if you continue in a new turn.</p>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>In the terminal, <q>Drag and drop an image into the Claude Code window</q>, paste one with <kbd>Ctrl</kbd>+<kbd>V</kbd> (<kbd>Alt</kbd>+<kbd>V</kbd> on Windows and WSL), or type its path in the message.<sup class="cite"><a href="#src-cw">[3]</a></sup> A pasted image is part of that message, so describe it in the same message.</p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
     <p>Paste the image into the interactive composer, or start a run with a file: <code>codex -i screenshot.png "Explain this error and suggest the smallest fix"</code>. For several, <code>codex --image before.png,after.png "Compare these states"</code>. PNG and JPEG are accepted.<sup class="cite"><a href="#src-img">[4]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
     <p>Paste with <kbd>Ctrl</kbd>+<kbd>V</kbd>, drag the file in, or mention it as <code>@path/to/image.png</code>. A chip in the composer confirms the attachment.<sup class="cite"><a href="#src-omp">[5]</a></sup> The docs add the sentence this whole lesson is about: <q>Say what each attachment is for; a path by itself supplies context but not intent.</q><sup class="cite"><a href="#src-omp">[5]</a></sup></p>
   </div>
 </div>
@@ -94,18 +94,18 @@ Fix that and change nothing else. Then take a new screenshot at the same size an
 
 <div class="warn">
   <span class="label">Careful with what is in the frame</span>
-  <p>A screenshot can carry your name, your email, a private message, a file path, or a key pasted into a form. Crop it, or cover those parts before attaching. The same caution applies to recordings: Claude Code's own page warns that a browser recording <q>captures everything visible in the browser, including account details on logged-in pages</q>.<sup class="cite"><a href="#src-chrome">[1]</a></sup> Unit 8 covers secrets properly; here, the rule is simply: look at the picture before you send it.</p>
+  <p>A screenshot can carry your name, your email, a private message, a file path, or a key pasted into a form. Crop it, or cover those parts before attaching. The same caution applies to recordings: Claude Code's own page warns that a browser recording <q>captures everything visible in the browser, including account details on logged-in pages</q>.<sup class="cite"><a href="#src-chrome">[1]</a></sup> Unit 8 covers secrets properly; here, the rule is plain: look at the picture before you send it.</p>
 </div>
 
 <h2>Two habits that keep it honest</h2>
 <p><strong>Show the state you mean.</strong> If the bug appears only after you click a button, click it, then screenshot the result. A picture of the page before the click describes a page that works.</p>
 <p><strong>Ask for the after picture.</strong> The fix is not proven by the agent saying it is fixed. Ask it to repeat the same view and attach the result, or reopen the page yourself. This is the same rule as lesson 0.1 — "done" is a claim — applied to something you can now see side by side.</p>
-<p>If the agent has a browser tool, you can also tell it to keep its own screenshot as a file: <q>Take a screenshot of the checkout page and save it to disk</q> is the example in Claude Code's Chrome page.<sup class="cite"><a href="#src-chrome">[1]</a></sup> That file is evidence you can compare later, not just a message that scrolls away.</p>
+<p>If the agent has a browser tool, you can also tell it to keep its own screenshot as a file: <q>Take a screenshot of the checkout page and save it to disk</q> is the example in Claude Code's Chrome page.<sup class="cite"><a href="#src-chrome">[1]</a></sup> That file is evidence you can compare later, not only a message that scrolls away.</p>
 
 <div class="doit">
   <span class="label">Do it now, in your own project</span>
   <ol>
-    <li><label><input type="checkbox"> Start your page from lesson 0.7 and open it in your browser.</label></li>
+    <li><label><input type="checkbox"> Start the page you made in <a href="0007-first-prompt-to-a-page.html">lesson 0.7</a> and open it in your browser.</label></li>
     <li><label><input type="checkbox"> Make the window much narrower, until something looks wrong — text overlapping, an image too wide, a button off-screen.</label></li>
     <li><label><input type="checkbox"> Take a screenshot of just that area: <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>4</kbd> on macOS, <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> on Windows.</label></li>
     <li><label><input type="checkbox"> In your agent, attach the image and paste the four-line prompt above, filled in with what you see.</label></li>
@@ -137,19 +137,19 @@ Fix that and change nothing else. Then take a new screenshot at the same size an
 <div class="quiz" data-correct="0">
   <span class="label">Question 3 of 4</span>
   <p class="q">The agent says the layout bug is fixed. What is the strongest next step?</p>
-  <button class="opt" type="button">A fresh screenshot of the screen you reported</button>
-  <button class="opt" type="button">A written summary of every single change made</button>
-  <button class="opt" type="button">A firm promise that nothing else has changed</button>
-  <button class="opt" type="button">A list of every file that it edited today</button>
+  <button class="opt" type="button">Fresh screenshot of the exact screen you reported</button>
+  <button class="opt" type="button">Longer summary of every change that it made</button>
+  <button class="opt" type="button">Firm promise that nothing else has really changed</button>
+  <button class="opt" type="button">Tidy list of every single file it edited</button>
   <div class="why"><p>A new picture at the same window size is evidence you can check yourself. Summaries and promises are claims about the work, not observations of the result.</p></div>
 </div>
 <div class="quiz" data-correct="3">
   <span class="label">Question 4 of 4</span>
   <p class="q">Your screenshot shows a whole desktop with private messages in it. What do you do?</p>
-  <button class="opt" type="button">Take a screenshot and point at the problem</button>
-  <button class="opt" type="button">Describe the problem in several more careful words</button>
-  <button class="opt" type="button">Ask it to read the whole folder by itself</button>
-  <button class="opt" type="button">Retype the error message from your own memory</button>
+  <button class="opt" type="button">Send it anyway and mention nothing at all</button>
+  <button class="opt" type="button">Attach the folder path instead of the image</button>
+  <button class="opt" type="button">Blur the private parts after you send it</button>
+  <button class="opt" type="button">Crop it tightly to the app before attaching</button>
   <div class="why"><p>Cropping to the app area is the practical habit: it removes private material and also removes distraction, so the agent looks at the thing you meant. Recopying text by hand loses detail.</p></div>
 </div>
 <p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>

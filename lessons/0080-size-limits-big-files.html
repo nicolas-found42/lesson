@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Size limits and big files: host them elsewhere</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.4</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 6 · Lesson 6.4 · First-ship path ★</p>
+  <h1>Size limits and big files: host them elsewhere</h1>
+  <p class="lede">Free hosting has hard size limits. Learn to measure your project, read the limits, and keep big files somewhere else — so your link still loads for your friends.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0013-github-pages.html">6.3 GitHub Pages</a></span><span>Win: you can measure your project and keep a too-big app shippable</span></div>
+</header>
+<main>
+
+<h2>Why size decides whether your link works</h2>
+<p>Your mission is a public link you send to someone. That link only works if the host accepts your files and serves them fast enough. Lesson 6.3 put your app on GitHub Pages; this lesson is about the ceiling that host imposes. A page full of huge files is not merely slow — above a certain size the host refuses it outright, and your "live" site shows nothing at all.</p>
+
+<h2>Measure first, guess never</h2>
+<p>Before you change anything, find out how big your project folder actually is. In a terminal inside your project folder, the command <code>du -sh .</code> prints one line: the total size and the folder. On this Mac it prints, for example, <code>3.0M&nbsp;&nbsp;.</code> To see which subfolders are heavy, <code>du -d 1 -h . | sort -hr</code> lists them biggest first. You can also ask your agent directly: <em>"Measure my project folder and list the ten biggest files in it."</em></p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to put a 3D model gallery online for friends who are not technical. Measuring the folder showed about 3.6 GB, while the free host caps a published site at 1 GB. The agent did not shrink or delete the models. It published only the app and its small catalog — about 45 MB — and made the page fetch the huge model files from the repository's raw file addresses at a pinned commit. The public link worked the same afternoon.</p>
+</div>
+
+<h2>The limits, in one table</h2>
+<p>GitHub publishes these numbers in its own documentation. A <span class="term" title="A cap a host or service imposes on size, count, or rate; exceeding it means refusal, warnings, or throttling.">size limit</span> is a hard or soft ceiling: hard limits refuse, soft limits warn or throttle.</p>
+
+<table class="ref">
+  <caption class="sidenote" style="caption-side:bottom;text-align:left">Quoted from GitHub's Pages limits page and its "About large files on GitHub" page.<sup class="cite"><a href="#src-g1">[1]</a><a href="#src-g2">[2]</a></sup></caption>
+  <thead><tr><th>What is measured</th><th>Limit</th><th>Kind</th></tr></thead>
+  <tbody>
+    <tr><td>One file inside a repository</td><td>warning above 50 MiB; <strong>blocked above 100 MiB</strong></td><td>hard block</td></tr>
+    <tr><td>Whole repository</td><td><q>ideally less than 1 GB</q>; under 5 GB strongly recommended</td><td>recommendation</td></tr>
+    <tr><td>Pages source repository</td><td><q>recommended limit of 1 GB</q></td><td>recommendation</td></tr>
+    <tr><td>Published Pages site</td><td><q>may be no larger than 1 GB</q></td><td>hard limit</td></tr>
+    <tr><td>One Pages deployment</td><td><q>will timeout if they take longer than 10 minutes</q></td><td>hard limit</td></tr>
+    <tr><td>Pages site bandwidth</td><td><q>soft bandwidth limit of 100 GB per month</q></td><td>soft limit</td></tr>
+    <tr><td>Pages builds</td><td><q>soft limit of 10 builds per hour</q></td><td>soft limit</td></tr>
+  </tbody>
+</table>
+
+<p>Read the table as three separate walls. A single file over 100 MiB cannot even be <em>pushed</em> to the repository — GitHub blocks it. A published site over 1 GB is refused at deploy time. And even a site that fits can misbehave if it moves more than 100 GB of traffic a month, which is a soft limit: GitHub says it may stop serving the site or write to you suggesting you put a content network in front of it or move hosts.<sup class="cite"><a href="#src-g1">[1]</a></sup></p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the two hard size walls a GitHub Pages project can hit, with their numbers. Then say in one sentence what "soft limit" means.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A single file over 100 MiB is blocked from the repository, and a published Pages site over 1 GB is not served. A soft limit (100 GB bandwidth per month, 10 builds per hour) does not refuse immediately — it warns, throttles, or may stop serving later.</p></div>
+</div>
+
+<h2>Host the big files somewhere else</h2>
+<p>The fix is not to shrink your ambition; it is to split the project. The <strong>site</strong> — HTML, CSS, JavaScript, small images — stays in the repository and is published by Pages. The <strong>big files</strong> — videos, model files, large downloads — live elsewhere, and your pages link to them with an <strong>absolute URL</strong> (the full address including <code>https://</code>, the kind lesson 6.3 reserved for other people's sites, because these files are no longer inside your site's folder tree).</p>
+<p>GitHub itself offers two verified places for the big files:</p>
+<ul>
+  <li><strong>A release.</strong> You attach files to a release on your repository's page. GitHub's large-files page says: <q>If you need to distribute large files within your repository, you can create releases on GitHub.com instead of tracking the files</q>, and <q>we don't limit the total size of the binary files in the release or the bandwidth used to deliver them</q> (each file still has a per-file cap).<sup class="cite"><a href="#src-g2">[2]</a></sup></li>
+  <li><strong>A raw file address at a pinned commit.</strong> Open any file in your repository on GitHub and click the <strong>Raw</strong> button — GitHub's docs describe this as viewing <q>the raw content of a file without any styling</q>.<sup class="cite"><a href="#src-g3">[3]</a></sup> The address looks like <code>https://raw.githubusercontent.com/YOUR_USERNAME/my-app/main/assets/big-file.bin</code>. Replace <code>main</code> with a commit ID to get a <span class="term" title="A raw file address that names a commit ID, so the bytes at that address never change.">pinned raw file URL</span>: <code>https://raw.githubusercontent.com/YOUR_USERNAME/my-app/&lt;commit-id&gt;/assets/big-file.bin</code>. A branch name can move; a commit ID cannot.</li>
+</ul>
+<p>Any other file host or storage service works too — the only requirement is a public absolute URL. What matters is that the file is served by <em>that</em> host, not by Pages, so it never counts against your 1 GB.</p>
+
+<div class="warn">
+  <span class="label">Do not "fix" size by deleting blindly</span>
+  <p>Deleting files to fit under a limit can break the app: the page may reference a file you removed, and the link then 404s. Decide per file — ship it, host it elsewhere, or truly drop it — and after publishing, open the live page and click through to the big file to prove it loads.</p>
+</div>
+
+<h2>Ask the agent for a size plan</h2>
+<p>You do not need to compute anything by hand. This prompt works in any of the three agents:</p>
+
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Measure my project folder and list the ten biggest files with their
+sizes. My site is published on GitHub Pages, which serves published
+sites of at most 1 GB and blocks single files over 100 MiB. Propose a
+plan: which files the site itself must ship, and which big files should
+be hosted elsewhere (a release, a raw file URL at a pinned commit, or
+another host) with the absolute URL each page should use. Change
+nothing yet — show me the plan first, and stop there.</pre>
+</div>
+
+<p>Notice the stop condition: <em>"show me the plan first, and stop there."</em> A size plan is a decision you should read before anything changes.</p>
+
+<div class="doit">
+  <span class="label">Do it now</span>
+  <ol>
+    <li><label><input type="checkbox"> In a terminal inside your project folder, run <code>du -sh .</code> and write down the number. (Or ask your agent to measure it.)</label></li>
+    <li><label><input type="checkbox"> Paste the size-plan prompt above into your agent and read the plan it returns.</label></li>
+    <li><label><input type="checkbox"> For every file the plan says to host elsewhere, note the absolute URL your pages will link to.</label></li>
+    <li><label><input type="checkbox"> Only after you approve: have the agent apply the plan, push, and then open the live site and load one big file through its new link.</label></li>
+  </ol>
+  <div class="expect"><p><code>du -sh .</code> prints one line like <code>3.0M&nbsp;&nbsp;.</code> The agent's plan separates "site must ship" from "host elsewhere", and after publishing, the live page loads a big file from its absolute URL (for example a pinned raw address) without the file being inside the published site.</p></div>
+  <p class="progress"></p>
+</div>
+
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Start it with <code>claude</code> inside your project folder, then paste the size-plan prompt as a normal message.<sup class="cite"><a href="#src-a1">[4]</a></sup> Keep approval prompts on; lesson 0.6 shows how to check which mode your session is in.</p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Start it with <code>codex</code> inside your project folder. It can <q>inspect code, make changes, run commands, and automate repeatable work without leaving your terminal</q>, which covers measuring and editing.<sup class="cite"><a href="#src-b1">[5]</a></sup> Keep the approval prompts as they are.</p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>Start it with <code>omp</code> inside your project folder; the same prompt works unchanged.<sup class="cite"><a href="#src-c1">[6]</a></sup> Its documentation comes only from its own authors, so double-check anything surprising.</p>
+  </div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your whole project folder measures 3.6 GB. GitHub Pages says published sites may be no larger than 1 GB. What should you do?</p>
+  <button class="opt" type="button">Delete files at random until the folder happens to fit the cap.</button>
+  <button class="opt" type="button">Shrink every single image and video file, then push again and hope.</button>
+  <button class="opt" type="button">Publish only the small site and load the big files from elsewhere.</button>
+  <button class="opt" type="button">Ask GitHub support to raise the 1 GB limit for free accounts.</button>
+  <div class="why"><p>The site itself must fit under 1 GB; the big files can live outside it and be linked by absolute URL. Deleting at random can break the app, and the published-size limit is not negotiable per account.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">One video file in your repo is 250 MB. What happens when you try to push it?</p>
+  <button class="opt" type="button">Git blocks it outright: single files above 100 MiB are refused.</button>
+  <button class="opt" type="button">Git warns but pushes anyway, and Pages still serves it fine.</button>
+  <button class="opt" type="button">Nothing happens at all; the file uploads quietly with no warning.</button>
+  <button class="opt" type="button">The whole repo is deleted automatically to protect all other files.</button>
+  <div class="why"><p>GitHub blocks files larger than 100 MiB (a warning starts above 50 MiB). A 250 MB file never enters the repository, so Pages never sees it either.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You move a big file out of your site and link to it by its full URL. Why must that link be absolute?</p>
+  <button class="opt" type="button">Because the file no longer sits inside your site's own folder tree.</button>
+  <button class="opt" type="button">Because a relative link only ever resolves inside your own published site.</button>
+  <button class="opt" type="button">It does not matter; relative links work fine for files hosted elsewhere.</button>
+  <button class="opt" type="button">Absolute links always load faster than relative ones on every host machine.</button>
+  <div class="why"><p>A relative link is completed from your page's own address, so it can only point inside your site. A file hosted elsewhere needs the full URL with its own domain.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits">GitHub Pages limits</a> — the official list used in the table above; read it before your first big publish. Then skim <a href="https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github">About large files on GitHub</a> for the file-size rules and the releases option.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Measure my project folder and tell me which files are pushing it over the Pages limit"</em> or <em>"Show me the raw URL of one file in my repo, pinned to a commit"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-g1">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits">GitHub Pages limits</a>. Retrieved 2026-11-02.</li>
+  <li id="src-g2">GitHub, <a href="https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github">About large files on GitHub</a>. Retrieved 2026-11-02.</li>
+  <li id="src-g3">GitHub, <a href="https://docs.github.com/en/repositories/working-with-files/using-files/viewing-and-understanding-files">Viewing and understanding files</a> (the Raw button). Retrieved 2026-11-02. Raw address at a pinned commit verified live against <code>raw.githubusercontent.com</code> on 2026-11-02.</li>
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/quickstart">omp quickstart</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> measure your project, name the Pages and repository size limits, and keep big files outside the published site behind absolute links.</p>
+  <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Previous: <a href="0079-build-step.html">6.2 Build step</a></span><span>Next: <a href="0081-actions-workflow.html">6.5 An Actions workflow</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

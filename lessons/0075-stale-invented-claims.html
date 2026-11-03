@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stale or invented claims: check the source of truth</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 5 · How agents work · Lesson 5.8</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 5 · Lesson 5.8</p>
+  <h1>Stale or invented claims: check the source of truth</h1>
+  <p class="lede">An earlier answer is not proof of the current state. Learn to trace a claim to the right source, check its freshness, and mark what remains unverified.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="./0030-claims-vs-evidence.html">2.2 Claims vs evidence</a></span><span>Win: you can make any agent prove a claim against the real thing</span></div>
+</header>
+<main>
+
+<h2>Why this matters for your app</h2>
+<p>Your mission is to ship a real app, not a convincing report about one. An agent's statement that a branch is gone or a page is live is a claim to check. Earlier output may describe an earlier state; a plausible explanation may have no supporting observation at all. Before you act on either, ask where the answer came from and whether that source still answers your question.</p>
+
+<h2>Two kinds of wrong</h2>
+<p>A <strong>stale claim</strong> relies on information that no longer describes the current situation. An <strong>invented claim</strong> presents a false statement as fact without supporting evidence. An unsupported claim is not necessarily false: it is <em>unverified</em> until you check it. These distinctions matter. You do not need to accuse the agent of inventing something to ask for evidence. A confident tone settles none of them.</p>
+<p>What counts as the source of truth depends on the claim. For a file, it is the file on disk right now. For a server or a live website, it is the server's answer right now. For a command, it is running the command again. Git gives a good example: your local copy keeps <em>remote-tracking references</em>, which are only local notes about the server, and git's own manual warns that <q>these stale references</q> accumulate if you never refresh them — the fix is <code>git fetch --prune</code>, which deletes local notes for things the server no longer has.<sup class="cite"><a href="#src-1">[1]</a></sup> I confirmed this on a throwaway copy: after deleting a branch on the server, <code>git branch -a</code> still listed it until a pruning fetch removed it.</p>
+<p>A table makes the choice concrete. Each row is a claim you might hear, and the one place that can settle it.</p>
+<table class="ref">
+  <thead><tr><th>A claim about</th><th>Where to check it</th></tr></thead>
+  <tbody>
+    <tr><td>A file's contents</td><td>The file on disk, read now</td></tr>
+    <tr><td>A command's result</td><td>The command, run again read-only</td></tr>
+    <tr><td>A branch on the server</td><td>A fresh fetch, then the branch list</td></tr>
+    <tr><td>A live page's text</td><td>The public address, opened now</td></tr>
+  </tbody>
+</table>
+
+<h2>A real pattern, anonymized</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to clean up old branches. The agent insisted one branch still existed on the server, because an earlier command in the same session had listed it. A second opinion disagreed. Instead of arguing from memory, the agent ran a fresh command against the server, found the branch was already gone, and corrected itself in front of the user. In another session, an agent read a documentation page that had quietly become a "page not found" and confidently wrote a false rule into the project notes. It was caught only when someone re-opened the real page and noticed the address was dead.</p>
+</div>
+<p>Both mistakes had the same shape: the agent trusted a cached or second-hand picture instead of the live one. The fix in both cases was identical and cheap — re-check at the source.</p>
+
+<h2>The habit: check the source of truth</h2>
+<p>Anthropic describes the agent loop this way: <q>Each tool use returns information that feeds back into the loop, informing Claude's next decision.</q><sup class="cite"><a href="#src-2">[2]</a></sup> That gives you a useful question: which observation supports this answer? Its best-practices page describes a familiar failure: <q>Claude said it was done and it wasn't quite, usually because it had no way to check its own work.</q><sup class="cite"><a href="#src-3">[3]</a></sup> Testing is one remedy; Anthropic's engineering guidance recommends <q>extensive testing in sandboxed environments</q> with appropriate safeguards.<sup class="cite"><a href="#src-4">[4]</a></sup></p>
+<p>So make "prove it" your default prompt. This block works in any agent:</p>
+<div class="prompt">
+  <span class="label">Copy-paste prompt</span>
+  <button class="copy" type="button">Copy</button>
+  <pre>Check this claim against the current source of truth. Use read-only checks;
+do not change files, deploy, or repeat an action that changes anything.
+Show the relevant evidence, its source, and when you checked it.
+Redact secrets. Separate what you observed from what you infer.
+If you cannot access the source, mark the claim unverified.</pre>
+</div>
+<p>Keep approval prompts on; <a href="./0006-approvals-and-permissions.html">lesson 0.6</a> explains the settings. Do not blindly re-run a command that changes something. Checking whether a deploy succeeded means inspecting its result, not deploying again. Ask for the smallest read-only check that answers the question, without printing passwords or private data.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what is the difference between a stale claim and an invented claim, and what single habit catches both?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A stale claim relies on an outdated picture. An invented claim states something false without support. A claim without evidence should be marked unverified, not automatically called false. Check the relevant current source before deciding what to trust.</p></div>
+</div>
+
+<h2>Practice: make your agent prove one claim</h2>
+<div class="doit">
+  <span class="label">Do it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in your project folder with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Send the prompt above, then ask: <em>"What exact version of Git is installed here? Check with git --version."</em></label></li>
+    <li><label><input type="checkbox"> Inspect the tool call and its returned output, not only the final summary.</label></li>
+    <li><label><input type="checkbox"> Compare the final claim with that output. If the command was unavailable, require an unverified answer rather than a guessed version.</label></li>
+  </ol>
+  <div class="expect"><p><strong>What you should see:</strong> a read-only tool call running <code>git --version</code>, followed by the installed version or an error explaining why it could not be checked. Your version may differ from the author's <code>git version 2.56.0</code>. The summary should agree with the actual output.</p></div>
+  <p class="progress" aria-live="polite"></p>
+</div>
+
+<h2>Match the evidence to the question</h2>
+<p>Fresh does not automatically mean relevant. A current file in the wrong project folder cannot prove what is in your project. A current local page cannot prove what your friends see at the public address. Ask the agent to identify the folder, page, or service it inspected. If those do not match your question, you still do not have the evidence you need.</p>
+<p>Use three parts in a useful report: <em>claim, observation, limit</em>. For example: "The public page shows the new heading; I opened the public address now; I did not check the contact form." This is stronger than "everything is live." It tells you exactly how far the evidence reaches, and where another check would be needed.</p>
+<p>A cached result is a saved copy, not automatically a bad copy. Earlier output can help you find where to look. The mistake is treating it as proof of a changing fact without checking freshness. Nor does a source link alone prove a claim: open the page and confirm it actually contains the information. A page-not-found message gives you no basis for inventing a replacement rule.</p>
+<p>If the source is inaccessible, stop at that boundary: "I cannot verify it from here." Ask for the missing access or check it yourself. Repeating the question, requesting more confidence, or collecting another summary does not turn missing evidence into a verified fact.</p>
+<p>Write the result where the work lives: the claim, the check you ran, and the date. That line is what a teammate or a later session reads instead of repeating your search. It also ages honestly. A dated check of a live page is easy to spot as old, while an undated "it works" quietly becomes a stale claim of its own.</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">An agent says a branch still exists on the server, based on output from earlier in the session. What is the best move?</p>
+  <button class="opt" type="button">Ask it to check the server again before trusting that.</button>
+  <button class="opt" type="button">Trust the answer, since the agent had looked there earlier.</button>
+  <button class="opt" type="button">Delete the whole project and start the task over again.</button>
+  <button class="opt" type="button">Ask the agent to guess what the server would say.</button>
+  <div class="why"><p>The earlier output is a cached picture. Only a fresh command against the server is the source of truth, so the claim needs re-checking, not trusting or guessing.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which of these is the source of truth for a claim about a live website?</p>
+  <button class="opt" type="button">The agent's memory of reading the page one week ago.</button>
+  <button class="opt" type="button">A fresh look at the page or its live response.</button>
+  <button class="opt" type="button">What a random forum comment once said about that site.</button>
+  <button class="opt" type="button">The page's old cached copy inside a big search engine.</button>
+  <div class="why"><p>Memory, comments, and search caches are all second-hand. The live page's current response is the only first-hand source.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Your agent reports "deploy shipped", but you doubt it. What is the best next step?</p>
+  <button class="opt" type="button">Accept the report, since the agent seemed confident about it.</button>
+  <button class="opt" type="button">Ask your friend to reread the agent's earlier summary aloud.</button>
+  <button class="opt" type="button">Compare the live site against what the deploy had claimed.</button>
+  <button class="opt" type="button">Restart the computer and then trust the agent's summary again.</button>
+  <div class="why"><p>Confidence is not evidence. Checking what the live site actually shows, against what the deploy claimed, is a real verification step (lesson 2.2).</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://git-scm.com/docs/git-fetch">git-fetch manual</a> — search the page for "prune" to see exactly what stale remote-tracking references are and how <code>git fetch --prune</code> removes them. Git is the clearest example of a local cache that can lie about a server.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Give me an example of a stale claim and an invented claim from my own project"</em> or <em>"Show me the output of git fetch --prune in my project."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-1">Git documentation, <a href="https://git-scm.com/docs/git-fetch">git-fetch(1)</a> — quotes verified against local <code>git help fetch</code> (git 2.56.0) and a throwaway-repo demo. Retrieved 2026-11-02.</li>
+  <li id="src-2">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02.</li>
+  <li id="src-3">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-4">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as outdated on the page). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> spot stale vs invented claims, and make any agent prove a claim against the source of truth instead of its memory.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure modes (one page)</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><a href="./0074-prompt-injection.html">Previous: 5.7 Prompt injection</a><a href="./0076-background-processes-exit-codes-waiting-vs.html">Next: 5.9 Background processes, exit codes, waiting vs polling</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

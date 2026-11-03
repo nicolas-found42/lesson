@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emulator vs production</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.10</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 8 · Lesson 8.10</p>
+  <h1>Emulator vs production</h1>
+  <p class="lede">Your app's backend can be imitated on your own machine so you can test without touching the real service. An imitation is fast and safe — and it is also the place where "all tests passed" most often stops being true.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0097-backends.html">8.9 Backends</a></span><span>Win: you can say which parts of a test run were real and which were imitated</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>In <a href="0097-backends.html">lesson 8.9</a> you met the three pieces of a dynamic app: hosting, functions, and a database. Those pieces run for real on someone else's computers, where real users' data lives. If every test goes straight to that real service, one careless run can delete a user's record. It can send a real email or burn your quota. So backend platforms give you an <em>emulator</em>: a private imitation of the backend that runs on your own machine. Knowing what that imitation can and cannot prove is the difference between "it works" and "it works there but not here."</p>
+
+<h2>What an emulator is</h2>
+<p>An emulator is a program that copies the behavior of the real backend and runs it locally. Your app talks to it as if it were the real service — same kind of calls, same kind of answers — but nothing leaves your machine. One popular backend platform lists the advantages of this: <q>Safe testing: You can experiment with different configurations and features without affecting your production environment.</q><sup class="cite"><a href="#src-s1">[1]</a></sup></p>
+<p>That last phrase, <em>production environment</em>, names the other side of this lesson. <strong>Production</strong> is the real, hosted backend — the one your live site uses, with real accounts and real data. The emulator is the rehearsal room; production is the stage.</p>
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three pieces of a backend from lesson 8.9, and say which piece an emulator replaces on your machine.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Hosting, functions, and a database. An emulator usually imitates the <strong>functions</strong> and the <strong>database</strong> (and sometimes logins) on your own machine; the hosting of your static files is separate.</p></div>
+</div>
+
+<h2>Why not always test in production?</h2>
+<p>Because production is shared and permanent. A test that writes to production writes where your users' data lives; a test that deletes, deletes for real. Anthropic's agent guidance draws the same line for automated workers: <q>We recommend extensive testing in sandboxed environments, along with the appropriate guardrails.</q><sup class="cite"><a href="#src-d1">[2]</a></sup> An emulator is exactly that kind of contained space for a backend: free to run, quick to reset, safe to break.</p>
+<p>It also protects <em>other people</em>. A local stack holds any sensitive data on your machine, and its own documentation warns: <q>You should never expose your local development stack publicly.</q><sup class="cite"><a href="#src-s1">[1]</a></sup> Keep the rehearsal room closed and the stage separate.</p>
+
+<h2>The gap: what an emulator cannot imitate</h2>
+<p>An emulator imitates the backend's own behavior well. But a real app is more than a backend. Green emulator runs turn into real-world failures in places outside its walls:</p>
+<ul>
+  <li><strong>Real logins.</strong> The emulator fakes a signed-in user. Real sign-in goes through a provider's popup and a redirect address that must match exactly. Your organization may impose token rules on top. None of that happens until you log in for real.</li>
+  <li><strong>The browser's rules.</strong> Pages enforce rules about which sites may call which. A command-line test skips them; a real browser does not. Lesson <a href="0096-cors.html">8.8</a> is the classic case.</li>
+  <li><strong>Services nobody emulated.</strong> Sending emails, payments, analytics — many side services do not exist in the imitation. Code that touches them does nothing, or fails only in production.</li>
+  <li><strong>Real limits and real money.</strong> Quotas, rate limits and billing exist only against the real service. An emulator cannot tell you that you are about to exceed a plan's cap.</li>
+  <li><strong>Configuration drift.</strong> The imitation reads its settings from your machine. The deployed service may be configured differently, or several changes behind your branch. Then the emulator faithfully tests a world that no longer exists.</li>
+</ul>
+<p>And one trap deserves its own paragraph. The emulator takes over <em>only if your app is pointed at it</em>. If that connection is not configured, the app keeps calling the real production service — your "safe local test" is now writing to the stage. When you ask for an emulator run, ask for evidence that the app was really connected to it.</p>
+
+<h2>A real pattern, anonymized</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user's app had a button that connected each teammate to an outside service. Every automated check passed, and so did the whole run against the local emulator. Then a teammate opened the live app and clicked the button for the first time — and it failed. In the imitation there was no real browser and no real third party. So nobody had noticed that the server never told the browser the connection was allowed. Only a signed-in click in a real browser revealed it. Meanwhile, a setup script meant to configure a throwaway practice project granted permissions on the <em>real</em> project instead. That was caught only because the agent stopped and checked which project it had touched.</p>
+</div>
+<p>Two failures, one shape: the test environment was not the world the click lived in. Neither was a coding mistake in the usual sense — both were assumptions about where the code was running.</p>
+
+<h2>The habit: two questions before you trust a run</h2>
+<p>You do not need to memorize every difference. Make the agent draw the map for you:</p>
+<pre class="prompt">Before we test: list which parts of this app would run against
+the local emulator and which parts would touch production even
+in a test run. Mark anything the emulator cannot imitate
+(real logins, browser rules, third-party calls, quotas).
+Then prove which backend the app is actually pointed at.</pre>
+<pre class="prompt">The emulator run passed. Now tell me exactly what this proves,
+what it does not cover, and what the first real-browser,
+real-login check should be. Do not say "done" until that
+first real check passes or you tell me what only I can do.</pre>
+<p>This is the same claim-versus-evidence habit from Unit 2, pointed at a new border. Claude Code's own best-practices page names the underlying failure honestly: <q>Claude said it was done and it wasn't quite, usually because it had no way to check its own work.</q><sup class="cite"><a href="#src-a7">[3]</a></sup> An emulator that was never connected to is precisely a way of checking work that checks the wrong world.</p>
+
+<h2>Try it yourself</h2>
+<div class="doit">
+  <span class="label">In your project</span>
+  <p>If your app has a backend, ask your agent:</p>
+  <pre class="prompt">Make a two-column table: "runs in the emulator" and "touches
+production no matter what". Include logins, database writes,
+function calls, and any third-party service. Then point the
+app at the emulator, start it, and show me a log line that
+proves a test write landed in the emulator, not production.</pre>
+  <div class="expect"><p><strong>What you should see:</strong> a short table, then a log or console line from the <em>local</em> emulator showing your test write. If the only evidence is the agent saying "it worked locally" with no local log, you do not yet know where the write went.</p></div>
+</div>
+<p>If your app is still static, you can rehearse the habit instead: ask the agent "which parts of my current project would need a backend, and what would I want to imitate locally before touching a real one?"</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">An emulator, as this lesson uses the word, is:</p>
+  <button class="opt" type="button">A weaker laptop reserved for testing</button>
+  <button class="opt" type="button">A recording of your production traffic</button>
+  <button class="opt" type="button">The local stand-in for the backend</button>
+  <button class="opt" type="button">A preview rendered on a phone</button>
+  <div class="why"><p>An emulator imitates the real backend (functions, database, sometimes logins) on your own machine, so tests never touch production data.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Emulator tests pass, then the first real click fails. The most likely cause is:</p>
+  <button class="opt" type="button">Something the emulator does not imitate broke</button>
+  <button class="opt" type="button">The emulator wrote results into production databases</button>
+  <button class="opt" type="button">The tests covered files instead of screens</button>
+  <button class="opt" type="button">Your browser cached an older broken version</button>
+  <div class="why"><p>Emulators imitate the backend's own behavior; real logins, browser rules, third-party services and quotas live outside that imitation, so failures cluster there.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Before trusting a green emulator run, the question to ask is:</p>
+  <button class="opt" type="button">Which parts ran local and which production</button>
+  <button class="opt" type="button">Which data did the tests actually read</button>
+  <button class="opt" type="button">How many tests ran and which passed</button>
+  <button class="opt" type="button">Which parts the run really tested where</button>
+  <div class="why"><p>The map between imitation and reality is what a green run cannot show you. Make the agent draw it, and prove where the app was pointed.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://supabase.com/docs/guides/local-development">Local development</a> — one backend platform's own page on running its stack on your machine, including the advantages list quoted above. Branded to one vendor, but the local-versus-production reasoning is general; your platform's docs will have an equivalent page.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Try: <em>"Why can an emulator not imitate a real login?"</em> or <em>"Show me how I would prove my app is pointed at the emulator and not production."</em> If your backend platform has no emulator, ask what its local-testing story is instead.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-s1">Supabase, <a href="https://supabase.com/docs/guides/local-development">Local development</a>. Retrieved 2026-11-02.</li>
+  <li id="src-d1">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as outdated). Retrieved 2026-11-02.</li>
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> say what an emulator imitates, name the gaps it cannot close, and ask the agent to prove which backend a test really touched.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: <a href="0099-ci-logging-without-key-file.html">8.11 CI logging in without a key file</a> · See also: <a href="0035-real-vs-simulated.html">2.7 Real vs simulated</a>, <a href="0101-mocks-vs-live-tests.html">8.13 Mocks vs live tests</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

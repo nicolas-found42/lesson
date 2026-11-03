@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Subagents: one agent can hire helpers</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 5 · How agents work · Lesson 5.4</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 5 · Lesson 5.4</p>
+  <h1>Subagents: one agent can hire helpers</h1>
+  <p class="lede">Sometimes one question is bigger than one conversation. Your agent can hand parts of the work to helper agents — called subagents — that look around in their own space and report back. You stay the boss who cross-checks.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0070-tools.html">5.3 Tools</a></span><span>Win: you can split a big question across read-only helpers and cross-check their reports</span></div>
+</header>
+<main>
+
+<h2>Why one agent is not always enough</h2>
+<p>Your mission is to ship your app. Along the way, you will ask questions that are too big for one sitting: "how does every part of this project fit together?", "which files touch the login flow?", "do these two reports agree?" An agent can answer these. But the searching fills its context window with raw output you will never read again. Anthropic's documentation describes the fix plainly: use a subagent <q>when a side task would flood your main conversation with search results, logs, or file contents you won't reference again.</q><sup class="cite"><a href="#src-a1">[1]</a></sup></p>
+<p>Codex puts the same idea from the cost side. Subagent workflows <q>consume more tokens than comparable single-agent runs</q>, because each helper does its own model work.<sup class="cite"><a href="#src-b1">[2]</a></sup> So subagents are not free. They are a trade: more tokens, in exchange for a main conversation that stays clean and readable.</p>
+
+<h2>Parent and child</h2>
+<p>The agent you talk to is the <strong>parent</strong>. When it delegates, it spawns one or more <strong>subagents</strong> (child agents). Each child works in <q>its own context window</q>, with its own instructions and tool permissions. When it finishes, <q>the subagent does that work in its own context and returns only the summary</q>.<sup class="cite"><a href="#src-a1">[1]</a></sup> omp's documentation adds an important detail: <q>a child session does not inherit the main conversation</q>. It gets the assignment and the shared context you pass explicitly.<sup class="cite"><a href="#src-c1">[3]</a></sup></p>
+<p>That is why the handoff matters. If something is easy to miss — which file is the source of truth, which files must not be edited — say so in the delegation prompt itself.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
+    <p>Claude Code has built-in subagents such as <em>Explore</em>, a <q>fast, read-only agent optimized for searching and analyzing codebases</q>. It can spawn them automatically when a task needs exploration. You can also define your own in <code>.claude/agents/</code> files, with a name, a description, a tool list and a system prompt.<sup class="cite"><a href="#src-a1">[1]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
+    <p>Codex <q>can run subagent workflows by spawning specialized agents in parallel and then collecting their results in one response</q>. You ask for delegation directly, or your rules file can request it. In the CLI, <code>/subagents</code> lets you inspect the running agent threads.<sup class="cite"><a href="#src-b1">[2]</a></sup></p>
+  </div>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
+    <p>omp lets you delegate in ordinary language: state the outcome, what may run in parallel, and the boundaries. It ships bundled specialists such as <em>scout</em> (fast, read-only exploration) and <em>reviewer</em> (evidence-backed review). Completed results come back into the main conversation.<sup class="cite"><a href="#src-c1">[3]</a></sup> This is single-vendor documentation; check anything surprising with your teacher.</p>
+  </div>
+</div>
+
+<h2>Read-only contracts</h2>
+<p>The most useful kind of subagent for a beginner is one that may <em>look</em> but not <em>touch</em>. Claude Code's built-in Explore agent has <q>read-only tools; Write and Edit are denied</q>.<sup class="cite"><a href="#src-a1">[1]</a></sup> You can give the same contract in plain words: "do not edit anything". A contract like that makes the helper safe to run on your real project. It can read every file and still change nothing.</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Split this question into independent parts and research each part with a read-only helper. The helpers must not edit or create any file. Each helper returns a short report plus a list of what it did NOT check. Then cross-check the reports against each other and against the code, and tell me exactly where they disagree.</pre></div>
+<div class="warn">
+  <span class="label">Watch out</span>
+  <p>Even a read-only helper can leave files behind if you ask it to save a report <em>into your project folder</em>. The next commit would sweep it in. Have helpers report back in the chat, or into a scratch folder you delete afterwards.</p>
+</div>
+
+<h2>Cross-checking reports</h2>
+<p>Subagents are fallible. When you run several of them, they will sometimes disagree, both with each other and with the code. That disagreement is not a failure; it is a signal. In a real session, one helper reported a progress bar ending at 450. Another said 500. The parent did the arithmetic and found both were partly right: one number was the gate, the other the display. It sent the helpers targeted corrections before answering.<sup class="cite"><a href="#src-c1">[3]</a></sup> In the same session, another helper claimed a feature paid no rewards. The parent found the code did pay them, and the report was corrected.</p>
+<p>Two habits make this work. First, ask every helper to state what it did <em>not</em> verify. The final answer in that session ended with <q>no full UI playthrough was performed</q>, which is exactly the kind of honesty you want. Second, when reports conflict, go to the source: the file on disk or a command's real output beats both reports.</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Two of your helpers disagree about a number. Do not average them and do not pick the first answer. Open the relevant file yourself, quote the exact line, correct the wrong report, and only then give me the final answer with what you did not verify.</pre></div>
+
+<h2>Worked example</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked one short question: "explain exactly how this app's progression mode works". They added: "use a team of helpers." The parent agent split the question into four slices: flow, progression, economy and saving. It launched four read-only helpers with a clear done-condition. While they ran, it checked some numbers itself with a small throwaway program. Over the next half hour, the helpers' reports contradicted each other in several places. The parent cross-checked against the code and sent about ten correction messages. It finally answered with a structured explanation, a "problems found" list, and an honest note about what it had not exercised. The whole thing took one user message.</p>
+</div>
+<p>Notice what the user did <em>not</em> do: they did not write the four assignments, did not read the raw search output, and did not trust the first summary. They named the outcome and the method, then verified at the end.</p>
+
+<h2>When not to use subagents</h2>
+<p>More helpers is not always better. omp's guidance is blunt: keep work in the main session when it is <q>a small sequential change, when several steps must continuously modify the same file, or when each decision depends on the previous result</q> — and <q>overlapping writers create merge risk</q>.<sup class="cite"><a href="#src-c1">[3]</a></sup> A chain of dependent steps does not get faster by adding workers. Two helpers editing the same file will collide. Subagents shine for independent slices: research, review and checking, not interleaved edits.</p>
+<div class="warn">
+  <span class="label">The drift trap</span>
+  <p>In another real session, a user asked an agent to "keep researching" a question with a team of subagents. Hours later there was a whole new product, a published repository, and a long grading campaign. Nobody had decided to build anything. Each short follow-up message added "and also". When a research question starts turning into a build, stop and restate the goal in one sentence before sending the next message.</p>
+</div>
+
+<h2>Try it yourself</h2>
+<div class="doit">
+  <span class="label">Try it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Pick one question about your project that would take many searches to answer by hand — for example "which files mention the login flow?".</label></li>
+    <li><label><input type="checkbox"> Paste the first prompt block above, adapted to your question, and let the agent delegate to read-only helpers.</label></li>
+    <li><label><input type="checkbox"> Watch that no file in your project changes during the research (check your version-control status afterwards).</label></li>
+    <li><label><input type="checkbox"> Ask the agent: "Which reports disagreed, and how did you resolve each one?"</label></li>
+    <li><label><input type="checkbox"> Ask: "What did you NOT verify?" and compare that list with your own reading of the key file.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see the agent report which helpers it started. It should return short summaries rather than raw search output, and name any disagreements it found. It should say how it resolved each one against the code, and end with a list of unverified claims. Your project files should be unchanged.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what does a subagent return to the parent, what is a read-only contract for, and what should you do when two reports disagree?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A subagent works in its own context window and returns only a summary. A read-only contract means the helper may read but never edit. So it cannot break the project. When reports disagree, go to the source: the file or real command output. Correct the wrong report, and state what was not verified.</p></div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">A subagent finishes its work. What comes back to the parent agent?</p>
+  <button class="opt" type="button">The complete log of every tool call it made</button>
+  <button class="opt" type="button">A brief summary only, not the raw search output</button>
+  <button class="opt" type="button">A request for you to approve every single edit</button>
+  <button class="opt" type="button">Nothing at all until the whole session ends now</button>
+  <div class="why"><p>Subagents do their work in their own context window. They return only the summary, which keeps the main conversation clean.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">Why give a research helper a read-only contract?</p>
+  <button class="opt" type="button">So it cannot change files while it is looking</button>
+  <button class="opt" type="button">So the parent keeps the whole context window free</button>
+  <button class="opt" type="button">So the run finishes faster on a smaller model</button>
+  <button class="opt" type="button">So nobody has to read the helper's report later</button>
+  <div class="why"><p>Read-only means Write and Edit are denied. The helper can search everything and still break nothing in your project.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Two helpers report different numbers for the same thing. What should you do?</p>
+  <button class="opt" type="button">Go check the source and fix the wrong report now</button>
+  <button class="opt" type="button">Average the two numbers and present that as final answer</button>
+  <button class="opt" type="button">Trust the helper that answered first, since it was faster</button>
+  <button class="opt" type="button">Ask both helpers to vote on which number is right</button>
+  <div class="why"><p>The file on disk or a command's real output beats both reports. Averaging, speed, or voting do not find the truth.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">When is splitting work across subagents a bad idea?</p>
+  <button class="opt" type="button">Always, since subagents are useless for any real big project</button>
+  <button class="opt" type="button">When steps must edit the same file one after another</button>
+  <button class="opt" type="button">When the task is big and every part is independent</button>
+  <button class="opt" type="button">When you want two helpers to check each other's work</button>
+  <div class="why"><p>Sequential edits to the same file collide between writers. They gain nothing from parallelism. Independent slices are exactly what subagents are for.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/agents">Create custom subagents</a> — Anthropic's page on how subagents get their own context window and tool limits. Written for one tool, but the parent/child idea applies to all three agents in this course.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me what a subagent call looks like in my agent"</em> or <em>"When would you NOT use a subagent for my project?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/agents">Create custom subagents</a> (Claude Code docs). Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/subagents">Subagents</a> (Codex docs). Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/subagents">Subagents &amp; Agent Hub</a> (omp docs). Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> split a big question across read-only helpers, give each one a clear contract, and cross-check their reports against the code before you believe them.</p>
+  <p>Quick reference: <a href="../reference/agent-loop.html">The agent loop (one page)</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: <a href="0072-goal-mode-persistent-objectives.html">5.5 Goal mode (coming)</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

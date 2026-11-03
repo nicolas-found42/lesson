@@ -23,9 +23,11 @@
 <p>A plain AI chat takes your message and sends back text. A coding agent is the same kind of AI, but it is also allowed to use <em>tools</em>: read a file, change a file, run a command on your computer. Anthropic's documentation puts it bluntly: <q>Tools are what make Claude Code agentic. Without tools, Claude can only respond with text.</q><sup class="cite"><a href="#src-a3">[1]</a></sup></p>
 <span class="sidenote">Anthropic's older essay defines agents as <q>typically just LLMs using tools based on environmental feedback in a loop.</q> It carries a note that its tooling details are dated, but this core definition still holds.<sup class="cite"><a href="#src-d1">[2]</a></sup></span>
 <p>That is the whole idea. The model supplies the judgement. The tools let that judgement touch the real world, which in your case means a folder of files that will become your app.</p>
+<p>Three kinds of tool do most of the work. A read tool looks at something: a file's contents, a folder listing, the output of a command. An edit tool changes a file, usually by replacing a specific piece of text. A run tool starts a program and hands back what it printed. Nearly every action in the transcript later in this lesson is one of those three.</p>
 
 <h2>The loop</h2>
-<p>When you give a task, the agent doesn't answer once. It cycles. Claude Code's documentation names three phases: <q>gather context, take action, and verify results.</q><sup class="cite"><a href="#src-a3">[1]</a></sup> After each tool use, <q>information feeds back into the loop, informing Claude's next decision.</q><sup class="cite"><a href="#src-a3">[1]</a></sup></p>
+<p>When you give a task, the agent doesn't answer once. It cycles. Claude Code's documentation names three phases: <q>gather context, take action, and verify results.</q><sup class="cite"><a href="#src-a3">[1]</a></sup> Each tool use <q>returns information that feeds back into the loop, informing Claude's next decision</q>.<sup class="cite"><a href="#src-a3">[1]</a></sup></p>
+<p>Why does the loop matter so much? Every turn ends with real output: a file's contents, an error message, a page that failed to load. That output becomes the next input, so the agent reacts to what is on disk rather than to what it assumed. A command that fails is not a dead end; it is new information, and a good agent changes its plan because of it.</p>
 
 <figure style="margin: 1.2rem 0;">
 <svg viewBox="0 0 520 150" role="img" aria-labelledby="loop-t loop-d" style="width:100%;height:auto;max-width:520px">
@@ -63,6 +65,7 @@ agent    run    open the live page in a browser       (verify)
 agent    edit   add the link to the front page        (act)
 agent    says   "Done. Here is the link."</code></pre>
 <p>Only the first and last lines are a conversation. Everything between is the loop.</p>
+<p>Read the transcript again and notice the change of plan. The agent measured the project, learned it was too large for the free host, and published only the small part. Nobody told it to. That decision came from a number the previous command printed, which is the loop working as intended.</p>
 
 <div class="recall">
   <span class="label">Recall before you read on</span>
@@ -76,17 +79,17 @@ agent    says   "Done. Here is the link."</code></pre>
 <p>This course covers three agents. They look different but all run the same loop. You start each one from inside a project folder; the next lessons cover folders, the terminal and installation.</p>
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
-    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
-    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
-    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+    <button type="button" role="tab" id="tab1-claude" aria-controls="panel1-claude" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button type="button" role="tab" id="tab1-codex" aria-controls="panel1-codex" data-tab="codex" aria-selected="false">Codex</button>
+    <button type="button" role="tab" id="tab1-omp" aria-controls="panel1-omp" data-tab="omp" aria-selected="false">omp</button>
   </div>
-  <div role="tabpanel" data-panel="claude">
+  <div role="tabpanel" id="panel1-claude" aria-labelledby="tab1-claude" data-panel="claude">
     <p>Made by Anthropic. Its overview says it <q>helps you build features, fix bugs, and automate development tasks.</q><sup class="cite"><a href="#src-a1">[3]</a></sup> You start it by typing <code>claude</code> in your project folder.<sup class="cite"><a href="#src-a2">[4]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="codex" hidden>
+  <div role="tabpanel" id="panel1-codex" aria-labelledby="tab1-codex" data-panel="codex" hidden>
     <p>Made by OpenAI. It can <q>inspect code, make changes, run commands, and automate repeatable work without leaving your terminal.</q><sup class="cite"><a href="#src-b1">[5]</a></sup> You start it by typing <code>codex</code> in your project folder. It also lives inside the ChatGPT desktop app.<sup class="cite"><a href="#src-b1">[5]</a></sup></p>
   </div>
-  <div role="tabpanel" data-panel="omp" hidden>
+  <div role="tabpanel" id="panel1-omp" aria-labelledby="tab1-omp" data-panel="omp" hidden>
     <p>An independent open-source agent from Stencil Labs, describing itself as <q>a coding agent with the IDE wired in.</q><sup class="cite"><a href="#src-c1">[6]</a></sup> You start it by typing <code>omp</code> in your project folder.<sup class="cite"><a href="#src-c3">[7]</a></sup> Its documentation comes only from its own authors, so check anything surprising with your teacher.</p>
   </div>
 </div>
@@ -94,6 +97,7 @@ agent    says   "Done. Here is the link."</code></pre>
 
 <h2>"Done" is a claim, not a proof</h2>
 <p>Because the loop ends when the agent <em>believes</em> the task is finished, "done" is a statement about what it believes. Claude Code's own best-practices page admits the common failure: <q>Claude said it was done and it wasn't quite, usually because it had no way to check its own work.</q><sup class="cite"><a href="#src-a7">[8]</a></sup></p>
+<p>A cheap way to give the agent something to check against: ask, before it starts, what it will run to prove the task worked. A check that prints a clear pass or fail is worth more than a confident summary, because the summary and the check come from the same model, while the check has to face the files.</p>
 <div class="callout">
   <span class="label">The habit this whole course builds</span>
   <p>Treat the agent's report as a claim. Look at the real result yourself, and give the agent a way to check its own work. Unit 2 teaches how.</p>
