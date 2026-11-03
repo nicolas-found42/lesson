@@ -1,0 +1,1417 @@
+{
+  "units": {
+    "0": "Orientation & setup",
+    "1": "Telling the agent what you want",
+    "2": "Knowing what it actually did (verification)",
+    "3": "Version control as the safety net",
+    "4": "Scope & stopping (field guide to derailments)",
+    "5": "How agents work (mental model)",
+    "6": "Shipping a static app",
+    "7": "Capstone",
+    "8": "Beyond static (advanced tracks; nothing dropped)",
+    "9": "Working at scale"
+  },
+  "lessons": [
+    {
+      "n": 1,
+      "file": "0001-what-a-coding-agent-is.html",
+      "id": "0.1",
+      "star": true,
+      "concept": "What a coding agent is: a chat that can read files and run commands; one message \u2192 many tool calls",
+      "needs": [],
+      "ev": "1,2",
+      "unit": 0
+    },
+    {
+      "n": 2,
+      "file": "0002-the-three-agents.html",
+      "id": "0.2",
+      "star": true,
+      "concept": "The three agents: same ideas, different shells (Claude Code, Codex, omp)",
+      "needs": [
+        "0.1"
+      ],
+      "ev": "all",
+      "unit": 0
+    },
+    {
+      "n": 3,
+      "file": "0003-your-project-is-a-folder.html",
+      "id": "0.3",
+      "star": true,
+      "concept": "Your project is a folder; files are text; the working directory",
+      "needs": [],
+      "ev": "5,13",
+      "unit": 0
+    },
+    {
+      "n": 4,
+      "file": "0004-the-terminal-in-five-commands.html",
+      "id": "0.4",
+      "star": true,
+      "concept": "The terminal in 5 commands (pwd, ls, cd, open, run)",
+      "needs": [
+        "0.3"
+      ],
+      "ev": "5",
+      "unit": 0
+    },
+    {
+      "n": 5,
+      "file": "0005-install-and-sign-in.html",
+      "id": "0.5",
+      "star": true,
+      "concept": "Install + sign in (reference page, tabbed)",
+      "needs": [
+        "0.4"
+      ],
+      "ev": "\u2014",
+      "unit": 0
+    },
+    {
+      "n": 6,
+      "file": "0006-approvals-and-permissions.html",
+      "id": "0.6",
+      "star": true,
+      "concept": "Approvals & permissions: what the agent may do; modes; sandbox; why a beginner keeps prompts ON",
+      "needs": [
+        "0.1"
+      ],
+      "ev": "2,5,3",
+      "unit": 0
+    },
+    {
+      "n": 7,
+      "file": "0007-first-prompt-to-a-page.html",
+      "id": "0.7",
+      "star": true,
+      "concept": "First prompt \u2192 a page on your screen (localhost, port, \"start and open\")",
+      "needs": [
+        "0.5",
+        "0.6"
+      ],
+      "ev": "11,13",
+      "unit": 0
+    },
+    {
+      "n": 8,
+      "file": "0008-anatomy-of-a-web-page.html",
+      "id": "0.8",
+      "star": false,
+      "concept": "Anatomy of a web page: HTML, CSS, JavaScript in plain words",
+      "needs": [
+        "0.3"
+      ],
+      "ev": "2,3",
+      "unit": 0
+    },
+    {
+      "n": 9,
+      "file": "0009-why-save-points-exist.html",
+      "id": "3.1",
+      "star": true,
+      "concept": "Why save points exist; what a commit is",
+      "needs": [
+        "0.3"
+      ],
+      "ev": "4",
+      "unit": 3
+    },
+    {
+      "n": 10,
+      "file": "0010-repo-working-tree-uncommitted-change.html",
+      "id": "3.2",
+      "star": true,
+      "concept": "Repo, working tree, uncommitted change; `status` and `diff`",
+      "needs": [
+        "3.1"
+      ],
+      "ev": "4,13",
+      "unit": 3
+    },
+    {
+      "n": 11,
+      "file": "0011-remote-origin-push.html",
+      "id": "3.6",
+      "star": true,
+      "concept": "Remote, origin, push; GitHub account",
+      "needs": [
+        "3.1"
+      ],
+      "ev": "4",
+      "unit": 3
+    },
+    {
+      "n": 12,
+      "file": "0012-static-vs-dynamic.html",
+      "id": "6.1",
+      "star": true,
+      "concept": "Static vs dynamic; what \"hosting\" is",
+      "needs": [
+        "0.8"
+      ],
+      "ev": "2",
+      "unit": 6
+    },
+    {
+      "n": 13,
+      "file": "0013-github-pages.html",
+      "id": "6.3",
+      "star": true,
+      "concept": "GitHub Pages: URL shape; relative links; subpaths",
+      "needs": [
+        "6.1",
+        "3.6"
+      ],
+      "ev": "2",
+      "unit": 6
+    },
+    {
+      "n": 14,
+      "file": "0014-deploy-merge-live.html",
+      "id": "6.6",
+      "star": true,
+      "concept": "Deploy \u2260 merge \u2260 live: verify the real URL",
+      "needs": [
+        "6.3"
+      ],
+      "ev": "2,3",
+      "unit": 6
+    },
+    {
+      "n": 15,
+      "file": "0015-ship-a-hello-world-page.html",
+      "id": "M.1",
+      "star": true,
+      "concept": "Milestone: ship a one-page \"hello world\" site to a public URL with your agent",
+      "needs": [
+        "0.7",
+        "3.1",
+        "3.6",
+        "6.3",
+        "6.6"
+      ],
+      "ev": "2,3",
+      "unit": 0
+    },
+    {
+      "n": 16,
+      "file": "0016-goal-audience-not-method.html",
+      "id": "1.1",
+      "star": true,
+      "concept": "Goal + audience, not method (\"so my friends can use it\")",
+      "needs": [
+        "0.7"
+      ],
+      "ev": "2",
+      "unit": 1
+    },
+    {
+      "n": 17,
+      "file": "0017-orient-first.html",
+      "id": "1.2",
+      "star": true,
+      "concept": "Orient first: ask a cheap question before changing anything",
+      "needs": [
+        "0.7"
+      ],
+      "ev": "15",
+      "unit": 1
+    },
+    {
+      "n": 18,
+      "file": "0018-ask-word-means.html",
+      "id": "1.3",
+      "star": true,
+      "concept": "Ask what a word means (explain-as-you-go; \"re-pitch it with an example\")",
+      "needs": [
+        "0.1"
+      ],
+      "ev": "7,13",
+      "unit": 1
+    },
+    {
+      "n": 19,
+      "file": "0019-interview.html",
+      "id": "1.4",
+      "star": true,
+      "concept": "The interview: agent asks numbered questions, each with a recommended answer",
+      "needs": [
+        "1.1"
+      ],
+      "ev": "1,3,7,11,12",
+      "unit": 1
+    },
+    {
+      "n": 20,
+      "file": "0020-yes-all.html",
+      "id": "1.5",
+      "star": true,
+      "concept": "\"yes to all\" \u2014 and amending inside the yes",
+      "needs": [
+        "1.4"
+      ],
+      "ev": "3,12",
+      "unit": 1
+    },
+    {
+      "n": 21,
+      "file": "0021-when-override-recommendation.html",
+      "id": "1.6",
+      "star": false,
+      "concept": "When to override a recommendation (product intent is yours)",
+      "needs": [
+        "1.5"
+      ],
+      "ev": "12",
+      "unit": 1
+    },
+    {
+      "n": 22,
+      "file": "0022-plan-then-human-go.html",
+      "id": "1.7",
+      "star": true,
+      "concept": "Plan, then a human \"go\": plan vs edit; confirmation gate",
+      "needs": [
+        "1.4"
+      ],
+      "ev": "12,15",
+      "unit": 1
+    },
+    {
+      "n": 23,
+      "file": "0023-reference-as-spec.html",
+      "id": "1.8",
+      "star": false,
+      "concept": "A reference as a spec (\"handles like X\"); a baseline as the bar (\"at or above v1\")",
+      "needs": [
+        "1.1"
+      ],
+      "ev": "1",
+      "unit": 1
+    },
+    {
+      "n": 24,
+      "file": "0024-show-dont-tell.html",
+      "id": "1.9",
+      "star": true,
+      "concept": "Show, don't tell: screenshots as bug reports; what the agent cannot see",
+      "needs": [
+        "0.7"
+      ],
+      "ev": "11",
+      "unit": 1
+    },
+    {
+      "n": 25,
+      "file": "0025-steering-mid-run.html",
+      "id": "1.10",
+      "star": true,
+      "concept": "Steering mid-run: queue a message, interrupt (Esc), \"continue\", \"what is the task and its state?\"",
+      "needs": [
+        "0.1"
+      ],
+      "ev": "10,15,18,11",
+      "unit": 1
+    },
+    {
+      "n": 26,
+      "file": "0026-skills-slash-commands-mentions.html",
+      "id": "1.11",
+      "star": false,
+      "concept": "Skills, slash commands, @-mentions: reusable instruction packs",
+      "needs": [
+        "0.1"
+      ],
+      "ev": "1,3,12",
+      "unit": 1
+    },
+    {
+      "n": 27,
+      "file": "0027-project-rules-file.html",
+      "id": "1.12",
+      "star": true,
+      "concept": "Project rules file (CLAUDE.md / AGENTS.md): write the procedure once",
+      "needs": [
+        "0.3"
+      ],
+      "ev": "2,5,17",
+      "unit": 1
+    },
+    {
+      "n": 28,
+      "file": "0028-outcome-sized-prompts-vs-micro-managing.html",
+      "id": "1.13",
+      "star": false,
+      "concept": "Outcome-sized prompts vs micro-managing (you as project manager)",
+      "needs": [
+        "1.1"
+      ],
+      "ev": "18",
+      "unit": 1
+    },
+    {
+      "n": 29,
+      "file": "0029-run-yourself.html",
+      "id": "2.1",
+      "star": true,
+      "concept": "Run it yourself: the \"change \u2192 start and open \u2192 look\" loop",
+      "needs": [
+        "0.7"
+      ],
+      "ev": "11",
+      "unit": 2
+    },
+    {
+      "n": 30,
+      "file": "0030-claims-vs-evidence.html",
+      "id": "2.2",
+      "star": true,
+      "concept": "Claims vs evidence: \"done\" is not proof; ask \"what did you NOT verify?\"",
+      "needs": [
+        "2.1"
+      ],
+      "ev": "14,17",
+      "unit": 2
+    },
+    {
+      "n": 31,
+      "file": "0031-test.html",
+      "id": "2.3",
+      "star": false,
+      "concept": "What a test is; pass / fail / skipped",
+      "needs": [
+        "0.3"
+      ],
+      "ev": "2,6",
+      "unit": 2
+    },
+    {
+      "n": 32,
+      "file": "0032-regression-test.html",
+      "id": "2.4",
+      "star": false,
+      "concept": "Regression test; failing-test-first (prove the bug is real)",
+      "needs": [
+        "2.3"
+      ],
+      "ev": "16,18",
+      "unit": 2
+    },
+    {
+      "n": 33,
+      "file": "0033-linter-formatter-type-checker.html",
+      "id": "2.5",
+      "star": false,
+      "concept": "Linter, formatter, type checker: automatic style/error checkers",
+      "needs": [
+        "2.3"
+      ],
+      "ev": "13",
+      "unit": 2
+    },
+    {
+      "n": 34,
+      "file": "0034-one-command-gate.html",
+      "id": "2.6",
+      "star": false,
+      "concept": "One-command gate (\"make check\"): put checks in the repo",
+      "needs": [
+        "2.3",
+        "1.12"
+      ],
+      "ev": "4,17",
+      "unit": 2
+    },
+    {
+      "n": 35,
+      "file": "0035-real-vs-simulated.html",
+      "id": "2.7",
+      "star": true,
+      "concept": "Real vs simulated: tests passed but the screen was wrong; use a real browser",
+      "needs": [
+        "2.1"
+      ],
+      "ev": "11,2",
+      "unit": 2
+    },
+    {
+      "n": 36,
+      "file": "0036-screenshots-as-evidence.html",
+      "id": "2.8",
+      "star": false,
+      "concept": "Screenshots as evidence; black frames; locked screens / focus stealing",
+      "needs": [
+        "2.7"
+      ],
+      "ev": "1,10",
+      "unit": 2
+    },
+    {
+      "n": 37,
+      "file": "0037-logs-telemetry.html",
+      "id": "2.9",
+      "star": false,
+      "concept": "Logs & telemetry: ask \"do you have enough logs to diagnose this?\"",
+      "needs": [
+        "2.2"
+      ],
+      "ev": "11",
+      "unit": 2
+    },
+    {
+      "n": 38,
+      "file": "0038-independent-reviewer.html",
+      "id": "2.10",
+      "star": false,
+      "concept": "Independent reviewer (second agent); advisory vs obey",
+      "needs": [
+        "2.2"
+      ],
+      "ev": "1,12,17",
+      "unit": 2
+    },
+    {
+      "n": 39,
+      "file": "0039-checker-can-be-wrong.html",
+      "id": "2.11",
+      "star": false,
+      "concept": "The checker can be wrong: negative controls; flaky tests; AI-as-judge noise",
+      "needs": [
+        "2.3",
+        "2.10"
+      ],
+      "ev": "7,8",
+      "unit": 2
+    },
+    {
+      "n": 40,
+      "file": "0040-be-first-time-user.html",
+      "id": "2.13",
+      "star": true,
+      "concept": "Be a first-time user: have the agent (and a friend) walk the live app",
+      "needs": [
+        "2.1"
+      ],
+      "ev": "3,12",
+      "unit": 2
+    },
+    {
+      "n": 41,
+      "file": "0041-reading-screenshots-diagnostics-from-real-user.html",
+      "id": "2.14",
+      "star": false,
+      "concept": "Reading screenshots/diagnostics from a real user",
+      "needs": [
+        "2.13"
+      ],
+      "ev": "9",
+      "unit": 2
+    },
+    {
+      "n": 42,
+      "file": "0042-gitignore.html",
+      "id": "3.3",
+      "star": true,
+      "concept": ".gitignore: what not to track (secrets, caches, big files); why ignored skills vanish",
+      "needs": [
+        "3.2"
+      ],
+      "ev": "10,4",
+      "unit": 3
+    },
+    {
+      "n": 43,
+      "file": "0043-commit-messages.html",
+      "id": "3.4",
+      "star": false,
+      "concept": "Commit messages; staging; \"commit all\" sweeps in unrelated work",
+      "needs": [
+        "3.2"
+      ],
+      "ev": "4,13",
+      "unit": 3
+    },
+    {
+      "n": 44,
+      "file": "0044-branch.html",
+      "id": "3.5",
+      "star": true,
+      "concept": "Branch: parallel line of work; main vs feature",
+      "needs": [
+        "3.1"
+      ],
+      "ev": "2,4",
+      "unit": 3
+    },
+    {
+      "n": 45,
+      "file": "0045-pull-request.html",
+      "id": "3.7",
+      "star": true,
+      "concept": "Pull request: proposal to merge; description; checks",
+      "needs": [
+        "3.6"
+      ],
+      "ev": "2,16",
+      "unit": 3
+    },
+    {
+      "n": 46,
+      "file": "0046-local-vs-ci.html",
+      "id": "2.12",
+      "star": false,
+      "concept": "Local vs CI: skipped locally, failed in the cloud",
+      "needs": [
+        "2.3",
+        "3.7"
+      ],
+      "ev": "6,3",
+      "unit": 2
+    },
+    {
+      "n": 47,
+      "file": "0047-merge-vs-squash.html",
+      "id": "3.8",
+      "star": false,
+      "concept": "Merge vs squash; what \"merged\" means; late review comments need a new PR",
+      "needs": [
+        "3.7"
+      ],
+      "ev": "16",
+      "unit": 3
+    },
+    {
+      "n": 48,
+      "file": "0048-merge-conflicts.html",
+      "id": "3.9",
+      "star": false,
+      "concept": "Merge conflicts; rebase; cherry-pick",
+      "needs": [
+        "3.5"
+      ],
+      "ev": "16",
+      "unit": 3
+    },
+    {
+      "n": 49,
+      "file": "0049-worktrees.html",
+      "id": "3.10",
+      "star": false,
+      "concept": "Worktrees: two checkouts; edits landing in the wrong one; tell the agent where work happens",
+      "needs": [
+        "3.5"
+      ],
+      "ev": "9,17",
+      "unit": 3
+    },
+    {
+      "n": 50,
+      "file": "0050-undo.html",
+      "id": "3.11",
+      "star": false,
+      "concept": "Undo: revert vs reset; force push; stale remote refs (fetch/prune)",
+      "needs": [
+        "3.6"
+      ],
+      "ev": "4",
+      "unit": 3
+    },
+    {
+      "n": 51,
+      "file": "0051-permission-errors.html",
+      "id": "3.12",
+      "star": false,
+      "concept": "Permission errors (403/404), forks, token scopes",
+      "needs": [
+        "3.6"
+      ],
+      "ev": "4,8",
+      "unit": 3
+    },
+    {
+      "n": 52,
+      "file": "0052-checkpoint-often.html",
+      "id": "3.13",
+      "star": true,
+      "concept": "Checkpoint often: why long unsaved runs are risky",
+      "needs": [
+        "3.1"
+      ],
+      "ev": "6,15",
+      "unit": 3
+    },
+    {
+      "n": 53,
+      "file": "0053-default-branch-rename.html",
+      "id": "3.14",
+      "star": false,
+      "concept": "Default branch rename (master \u2192 main); deleting merged branches safely",
+      "needs": [
+        "3.5"
+      ],
+      "ev": "4,9",
+      "unit": 3
+    },
+    {
+      "n": 54,
+      "file": "0054-branch-protection-prs-only-convention.html",
+      "id": "3.15",
+      "star": false,
+      "concept": "Branch protection / \"PRs only\" convention",
+      "needs": [
+        "3.7"
+      ],
+      "ev": "3",
+      "unit": 3
+    },
+    {
+      "n": 55,
+      "file": "0055-definition-done-acceptance-criteria.html",
+      "id": "4.1",
+      "star": true,
+      "concept": "Definition of done / acceptance criteria",
+      "needs": [
+        "1.1"
+      ],
+      "ev": "6,7",
+      "unit": 4
+    },
+    {
+      "n": 56,
+      "file": "0056-scope-creep-scope-ladder.html",
+      "id": "4.2",
+      "star": true,
+      "concept": "Scope creep and the scope ladder (\"research \u2192 product \u2192 plugin\")",
+      "needs": [
+        "4.1"
+      ],
+      "ev": "6,8",
+      "unit": 4
+    },
+    {
+      "n": 57,
+      "file": "0057-stop-conditions.html",
+      "id": "4.3",
+      "star": true,
+      "concept": "Stop conditions (\"stop when X is merged\", \"and stop there\")",
+      "needs": [
+        "4.1"
+      ],
+      "ev": "18",
+      "unit": 4
+    },
+    {
+      "n": 58,
+      "file": "0058-budgets.html",
+      "id": "4.4",
+      "star": true,
+      "concept": "Budgets: time, attempts, dollars; why \"until no issues remain\" never ends",
+      "needs": [
+        "4.3"
+      ],
+      "ev": "7,15,17",
+      "unit": 4
+    },
+    {
+      "n": 59,
+      "file": "0059-root-cause-vs-workaround.html",
+      "id": "4.5",
+      "star": false,
+      "concept": "Root cause vs workaround; say what is not acceptable",
+      "needs": [
+        "4.1"
+      ],
+      "ev": "6",
+      "unit": 4
+    },
+    {
+      "n": 60,
+      "file": "0060-conflicting-requirements.html",
+      "id": "4.6",
+      "star": false,
+      "concept": "Conflicting requirements: spot them, make the agent surface them, choose",
+      "needs": [
+        "4.1"
+      ],
+      "ev": "11",
+      "unit": 4
+    },
+    {
+      "n": 61,
+      "file": "0061-reward-hacking-goodhart.html",
+      "id": "4.7",
+      "star": false,
+      "concept": "Reward hacking / Goodhart: the metric gets gamed",
+      "needs": [
+        "4.1"
+      ],
+      "ev": "11,8",
+      "unit": 4
+    },
+    {
+      "n": 62,
+      "file": "0062-vague-prompts-safe-only-when-repo.html",
+      "id": "4.8",
+      "star": false,
+      "concept": "Vague prompts are safe only when the repo defines \"works\"",
+      "needs": [
+        "1.12",
+        "2.6"
+      ],
+      "ev": "17,7",
+      "unit": 4
+    },
+    {
+      "n": 63,
+      "file": "0063-long-unsupervised-runs.html",
+      "id": "4.9",
+      "star": false,
+      "concept": "Long unsupervised runs: early evidence checkpoints; progress logs",
+      "needs": [
+        "3.13"
+      ],
+      "ev": "10,6",
+      "unit": 4
+    },
+    {
+      "n": 64,
+      "file": "0064-recovering-derail.html",
+      "id": "4.10",
+      "star": false,
+      "concept": "Recovering a derail: stop, commit, PR, restart with a fresh goal",
+      "needs": [
+        "3.13",
+        "4.3"
+      ],
+      "ev": "6,7",
+      "unit": 4
+    },
+    {
+      "n": 65,
+      "file": "0065-over-asking.html",
+      "id": "4.11",
+      "star": false,
+      "concept": "Over-asking: when an interview is too long; cap the questions",
+      "needs": [
+        "1.4"
+      ],
+      "ev": "12",
+      "unit": 4
+    },
+    {
+      "n": 66,
+      "file": "0066-questions-agent-cant-answer-vs-ones.html",
+      "id": "4.12",
+      "star": false,
+      "concept": "Questions the agent can't answer vs ones you can (\"it's in this folder\")",
+      "needs": [
+        "1.10"
+      ],
+      "ev": "6,10",
+      "unit": 4
+    },
+    {
+      "n": 67,
+      "file": "0067-cutting-scope-purpose.html",
+      "id": "4.13",
+      "star": false,
+      "concept": "Cutting scope on purpose (\"leave as unmapped, I'll do it later\")",
+      "needs": [
+        "4.2"
+      ],
+      "ev": "10",
+      "unit": 4
+    },
+    {
+      "n": 68,
+      "file": "0068-context-window.html",
+      "id": "5.1",
+      "star": false,
+      "concept": "Context window; compaction; resume, fork, handoff",
+      "needs": [
+        "0.1"
+      ],
+      "ev": "10,6",
+      "unit": 5
+    },
+    {
+      "n": 69,
+      "file": "0069-tokens-cost-caching.html",
+      "id": "5.2",
+      "star": false,
+      "concept": "Tokens, cost, caching (concept level)",
+      "needs": [
+        "5.1"
+      ],
+      "ev": "6",
+      "unit": 5
+    },
+    {
+      "n": 70,
+      "file": "0070-tools.html",
+      "id": "5.3",
+      "star": false,
+      "concept": "Tools: read / edit / run; what it can't see",
+      "needs": [
+        "0.1"
+      ],
+      "ev": "1",
+      "unit": 5
+    },
+    {
+      "n": 71,
+      "file": "0071-subagents.html",
+      "id": "5.4",
+      "star": false,
+      "concept": "Subagents: parent/child; read-only contracts; cross-checking reports",
+      "needs": [
+        "5.3"
+      ],
+      "ev": "14,8",
+      "unit": 5
+    },
+    {
+      "n": 72,
+      "file": "0072-goal-mode-persistent-objectives.html",
+      "id": "5.5",
+      "star": false,
+      "concept": "Goal mode / persistent objectives (and their failure modes)",
+      "needs": [
+        "4.3"
+      ],
+      "ev": "7,17",
+      "unit": 5
+    },
+    {
+      "n": 73,
+      "file": "0073-models-effort.html",
+      "id": "5.6",
+      "star": false,
+      "concept": "Models and effort: switching, cheaper-for-building",
+      "needs": [
+        "0.1"
+      ],
+      "ev": "4,10",
+      "unit": 5
+    },
+    {
+      "n": 74,
+      "file": "0074-prompt-injection.html",
+      "id": "5.7",
+      "star": false,
+      "concept": "Prompt injection: instructions hidden in untrusted files and pages",
+      "needs": [
+        "5.3"
+      ],
+      "ev": "5,6",
+      "unit": 5
+    },
+    {
+      "n": 75,
+      "file": "0075-stale-invented-claims.html",
+      "id": "5.8",
+      "star": false,
+      "concept": "Stale or invented claims: check the source of truth, not memory/cache",
+      "needs": [
+        "2.2"
+      ],
+      "ev": "4,9",
+      "unit": 5
+    },
+    {
+      "n": 76,
+      "file": "0076-background-processes-exit-codes-waiting-vs.html",
+      "id": "5.9",
+      "star": false,
+      "concept": "Background processes, exit codes, waiting vs polling",
+      "needs": [
+        "0.4"
+      ],
+      "ev": "10,16",
+      "unit": 5
+    },
+    {
+      "n": 77,
+      "file": "0077-human-only-steps.html",
+      "id": "5.10",
+      "star": false,
+      "concept": "Human-only steps: logins, attestations; runbooks the agent writes for you",
+      "needs": [
+        "0.6"
+      ],
+      "ev": "3,9",
+      "unit": 5
+    },
+    {
+      "n": 78,
+      "file": "0078-desktop-app-features.html",
+      "id": "5.11",
+      "star": false,
+      "concept": "Desktop-app features (buttons, plan checklist, cards) vs CLI",
+      "needs": [
+        "0.2"
+      ],
+      "ev": "5,13,16",
+      "unit": 5
+    },
+    {
+      "n": 79,
+      "file": "0079-build-step.html",
+      "id": "6.2",
+      "star": true,
+      "concept": "Build step: source \u2192 deployable files",
+      "needs": [
+        "6.1"
+      ],
+      "ev": "3",
+      "unit": 6
+    },
+    {
+      "n": 80,
+      "file": "0080-size-limits-big-files.html",
+      "id": "6.4",
+      "star": true,
+      "concept": "Size limits and big files (host them elsewhere)",
+      "needs": [
+        "6.3"
+      ],
+      "ev": "2",
+      "unit": 6
+    },
+    {
+      "n": 81,
+      "file": "0081-actions-workflow.html",
+      "id": "6.5",
+      "star": true,
+      "concept": "An Actions workflow: a recipe GitHub runs on every push",
+      "needs": [
+        "3.7"
+      ],
+      "ev": "2,3",
+      "unit": 6
+    },
+    {
+      "n": 82,
+      "file": "0082-readme-repo-description.html",
+      "id": "6.7",
+      "star": true,
+      "concept": "README and repo description: put the link where people look",
+      "needs": [
+        "6.6"
+      ],
+      "ev": "2",
+      "unit": 6
+    },
+    {
+      "n": 83,
+      "file": "0083-other-hosts.html",
+      "id": "6.8",
+      "star": false,
+      "concept": "Other hosts (Cloudflare, Netlify, Vercel); free-plan guardrails",
+      "needs": [
+        "6.3"
+      ],
+      "ev": "3",
+      "unit": 6
+    },
+    {
+      "n": 84,
+      "file": "0084-rollback.html",
+      "id": "6.9",
+      "star": false,
+      "concept": "Rollback: what main is vs what is live",
+      "needs": [
+        "6.6"
+      ],
+      "ev": "9",
+      "unit": 6
+    },
+    {
+      "n": 85,
+      "file": "0085-custom-domains.html",
+      "id": "6.10",
+      "star": false,
+      "concept": "Custom domains (optional)",
+      "needs": [
+        "6.8"
+      ],
+      "ev": "\u2014",
+      "unit": 6
+    },
+    {
+      "n": 86,
+      "file": "0086-choose-idea.html",
+      "id": "7.1",
+      "star": true,
+      "concept": "Choose an idea; fallback example",
+      "needs": [
+        "M.1"
+      ],
+      "ev": "\u2014",
+      "unit": 7
+    },
+    {
+      "n": 87,
+      "file": "0087-interview-plan-build-verify-ship-share.html",
+      "id": "7.2",
+      "star": true,
+      "concept": "Interview \u2192 plan \u2192 build \u2192 verify \u2192 ship \u2192 share",
+      "needs": [
+        "7.1"
+      ],
+      "ev": "\u2014",
+      "unit": 7
+    },
+    {
+      "n": 88,
+      "file": "0088-retrospective.html",
+      "id": "7.3",
+      "star": false,
+      "concept": "Retrospective: which failure modes did you hit?",
+      "needs": [
+        "7.2"
+      ],
+      "ev": "\u2014",
+      "unit": 7
+    },
+    {
+      "n": 89,
+      "file": "0089-secrets.html",
+      "id": "8.1",
+      "star": false,
+      "concept": "Secrets: what, why not in code",
+      "needs": [
+        "3.3"
+      ],
+      "ev": "9",
+      "unit": 8
+    },
+    {
+      "n": 90,
+      "file": "0090-env-vars.html",
+      "id": "8.2",
+      "star": false,
+      "concept": "Env vars; .env vs .env.example",
+      "needs": [
+        "8.1"
+      ],
+      "ev": "17",
+      "unit": 8
+    },
+    {
+      "n": 91,
+      "file": "0091-never-print-commit.html",
+      "id": "8.3",
+      "star": false,
+      "concept": "Never print/commit; rotate a leaked key; git history keeps secrets",
+      "needs": [
+        "8.1"
+      ],
+      "ev": "4,9",
+      "unit": 8
+    },
+    {
+      "n": 92,
+      "file": "0092-third-party-api-keys.html",
+      "id": "8.4",
+      "star": false,
+      "concept": "Third-party API keys; rate limits (429); credits (402); spend caps",
+      "needs": [
+        "8.2"
+      ],
+      "ev": "7,15,17",
+      "unit": 8
+    },
+    {
+      "n": 93,
+      "file": "0093-send-third-parties.html",
+      "id": "8.5",
+      "star": false,
+      "concept": "What you send to third parties (privacy)",
+      "needs": [
+        "8.4"
+      ],
+      "ev": "15",
+      "unit": 8
+    },
+    {
+      "n": 94,
+      "file": "0094-logins-token-expiry.html",
+      "id": "8.6",
+      "star": false,
+      "concept": "Logins and token expiry; org re-login policy",
+      "needs": [
+        "8.1"
+      ],
+      "ev": "9",
+      "unit": 8
+    },
+    {
+      "n": 95,
+      "file": "0095-oauth-pieces.html",
+      "id": "8.7",
+      "star": false,
+      "concept": "OAuth in pieces: client id/secret; scopes; redirect URI; consent; per-user vs shared tokens",
+      "needs": [
+        "8.6"
+      ],
+      "ev": "9",
+      "unit": 8
+    },
+    {
+      "n": 96,
+      "file": "0096-cors.html",
+      "id": "8.8",
+      "star": false,
+      "concept": "CORS: why tests pass and the real click fails",
+      "needs": [
+        "8.7"
+      ],
+      "ev": "9",
+      "unit": 8
+    },
+    {
+      "n": 97,
+      "file": "0097-backends.html",
+      "id": "8.9",
+      "star": false,
+      "concept": "Backends: hosting vs functions vs database",
+      "needs": [
+        "6.1"
+      ],
+      "ev": "9",
+      "unit": 8
+    },
+    {
+      "n": 98,
+      "file": "0098-emulator-vs-production.html",
+      "id": "8.10",
+      "star": false,
+      "concept": "Emulator vs production",
+      "needs": [
+        "8.9"
+      ],
+      "ev": "9",
+      "unit": 8
+    },
+    {
+      "n": 99,
+      "file": "0099-ci-logging-without-key-file.html",
+      "id": "8.11",
+      "star": false,
+      "concept": "CI logging in without a key file (workload identity, concept)",
+      "needs": [
+        "6.5",
+        "8.1"
+      ],
+      "ev": "9",
+      "unit": 8
+    },
+    {
+      "n": 100,
+      "file": "0100-docker.html",
+      "id": "8.12",
+      "star": false,
+      "concept": "Docker: image, container, volume, port; isolate tests from real data",
+      "needs": [
+        "5.9"
+      ],
+      "ev": "7,17",
+      "unit": 8
+    },
+    {
+      "n": 101,
+      "file": "0101-mocks-vs-live-tests.html",
+      "id": "8.13",
+      "star": false,
+      "concept": "Mocks vs live tests; fixtures; wire tests",
+      "needs": [
+        "2.3"
+      ],
+      "ev": "17",
+      "unit": 8
+    },
+    {
+      "n": 102,
+      "file": "0102-deploy-blockers.html",
+      "id": "8.14",
+      "star": false,
+      "concept": "Deploy blockers: missing secrets; secret managers",
+      "needs": [
+        "8.1"
+      ],
+      "ev": "9",
+      "unit": 8
+    },
+    {
+      "n": 103,
+      "file": "0103-third-party-churn.html",
+      "id": "8.15",
+      "star": false,
+      "concept": "Third-party churn: deprecations; docs that lie (404 pages)",
+      "needs": [
+        "5.8"
+      ],
+      "ev": "9",
+      "unit": 8
+    },
+    {
+      "n": 104,
+      "file": "0104-llm-calls-as-dependency.html",
+      "id": "8.16",
+      "star": false,
+      "concept": "LLM calls as a dependency: output limits, timeouts, retries, JSON shape",
+      "needs": [
+        "8.4"
+      ],
+      "ev": "7,17",
+      "unit": 8
+    },
+    {
+      "n": 105,
+      "file": "0105-data-dont-own.html",
+      "id": "8.17",
+      "star": false,
+      "concept": "Data you don't own: provenance, units, evidence status",
+      "needs": [
+        "5.8"
+      ],
+      "ev": "15",
+      "unit": 8
+    },
+    {
+      "n": 106,
+      "file": "0106-assets-licensing.html",
+      "id": "8.18",
+      "star": false,
+      "concept": "Assets & licensing; reverse engineering and the legal/IP caution",
+      "needs": [
+        "8.17"
+      ],
+      "ev": "6,10,14",
+      "unit": 8
+    },
+    {
+      "n": 107,
+      "file": "0107-performance.html",
+      "id": "8.19",
+      "star": false,
+      "concept": "Performance: frames per second, benchmarks, bottlenecks, parallel workers",
+      "needs": [
+        "2.3"
+      ],
+      "ev": "11",
+      "unit": 8
+    },
+    {
+      "n": 108,
+      "file": "0108-accessibility-basics.html",
+      "id": "8.20",
+      "star": false,
+      "concept": "Accessibility basics (targets, keyboard, reduced motion)",
+      "needs": [
+        "0.8"
+      ],
+      "ev": "11,12",
+      "unit": 8
+    },
+    {
+      "n": 109,
+      "file": "0109-spec-tickets-dependency-graph.html",
+      "id": "9.1",
+      "star": false,
+      "concept": "Spec \u2192 tickets \u2192 dependency graph (\"frontier\")",
+      "needs": [
+        "4.1"
+      ],
+      "ev": "18",
+      "unit": 9
+    },
+    {
+      "n": 110,
+      "file": "0110-integration-branch-vs-per-ticket-branches.html",
+      "id": "9.2",
+      "star": false,
+      "concept": "Integration branch vs per-ticket branches",
+      "needs": [
+        "3.5"
+      ],
+      "ev": "18",
+      "unit": 9
+    },
+    {
+      "n": 111,
+      "file": "0111-parallel-agents-shared-build-folders.html",
+      "id": "9.3",
+      "star": false,
+      "concept": "Parallel agents and shared build folders (races)",
+      "needs": [
+        "3.10"
+      ],
+      "ev": "18",
+      "unit": 9
+    },
+    {
+      "n": 112,
+      "file": "0112-pr-babysitting-auto-fix.html",
+      "id": "9.4",
+      "star": false,
+      "concept": "PR babysitting / auto-fix: bot reviewers; merging before CI finishes",
+      "needs": [
+        "3.7",
+        "2.12"
+      ],
+      "ev": "16",
+      "unit": 9
+    },
+    {
+      "n": 113,
+      "file": "0113-swarm-research-reconciling-contradictory-reports.html",
+      "id": "9.5",
+      "star": false,
+      "concept": "Swarm research and reconciling contradictory reports",
+      "needs": [
+        "5.4"
+      ],
+      "ev": "14,8",
+      "unit": 9
+    },
+    {
+      "n": 114,
+      "file": "0114-agent-as-scheduler.html",
+      "id": "9.6",
+      "star": false,
+      "concept": "Agent as scheduler; meta-prompting (\"critique how I prompt\")",
+      "needs": [
+        "1.13"
+      ],
+      "ev": "18",
+      "unit": 9
+    },
+    {
+      "n": 115,
+      "file": "0115-handoff-docs-long-sessions.html",
+      "id": "9.7",
+      "star": false,
+      "concept": "Handoff docs for long sessions",
+      "needs": [
+        "5.1"
+      ],
+      "ev": "9",
+      "unit": 9
+    },
+    {
+      "n": 116,
+      "file": "0116-triage-prompt.html",
+      "id": "9.8",
+      "star": false,
+      "concept": "Triage prompt: diagnose first, act second",
+      "needs": [
+        "3.5"
+      ],
+      "ev": "1,16,18",
+      "unit": 9
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# .githooks/pre-commit — Fast pre-commit hook (<1 second)
+# Runs Tier 1 Fast Quality Gate on staged HTML/Markdown lessons without third-party dependencies.
+
+set -eo pipefail
+
+# Collect staged HTML and Markdown files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -- 'lessons/*.html' 'index.html' '*.md' || true)
+
+if [ -n "$STAGED_FILES" ]; then
+    echo "Running Tier 1 Fast Quality Gate on staged files..."
+    python3 -I tools/check_lessons.py $STAGED_FILES
+    echo "Tier 1 Fast Quality Gate passed."
+fi
