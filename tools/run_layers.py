@@ -65,7 +65,13 @@ def main() -> int:
         return 0
 
     lesson_targets = [t for t in targets if t.startswith('lessons/')]
-    print(f'Running 6 local quality layers on {len(targets)} file(s) [{scope}]\n')
+    # Deep layers need lesson pages: when only index.html changed, sweep the corpus
+    # so L2/L3/L5 still run against real content instead of an empty file list.
+    deep_targets = lesson_targets or all_targets()
+    print(f'Running 6 local quality layers on {len(targets)} file(s) [{scope}]')
+    print(f'  L1/L4/L5/L6 static: {len(targets)} file(s)')
+    print(f'  L6 index sync: full corpus')
+    print(f'  L2 visual / L3 W3C / L5 semantic: {len(deep_targets)} file(s)\n')
 
     results: list[tuple[str, int, str]] = []
 
@@ -78,17 +84,16 @@ def main() -> int:
     results.append(('L6 index sync', code, out))
 
     # L2 visual — real browser
-    if lesson_targets:
-        code, out = sh(['node', 'tools/deep/visual.mjs', *lesson_targets])
-        results.append(('L2 visual', code, out))
+    code, out = sh(['node', 'tools/deep/visual.mjs', *deep_targets])
+    results.append(('L2 visual', code, out))
 
-        # L3 W3C + ARIA
-        code, out = sh(['node', 'tools/deep/html.mjs', *lesson_targets])
-        results.append(('L3 W3C/a11y', code, out))
+    # L3 W3C + ARIA
+    code, out = sh(['node', 'tools/deep/html.mjs', *deep_targets])
+    results.append(('L3 W3C/a11y', code, out))
 
-        # L5 semantic extraction (Jev batch prep; full verify via MCP/nightly)
-        code, out = sh(['python3', 'tools/deep/claims.py', *lesson_targets])
-        results.append(('L5 semantic', code, out))
+    # L5 semantic extraction (Jev batch prep; full verify via MCP/nightly)
+    code, out = sh(['python3', 'tools/deep/claims.py', *deep_targets])
+    results.append(('L5 semantic', code, out))
 
     failed = []
     for name, code, out in results:

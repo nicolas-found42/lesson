@@ -237,7 +237,7 @@ def check_lesson_file(
     if parser.buttons_without_type > 0:
         warnings.append(f'Found {parser.buttons_without_type} <button> tags without explicit type=""')
 
-    is_lesson_page = filename != 'index.html' and os.path.sep + 'lessons' + os.path.sep in path
+    is_lesson_page = filename != 'index.html' and '/lessons/' in '/' + path.replace(os.sep, '/')
 
     # Core required components (lesson pages only)
     if is_lesson_page:
