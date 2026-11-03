@@ -1,5 +1,7 @@
 # Building Apps with a Coding Agent
 
+**Live course:** <https://nicolas-found42.github.io/lesson/> — open it in a browser; no install required.
+
 A comprehensive, zero-jargon curriculum designed to teach a complete non-programmer ("any general user") how to take an idea and ship a working, public web application by directing modern AI coding agents—without getting lost, stalled, or letting agents run wild.
 
 ---
@@ -106,7 +108,7 @@ The hook is **report-only** by default so concurrent authoring never deadlocks. 
 
 ### Deployment
 
-`.github/workflows/deploy.yml` gates the push (`index.html` valid, no links to missing files) and publishes. Source is set to "GitHub Actions" for this repository.
+`.github/workflows/deploy.yml` gates the push (`index.html` valid, no links to missing files) and publishes. Source is set to "GitHub Actions" for this repository. The published course lives at <https://nicolas-found42.github.io/lesson/>.
 
 ---
 
@@ -125,6 +127,8 @@ Every lesson is published as a standalone HTML file adhering to strict pedagogic
 ---
 
 ## 🚀 Getting Started
+
+The published course is the fastest route: <https://nicolas-found42.github.io/lesson/>. To run it from source:
 
 1. Clone or open this repository locally.
 2. Navigate to `lessons/` in your file browser or terminal.
