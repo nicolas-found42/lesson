@@ -37,7 +37,7 @@
 
 <h2>Reduced motion: respect the system setting</h2>
 <p>Operating systems have a switch that asks every app to calm its animations. The reason is physical: <q>animations such as scaling or panning large objects can be vestibular motion triggers</q> — they can genuinely make people dizzy or sick.<sup class="cite"><a href="#src-mdn">[2]</a></sup> On a Mac, look under System Settings, Accessibility, then <em>Reduce motion</em>. Every major platform has an equivalent.<sup class="cite"><a href="#src-mdn">[2]</a></sup></p>
-<p>A web page can honour that request with one CSS media feature, <code>prefers-reduced-motion</code>. MDN says it detects <q>if a user has enabled a setting on their device to minimize the amount of non-essential motion,</q> and a page that honors it <q>removes, reduces, or replaces motion-based animations</q>.<sup class="cite"><a href="#src-mdn">[2]</a></sup> Note the shape: the user sets one switch on their device, and every well-built page responds. Your job is to make sure your page is well-built.</p>
+<p>A web page can honour that request with one CSS media feature, <code>prefers-reduced-motion</code>. MDN says it detects <q>if a user has enabled a setting on their device to minimize the amount of non-essential motion,</q> and a page that honours it <q>removes, reduces, or replaces motion-based animations</q>.<sup class="cite"><a href="#src-mdn">[2]</a></sup> Note the shape: the user sets one switch on their device, and every well-built page responds. Your job is to make sure your page is well-built.</p>
 <div class="compare">
   <div class="bad">
     <span class="label">What the agent ships by default</span>
