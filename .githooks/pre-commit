@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
-# .githooks/pre-commit — Fast pre-commit hook (<1 second)
-# Runs Tier 1 Fast Quality Gate on staged HTML/Markdown lessons without third-party dependencies.
+# .githooks/pre-commit — runs all six quality layers locally.
+#
+# Layers: L1 syntax/DOM · L2 visual · L3 W3C/a11y · L4 pedagogy ·
+#         L5 semantic provenance · L6 graph/privacy.
+#
+# Default posture is report-only so concurrent authoring never deadlocks.
+# Set CHECK_LESSONS_STRICT=1 to make findings block the commit.
 
+set -o pipefail
 
-# Collect staged HTML and Markdown files
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -- 'lessons/*.html' 'index.html' '*.md' || true)
+STAGED_HTML=$(git diff --cached --name-only --diff-filter=ACM -- 'lessons/*.html' 'index.html' || true)
 
-if [ -n "$STAGED_FILES" ]; then
-    echo "Running Tier 1 Quality Gate on staged files..."
-    if [ "${CHECK_LESSONS_STRICT:-0}" = "1" ]; then
-        python3 -I tools/check_lessons.py $STAGED_FILES
-    else
-        # Report-only mode during concurrent authoring rollout: print findings without failing commit
-        python3 -I tools/check_lessons.py $STAGED_FILES || echo "[REPORT ONLY] Quality gate identified findings above. Set CHECK_LESSONS_STRICT=1 to block commits."
-    fi
-    echo "Pre-commit check completed."
+if [ -z "$STAGED_HTML" ]; then
+    exit 0
 fi
+
+python3 -I tools/run_layers.py --staged
+exit $?

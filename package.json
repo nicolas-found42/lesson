@@ -1,0 +1,17 @@
+{
+  "name": "lesson",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Beginner curriculum for building apps with a coding agent. Local dev tooling only; the published site is plain HTML/CSS/JS.",
+  "scripts": {
+    "layers": "python3 -I tools/run_layers.py",
+    "layers:staged": "python3 -I tools/run_layers.py --staged",
+    "gate": "python3 -I tools/check_lessons.py",
+    "deep:visual": "node tools/deep/visual.mjs --all",
+    "deep:html": "node tools/deep/html.mjs --all",
+    "deep:claims": "python3 tools/deep/claims.py"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.1"
+  }
+}

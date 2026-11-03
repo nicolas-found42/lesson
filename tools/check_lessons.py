@@ -103,7 +103,8 @@ def load_evidence() -> str:
     for pattern in globs:
         for p in glob.glob(pattern, recursive=True):
             try:
-                text_parts.append(open(p, 'r', encoding='utf-8', errors='ignore').read().lower())
+                raw = open(p, 'r', encoding='utf-8', errors='ignore').read().lower()
+                text_parts.append(re.sub(r'\s+', ' ', raw))
             except Exception:
                 pass
     return '\n'.join(text_parts)
@@ -236,23 +237,27 @@ def check_lesson_file(
     if parser.buttons_without_type > 0:
         warnings.append(f'Found {parser.buttons_without_type} <button> tags without explicit type=""')
 
-    # Core required components
-    if not parser.has_lesson_head: errors.append('Missing <header class="lesson-head">')
-    if not parser.has_lesson_foot: errors.append('Missing <footer class="lesson-foot">')
-    if not parser.has_source_box: errors.append('Missing <div class="source-box">')
-    if not parser.has_ask: errors.append('Missing <div class="ask">')
-    if not parser.has_meta: errors.append('Missing <div class="meta">')
+    is_lesson_page = filename != 'index.html' and os.path.sep + 'lessons' + os.path.sep in path
+
+    # Core required components (lesson pages only)
+    if is_lesson_page:
+        if not parser.has_lesson_head: errors.append('Missing <header class="lesson-head">')
+        if not parser.has_lesson_foot: errors.append('Missing <footer class="lesson-foot">')
+        if not parser.has_source_box: errors.append('Missing <div class="source-box">')
+        if not parser.has_ask: errors.append('Missing <div class="ask">')
+        if not parser.has_meta: errors.append('Missing <div class="meta">')
 
     # 3. Assets links
     if 'assets/lesson.css' not in content:
         errors.append('Missing link to assets/lesson.css')
-    if 'assets/lesson.js' not in content:
+    if is_lesson_page and 'assets/lesson.js' not in content:
         errors.append('Missing script tag for assets/lesson.js')
 
-    # 4. Interactive Components
-    has_interactive = bool(re.search(r'class="(quiz|doit|order|recall)', content))
-    if not has_interactive:
-        errors.append('No interactive component found (.quiz, .doit, .order, or .recall)')
+    # 4. Interactive Components (lesson pages only)
+    if is_lesson_page:
+        has_interactive = bool(re.search(r'class="(quiz|doit|order|recall)', content))
+        if not has_interactive:
+            errors.append('No interactive component found (.quiz, .doit, .order, or .recall)')
 
     # 5. Quiz Fairness Checks
     quiz_starts = [m.start() for m in re.finditer(r'<div\s+class="quiz"[^>]*data-correct="(\d+)"', content)]
@@ -362,7 +367,86 @@ def check_lesson_file(
     if curriculum and filename not in curriculum and filename != 'index.html':
         warnings.append(f'Filename "{filename}" is not registered in curriculum.json')
 
+    # 9. Layer 4 — Pedagogy: prose budget, banned intensifiers, readability
+    prose = extract_prose(content)
+    word_count = len(re.findall(r"[A-Za-z0-9'][A-Za-z0-9'-]*", prose))
+    if filename != 'index.html' and word_count:
+        if word_count < 900 or word_count > 1500:
+            warnings.append(f'Prose budget {word_count} words outside spec 900-1500')
+
+    for term in ('simply', 'obviously', 'just'):
+        hits = len(re.findall(rf'\b{term}\b', prose, re.I))
+        if hits:
+            warnings.append(f'Banned intensifier "{term}" used {hits}x outside quotes/code')
+
+    if word_count >= 100:
+        grade = flesch_kincaid_grade(prose)
+        if grade > 8.5:
+            warnings.append(f'Readability FK grade {grade:.1f} above 8.5 target')
+
+    # 10. Layer 5 — Semantic provenance: every <q> must exist in saved evidence
+    if evidence_text:
+        for m in re.finditer(r'<q>(.*?)</q>', content, re.S):
+            raw_q = re.sub(r'<[^>]+>', '', m.group(1))
+            norm_q = re.sub(r'\s+', ' ', raw_q).strip().strip('\u201c\u201d"\'')
+            norm_q = norm_q.rstrip('.,;:!?')
+            if len(norm_q) >= 8 and norm_q.lower() not in evidence_text:
+                warnings.append(f'Quote not found in saved evidence: "{norm_q[:60]}"')
+
     return errors, warnings
+
+
+def extract_prose(content: str) -> str:
+    """Returns prose text only: no chrome, code, or interactive components."""
+    text = re.sub(r'<pre\b.*?</pre>', ' ', content, flags=re.S | re.I)
+    text = re.sub(r'<code\b.*?</code>', ' ', text, flags=re.S | re.I)
+    text = re.sub(r'<script\b.*?</script>', ' ', text, flags=re.S | re.I)
+    text = re.sub(r'<style\b.*?</style>', ' ', text, flags=re.S | re.I)
+    text = re.sub(r'<nav\b.*?</nav>', ' ', text, flags=re.S | re.I)
+    text = re.sub(r'<header\b.*?</header>', ' ', text, flags=re.S | re.I)
+    text = re.sub(r'<footer\b.*?</footer>', ' ', text, flags=re.S | re.I)
+    text = re.sub(r'<div class="(?:quiz|recall|doit|order|transcript|prompt|agent-tabs|source-box|ask)"[^>]*>.*?</div>',
+                  ' ', text, flags=re.S | re.I)
+    text = re.sub(r'<figure\b.*?</figure>', ' ', text, flags=re.S | re.I)
+    text = re.sub(r'<[^>]+>', ' ', text)
+    return html.unescape(text)
+
+
+def count_syllables(word: str) -> int:
+    word = word.lower()
+    word = re.sub(r'[^a-z]', '', word)
+    if not word:
+        return 0
+    groups = re.findall(r'[aeiouy]+', word)
+    n = len(groups)
+    if word.endswith('e') and n > 1 and not word.endswith(('le', 'ee')):
+        n -= 1
+    return max(1, n)
+
+
+def flesch_kincaid_grade(text: str) -> float:
+    sentences = max(1, len(re.findall(r'[.!?]+', text)) or text.count('\n') + 1)
+    words = re.findall(r"[A-Za-z][A-Za-z'-]*", text)
+    if not words:
+        return 0.0
+    syllables = sum(count_syllables(w) for w in words)
+    return 0.39 * (len(words) / sentences) + 11.8 * (syllables / len(words)) - 15.59
+
+def check_index_sync(lesson_files: list[str]) -> list[str]:
+    """Layer 6: every lesson file must be reachable from index.html."""
+    index_path = os.path.join(ROOT, 'index.html')
+    if not os.path.isfile(index_path):
+        return ['index.html missing; cannot verify lesson reachability']
+    try:
+        index_src = open(index_path, encoding='utf-8').read()
+    except OSError:
+        return ['index.html unreadable; cannot verify lesson reachability']
+    linked = {os.path.basename(h) for h in re.findall(r'href="lessons/([^"#]+\.html)', index_src)}
+    missing = [os.path.basename(f) for f in lesson_files if os.path.basename(f) not in linked]
+    if not missing:
+        return []
+    shown = ', '.join(missing[:6]) + (f' (+{len(missing) - 6} more)' if len(missing) > 6 else '')
+    return [f'{len(missing)} lesson(s) not linked from index.html: {shown}']
 
 # ---------------------------------------------------------------------------
 # CLI Entrypoint
@@ -372,6 +456,15 @@ def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
     strict_links = '--strict-links' in sys.argv
     warn_as_error = '--strict' in sys.argv
+
+    if '--index-only' in sys.argv:
+        all_lessons = sorted(glob.glob(os.path.join(ROOT, 'lessons', '*.html')))
+        findings = check_index_sync(all_lessons)
+        for w in findings:
+            print(f'[L6] {w}')
+        if not findings:
+            print(f'[L6] index.html links all {len(all_lessons)} lessons.')
+        return 1 if findings else 0
 
     curriculum = load_curriculum()
     private_terms = load_private_terms()
@@ -401,6 +494,13 @@ def main() -> int:
     total_errors = 0
     total_warnings = 0
     failed_files = 0
+
+    # Layer 6 — Graph integrity: every lesson must be linked from index.html (corpus mode only)
+    if not args:
+        index_warnings = check_index_sync(files)
+        for w in index_warnings:
+            print(f'[L6] {w}')
+        total_warnings += len(index_warnings)
 
     for f in files:
         errs, warns = check_lesson_file(

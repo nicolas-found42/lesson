@@ -1,3 +1,6 @@
 # Private audit notes, scratchpads, and background worker state
 .scratch/
 .DS_Store
+
+# Local tooling dependencies (Playwright for the visual gate)
+node_modules/

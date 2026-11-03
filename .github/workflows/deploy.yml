@@ -1,0 +1,64 @@
+name: Deploy site
+
+# Only the checks required to publish a working site run here.
+# The full six-layer quality flow runs locally on every commit (.githooks/pre-commit).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy-gate:
+    name: Deploy gate (structure only)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify published structure
+        run: |
+          set -e
+          test -f index.html || { echo "index.html missing"; exit 1; }
+          test -d lessons || { echo "lessons/ missing"; exit 1; }
+          test -d assets || { echo "assets/ missing"; exit 1; }
+          # Blocks on structural errors and on links to files that do not exist.
+          python3 -I tools/check_lessons.py index.html --strict-links
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: deploy-gate
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble publishable site
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp -r lessons assets reference _site/ 2>/dev/null || true
+          cp curriculum.json _site/ 2>/dev/null || true
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
