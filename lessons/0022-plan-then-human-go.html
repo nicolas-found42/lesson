@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan, then a human "go"</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 1 · Telling the agent what you want · Lesson 1.7</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.7 · First-ship path ★</p>
+  <h1>Plan, then a human "go"</h1>
+  <p class="lede">A plan is words. An edit is your files changed. Keeping those two apart, with you in between, is the cheapest safety net you will ever own.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0019-interview.html">1.4 The interview</a></span><span>Win: you can read a plan and decide when editing starts</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>By now you have answered the agent's questions and you hold a set of decisions. The next thing the agent wants to do is change your project. That is the moment where one cheap check saves an afternoon: ask what it is going to do, read the answer, and only then let it work. A plan you have read costs two minutes. Unpicking a build you did not expect costs far more, and it happens while you are not looking.</p>
+
+<h2>A plan is not an edit</h2>
+<p>A <strong>plan</strong> is a proposal written in words: the steps the agent intends to take, the files it expects to touch, and how it will know the result worked. It changes nothing on disk. An <strong>edit</strong> is a tool call that rewrites a file. The distinction is not philosophical. It is the difference between reading a menu and eating the meal.</p>
+<p>All three agents can hold at that line. Claude Code's plan mode <q>tells Claude to research and propose changes without making them</q>, and <q>edits stay blocked until you approve the plan</q>.<sup class="cite"><a href="#src-cc-pm">[1]</a></sup> Codex documents the same move as a command whose purpose is to <q>propose an execution plan before implementation work starts</q>.<sup class="cite"><a href="#src-cx-cmd">[2]</a></sup> In omp, once planning starts, <q>the next turn explores and drafts rather than implements</q>.<sup class="cite"><a href="#src-omp-plan">[3]</a></sup> The names differ; the shape is identical.</p>
+
+<p>You can also get the same effect without any special mode, by asking for a plan and saying "do not edit anything yet". That works in every version of every tool, including ones released after this course was written. The modes exist to make the pause harder to lose by accident, not because the pause needs machinery.</p>
+
+<div class="callout">
+  <span class="label">The two gates</span>
+  <p>Gate one was the interview: decisions in words. Gate two is the plan: actions in words. Both happen before your files change. Nothing in an interview answer authorises a build, and nothing in a plan authorises an edit until you say go.</p>
+</div>
+
+<h2>What a plan is for</h2>
+<p>You are not approving the agent's competence; you are checking four things you can actually judge without reading code.</p>
+<ul>
+  <li><strong>Scope.</strong> Does the list of steps match what you asked for, or has it quietly grown a second feature? Scope creep is easiest to catch here, in a sentence, before it exists.</li>
+  <li><strong>Order.</strong> Which step comes first, and what must be true before the risky one? If step 4 deletes data, you want to see step 4 coming.</li>
+  <li><strong>Proof.</strong> How will the agent show it worked? "Run the site and open the page" is a check. "It should look better" is not.</li>
+  <li><strong>Blast radius.</strong> Which parts of the project does it expect to touch, and which does it promise to leave alone?</li>
+</ul>
+<p>A plan that answers those four in half a page is good enough. A plan that is a page of confident prose with no file names and no check is a mood, not a plan.</p>
+
+<div class="compare">
+  <div class="bad">
+    <span class="label">Reads like progress, decides nothing</span>
+    <p>"I'll improve the gallery page, clean up the styling, and make sure everything works nicely. Then I'll verify and finish up."</p>
+    <p>No files, no order, no check, no boundary. You cannot disagree with any sentence in it, which means you cannot approve it either.</p>
+  </div>
+  <div class="good">
+    <span class="label">Same task, readable plan</span>
+    <p>"1. Read the gallery page and the stylesheet. 2. Change only the caption layout in the gallery template. 3. Leave the image sizing and the data files alone. 4. Start the site, open it, and take a screenshot at phone width. 5. Stop before publishing."</p>
+    <p>Every line can be checked against what you asked. You can strike line 2, add a line, or refuse the whole thing without a single file having moved.</p>
+  </div>
+</div>
+
+<h2>The go is a decision, not a formality</h2>
+<p>When the plan arrives, you have three real options, and they are not "yes" or "no".</p>
+<ol>
+  <li><strong>Go.</strong> The plan matches your intent and names a check you believe in. Say so in one line.</li>
+  <li><strong>Amend, then go.</strong> Most of it is right; one line is wrong. Say which line and what it should say instead, inside the same message. A tiny correction inside an approval keeps your control without another round trip.</li>
+  <li><strong>Keep planning.</strong> The plan solved a different problem, or the order is dangerous. Say what is wrong with the thinking, not with the wording.</li>
+</ol>
+<p>The second option is the one beginners miss. You do not have to choose between "accept everything" and "start over". A single sentence — "yes, but leave the header alone" — is a complete instruction, and the agent will fold it into the plan before it starts.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to make a small data-explorer app easier for newcomers. After a long interview the agent wrote a five-step plan and asked whether it captured the shared understanding. The user read it and answered with one word. Work began. Much later, mid-build, a second instruction arrived about how dragged items should settle; the agent took it as the next step rather than a restart, because the plan had made the current step visible enough to slot a change into.</p>
+</div>
+
+<p>In another session the agent finished planning and asked for confirmation before touching anything, even though the user had already said "implement all of it". That felt like friction for a moment. It was the gate doing its job: the plan was the last cheap place to notice a wrong assumption, and the agent was not allowed to skip it on its own.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the four things you check in a plan, and explain the difference between a plan and an edit in one sentence.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Scope, order, proof, and blast radius. A plan is a written proposal that changes nothing; an edit is a tool call that actually rewrites your files. The gate sits between them, and only you can open it.</p></div>
+</div>
+
+<h2>Asking for a plan</h2>
+<p>The request is a plain prompt and needs no special vocabulary. What makes it work is the stop line at the end: without it, many agents will produce a plan and then, in the same turn, start implementing it.</p>
+
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Before you change anything, write me a plan.
+
+List, in order: the steps you will take, the files you expect to touch,
+what you will leave alone, and how you will check that the result works.
+Keep it under half a page. Do not edit, create or delete any file yet.
+
+Stop after the plan and wait for my explicit go.
+
+If something in my request is ambiguous, put it in a short "open
+questions" line at the end of the plan instead of guessing.</pre>
+</div>
+
+<p>Then read it. If a step is missing its check, ask for the check rather than approving and hoping. If two steps could run in either order, ask which one is riskier and why. These are questions about the plan, so they cost nothing but a sentence.</p>
+
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Plan mode is a permission mode: press <kbd>Shift</kbd>+<kbd>Tab</kbd> until the status bar reads <code>⏸ plan mode on</code>, or start with <code>claude --permission-mode plan</code>.<sup class="cite"><a href="#src-cc-pm">[1]</a></sup> When the plan is ready you choose how to proceed. Pick <em>Yes, manually approve edits</em> so you keep reviewing each change; the other option hands editing to a mode that no longer asks. <kbd>Ctrl</kbd>+<kbd>G</kbd> opens the plan in your text editor if you would rather rewrite it directly.<sup class="cite"><a href="#src-cc-pm">[1]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Type <code>/plan</code> and press Enter to switch the active chat into plan mode; you may add the request after it on the same line.<sup class="cite"><a href="#src-cx-cmd">[2]</a></sup> The command is unavailable while Codex is already working, so use it before the turn that would start editing. Your approval settings from lesson 0.6 are untouched by planning.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>Type <code>/plan</code> with the request, or on its own and then describe the task; the default chord is <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>.<sup class="cite"><a href="#src-omp-plan">[3]</a></sup> The draft opens in a review screen where you can annotate sections or delete them, and <code>/plan-review</code> reopens the latest draft. Approval starts implementation immediately, and <em>Save and quit</em> writes the plan to a file and executes nothing.<sup class="cite"><a href="#src-omp-plan">[3]</a></sup></p>
+  </div>
+</div>
+<span class="sidenote">Planning costs one extra model turn and some context. For a one-line edit you can check by eye, skipping the plan is reasonable; the gate matters for anything you would not want to undo by hand.</span>
+
+<h2>What approval really starts</h2>
+<p>Saying go is not a promise that the plan will be followed exactly. It is permission to begin, and the agent may discover mid-way that step 2 is impossible. That is normal, and it is why a plan is a short document rather than a contract. What you gain is that the first discovery happens in front of you, with a sentence you can react to, instead of silently inside a large change.</p>
+<p>Two habits keep the gate honest. First, ask for a checkpoint after the first step if the change touches anything you cannot easily redo. Second, when the work ends, compare what happened with the plan: which steps ran, which changed, what evidence exists. That comparison is the beginning of verification, which Unit 2 covers properly.</p>
+
+<div class="doit">
+  <span class="label">Do it now: get a plan and hold the gate</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your project folder and start your agent with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Paste the prompt above for one small change you actually want.</label></li>
+    <li><label><input type="checkbox"> Read the plan and mark the four things: scope, order, proof, blast radius. Note the weakest one.</label></li>
+    <li><label><input type="checkbox"> Reply with one amendment before you approve: "yes, but leave X alone" or "add a check for Y".</label></li>
+    <li><label><input type="checkbox"> Only then say go, and watch the first tool call to confirm it matches step one.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see a numbered plan naming real files, then a second version of it containing your amendment, and only after your go should a file change appear. If the agent starts editing before you answered, stop it, ask it to revert anything it touched, and repeat the last line of the prompt. If the plan has no check at all, that is the amendment to send.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">The agent is in a planning mode. What may it do to your project?</p>
+  <button class="opt" type="button">It reads files and proposes steps, no edits.</button>
+  <button class="opt" type="button">It edits the files and explains each change.</button>
+  <button class="opt" type="button">It never reads files before it starts editing.</button>
+  <button class="opt" type="button">It opens the browser and clicks through pages.</button>
+  <div class="why"><p>Planning is for gathering context and writing a proposal. Edits wait for your approval; that gap is the whole point of the mode.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">The plan is good except that it also restyles your header, which you did not ask for. Best reply?</p>
+  <button class="opt" type="button">Say yes, then fix the header after building.</button>
+  <button class="opt" type="button">Cancel the session and start another one now.</button>
+  <button class="opt" type="button">Accept the plan and trust it looks right.</button>
+  <button class="opt" type="button">Keep planning: only the logo, leave the rest.</button>
+  <div class="why"><p>An amendment inside the approval fixes one line without discarding the plan. Correcting scope before the edit is far cheaper than after.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">When can you reasonably skip the plan and let the agent edit straight away?</p>
+  <button class="opt" type="button">When the folder has never once been opened before.</button>
+  <button class="opt" type="button">When the edit is tiny and obvious on sight.</button>
+  <button class="opt" type="button">When the agent claims that the tests are passing.</button>
+  <button class="opt" type="button">When another agent has already read all the code.</button>
+  <div class="why"><p>Planning costs a turn and some context. For a change you can fully check by eye, ordinary mode is faster; anything larger deserves the gate.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a> — read the section "Analyze before you edit with plan mode". It is the clearest description of the gate from any vendor, including the three approval choices and what each one does to your editing rights afterwards.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Unsure whether a plan is good enough? Paste it here and ask: <em>"What is this plan not saying, and which step would you make it prove?"</em> A plan is a text you are allowed to argue with.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-cc-pm">Anthropic, <a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a>, "Analyze before you edit with plan mode". Retrieved 2026-11-02.</li>
+  <li id="src-cx-cmd">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Developer commands (Codex CLI)</a>, "Switch to plan mode with <code>/plan</code>". Retrieved 2026-11-02.</li>
+  <li id="src-omp-plan">Stencil Labs, <a href="https://omp.sh/docs/plan">Plan mode</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-cc-cw">Anthropic, <a href="https://code.claude.com/docs/en/common-workflows">Common workflows</a>, "Plan before editing". Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> ask for a written plan, check its scope, order, proof and blast radius, amend it in one line, and decide yourself when editing begins.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns (the plan gate)</a> · <a href="../reference/agent-loop.html">The agent loop</a></p>
+  <div class="pager"><span>Next: 1.8 A reference as a spec — <a href="0023-reference-as-spec.html">continue</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

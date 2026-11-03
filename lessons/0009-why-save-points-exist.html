@@ -25,7 +25,7 @@
 <p>The fallback most beginners use is asking the agent to undo. That depends on the agent's account of what it changed, and an agent that misread a file will misread its own summary too. A save point does not: it lives in the folder, in a hidden subfolder, and does not care what the agent believes.</p>
 
 <h2>What a commit actually is</h2>
-<p>A <span class="term" title="A recorded snapshot of your project's tracked files, with a message, kept in the project's history.">commit</span> is a recorded snapshot of your project's files, taken at one moment, with a short message attached. Pro Git describes the mechanism plainly: <q>Git basically takes a picture of what all your files look like at that moment and stores a reference to that snapshot.</q><sup class="cite"><a href="#src-g1">[1]</a></sup> GitHub's own quickstart puts the same idea in one sentence: <q>A commit is like a snapshot of all the files in your project at a particular point in time.</q><sup class="cite"><a href="#src-g4">[2]</a></sup></p>
+<p>A <span class="term" title="A recorded snapshot of the files the project is keeping, with a message, stored in the project's history.">commit</span> is a recorded snapshot of your project's files, taken at one moment, with a short message attached. Pro Git describes the mechanism plainly: <q>Git basically takes a picture of what all your files look like at that moment and stores a reference to that snapshot.</q><sup class="cite"><a href="#src-g1">[1]</a></sup> GitHub's own quickstart puts the same idea in one sentence: <q>A commit is like a snapshot of all the files in your project at a particular point in time.</q><sup class="cite"><a href="#src-g4">[2]</a></sup></p>
 <p>Three things go into every commit:</p>
 <ul>
   <li><strong>The state of the files.</strong> Not just the lines you changed — the whole picture of every file the project is already keeping track of, at that instant. Git is efficient about it: <q>if files have not changed, Git doesn’t store the file again, just a link to the previous identical file it has already stored.</q><sup class="cite"><a href="#src-g1">[1]</a></sup></li>
@@ -54,7 +54,7 @@ fef94e8 Add a first page</code></pre>
   <p>Without scrolling up: name the three things that go into a commit, and explain why "the agent says it undid the change" is weaker than a save point.</p>
   <textarea aria-label="Your answer"></textarea>
   <button class="btn reveal" type="button">Check my answer</button>
-  <div class="answer"><p>A commit holds the <strong>state of every tracked file</strong>, a <strong>message</strong>, and a <strong>place in a chain</strong> of earlier commits. The agent's account lives only in the session and depends on its own memory; a commit lives in the folder, is dated, and can be inspected or returned to without asking the agent anything.</p></div>
+  <div class="answer"><p>A commit holds the <strong>state of every file the project keeps</strong>, a <strong>message</strong>, and a <strong>place in a chain</strong> of earlier commits. The agent's account lives only in the session and depends on its own memory; a commit lives in the folder, is dated, and can be inspected or returned to without asking the agent anything.</p></div>
 </div>
 
 <h2>The moment you choose matters</h2>
@@ -82,7 +82,7 @@ fef94e8 Add a first page</code></pre>
 <div class="doit">
   <span class="label">Do it now — about five minutes</span>
   <ol>
-    <li><label><input type="checkbox"> In your project folder, start your agent and ask it to check whether the folder is already a repository. Ask it to show the command it used and the raw output.</label></li>
+    <li><label><input type="checkbox"> In your project folder, start your agent and ask it to check whether the folder is already a <span class="term" title="A project folder whose past states are stored in a hidden subfolder by version control.">repository</span>. Ask it to show the command it used and the raw output.</label></li>
     <li><label><input type="checkbox"> If the answer is no, ask it to set one up and make a first commit of the current files without changing any of them. Approve only the git commands it shows you.</label></li>
     <li><label><input type="checkbox"> Ask: "Show me the last five commits, one line each, with the short id first."</label></li>
     <li><label><input type="checkbox"> Write one sentence: what would be lost if this folder's history disappeared tonight?</label></li>
@@ -102,7 +102,7 @@ fef94e8 Add a first page</code></pre>
   <button class="opt" type="button">A cloud backup copy stored far away</button>
   <button class="opt" type="button">A lock that freezes every file forever</button>
   <button class="opt" type="button">A temporary file the agent deletes later</button>
-  <div class="why"><p>A commit records the current state inside the project's own history. It is not a cloud backup, and later commits can follow it; the old snapshot simply stays available.</p></div>
+  <div class="why"><p>A commit records the current state inside the project's own history. It is not a cloud backup, and later commits can follow it; the old snapshot stays available either way.</p></div>
 </div>
 <div class="quiz" data-correct="2">
   <span class="label">Question 2 of 3</span>

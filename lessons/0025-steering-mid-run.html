@@ -49,7 +49,7 @@
   <span class="label">A real pattern, anonymized</span>
   <p>A user set an agent to test a small desktop app by launching it and driving its menus with scripted keystrokes. Each run took twenty minutes, and the first screenshot was only taken at minute fourteen. Two minutes into a run, the user stopped it, looked at the frames that existed, and said in effect: stop now, check what you have, then start again. The restart had frames every twenty seconds, so a bad run showed up in the first minute instead of the fourteenth. The interruption cost two minutes. Watching the full run would have cost twenty.</p>
 </div>
-<p>Notice what the interrupt did <em>not</em> do. It did not undo the morning's work, rewrite the script, or end the session. It ended one action. Everything already written to disk stayed written. That is the promise that makes interrupting safe enough to use early, and early is when it is cheapest.</p>
+<p>Notice what the interrupt did <em>not</em> do: it did not undo the morning's work or end the session. It ended one action, and everything already written to disk stayed written. That is what makes interrupting safe enough to use early, which is when it is cheapest.</p>
 
 <h2>The state question</h2>
 <p>Before you decide whether to interrupt, you need to know what is actually happening. Do not guess from the last line on screen. Ask, in words:</p>
@@ -76,7 +76,7 @@ Answer in four parts:
 </div>
 
 <h2>The same run, three times</h2>
-<p>The three moves are easiest to see side by side. Suppose an agent is halfway through adding a contact form to your page and is about to install a package you do not want.</p>
+<p>Side by side, with an agent halfway through adding a contact form and about to install a package you did not ask for:</p>
 <div class="compare">
   <div class="bad"><span class="label">Restart</span><p>"Stop. Forget all that. Here is the whole task again, and this time do not install anything." The agent starts from zero, re-reads every file, and you wait again.</p></div>
   <div class="good"><span class="label">Steer</span><p>Press Esc. Then: "Do not add any packages. Use a plain HTML form that posts to the address I gave you. Then continue." The files it already wrote are still there, and it picks up from them.</p></div>
@@ -94,8 +94,8 @@ Answer in four parts:
     <p><strong>Queue:</strong> type and press <code>Enter</code> while it works. <strong>Interrupt:</strong> <code>Esc</code> cancels the running call and keeps earlier work. <strong>Send queued messages now:</strong> <code>Ctrl+Enter</code> or <code>Ctrl+X Ctrl+S</code>.<sup class="cite"><a href="#src-a1">[1]</a></sup> <strong>Continue:</strong> say <code>continue</code>.<sup class="cite"><a href="#src-a3">[3]</a></sup></p>
   </div>
   <div role="tabpanel" data-panel="codex" hidden>
-    <p><strong>Steer:</strong> <q>Press <code>Enter</code> while Codex is working to inject new instructions into the current turn.</q> <strong>Queue:</strong> <code>Tab</code> queues a follow-up <q>for the next turn</q>.<sup class="cite"><a href="#src-b2">[6]</a></sup> From another terminal, <code>codex queue --thread &lt;id&gt; --message "…"</code> does the same by name.</p>
-    <p>OpenAI's CLI page does not document an Esc-to-interrupt key, so do not count on one; it lists <code>Ctrl+C</code> as closing the session.<sup class="cite"><a href="#src-b2">[6]</a></sup> Check your version's shortcut list before relying on a key.</p>
+    <p><strong>Steer:</strong> <q>Press <code>Enter</code> while Codex is working to inject new instructions into the current turn.</q> <strong>Queue:</strong> <code>Tab</code> queues a follow-up <q>for the next turn</q>.<sup class="cite"><a href="#src-b1">[4]</a></sup> From another terminal, <code>codex queue --thread &lt;id&gt; --message "…"</code> does the same by name.</p>
+    <p>OpenAI's CLI page does not document an Esc-to-interrupt key, so do not count on one; it lists <code>Ctrl+C</code> as closing the session.<sup class="cite"><a href="#src-b1">[4]</a></sup> Check your version's shortcut list before relying on a key.</p>
   </div>
   <div role="tabpanel" data-panel="omp" hidden>
     <p><strong>Steer:</strong> <code>Enter</code> sends a steering message to the active turn. <strong>Queue:</strong> <code>Ctrl+Q</code> or <code>Ctrl+Enter</code>. <strong>Interrupt:</strong> <code>Escape</code>. <strong>Continue:</strong> <code>.</code> or <code>c</code>.<sup class="cite"><a href="#src-c1">[5]</a></sup></p>
@@ -174,7 +174,6 @@ Answer in four parts:
   <li id="src-a3">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> (steer the session, continue). Retrieved 2026-11-02.</li>
   <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex CLI commands reference</a> (<code>/status</code>). Retrieved 2026-11-02.</li>
   <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/using">omp: Using omp</a> (steer, queue, stop, continue). Retrieved 2026-11-02. Single-vendor source.</li>
-  <li id="src-b2">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex CLI commands reference</a> (interactive shortcuts). Retrieved 2026-11-02.</li>
   <li id="src-c2">Stencil Labs, <a href="https://omp.sh/docs/keybindings">omp: Keybindings</a> (Escape is focus-sensitive). Retrieved 2026-11-02. Single-vendor source.</li>
 </ol>
 </main>

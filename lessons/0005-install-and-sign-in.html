@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Install and sign in</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 0 · Orientation · Lesson 0.5</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 0 · Lesson 0.5 · First-ship path ★</p>
+  <h1>Install and sign in</h1>
+  <p class="lede">Two one-time jobs stand between you and your first prompt: put the program where your terminal can find it, then prove which account pays for the work. After that, launching is one word.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0004-the-terminal-in-five-commands.html">0.4 The terminal in five commands</a></span><span>Win: you can start your agent from any project folder</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Everything later in this course happens inside an agent session: the first page, the save points, the deploy. If the agent is not installed and signed in, none of it can start. This lesson is the setup gate, and it is the only one you cross once. Treat it as a reference page: run the steps for your agent, keep the page nearby, and come back if a later machine or a reinstall needs the same commands.</p>
+
+<h2>Two different one-time jobs</h2>
+<p><strong>Installing</strong> copies a program onto your computer. <strong>Signing in</strong> tells the company behind that program who you are, so the work can be billed to your account and your settings can follow you. They fail differently, which is why this lesson keeps them apart.</p>
+<p>When you type a command name such as <code>claude</code>, your terminal does not search the whole disk. It looks through a fixed list of folders called the <span class="term" title="The list of folders your terminal searches, in order, when you type a command name.">PATH</span>. An install that finishes but leaves the program outside those folders looks successful and still answers <q>command not found</q>. That single sentence explains most first-day setup confusion.</p>
+
+<div class="callout">
+  <span class="label">The order that avoids trouble</span>
+  <p>Install, open a <em>new</em> terminal window, check the version, then start the agent once to sign in. A new window is what lets the terminal notice a folder that was added to its PATH list.</p>
+</div>
+
+<h2>Step 1: install and check</h2>
+<p>Pick the tab for your agent. Each command below is the vendor's own documented macOS/Linux installer, copied verbatim from the page cited beside it. Run it in a terminal, from any folder. You do not need to be inside a project yet.</p>
+
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Install command by agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <pre><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+    <p>Anthropic labels this the <q>Native Install (Recommended)</q>.<sup class="cite"><a href="#src-ccqs">[1]</a></sup> Homebrew users can run <code>brew install --cask claude-code</code> instead, but Homebrew installs do not update themselves.<sup class="cite"><a href="#src-ccqs">[1]</a></sup> Then check it from a new window:</p>
+    <pre><code>claude --version</code></pre>
+    <p>The docs say: <q>The command prints a version number followed by <code>(Claude Code)</code>.</q><sup class="cite"><a href="#src-ccqs">[1]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <pre><code>curl -fsSL https://chatgpt.com/codex/install.sh | sh</code></pre>
+    <p>OpenAI's documented standalone installer for macOS and Linux; <code>npm install -g @openai/codex</code> and <code>brew install --cask codex</code> are listed as alternatives.<sup class="cite"><a href="#src-cx">[3]</a></sup> Then check it:</p>
+    <pre><code>codex --version</code></pre>
+    <p>You should see a line beginning <code>codex-cli</code> followed by a version number. Open a new window first if the old one says the command is missing.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <pre><code>curl -fsSL https://omp.sh/install | sh</code></pre>
+    <p>omp's own install script. It is a shell script fetched from the project's site, so you are running code the project publishes.<sup class="cite"><a href="#src-ompqs">[4]</a></sup> Then check it:</p>
+    <pre><code>omp --version</code></pre>
+    <p>The quickstart says: <q>If your shell cannot find <code>omp</code>, follow the PATH instruction printed by the installer, then open a new terminal and try again.</q><sup class="cite"><a href="#src-ompqs">[4]</a></sup></p>
+  </div>
+</div>
+
+<h3>If the check prints "command not found"</h3>
+<p>Nothing is broken. The program is on your disk but not in a folder your terminal searches. Anthropic's quickstart names the cause directly: <q>the install directory isn't on your PATH yet</q>.<sup class="cite"><a href="#src-ccqs">[1]</a></sup> Close the terminal window, open a fresh one, and run the check again. If that does not help, the installer usually printed a line telling you which folder to add; copy that line into your shell's startup file as it instructs, then open another new window. Do not retype the install command repeatedly; it will not fix a PATH problem.</p>
+
+<h2>Step 2: sign in</h2>
+<p>Signing in happens the first time you launch the agent, not during the install. Launch it from a project folder so the first session also proves the folder part works. Any folder will do for now; <a href="0003-your-project-is-a-folder.html">0.3</a> explains why the launch folder matters.</p>
+
+<div class="agent-tabs">
+  <div role="tablist" aria-label="First launch by agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Run <code>claude</code> in the folder. <q>Claude Code prompts you to log in on first use.</q><sup class="cite"><a href="#src-ccqs">[1]</a></sup> It opens a browser window; finish there and return to the terminal. Once you are through, <q>your credentials are stored and you won't need to log in again.</q><sup class="cite"><a href="#src-ccqs">[1]</a></sup> To switch accounts later, type <code>/login</code> in a session; to sign out, type <code>/logout</code>.<sup class="cite"><a href="#src-ccauth">[2]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Run <code>codex</code> in the folder. <q>The first time you run Codex, choose Sign in with ChatGPT or another available sign-in method.</q><sup class="cite"><a href="#src-cx">[3]</a></sup> The browser flow completes the sign-in. To remove the stored credential later, <code>codex logout</code> is the documented command.<sup class="cite"><a href="#src-cxhelp">[5]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>Run <code>omp</code> in the folder. <q>The first launch opens a setup wizard.</q><sup class="cite"><a href="#src-ompqs">[4]</a></sup> Keep the <strong>Sign in</strong> tab, choose your provider, press Enter, and finish in the browser. Then choose a default model and accept the remaining appearance prompts. <q>OAuth users can reopen sign-in with <code>/login</code></q>.<sup class="cite"><a href="#src-ompqs">[4]</a></sup></p>
+  </div>
+</div>
+
+<div class="warn">
+  <span class="label">Do not paste credentials into the chat</span>
+  <p>If a sign-in flow asks for a code or an API key, type it into the prompt that asks for it, never into a message to the agent. omp's own security page warns that authorization URLs, callback URLs, device codes and pasted login codes should be treated as secrets until the login finishes.<sup class="cite"><a href="#src-ompsec">[6]</a></sup> The same habit protects you with any tool.</p>
+</div>
+
+<h2>What first launch may also ask</h2>
+<p>Claude Code may also ask about permissions and Codex asks about its sandbox and approval policy during setup. Those questions decide what the agent may do without asking. For now, choose the option that keeps approval prompts on. Lesson <a href="0006-approvals-and-permissions.html">0.6</a> explains each choice; you can change it later without reinstalling.</p>
+
+<h2>A first launch, step by step</h2>
+<p>This is the shape of a typical first run on a Mac, with the small delay that most beginners hit. Treat it as an illustration of the sequence, not a transcript of one recorded session.</p>
+<div class="transcript">
+  <div class="row tool"><span class="who">term</span><span>curl -fsSL https://…/install.sh | bash</span></div>
+  <div class="row tool"><span class="who">out</span><span>installed to /Users/you/.local/bin/claude</span></div>
+  <div class="row tool"><span class="who">term</span><span>claude --version</span></div>
+  <div class="row flag"><span class="who">out</span><span>zsh: command not found: claude</span></div>
+  <div class="row"><span class="who">note">The install worked. This window was opened before the folder existed in PATH.</span></div>
+  <div class="row tool"><span class="who">term</span><span>open a new terminal window, then run the check again</span></div>
+  <div class="row tool"><span class="who">out</span><span>2.1.316 (Claude Code)</span></div>
+  <div class="row tool"><span class="who">term</span><span>cd ~/my-app &amp;&amp; claude</span></div>
+  <div class="row"><span class="who">you</span><span>browser opens, sign in, return to the terminal</span></div>
+  <div class="row"><span class="who">agent</span><span>prompt ready, working folder shown</span></div>
+</div>
+<p>The two lessons in that transcript: a version number is the only proof of install, and a new window is part of the procedure, not a workaround.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the two one-time jobs in this lesson, and which command proves the first one worked?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Install</strong> (put the program where the terminal can find it) and <strong>sign in</strong> (connect it to your account). The check is the version command — <code>claude --version</code>, <code>codex --version</code> or <code>omp --version</code> — run in a new terminal window.</p></div>
+</div>
+
+<h2>Where the credentials live, and how to undo it</h2>
+<p>Signing in stores a credential on your computer so later sessions start without a browser. That is convenient and it is also the reason to sign out on a shared machine.</p>
+<table class="ref">
+  <thead><tr><th>Agent</th><th>Sign out later</th><th>What the docs say about storage</th></tr></thead>
+  <tbody>
+    <tr><td>Claude Code</td><td><code>/logout</code></td><td>Credentials are stored; you <q>won't need to log in again</q>.<sup class="cite"><a href="#src-ccauth">[2]</a></sup></td></tr>
+    <tr><td>Codex</td><td><code>codex logout</code></td><td><q>Remove stored authentication credentials</q>.<sup class="cite"><a href="#src-cxhelp">[5]</a></sup></td></tr>
+    <tr><td>omp</td><td><code>/logout</code></td><td><q>The local database is not encrypted at rest.</q><sup class="cite"><a href="#src-ompsec">[6]</a></sup></td></tr>
+  </tbody>
+</table>
+<p>That last line matters on a shared or borrowed computer: a stored login is only as private as the account you use to log in to that machine.</p>
+
+<div class="doit">
+  <span class="label">Do it now</span>
+  <ol>
+    <li><label><input type="checkbox"> Run the install command for your agent from the tab above.</label></li>
+    <li><label><input type="checkbox"> Open a new terminal window and run the matching <code>--version</code> command.</label></li>
+    <li><label><input type="checkbox"> Make a throwaway folder and go into it: <code>mkdir ~/agent-test &amp;&amp; cd ~/agent-test</code></label></li>
+    <li><label><input type="checkbox"> Start your agent there and complete the browser sign-in.</label></li>
+    <li><label><input type="checkbox"> Ask it one harmless question, such as <em>"Which folder are you working in?"</em>, then leave with <code>/exit</code> (Claude Code, omp) or <code>Ctrl+C</code> twice (Codex).</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see a version number, then a prompt that names your project folder, then an answer that names the same folder. If instead you see <q>command not found</q>, you are in the wrong window or the installer's PATH line has not been applied yet; repeat step 2 in a fresh window before anything else.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">The install command finishes, but the version check says "command not found". What is the likely cause?</p>
+  <button class="opt" type="button">The vendor has withdrawn the download from its server.</button>
+  <button class="opt" type="button">The agent needs an account before it can even install.</button>
+  <button class="opt" type="button">The install folder is missing from the terminal search list.</button>
+  <button class="opt" type="button">The computer needs a full restart before any new program runs.</button>
+  <div class="why"><p>Install and PATH are separate. The program is on disk; the terminal simply has not been told where to look. A new window, and the installer's PATH line, fixes it.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">What does signing in actually do on first launch?</p>
+  <button class="opt" type="button">Links the work to your account and stores a credential locally.</button>
+  <button class="opt" type="button">Uploads your project folder to the vendor before you begin.</button>
+  <button class="opt" type="button">Replaces the install step with a browser-only version.</button>
+  <button class="opt" type="button">Turns off approval prompts so the agent can act freely.</button>
+  <div class="why"><p>Sign-in is about identity and billing, and it saves a credential so later sessions start without a browser. It does not upload your folder or change what the agent may do.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You are about to use an agent on a shared computer. What should you do before leaving?</p>
+  <button class="opt" type="button">Delete the project folder so nobody else can open it.</button>
+  <button class="opt" type="button">Uninstall and reinstall the agent at the next login.</button>
+  <button class="opt" type="button">Change your account password from the same machine.</button>
+  <button class="opt" type="button">Sign out so the stored credential is removed from that machine.</button>
+  <div class="why"><p>The credential sits on the machine between sessions. Signing out removes it; neither reinstalling nor deleting a project does that job.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a> — the shortest official page that covers install, the version check, first launch and sign-in in one place. Read Steps 1 and 2; the rest repeats what this course teaches later.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on an error message? Ask the agent that gave you this course, and paste the message exactly. Try: <em>"My terminal says command not found after install. What should I check, in order?"</em> or <em>"How do I tell which account my agent is signed in to?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-ccqs">Anthropic, <a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a>. Retrieved 2026-11-02.</li>
+  <li id="src-ccauth">Anthropic, <a href="https://code.claude.com/docs/en/authentication">Authentication</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-ompqs">Stencil Labs, <a href="https://omp.sh/docs/quickstart">omp Quickstart</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-cxhelp">OpenAI, <code>codex --help</code>, local command output. Retrieved 2026-11-02.</li>
+  <li id="src-ompsec">Stencil Labs, <a href="https://omp.sh/docs/secrets">Secrets and auth</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> install your agent, prove it with a version check, sign in once, and start a session from any project folder.</p>
+  <p>Quick reference: <a href="../reference/setup.html">Setup reference</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0004-the-terminal-in-five-commands.html">Previous: The terminal in five commands</a> · <a href="0006-approvals-and-permissions.html">Next: Approvals and permissions</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

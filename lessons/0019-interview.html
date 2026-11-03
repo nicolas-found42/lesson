@@ -36,7 +36,7 @@
 <h2>Why every question carries a recommendation</h2>
 <p>A bare question moves the work back to you: now you must invent an answer, in the agent's vocabulary, with no idea which options are cheap and which are expensive. A question with a recommendation does the opposite. The agent has already thought about the trade-off, chosen a side, and told you why in one sentence. Your job shrinks from "design this" to "agree or disagree".</p>
 <p>That matters most when you are not technical. You cannot evaluate "per-user versus per-key rate limits", but you can read "per-user, because your friends each get a fair share" and say yes. The recommendation is not a command and not a promise. It is a proposal with its reasoning attached, which is exactly what a decision needs in order to be checked.</p>
-<span class="sidenote">Recommendations are only as good as the agent's picture of your project. That is why the interview usually comes after a quick look at the folder, not before. Lesson 1.2 covers that first look.</span>
+<span class="sidenote">Recommendations are only as good as the agent's picture of your project. That is why the interview usually comes after a quick look at the folder, not before. Lesson <a href="0017-orient-first.html">1.2</a> covers that first look.</span>
 
 <h2>Answering by number</h2>
 <p>Answer in the same numbering, one line per question. Accepting a recommendation needs one word: <em>yes</em>, <em>your rec</em>, or the number alone. That is not laziness; it keeps the whole exchange inside one screen, so you can still see question 4 while answering question 7. Codex's documentation makes the point that the agent should <q>turn the fuzzy idea into something concrete before writing code</q>.<sup class="cite"><a href="#src-a2">[2]</a></sup> A numbered answer list is what "concrete" looks like in practice.</p>
@@ -56,9 +56,9 @@
 
 <p>Three moves cover almost every interview:</p>
 <ul>
-  <li><strong>Accept:</strong> "your rec", "yes", or just the number.</li>
-  <li><strong>Override:</strong> state the answer you want and, if it matters, the reason. Product intent is yours, not the agent's; lesson 1.6 is about knowing when to do this.</li>
-  <li><strong>Amend inside a yes:</strong> "yes to all, except question 3 — keep the finished date". One batch, one correction. Lesson 1.5 covers that move in detail.</li>
+  <li><strong>Accept:</strong> "your rec", "yes", or the number alone.</li>
+  <li><strong>Override:</strong> state the answer you want and, if it matters, the reason. Product intent is yours, not the agent's; lesson <a href="0021-when-override-recommendation.html">1.6</a> is about knowing when to do this.</li>
+  <li><strong>Amend inside a yes:</strong> "yes to all, except question 3 — keep the finished date". One batch, one correction. Lesson <a href="0020-yes-all.html">1.5</a> covers that move in detail.</li>
 </ul>
 
 <div class="vignette">
@@ -89,7 +89,7 @@ Group them into rounds of at most 6. Stop asking when you could write a
 one-page spec, then show me the spec and wait for my go-ahead.</pre>
 </div>
 
-<p>The cap matters. Without it, an interview can grow past what you are willing to read: one real session produced 26 questions for a request that said "make it less clunky". Lesson 4.11 is about recognising that and cutting it short. The "wait for my go-ahead" line keeps the interview separate from the build; lesson 1.7 explains why that gate is worth keeping.</p>
+<p>The cap matters. Without it, an interview can grow past what you are willing to read: one real session produced 26 questions for a request that said "make it less clunky". Lesson <a href="0065-over-asking.html">4.11</a> is about recognising that and cutting it short. The "wait for my go-ahead" line keeps the interview separate from the build; lesson <a href="0022-plan-then-human-go.html">1.7</a> explains why that gate is worth keeping.</p>
 
 <div class="agent-tabs">
   <div role="tablist" aria-label="Agent">
@@ -128,7 +128,7 @@ one-page spec, then show me the spec and wait for my go-ahead.</pre>
 
 <div class="callout">
   <span class="label">The habit</span>
-  <p>Never answer a question you cannot restate. If a question is unclear, ask for a re-pitch with an example (lesson 1.3) before answering. A guessed answer to an unclear question is worse than no answer, because it looks like a decision.</p>
+  <p>Never answer a question you cannot restate. If a question is unclear, ask for a re-pitch with an example (lesson <a href="0018-ask-word-means.html">1.3</a>) before answering. A guessed answer to an unclear question is worse than no answer, because it looks like a decision.</p>
 </div>
 
 <h2>Check yourself</h2>
@@ -146,7 +146,7 @@ one-page spec, then show me the spec and wait for my go-ahead.</pre>
   <p class="q">A user replies "yes to all" to twelve questions, including one about deleting old entries permanently. What went wrong?</p>
   <button class="opt" type="button">Nothing at all; accepting every default is the fastest path.</button>
   <button class="opt" type="button">The agent should never ask about deleting any stored data.</button>
-  <button class="opt" type="button">Twelve questions is far too few for any real product.</button>
+  <button class="opt" type="button">Twelve questions are far too few for any real product.</button>
   <button class="opt" type="button">A blanket yes accepted a risky default without being read.</button>
   <div class="why"><p>Batch acceptance is fine, but it must be read. The destructive question needed its own answer, or an explicit amendment inside the yes.</p></div>
 </div>

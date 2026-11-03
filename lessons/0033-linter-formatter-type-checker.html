@@ -112,18 +112,18 @@ error: Type checking failed.</code></pre>
   <span class="label">Question 1 of 3</span>
   <p class="q">Your page loads, but a name is passed where a number belongs. Which check is built to catch that before you open the browser?</p>
   <button class="opt" type="button">The type checker, which follows each value into its use.</button>
-  <button class="opt" type="button">The formatter, which reprints each line to one standard.</button>
-  <button class="opt" type="button">The linter, which scans the text for unused names.</button>
-  <button class="opt" type="button">The test runner, which executes every path in order.</button>
+  <button class="opt" type="button">The formatter, which reprints each line to one single standard.</button>
+  <button class="opt" type="button">The linter, which scans the whole code for unused names.</button>
+  <button class="opt" type="button">The test runner, which executes every path in one order.</button>
   <div class="why"><p>Types describe the kind of value each name holds, so a mismatch between a call and a function's declared parameter is exactly what a type checker reports. Formatters change appearance; linters flag patterns; tests only catch what they execute.</p></div>
 </div>
 <div class="quiz" data-correct="2">
   <span class="label">Question 2 of 3</span>
   <p class="q">The formatter reports nothing, the linter is clean, and the page's main button still does nothing. What is the best explanation?</p>
-  <button class="opt" type="button">The rules were too strict for a project of this size.</button>
+  <button class="opt" type="button">Rules were too strict for a codebase of this size.</button>
   <button class="opt" type="button">The agent must have skipped the checks and then lied.</button>
-  <button class="opt" type="button">These checks read code and never ran the page at all.</button>
-  <button class="opt" type="button">The type checker automatically repaired the broken button.</button>
+  <button class="opt" type="button">These checks read code and never ran the page once.</button>
+  <button class="opt" type="button">The checker then fixed the broken page button by itself.</button>
   <div class="why"><p>All three are static: they reason about source text without starting the app. A dead button is a behaviour problem, so it needs a test or a real click to show up.</p></div>
 </div>
 <div class="quiz" data-correct="3">
@@ -132,7 +132,7 @@ error: Type checking failed.</code></pre>
   <button class="opt" type="button">A short summary of which style choices the project uses.</button>
   <button class="opt" type="button">A promise that no rules were disabled during the run.</button>
   <button class="opt" type="button">The name of the linter and its version number only.</button>
-  <button class="opt" type="button">The exact command, its output, and its exit status.</button>
+  <button class="opt" type="button">The exact command, its full output, and its exit status.</button>
   <div class="why"><p>A clean report is a claim until you can see the command that produced it, what it printed, and what it returned. That is the evidence habit from lesson 2.2, applied to checks.</p></div>
 </div>
 <p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
