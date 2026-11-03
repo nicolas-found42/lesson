@@ -80,8 +80,8 @@ def load_private_terms() -> list[str]:
 # ---------------------------------------------------------------------------
 
 def load_curriculum() -> dict[str, dict]:
-    """Loads curriculum manifest from curriculum.json or .scratch/curriculum.json."""
-    for loc in ['curriculum.json', '.scratch/curriculum.json']:
+    """Loads curriculum manifest, preferring authoritative uncommitted .scratch copy if present."""
+    for loc in ['.scratch/curriculum.json', 'curriculum.json']:
         p = os.path.join(ROOT, loc)
         if os.path.isfile(p):
             try:

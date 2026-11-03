@@ -78,13 +78,15 @@ A prioritized **First-Ship Path (marked with ★)** guides learners from zero te
 │   ├── lesson.css        # Minimalist, accessible Tufte-style typography
 │   └── lesson.js         # Interactive tabs, revealable recalls, and quiz scoring
 ├── index.html            # Course home portal and lesson directory
+├── curriculum.json       # Public curriculum graph and lesson sequence
+├── tools/                # Automated verification gates and pre-commit checks
 ├── MISSION.md            # Target learner persona, learning objectives, and core constraints
 ├── NOTES.md              # Author decisions, privacy rules, and pedagogical guidelines
 ├── RESOURCES.md          # Primary source documentation references & URLs
 └── README.md             # Project documentation and navigation guide
 ```
 
-*(Note: `.scratch/` contains the author's local working draft notes, validation scripts, and raw curriculum maps, which are kept uncommitted to preserve private session logs.)*
+*(Note: `.scratch/` contains the author's local working draft notes, validation scripts, and raw curriculum maps with internal audit annotations, which are kept uncommitted to preserve private session logs.)*
 ---
 
 ## 📖 Lesson Design & Standards
