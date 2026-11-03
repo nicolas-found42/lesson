@@ -76,7 +76,10 @@ def main() -> int:
     results: list[tuple[str, int, str]] = []
 
     # L1 + L4 + L5(provenance) + L6(per-file part)
-    code, out = sh(['python3', '-I', 'tools/check_lessons.py', *targets])
+    # Strict mode escalates broken relative links (L6) to errors; structural L1
+    # errors already block.
+    static_flags = ['--strict-links'] if strict else []
+    code, out = sh(['python3', '-I', 'tools/check_lessons.py', *static_flags, *targets])
     results.append(('L1/L4/L5/L6 static', code, out))
 
     # L6 graph: index reachability across the whole corpus

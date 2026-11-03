@@ -99,7 +99,7 @@ Agent-facing instructions live in [`AGENTS.md`](AGENTS.md): install steps, run m
 ```bash
 npm install                          # once: Playwright for the visual layer
 git config core.hooksPath .githooks  # once per clone: enable the commit hook
-CHECK_LESSONS_STRICT=1 git commit    # make findings block instead of report
+CHECK_LESSONS_STRICT=1 git commit    # block on errors instead of reporting
 ```
 
 The hook is **report-only** by default so concurrent authoring never deadlocks. Privacy terms are read at runtime from the uncommitted `.scratch/` workspace and never live in a tracked file.

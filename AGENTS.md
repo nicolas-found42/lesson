@@ -38,7 +38,7 @@ Run modes, by what you touched:
 
 ### Reading findings
 
-- **Report-only is the default**: findings print, exit code stays 0, commits land. Set `CHECK_LESSONS_STRICT=1` to block on findings.
+- **Report-only is the default**: findings print, exit code stays 0, commits land. `CHECK_LESSONS_STRICT=1` makes layer failures block — structural errors and broken relative links. Advisory warnings (prose budget, intensifiers, forward references) stay advisory either way.
 - Fix findings in files you changed. Pre-existing corpus findings — `.sidenote` overflow at 1100px, tab/panel mismatch, lessons not yet linked from `index.html` — belong to the authoring pass in progress.
 - L2/L3 run against lesson targets only; a run over the corpus takes ~16s, a staged subset ~3s.
 
@@ -46,8 +46,8 @@ Run modes, by what you touched:
 
 - **Index sync**: a new lesson lands with its card in `index.html` in the same change; L6 names every unlinked lesson.
 - **Anonymize**: vignettes come from the author's sessions, rewritten without names, paths, repository names, or secrets. The privacy gate loads its term list from uncommitted `.scratch/` at runtime, so committed files never carry the list.
-- **Reference pages**: linking `reference/*.html` before the page exists is a warning, so authoring can proceed; CI blocks only genuinely broken links — a relative path to a file that neither exists nor appears in `curriculum.json`. Check the real set with `python3 -I tools/check_lessons.py index.html --strict-links`.
+- **Links**: `reference/*.html` may be linked before the page exists (warning, never blocking). CI's `--strict-links` gate checks `index.html` only; links inside lessons are verified by your local run alone. Before pushing, `CHECK_LESSONS_STRICT=1 python3 -I tools/run_layers.py --staged` turns a broken link into a blocking error you will see.
 
 ## Deploy contract
 
-`main` deploys by itself: `.github/workflows/deploy.yml` runs a structure gate on `index.html` (files present, valid HTML, links resolve to a real file or a curriculum entry), then publishes `index.html`, `lessons/`, `assets/`, `reference/`, and `curriculum.json`. Deep layers stay local, so a push is the only step after your commit — no manual deploy command.
+`main` deploys by itself: `.github/workflows/deploy.yml` runs a structure gate on `index.html` (files present, valid HTML, its links resolve to a real file or a curriculum entry), then publishes `index.html`, `lessons/`, `assets/`, `reference/`, and `curriculum.json`. Deep layers stay local, so a push is the only step after your commit — no manual deploy command.
