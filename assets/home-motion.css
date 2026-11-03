@@ -1,0 +1,37 @@
+/* Home page motion — the one effect kept from the SVGator survey (see
+   learning-records/0004-animation-selection.md).
+
+   A unit's disclosure unfolds over ~0.2s instead of snapping, so a beginner
+   can see that the row they clicked opened rather than replaced. There is no
+   idle or looping animation, and only the row a reader opened by hand carries
+   the transition: a rail jump, the expand-all button and the filter all change
+   `open` instantly. Reduced-motion users get the original instant toggle.
+
+   `interpolate-size` and `::details-content` are newer than the CSS grammar in
+   the W3C Nu validator (Layer 3), which is why this lives in its own sheet
+   instead of index.html's inline <style>: the validator would otherwise report
+   false "property doesn't exist" errors. The @supports guard means any browser
+   without them keeps the old behaviour. */
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (interpolate-size: allow-keywords) {
+    :root { interpolate-size: allow-keywords; }
+
+    details.unit::details-content {
+      block-size: 0;
+      overflow-y: clip;
+    }
+
+    details.unit[open]::details-content { block-size: auto; }
+
+    /* Only a disclosure the user just clicked carries .animatable (the script
+       adds it on a summary click and drops it after the transition). The
+       filter rewrites `open` for every unit on each keystroke; without the
+       class those changes commit with no transition at all, so one keystroke
+       can never start the pile-up of simultaneous animations the source
+       article warns about. Structure, not a timed suppression. */
+    details.unit.animatable::details-content {
+      transition: block-size 0.22s ease, content-visibility 0.22s allow-discrete;
+    }
+  }
+}

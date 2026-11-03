@@ -5,38 +5,196 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Building Apps with a Coding Agent — Course Home</title>
 <link rel="stylesheet" href="assets/lesson.css">
+<link rel="stylesheet" href="assets/home-motion.css">
 <style>
-  .unit-section { margin-top: 2.2rem; margin-bottom: 2rem; }
-  .unit-title { font-size: 1.4rem; font-weight: 400; font-style: italic; border-bottom: 1px solid var(--rule); padding-bottom: 0.4rem; margin-bottom: 1rem; }
-  .lesson-grid { display: grid; gap: 0.9rem; margin-top: 0.8rem; }
+  /* Homepage browsing layer: a compact card grid inside one collapsible
+     disclosure per unit, with a live filter over every card. */
+  /* The shared column is a 40rem measure shifted left of centre. The home
+     page's card grid needs more room, so every band of the page widens and
+     centres together; only running prose keeps a readable measure. */
+  @media (min-width: 960px) {
+    main, header.lesson-head, nav.crumbs, footer.lesson-foot {
+      width: min(100% - 32px, 66rem);
+      margin-inline: auto;
+    }
+    header.lesson-head .lede, .hero-box p { max-width: 44rem; }
+  }
+  .hero-box {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 0.9rem 1.1rem;
+    border-radius: 0 6px 6px 0;
+    margin: 1rem 0 1.2rem;
+  }
+  .hero-box p { margin: 0 0 0.5rem; }
+  .hero-box p:last-child { margin: 0; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.9rem 0 0; }
+  .cta {
+    font: 600 0.8rem/1 system-ui, sans-serif;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .cta-primary { background: var(--accent); color: var(--bg); }
+  .browse {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--bg);
+    padding: 0.7rem 0 0.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .browse-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; }
+  .browse-label {
+    font: 600 0.7rem system-ui, sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  #lesson-search {
+    flex: 1 1 11rem;
+    min-width: 0;
+    padding: 0.45rem 0.6rem;
+    font: 0.9rem/1.3 system-ui, sans-serif;
+    color: var(--fg);
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+  }
+  #lesson-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .browse-btn {
+    font: 600 0.75rem/1 system-ui, sans-serif;
+    padding: 0.45rem 0.7rem;
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    color: var(--fg);
+    cursor: pointer;
+  }
+  .browse-btn:hover { border-color: var(--accent); color: var(--accent); }
+  /* The star filter is a real on/off state (aria-pressed); the expand toggle
+     is an action whose label carries the state, so it styles a class. */
+  .browse-btn[aria-pressed="true"], .browse-btn.is-open {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .browse-count {
+    font: 0.78rem/1.4 system-ui, sans-serif;
+    color: var(--muted);
+    margin: 0.4rem 0 0;
+  }
+  .unit-rail { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.55rem 0 1rem; }
+  .unit-rail a {
+    font: 0.75rem/1 system-ui, sans-serif;
+    color: var(--fg);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 0.32rem 0.55rem;
+    text-decoration: none;
+  }
+  .unit-rail a:hover, .unit-rail a:focus-visible { border-color: var(--accent); color: var(--accent); }
+  .unit-rail .rail-num { font-weight: 700; margin-right: 0.15rem; color: var(--accent); }
+  .unit-section { margin-top: 0; margin-bottom: 0; scroll-margin-top: 5.5rem; }
+  /* Sections carry tabindex="-1" so a rail chip or a #unit-N deep link moves
+     keyboard focus to the unit instead of only scrolling. The ring belongs on
+     the summary the user reaches next, not on the whole region. */
+  .unit-section:focus { outline: none; }
+  .unit { border-top: 1px solid var(--rule); }
+  .unit > summary {
+    display: grid;
+    grid-template-columns: 0.9rem 1fr auto;
+    grid-template-areas: "chev title count" ". blurb blurb";
+    align-items: baseline;
+    gap: 0.1rem 0.55rem;
+    padding: 0.8rem 0.2rem 0.8rem 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .unit > summary::-webkit-details-marker { display: none; }
+  .unit > summary::before {
+    grid-area: chev;
+    content: "▸";
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  /* The only rotation on the page. It is enabled only for a unit the user has
+     just clicked (.animatable, set by the script), so neither reduced motion
+     nor a filter keystroke that flips ten chevrons can rotate anything. */
+  @media (prefers-reduced-motion: no-preference) {
+    .unit.animatable > summary::before { transition: transform 0.15s ease; }
+  }
+  .unit[open] > summary::before { transform: rotate(90deg); }
+  .unit > summary:hover .unit-title { color: var(--accent); }
+  .unit > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .unit-title {
+    grid-area: title;
+    font-size: 1.12rem;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.4;
+    margin: 0;
+  }
+  .unit-count {
+    grid-area: count;
+    font: 600 0.7rem/1.8 system-ui, sans-serif;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: right;
+  }
+  .unit-blurb {
+    grid-area: blurb;
+    font-size: 0.86rem;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+  .lesson-grid {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0.5rem 0 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+  }
   .lesson-card {
     background: var(--card);
     border: 1px solid var(--rule);
     border-radius: 6px;
-    padding: 0.9rem 1.1rem;
-    transition: border-color 0.15s ease;
-    text-decoration: none;
+    padding: 0.7rem 0.9rem;
     display: block;
     color: inherit;
+    text-decoration: none;
   }
-  .lesson-card:hover {
-    border-color: var(--accent);
+  /* Under reduced motion nothing on the page transitions, not even a colour
+     fade: the hover state then arrives instantly instead. */
+  @media (prefers-reduced-motion: no-preference) {
+    .lesson-card { transition: border-color 0.15s ease; }
   }
+  .lesson-card[hidden] { display: none; }
+  .lesson-card:hover, .lesson-card:focus-visible { border-color: var(--accent); }
+  .lesson-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  /* Motion lives in assets/home-motion.css: its properties are newer than the
+     CSS grammar the Layer 3 validator knows, so it is kept out of this block. */
   .lesson-card-header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: flex-start;
     gap: 0.5rem;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.2rem;
   }
+  .lesson-card-tag { margin-top: 0.2rem; }
   .lesson-card-title {
-    font-size: 1.15rem;
+    font-size: 1rem;
     font-weight: 600;
+    line-height: 1.35;
     color: var(--accent);
     margin: 0;
+    overflow-wrap: anywhere;
   }
   .lesson-card-tag {
-    font: 600 0.72rem system-ui, sans-serif;
+    font: 600 0.68rem system-ui, sans-serif;
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -48,89 +206,161 @@
     margin-right: 0.2rem;
   }
   .lesson-card-lede {
-    font-size: 0.92rem;
+    font-size: 0.82rem;
+    line-height: 1.4;
     color: var(--muted);
     margin: 0;
-    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
   }
-  .hero-box {
-    background: var(--accent-soft);
-    border-left: 3px solid var(--accent);
-    padding: 1rem 1.25rem;
-    border-radius: 0 6px 6px 0;
-    margin: 1.5rem 0 2rem;
+  .no-results {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0.4rem 0 1.5rem;
   }
-  .hero-box p { margin: 0 0 0.6rem; }
-  .hero-box p:last-child { margin: 0; }
+  .skip-link {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .skip-link:focus {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    clip-path: none;
+    overflow: visible;
+    padding: 0.5rem 0.8rem;
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 0 0 6px 0;
+    font: 600 0.8rem/1 system-ui, sans-serif;
+    text-decoration: none;
+    z-index: 20;
+  }
+  /* The skip link lands on <main tabindex="-1">; the region takes focus so the
+     next Tab starts inside the content, but it does not need a ring itself. */
+  main:focus, main:focus-visible { outline: none; }
+  @media (max-width: 640px) {
+    .browse { position: static; }
+    .unit-section { scroll-margin-top: 1rem; }
+  }
+  @media (max-width: 560px) {
+    .unit > summary {
+      grid-template-columns: 0.9rem 1fr;
+      grid-template-areas: "chev title" ". count" ". blurb";
+    }
+    .unit-count { text-align: left; }
+    .lede { font-size: 1.05rem; }
+  }
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to the content</a>
 <nav class="crumbs" aria-label="Breadcrumb">Course Home</nav>
 <header class="lesson-head">
   <p class="kicker">Zero to Shipped · Static Web Applications</p>
   <h1>Building Apps with a Coding Agent</h1>
-  <p class="lede">A complete beginner's curriculum for directing Claude Code, Codex, and omp to take an idea and ship a working, public web app—without writing code and without losing control.</p>
+  <p class="lede">Direct Claude Code, Codex or omp from an idea to a public web app. No coding, and nothing out of your control.</p>
   <div class="meta">
     <span>116 lessons · 10 units</span>
-    <span>~15 Minutes Per Lesson</span>
-    <span>41 ★ first-ship lessons</span>
+    <span>~15 min per lesson</span>
+    <span>41 ★ first-ship</span>
   </div>
 </header>
-<main>
+<main id="main" tabindex="-1">
 
 <div class="hero-box">
-  <p><strong>How to use this course:</strong> Each lesson tackles one tightly focused concept with interactive recalls, real anonymized vignettes, tool-specific command tabs, and self-checks.</p>
-  <p>Start with <strong>Unit 0</strong> and follow the <strong>★ First-Ship Path</strong> to deploy your first static page to GitHub Pages as early as possible. Keep the <a href="#reference">reference cards</a> open while you work.</p>
+  <p><strong>116 short lessons, one idea each.</strong> Follow the ★ lessons to put a real page on the public web; every other unit is optional depth.</p>
+  <div class="cta-row">
+    <a class="cta cta-primary" href="lessons/0001-what-a-coding-agent-is.html">Start with lesson 0.1</a>
+    <a class="cta" href="#reference">Reference cards</a>
+  </div>
 </div>
 
-<section class="unit-section">
-  <h2 class="unit-title">Unit 0 &mdash; Orientation &amp; setup</h2>
-  <div class="lesson-grid">
+<div class="browse" id="browse" role="search" aria-label="Find a lesson" hidden>
+  <div class="browse-row">
+    <label class="browse-label" for="lesson-search">Find a lesson</label>
+    <input type="search" id="lesson-search" placeholder="git, deploy, screenshot, tokens&hellip;" autocomplete="off" spellcheck="false" aria-describedby="browse-count">
+    <button type="button" class="browse-btn" id="star-toggle" aria-pressed="false">★ First-ship only (41)</button>
+    <button type="button" class="browse-btn" id="expand-toggle" aria-controls="unit-0 unit-1 unit-2 unit-3 unit-4 unit-5 unit-6 unit-7 unit-8 unit-9 reference">Expand all units</button>
+  </div>
+  <p class="browse-count" id="browse-count" aria-live="polite">116 lessons in 10 units, plus 8 reference cards.</p>
+</div>
+<nav class="unit-rail" aria-label="Jump to a unit">
+  <a href="#unit-0"><span class="rail-num">0</span>Orientation</a>
+  <a href="#unit-1"><span class="rail-num">1</span>Prompting</a>
+  <a href="#unit-2"><span class="rail-num">2</span>Verification</a>
+  <a href="#unit-3"><span class="rail-num">3</span>Version control</a>
+  <a href="#unit-4"><span class="rail-num">4</span>Scope &amp; stopping</a>
+  <a href="#unit-5"><span class="rail-num">5</span>Mental model</a>
+  <a href="#unit-6"><span class="rail-num">6</span>Shipping</a>
+  <a href="#unit-7"><span class="rail-num">7</span>Capstone</a>
+  <a href="#unit-8"><span class="rail-num">8</span>Beyond static</a>
+  <a href="#unit-9"><span class="rail-num">9</span>At scale</a>
+  <a href="#reference">Reference</a>
+</nav>
+<p class="no-results" id="no-results" hidden>No lesson or reference card matches that search. Try a shorter word, or clear the filters.</p>
+
+<section class="unit-section" id="unit-0" tabindex="-1">
+  <details class="unit" open>
+    <summary>
+      <h2 class="unit-title">Unit 0 &mdash; Orientation &amp; setup</h2>
+      <span class="unit-count">9 lessons · 8 ★</span>
+      <span class="unit-blurb">What an agent is, how to install it, and a page on your own screen.</span>
+    </summary>
+    <div class="lesson-grid">
     <a class="lesson-card" href="lessons/0001-what-a-coding-agent-is.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>What a coding agent actually is</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>What a coding agent actually is</h3>
         <span class="lesson-card-tag">0.1 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A chat can only talk. An agent can look at your files, run things, and check what happened. Everything else in this course builds on that difference.</p>
     </a>
     <a class="lesson-card" href="lessons/0002-the-three-agents.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>The three agents: same ideas, different shells</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>The three agents: same ideas, different shells</h3>
         <span class="lesson-card-tag">0.2 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Claude Code, Codex and omp all run the loop you met in lesson 0.1. What changes is the shell around it: the start command, the rules file, the mode names, the key that stops a run.</p>
     </a>
     <a class="lesson-card" href="lessons/0003-your-project-is-a-folder.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Your project is a folder</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Your project is a folder</h3>
         <span class="lesson-card-tag">0.3 · Lesson</span>
       </div>
       <p class="lesson-card-lede">An app is not a cloud, a database or a website. Before any of that, it is a folder of text files on your computer, and the agent only works on the folder it was pointed at.</p>
     </a>
     <a class="lesson-card" href="lessons/0004-the-terminal-in-five-commands.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>The terminal in five commands</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>The terminal in five commands</h3>
         <span class="lesson-card-tag">0.4 · Lesson</span>
       </div>
       <p class="lesson-card-lede">The terminal is the room your agent works in. Five commands are enough to walk into the right folder, see what is there, open it, and start something — and to fix things when the agent says a file exists that you cannot find.</p>
     </a>
     <a class="lesson-card" href="lessons/0005-install-and-sign-in.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Install and sign in</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Install and sign in</h3>
         <span class="lesson-card-tag">0.5 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Two one-time jobs stand between you and your first prompt: put the program where your terminal can find it, then prove which account pays for the work. After that, launching is one word.</p>
     </a>
     <a class="lesson-card" href="lessons/0006-approvals-and-permissions.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Approvals and permissions: what your agent may do</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Approvals and permissions: what your agent may do</h3>
         <span class="lesson-card-tag">0.6 · Lesson</span>
       </div>
       <p class="lesson-card-lede">The agent works with your account and your files. One setting decides whether it stops to ask you before it acts, and that setting is the difference between a helpful assistant and a mess you did not see coming.</p>
     </a>
     <a class="lesson-card" href="lessons/0007-first-prompt-to-a-page.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Your first prompt, and a page on your screen</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Your first prompt, and a page on your screen</h3>
         <span class="lesson-card-tag">0.7 · Lesson</span>
       </div>
       <p class="lesson-card-lede">One short message, one small page, one address you can open. This is the moment the agent stops being an idea and starts being a thing you can look at.</p>
@@ -144,47 +374,53 @@
     </a>
     <a class="lesson-card" href="lessons/0015-ship-a-hello-world-page.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Ship a hello world page</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Ship a hello world page</h3>
         <span class="lesson-card-tag">M.1 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A file in a folder and a page a stranger can open are separated by five named states. This milestone walks all five once, with a page too small to distract you.</p>
     </a>
   </div>
+  </details>
 </section>
-<section class="unit-section">
-  <h2 class="unit-title">Unit 1 &mdash; Telling the agent what you want</h2>
-  <div class="lesson-grid">
+<section class="unit-section" id="unit-1" tabindex="-1">
+  <details class="unit">
+    <summary>
+      <h2 class="unit-title">Unit 1 &mdash; Telling the agent what you want</h2>
+      <span class="unit-count">13 lessons · 9 ★</span>
+      <span class="unit-blurb">Say what should exist and who it is for, and get a plan before the work starts.</span>
+    </summary>
+    <div class="lesson-grid">
     <a class="lesson-card" href="lessons/0016-goal-audience-not-method.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Goal and audience, not method</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Goal and audience, not method</h3>
         <span class="lesson-card-tag">1.1 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Tell the agent what should exist and who it is for. Let it choose the steps. Your two sentences about the person at the other end do more work than twenty about tools.</p>
     </a>
     <a class="lesson-card" href="lessons/0017-orient-first.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Orient first</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Orient first</h3>
         <span class="lesson-card-tag">1.2 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Before you ask for a change, ask for a map. One question that only reads costs almost nothing. One change built on a wrong guess has to be found and undone.</p>
     </a>
     <a class="lesson-card" href="lessons/0018-ask-word-means.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Ask what a word means</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Ask what a word means</h3>
         <span class="lesson-card-tag">1.3 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Half of a beginner's trouble with an agent is vocabulary. One question, asked at the moment the word appears, turns a paragraph you skim into a decision you can check.</p>
     </a>
     <a class="lesson-card" href="lessons/0019-interview.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>The interview: numbered questions with a recommended answer</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>The interview: numbered questions with a recommended answer</h3>
         <span class="lesson-card-tag">1.4 · Lesson</span>
       </div>
       <p class="lesson-card-lede">You have said what the app is for. Now the agent needs the hundred small decisions that turn a goal into something buildable. A good interview asks them as numbered questions, and answers every one of them with a recommendation you can accept in a single word.</p>
     </a>
     <a class="lesson-card" href="lessons/0020-yes-all.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>"Yes to all" — and amending inside the yes</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>"Yes to all" — and amending inside the yes</h3>
         <span class="lesson-card-tag">1.5 · Lesson</span>
       </div>
       <p class="lesson-card-lede">An interview can return twenty questions. You do not have to answer twenty times. One message can accept the whole list, name the two answers you want changed, and still leave you in control of what gets built.</p>
@@ -198,7 +434,7 @@
     </a>
     <a class="lesson-card" href="lessons/0022-plan-then-human-go.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Plan, then a human "go"</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Plan, then a human "go"</h3>
         <span class="lesson-card-tag">1.7 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A plan is words. An edit is your files changed. Keeping those two apart, with you in between, is the cheapest safety net you will ever own.</p>
@@ -212,14 +448,14 @@
     </a>
     <a class="lesson-card" href="lessons/0024-show-dont-tell.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Show, don't tell: screenshots as bug reports</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Show, don't tell: screenshots as bug reports</h3>
         <span class="lesson-card-tag">1.9 · Lesson</span>
       </div>
       <p class="lesson-card-lede">The agent reads files and command output. It does not look at your screen. When something is wrong in a way words keep missing, a picture is the shortest true description you can give.</p>
     </a>
     <a class="lesson-card" href="lessons/0025-steering-mid-run.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Steering an agent that is already running</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Steering an agent that is already running</h3>
         <span class="lesson-card-tag">1.10 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A run that takes twenty minutes is not a black box. You can add a condition, stop a wrong turn, ask where things stand, and send it on again, all without losing the work it already did.</p>
@@ -233,7 +469,7 @@
     </a>
     <a class="lesson-card" href="lessons/0027-project-rules-file.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Write the procedure once</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Write the procedure once</h3>
         <span class="lesson-card-tag">1.12 · Lesson</span>
       </div>
       <p class="lesson-card-lede">You have typed the same correction twice this week. There is a place for it: a short text file inside the project, which the agent reads at the start of every session. Write it once and stop repeating yourself.</p>
@@ -246,20 +482,26 @@
       <p class="lesson-card-lede">One prompt should buy one result you can look at. Smaller than that and you are doing the agent's job of choosing steps. Larger than that and nobody can tell when it is finished.</p>
     </a>
   </div>
+  </details>
 </section>
-<section class="unit-section">
-  <h2 class="unit-title">Unit 2 &mdash; Knowing what it actually did (verification)</h2>
-  <div class="lesson-grid">
+<section class="unit-section" id="unit-2" tabindex="-1">
+  <details class="unit">
+    <summary>
+      <h2 class="unit-title">Unit 2 &mdash; Knowing what it actually did (verification)</h2>
+      <span class="unit-count">14 lessons · 4 ★</span>
+      <span class="unit-blurb">Evidence over claims: run it, test it, screenshot it, have it reviewed.</span>
+    </summary>
+    <div class="lesson-grid">
     <a class="lesson-card" href="lessons/0029-run-yourself.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Run it yourself</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Run it yourself</h3>
         <span class="lesson-card-tag">2.1 · Lesson</span>
       </div>
       <p class="lesson-card-lede">The agent can change the files. Only you can see whether the change is any good. Start the app, open the address, look at the screen — then decide what happens next.</p>
     </a>
     <a class="lesson-card" href="lessons/0030-claims-vs-evidence.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Claims versus evidence</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Claims versus evidence</h3>
         <span class="lesson-card-tag">2.2 · Lesson</span>
       </div>
       <p class="lesson-card-lede">"Done" is a sentence about what the agent believes. Evidence is something that would have come out differently if the work were wrong. Only the second one lets you ship.</p>
@@ -294,7 +536,7 @@
     </a>
     <a class="lesson-card" href="lessons/0035-real-vs-simulated.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Tests passed, but the screen was wrong</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Tests passed, but the screen was wrong</h3>
         <span class="lesson-card-tag">2.7 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A passing test can be honest and still say nothing about what a person sees. Before you ship, someone has to open the page in a real browser and look at it.</p>
@@ -329,7 +571,7 @@
     </a>
     <a class="lesson-card" href="lessons/0040-be-first-time-user.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Be a first-time user</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Be a first-time user</h3>
         <span class="lesson-card-tag">2.13 · Lesson</span>
       </div>
       <p class="lesson-card-lede">You know where everything is, so you cannot feel what a stranger feels. Send two people through the live app with no map: your agent, then a friend. What they stumble on is your real to-do list.</p>
@@ -349,34 +591,40 @@
       <p class="lesson-card-lede">Your checks passed on your laptop. Then the pull request went red. Nothing is broken in your code and nothing is lying to you: two different computers ran two different sets of checks.</p>
     </a>
   </div>
+  </details>
 </section>
-<section class="unit-section">
-  <h2 class="unit-title">Unit 3 &mdash; Version control as the safety net</h2>
-  <div class="lesson-grid">
+<section class="unit-section" id="unit-3" tabindex="-1">
+  <details class="unit">
+    <summary>
+      <h2 class="unit-title">Unit 3 &mdash; Version control as the safety net</h2>
+      <span class="unit-count">15 lessons · 7 ★</span>
+      <span class="unit-blurb">Commits, branches and pull requests: the undo button for agent work.</span>
+    </summary>
+    <div class="lesson-grid">
     <a class="lesson-card" href="lessons/0009-why-save-points-exist.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Why save points exist</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Why save points exist</h3>
         <span class="lesson-card-tag">3.1 · Lesson</span>
       </div>
       <p class="lesson-card-lede">An agent can rewrite twenty files while you watch one paragraph of text scroll by. A commit is how you decide that this state of the folder is worth keeping, and give it a name you can come back to.</p>
     </a>
     <a class="lesson-card" href="lessons/0010-repo-working-tree-uncommitted-change.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Repository, working tree, uncommitted change</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Repository, working tree, uncommitted change</h3>
         <span class="lesson-card-tag">3.2 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Your project sits in two places at once: the files you can open, and the history git keeps. Two commands show you where those two disagree. Reading them is how you know what your agent actually changed.</p>
     </a>
     <a class="lesson-card" href="lessons/0011-remote-origin-push.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Remote, origin and push</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Remote, origin and push</h3>
         <span class="lesson-card-tag">3.6 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A commit saves your work on your own machine. A push copies those commits to a server, where a lost laptop cannot take them and where Unit 6 can publish them.</p>
     </a>
     <a class="lesson-card" href="lessons/0042-gitignore.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>What not to track: .gitignore</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>What not to track: .gitignore</h3>
         <span class="lesson-card-tag">3.3 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A save point should contain the things you meant to keep, and nothing else. One small text file decides which files git refuses to save, and that same file can quietly erase work you thought was safe.</p>
@@ -390,14 +638,14 @@
     </a>
     <a class="lesson-card" href="lessons/0044-branch.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Branch: a parallel line of work</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Branch: a parallel line of work</h3>
         <span class="lesson-card-tag">3.5 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A branch lets you try something unfinished without putting it in the version of your app you would hand to a friend. It also costs one line of typing, not a second copy of your folder.</p>
     </a>
     <a class="lesson-card" href="lessons/0045-pull-request.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>The pull request: a proposal, not a merge</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>The pull request: a proposal, not a merge</h3>
         <span class="lesson-card-tag">3.7 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A branch keeps your work separate. A pull request is how that work gets looked at, checked, and only then allowed into main .</p>
@@ -439,7 +687,7 @@
     </a>
     <a class="lesson-card" href="lessons/0052-checkpoint-often.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Checkpoint often</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Checkpoint often</h3>
         <span class="lesson-card-tag">3.13 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A coding agent can work for an hour and change a hundred lines across a dozen files. If none of that is committed, the folder holds one undivided lump of work. A checkpoint cuts the lump into pieces you can keep, compare and drop.</p>
@@ -459,34 +707,40 @@
       <p class="lesson-card-lede">A convention lives in your head and in a rules file. A branch protection rule lives in GitHub, where a tired agent at midnight cannot talk its way past it.</p>
     </a>
   </div>
+  </details>
 </section>
-<section class="unit-section">
-  <h2 class="unit-title">Unit 4 &mdash; Scope &amp; stopping (field guide to derailments)</h2>
-  <div class="lesson-grid">
+<section class="unit-section" id="unit-4" tabindex="-1">
+  <details class="unit">
+    <summary>
+      <h2 class="unit-title">Unit 4 &mdash; Scope &amp; stopping (field guide to derailments)</h2>
+      <span class="unit-count">13 lessons · 4 ★</span>
+      <span class="unit-blurb">Define done, cap the run, and recover when it drifts off course.</span>
+    </summary>
+    <div class="lesson-grid">
     <a class="lesson-card" href="lessons/0055-definition-done-acceptance-criteria.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Definition of done: deciding what "finished" means</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Definition of done: deciding what "finished" means</h3>
         <span class="lesson-card-tag">4.1 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A goal tells the agent which direction to walk. A definition of done tells it where to stop. Without one, the agent picks a finish line of its own, and it is rarely the one in your head.</p>
     </a>
     <a class="lesson-card" href="lessons/0056-scope-creep-scope-ladder.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Scope creep and the scope ladder</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Scope creep and the scope ladder</h3>
         <span class="lesson-card-tag">4.2 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A session rarely derails in one leap. It climbs a ladder one reasonable step at a time: a question becomes a fix, the fix becomes a product, the product becomes something you publish. This lesson teaches you to see the ladder, and to climb only the rungs you actually choose.</p>
     </a>
     <a class="lesson-card" href="lessons/0057-stop-conditions.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Stop conditions: decide where the run ends</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Stop conditions: decide where the run ends</h3>
         <span class="lesson-card-tag">4.3 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A definition of done says what finished looks like. A stop condition says where the work ends — and what the agent must not start next.</p>
     </a>
     <a class="lesson-card" href="lessons/0058-budgets.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Budgets: time, attempts, dollars</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Budgets: time, attempts, dollars</h3>
         <span class="lesson-card-tag">4.4 · Lesson</span>
       </div>
       <p class="lesson-card-lede">A stop condition tells the agent what success looks like. A budget tells it how much effort you authorize before it must return control to you.</p>
@@ -555,10 +809,16 @@
       <p class="lesson-card-lede">Every app has more ideas than time. The skill is choosing what to leave out, saying so out loud, and writing it down — so "not finished" becomes "finished for now".</p>
     </a>
   </div>
+  </details>
 </section>
-<section class="unit-section">
-  <h2 class="unit-title">Unit 5 &mdash; How agents work (mental model)</h2>
-  <div class="lesson-grid">
+<section class="unit-section" id="unit-5" tabindex="-1">
+  <details class="unit">
+    <summary>
+      <h2 class="unit-title">Unit 5 &mdash; How agents work (mental model)</h2>
+      <span class="unit-count">11 lessons</span>
+      <span class="unit-blurb">Context, tools, cost and subagents: why a run succeeds or fails.</span>
+    </summary>
+    <div class="lesson-grid">
     <a class="lesson-card" href="lessons/0068-context-window.html">
       <div class="lesson-card-header">
         <h3 class="lesson-card-title">The context window: what your agent remembers</h3>
@@ -637,55 +897,61 @@
       <p class="lesson-card-lede">The same agent can live in a window full of clickable controls or in a terminal where you type everything. The loop underneath is identical; only the surface changes. Knowing both lets you pick the right one for the moment.</p>
     </a>
   </div>
+  </details>
 </section>
-<section class="unit-section">
-  <h2 class="unit-title">Unit 6 &mdash; Shipping a static app</h2>
-  <div class="lesson-grid">
+<section class="unit-section" id="unit-6" tabindex="-1">
+  <details class="unit">
+    <summary>
+      <h2 class="unit-title">Unit 6 &mdash; Shipping a static app</h2>
+      <span class="unit-count">10 lessons · 7 ★</span>
+      <span class="unit-blurb">From a local file to your own public URL, with the deploy checklist.</span>
+    </summary>
+    <div class="lesson-grid">
     <a class="lesson-card" href="lessons/0012-static-vs-dynamic.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Static or dynamic, and what hosting means</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Static or dynamic, and what hosting means</h3>
         <span class="lesson-card-tag">6.1 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Some apps are a pile of files that a host hands over untouched. Others need a program running all the time. Which one you are building decides whether free hosting is enough.</p>
     </a>
     <a class="lesson-card" href="lessons/0013-github-pages.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>GitHub Pages: what your URL will be</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>GitHub Pages: what your URL will be</h3>
         <span class="lesson-card-tag">6.3 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Pages turns your repository into a website at a predictable address. Learn the address shape now, and your links will keep working after you send them to someone.</p>
     </a>
     <a class="lesson-card" href="lessons/0014-deploy-merge-live.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Merged is not live</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Merged is not live</h3>
         <span class="lesson-card-tag">6.6 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Your pull request says Merged and the checks are green. The page your friend opens is still yesterday's. Three different states are all called "done", and only one of them is the address you will share.</p>
     </a>
     <a class="lesson-card" href="lessons/0079-build-step.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>The build step: source becomes deployable files</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>The build step: source becomes deployable files</h3>
         <span class="lesson-card-tag">6.2 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Many projects are not published as-is. A program first turns your source files into a separate folder of finished files, and it is that folder — not your source — that goes online. Knowing which is which stops the classic "works on my machine, blank on the web" surprise.</p>
     </a>
     <a class="lesson-card" href="lessons/0080-size-limits-big-files.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Size limits and big files: host them elsewhere</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Size limits and big files: host them elsewhere</h3>
         <span class="lesson-card-tag">6.4 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Free hosting has hard size limits. Learn to measure your project, read the limits, and keep big files somewhere else — so your link still loads for your friends.</p>
     </a>
     <a class="lesson-card" href="lessons/0081-actions-workflow.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>An Actions workflow: a recipe GitHub runs on every push</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>An Actions workflow: a recipe GitHub runs on every push</h3>
         <span class="lesson-card-tag">6.5 · Lesson</span>
       </div>
       <p class="lesson-card-lede">The checks on your pull request and the publishing of your site are not done by your laptop. They are done by a small recipe file in your repo that GitHub runs for you, on a fresh machine, every time you push.</p>
     </a>
     <a class="lesson-card" href="lessons/0082-readme-repo-description.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Put the link where people look</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Put the link where people look</h3>
         <span class="lesson-card-tag">6.7 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Your app is live, but most people will not arrive through the link you send them. They will find your repository on GitHub first — so the link has to live on the repository page itself, in the two places eyes go first.</p>
@@ -712,20 +978,26 @@
       <p class="lesson-card-lede">Your app already has a working address like YOUR_USERNAME.github.io/my-app. A custom domain — yourname.com — is a nice extra, not a requirement. This lesson shows what it involves so you can decide whether it is worth it.</p>
     </a>
   </div>
+  </details>
 </section>
-<section class="unit-section">
-  <h2 class="unit-title">Unit 7 &mdash; Capstone</h2>
-  <div class="lesson-grid">
+<section class="unit-section" id="unit-7" tabindex="-1">
+  <details class="unit">
+    <summary>
+      <h2 class="unit-title">Unit 7 &mdash; Capstone</h2>
+      <span class="unit-count">3 lessons · 2 ★</span>
+      <span class="unit-blurb">One idea, one app, shipped end to end, then a retrospective.</span>
+    </summary>
+    <div class="lesson-grid">
     <a class="lesson-card" href="lessons/0086-choose-idea.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Choose your capstone idea</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>Choose your capstone idea</h3>
         <span class="lesson-card-tag">7.1 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Everything you have learned so far was practice. Now you pick the app you will actually take from a blank folder to a public link. The skill in this lesson is choosing an idea small enough to ship — and knowing the fallback if you cannot choose.</p>
     </a>
     <a class="lesson-card" href="lessons/0087-interview-plan-build-verify-ship-share.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>The capstone path: interview, plan, build, verify, ship, share</h3>
+        <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>The capstone path: interview, plan, build, verify, ship, share</h3>
         <span class="lesson-card-tag">7.2 · Lesson</span>
       </div>
       <p class="lesson-card-lede">You already shipped a hello world page. Now you ship the app you actually chose. Six steps, in order, each one already practised on its own — this lesson is about running them as one continuous run.</p>
@@ -738,10 +1010,16 @@
       <p class="lesson-card-lede">You built and shipped an app. Before the memory fades, name the ways the run went wrong — because the failure modes you hit once are the ones you will hit again, unless you write them down.</p>
     </a>
   </div>
+  </details>
 </section>
-<section class="unit-section">
-  <h2 class="unit-title">Unit 8 &mdash; Beyond static (advanced tracks; nothing dropped)</h2>
-  <div class="lesson-grid">
+<section class="unit-section" id="unit-8" tabindex="-1">
+  <details class="unit">
+    <summary>
+      <h2 class="unit-title">Unit 8 &mdash; Beyond static (advanced tracks; nothing dropped)</h2>
+      <span class="unit-count">20 lessons</span>
+      <span class="unit-blurb">Optional advanced tracks: secrets, logins, backends, CI, real APIs.</span>
+    </summary>
+    <div class="lesson-grid">
     <a class="lesson-card" href="lessons/0089-secrets.html">
       <div class="lesson-card-header">
         <h3 class="lesson-card-title">Secrets: what they are and why they never live in your code</h3>
@@ -883,10 +1161,16 @@
       <p class="lesson-card-lede">Your app will be used by people with shaky hands, sore eyes, and a dislike of spinning screens. The agent will not fix any of this on its own — but it can, in one prompt, if you know the three things to ask for.</p>
     </a>
   </div>
+  </details>
 </section>
-<section class="unit-section">
-  <h2 class="unit-title">Unit 9 &mdash; Working at scale</h2>
-  <div class="lesson-grid">
+<section class="unit-section" id="unit-9" tabindex="-1">
+  <details class="unit">
+    <summary>
+      <h2 class="unit-title">Unit 9 &mdash; Working at scale</h2>
+      <span class="unit-count">8 lessons</span>
+      <span class="unit-blurb">Many tickets, parallel agents, review bots and handoff docs.</span>
+    </summary>
+    <div class="lesson-grid">
     <a class="lesson-card" href="lessons/0109-spec-tickets-dependency-graph.html">
       <div class="lesson-card-header">
         <h3 class="lesson-card-title">From one big spec to a frontier of tickets</h3>
@@ -944,11 +1228,17 @@
       <p class="lesson-card-lede">When a project has grown several branches and open questions, the expensive mistake is acting on a guess. A read-only triage pass turns "something is off" into a ranked list you approve before anything changes.</p>
     </a>
   </div>
+  </details>
 </section>
 
-<section class="unit-section" id="reference">
-  <h2 class="unit-title">Reference cards</h2>
-  <div class="lesson-grid">
+<section class="unit-section" id="reference" tabindex="-1">
+  <details class="unit" open>
+    <summary>
+      <h2 class="unit-title">Reference cards</h2>
+      <span class="unit-count">8 cards</span>
+      <span class="unit-blurb">One page each, for when you need the shape of a thing mid-run.</span>
+    </summary>
+    <div class="lesson-grid">
     <a class="lesson-card" href="reference/agent-loop.html">
       <div class="lesson-card-header">
         <h3 class="lesson-card-title">The agent loop</h3>
@@ -1006,7 +1296,266 @@
       <p class="lesson-card-lede">Install an agent, sign in, start it in the right folder, and get a page on screen.</p>
     </a>
   </div>
+  </details>
 </section>
+
+<script>
+(function () {
+  "use strict";
+  var search = document.getElementById("lesson-search");
+  var status = document.getElementById("browse-count");
+  var empty = document.getElementById("no-results");
+  var starToggle = document.getElementById("star-toggle");
+  var expandToggle = document.getElementById("expand-toggle");
+  var browse = document.getElementById("browse");
+  if (!search || !status || !empty || !starToggle || !expandToggle) return;
+  // The filter only exists with JavaScript; keep the controls hidden without it.
+  if (browse) browse.hidden = false;
+
+  // Cards are read once into plain objects: the filter must not write expando
+  // properties onto the anchors (HTMLAnchorElement.text is a live setter and
+  // would replace the card's markup with its own text).
+  var units = [].map.call(document.querySelectorAll("section.unit-section"), function (section) {
+    var details = section.querySelector("details.unit");
+    // One listener per row, bound once. transitionend bubbles, so the chevron
+    // (150 ms) and any card transition arrive here before the disclosure's own
+    // 220 ms block-size run; the target/property guard ignores them, and the
+    // class is only cleared if it is still set, so a later timer cannot undo it.
+    if (details) {
+      details.addEventListener("transitionend", function (event) {
+        if (event.target === details && event.propertyName === "block-size") {
+          details.classList.remove("animatable");
+        }
+      });
+    }
+    var heading = section.querySelector(".unit-title");
+    var title = heading ? heading.textContent.replace(/\s+/g, " ").trim() : "";
+    var number = (/(\d+)/.exec(title) || ["", ""])[1];
+    // Card text carries the unit's subject but not its number, so a query of
+    // "8" does not pull in every card of unit 8; "unit 8" is handled below.
+    var subject = title.replace(/^\d+\s*/, "").toLowerCase();
+    var items = [].slice.call(section.querySelectorAll(".lesson-card")).map(function (card) {
+      var tag = card.querySelector(".lesson-card-tag");
+      return {
+        el: card,
+        reference: !!tag && /^reference$/i.test(tag.textContent.trim()),
+        starred: !!card.querySelector(".star-badge"),
+        text: subject + " " + card.textContent.replace(/\s+/g, " ").toLowerCase()
+      };
+    });
+    return {
+      section: section,
+      details: details,
+      number: number,
+      items: items,
+      count: section.querySelector(".unit-count"),
+      defaultOpen: details ? details.open : true
+    };
+  });
+
+  var totalLessons = 0, totalStars = 0, totalRefs = 0;
+  units.forEach(function (unit) {
+    if (unit.items.length && unit.items[0].reference) {
+      if (unit.count) unit.count.textContent = unit.items.length + " cards";
+      totalRefs += unit.items.length;
+      return;
+    }
+    var stars = 0;
+    unit.items.forEach(function (item) { if (item.starred) stars += 1; });
+    if (unit.count) {
+      unit.count.textContent = unit.items.length + " lessons" + (stars ? " · " + stars + " ★" : "");
+    }
+    totalLessons += unit.items.length;
+    totalStars += stars;
+  });
+  starToggle.textContent = "★ First-ship only (" + totalStars + ")";
+
+  // expandMode: "auto" follows each unit's own default, "open"/"closed" override
+  // every unit until the next rail jump. A single click target keeps the label,
+  // the open state, and the styling derived from one source of truth.
+  var expandMode = "auto";
+
+  // Motion belongs to a row the reader actually opened. A summary click sets
+  // .animatable on its own <details> just before the native toggle, and the
+  // class is dropped once the transition ends (or after 400 ms if it never
+  // starts). update() rewrites `open` for every unit on each keystroke; those
+  // disclosures carry no class, so nothing animates and no keystroke can start
+  // a pile of simultaneous transitions.
+  var MOTION_MS = 400;
+
+  function armMotion(details) {
+    details.classList.add("animatable");
+    // The per-row transitionend listener (bound once, in the units map) clears
+    // the class when the height run ends; this timer is the fallback for a row
+    // whose transition never starts. Removing an already-removed class is a
+    // no-op, so repeated clicks cannot leave a stale timer in effect.
+    window.setTimeout(function () { details.classList.remove("animatable"); }, MOTION_MS);
+  }
+
+  document.addEventListener("click", function (event) {
+    var summary = event.target.closest ? event.target.closest("summary") : null;
+    var details = summary && summary.parentElement;
+    if (details && details.classList.contains("unit")) armMotion(details);
+  });
+
+  function filtering() {
+    return search.value.trim() !== "" || starToggle.getAttribute("aria-pressed") === "true";
+  }
+
+  function visibleUnits() {
+    return units.filter(function (unit) { return !unit.section.hidden; });
+  }
+
+  function allOpen() {
+    var shown = visibleUnits();
+    return shown.length > 0 && shown.every(function (unit) { return !unit.details || unit.details.open; });
+  }
+
+  // The count can be right while nothing is readable. Say which it is, so the
+  // status never implies a query found nothing when the rows are just closed.
+  // The default layout (Unit 0 and Reference open) is not a condition worth
+  // announcing, so partial collapse is only narrated while a filter is active,
+  // where the reader's own collapse is what is hiding the matches. A collapse
+  // that leaves nothing readable is announced either way.
+  function collapseNote(announcePartial) {
+    var shown = visibleUnits();
+    if (!shown.length) return "";
+    var openCount = 0;
+    shown.forEach(function (unit) { if (!unit.details || unit.details.open) openCount += 1; });
+    if (openCount === shown.length) return "";
+    if (openCount === 0) return " \u2014 all units collapsed, expand to read them.";
+    return announcePartial ? " \u2014 some units are collapsed, expand to read them." : "";
+  }
+
+  function update() {
+    updating = true;
+    var q = search.value.trim().toLowerCase();
+    var starred = starToggle.getAttribute("aria-pressed") === "true";
+    var active = filtering();
+    var unitQuery = /^unit\s*(\d+)$/.exec(q);
+    var shownLessons = 0, shownRefs = 0;
+
+    units.forEach(function (unit) {
+      var wholeUnit = !!unitQuery && unitQuery[1] === unit.number;
+      var visible = 0;
+      unit.items.forEach(function (item) {
+        var ok = (unitQuery ? wholeUnit : (q === "" || item.text.indexOf(q) !== -1)) &&
+          (!starred || item.starred);
+        item.el.hidden = !ok;
+        if (!ok) return;
+        visible += 1;
+        if (item.reference) { shownRefs += 1; } else { shownLessons += 1; }
+      });
+      unit.section.hidden = visible === 0;
+      if (!unit.details) return;
+      if (expandMode === "closed") {
+        unit.details.open = false;
+      } else if (expandMode === "open") {
+        unit.details.open = visible > 0;
+      } else {
+        unit.details.open = active ? visible > 0 : unit.defaultOpen;
+      }
+    });
+
+    // Expanding from a collapsed list leaves the cards present but hidden by
+    // each row; say so instead of implying the query found nothing.
+    var open = allOpen();
+    expandToggle.textContent = open ? "Collapse all units" : "Expand all units";
+    expandToggle.classList.toggle("is-open", open);
+    expandToggle.disabled = visibleUnits().length === 0;
+
+    lastCount = { shown: shownLessons + shownRefs, active: active };
+    empty.hidden = lastCount.shown > 0;
+    renderStatus();
+    updating = false;
+  }
+
+  // A reader can also close a matching row by hand, which changes what the
+  // count means without running update(). Native `toggle` events repaint the
+  // sentence; `updating` keeps the eleven programmatic rewrites inside update()
+  // from repainting a half-applied state.
+  var lastCount = { shown: 0, active: false }, updating = false;
+
+  function renderStatus() {
+    var shown = lastCount.shown;
+    if (lastCount.active) {
+      // One label describes what is being filtered, so a zero-match sentence
+      // never claims to be a count and never offers a collapse hint.
+      var q = search.value.trim();
+      var label = q ? "\u201C" + q + "\u201D" : "";
+      if (starToggle.getAttribute("aria-pressed") === "true") label += (label ? " " : "") + "\u2605 first-ship";
+      if (shown === 0) {
+        status.textContent = "No item matches " + label + ". Try a shorter word, or clear the filters.";
+      } else {
+        status.textContent = shown + " of " + (totalLessons + totalRefs) + " items match " + label +
+          (collapseNote(true) || ".");
+      }
+    } else {
+      status.textContent = totalLessons + " lessons in 10 units, plus " + totalRefs +
+        " reference cards" + (collapseNote(false) || ".");
+    }
+  }
+
+  units.forEach(function (unit) {
+    if (unit.details) unit.details.addEventListener("toggle", function () { if (!updating) renderStatus(); });
+  });
+
+  search.addEventListener("input", update);
+  search.addEventListener("search", update);
+  search.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && search.value !== "") {
+      search.value = "";
+      update();
+      event.preventDefault();
+    }
+  });
+
+  starToggle.addEventListener("click", function () {
+    var on = starToggle.getAttribute("aria-pressed") !== "true";
+    starToggle.setAttribute("aria-pressed", on ? "true" : "false");
+    update();
+  });
+
+  expandToggle.addEventListener("click", function () {
+    expandMode = allOpen() ? "closed" : "open";
+    update();
+  });
+
+  // A rail chip is a jump, not a filter: clear the query and the star filter so
+  // the unit it opens is not immediately re-collapsed by the next update().
+  function clearFilters() {
+    if (search.value !== "") search.value = "";
+    starToggle.setAttribute("aria-pressed", "false");
+    expandMode = "auto";
+  }
+
+  [].forEach.call(document.querySelectorAll(".unit-rail a"), function (link) {
+    link.addEventListener("click", function () {
+      var target = document.getElementById(link.getAttribute("href").slice(1));
+      if (!target) return;
+      clearFilters();
+      units.forEach(function (unit) {
+        if (unit.section === target) unit.defaultOpen = true;
+      });
+      update();
+    });
+  });
+
+  function revealHash() {
+    var target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
+    if (!target) return;
+    units.forEach(function (unit) {
+      if (unit.section === target) unit.defaultOpen = true;
+    });
+    if (target.querySelector("details.unit")) clearFilters();
+    update();
+  }
+
+  window.addEventListener("hashchange", revealHash);
+  update();
+  revealHash();
+})();
+</script>
 
 <div class="source-box">
   <span class="label">Course Index &amp; Full Curriculum</span>
