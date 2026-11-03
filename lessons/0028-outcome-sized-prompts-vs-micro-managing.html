@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outcome-sized prompts, not micro-managing</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 1 · Telling the agent what you want · Lesson 1.13</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.13</p>
+  <h1>Outcome-sized prompts, not micro-managing</h1>
+  <p class="lede">One prompt should buy one result you can look at. Smaller than that and you are doing the agent's job of choosing steps. Larger than that and nobody can tell when it is finished.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0016-goal-audience-not-method.html">1.1 Goal and audience, not method</a></span><span>Win: you can size a request to one checkable outcome</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Lesson 1.1 taught you to state a goal and an audience instead of a method. That leaves an open question: how much work should one message ask for? Too little and you spend the evening typing the steps yourself, one file at a time. Too much and the agent wanders for an hour and hands back something you cannot judge. Both feel like work. Neither ships your app.</p>
+<p>The useful size is one <strong>outcome</strong>: a result you could describe in a sentence and check by looking at it. This lesson is about finding that size, on purpose, every time you press enter.</p>
+
+<h2>You are the project manager, not the typist</h2>
+<p>Think of the job you actually hold. A project manager does not stand behind a colleague naming each keystroke. They agree on the deliverable, the deadline, the boundary, and how the result will be judged, then get out of the way and review the result. That is the job you have with a coding agent. The agent owns <em>how</em>: which files to open, what to try first, what to redo. You own <em>what</em>, <em>why</em>, and <em>how much is enough</em>.</p>
+<p>Both official guides point at the same imbalance. Anthropic's prompt engineering guide says to <q>Prefer general instructions over prescriptive steps.</q><sup class="cite"><a href="#src-p1">[1]</a></sup> Anthropic's own agent guide notes that current models <q>usually carry on through an agreed task without being told, and lines like that are more likely to cause over-work than fix a stall.</q><sup class="cite"><a href="#src-a7">[2]</a></sup> In other words: they do not need you to push them step by step, and pushing can make things worse. omp's guide puts the positive version in one line: <q>State the outcome and boundaries.</q><sup class="cite"><a href="#src-c1">[3]</a></sup></p>
+
+<h2>Two ways to get the size wrong</h2>
+<div class="compare">
+  <div class="bad"><span class="label">Micro-managed</span><p>"Create <code>index.html</code>. Now add a nav bar. Now create <code>style.css</code>. Now set the body font to 18 pixels. Now add a footer. Now center the heading. Now open it."</p></div>
+  <div class="good"><span class="label">Outcome-sized</span><p>"Make the one-page menu for my café readable on a phone, with the dish names and prices large enough to read without zooming. Show me the page when it is done. Do not add online ordering yet."</p></div>
+</div>
+<p>The first version is not wrong work. It is work <em>you</em> did, in six messages, with the agent reduced to a pair of hands. You chose every step, so you own every step that turns out to be the wrong one. The second names a result, a reader and one boundary, then stops. Codex's best-practices page calls the opening line of that shape <q>Goal: What are you trying to change or build?</q> and says it <q>helps Codex stay scoped, make fewer assumptions, and produce work that’s easier to review.</q><sup class="cite"><a href="#src-b7">[4]</a></sup></p>
+
+<h2>What "outcome-sized" means in practice</h2>
+<p>An outcome-sized prompt passes two tests at once.</p>
+<ul>
+  <li><strong>One sentence of result.</strong> You can say what should exist without naming a single step. If your description is a list of instructions, it is too small.</li>
+  <li><strong>One look to check.</strong> When the agent says it is finished, you know how to confirm it in under a minute: open the page, click the button, run the check. If you cannot name that check, it is too big.</li>
+</ul>
+<p>Size by <em>result</em>, never by file. "Rewrite <code>style.css</code>" is small but pointless; the file is a means, not a deliverable. "Make the menu readable on a phone" is a result, and the agent may touch three files to reach it. That is its business.</p>
+<div class="sidenote">A useful phrase: one sitting, one screen. If you would want to sit and watch the whole thing, it is small enough to be safe. If you would want to leave and come back later, it needs a written definition of done first (lesson <a href="0055-definition-done-acceptance-criteria.html">4.1</a>).</div>
+
+<h2>The same job, two transcripts</h2>
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>Add an index.html file with the café menu.</span></div>
+  <div class="row"><span class="who">agent</span><span>Created index.html with the menu.</span></div>
+  <div class="row you"><span class="who">you</span><span>Now make a style.css and link it.</span></div>
+  <div class="row"><span class="who">agent</span><span>Linked style.css.</span></div>
+  <div class="row you flag"><span class="who">you</span><span>Now make the text bigger on phones.</span></div>
+  <div class="row"><span class="who">agent</span><span>What size would you like?</span></div>
+  <div class="row you"><span class="who">you</span><span>18 pixels. And center the heading.</span></div>
+  <div class="row note"><span class="note">Four turns, one decision each. You supplied the plan and the agent supplied typing. Nothing here checks the result on a real phone.</span></div>
+</div>
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>Make the café menu readable on a phone, then show me how to look at it on a narrow window. Done means I can read every price without zooming. No online ordering yet.</span></div>
+  <div class="row tool"><span class="who">tool</span><span>read index.html · edit index.html · edit style.css · run local preview</span></div>
+  <div class="row"><span class="who">agent</span><span>Done. Prices are 20px on narrow screens; here is the preview address. I did not test on a real phone.</span></div>
+  <div class="row note"><span class="note">One turn, one outcome, one check you can perform, and a clear statement of what was not verified.</span></div>
+</div>
+<p>Notice what the second version did not contain: no file names, no pixel values, no order of operations. The agent found the stylesheet because it had to. You kept the two things only you knew, the reader and the boundary.</p>
+
+<h2>Why bigger is not automatically better</h2>
+<p>Under-asking wastes your evening. Over-asking wastes the agent's hour and your trust. When a request covers several unrelated results, the agent has to guess an order and invent a definition of done, and you get a long report you cannot check. Claude Code's own guidance for unattended runs lists the five things such a run must know: what done looks like, how to check itself, what it may touch, what stops it, and where the result goes.<sup class="cite"><a href="#src-a7">[2]</a></sup> If you cannot answer all five for your request, it is too big for one message.</p>
+<p>That does not mean every prompt needs five paragraphs. It means the outcome must be small enough that the five answers are obvious. "Make the menu readable on a phone" passes easily. "Finish the whole restaurant site" does not, because done has no single image.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user handed an agent a roadmap of more than eighty small items, written in one line: implement the roadmap. The same message added a stop condition, "stop when items 10, 11 and 88 are merged." Because the work was sliced and the finish line was named, several helpers could work at once without the scope growing. Later the user asked the agent to critique their own prompting. The answer was blunt: they were acting as project manager between every step, and would do better handing over a bigger outcome, such as "deliver a review-ready pull request, own the sequencing and cleanup, stop before merging" rather than a series of instructions.</p>
+  <p>Read that carefully. The fix was not "ask for less". It was "ask for one coherent deliverable, and hand over the sequencing". The line between the two is the outcome, not the number of words: a large deliverable with a written finish line and a stop condition is manageable; a small errand without one is not.</p>
+</div>
+
+<h2>Spotting the wrong size while you work</h2>
+<table class="ref">
+  <caption>Signals and the move that fixes them</caption>
+  <thead><tr><th>Signal</th><th>What it means</th><th>Move</th></tr></thead>
+  <tbody>
+    <tr><td>You are naming files or tags per message</td><td>Micro-managing: you own the plan</td><td>Rewrite as one result plus a check</td></tr>
+    <tr><td>You re-explain the same goal each turn</td><td>No agreed finish line</td><td>Add "done means…" once, up front</td></tr>
+    <tr><td>You cannot say what done looks like</td><td>Too big for one turn</td><td>Cut at a checkable seam (lesson <a href="0056-scope-creep-scope-ladder.html">4.2</a>)</td></tr>
+    <tr><td>The agent asks questions you already answered</td><td>Too big and too vague</td><td>Interview first (lesson <a href="0019-interview.html">1.4</a>)</td></tr>
+    <tr><td>You keep saying "continue"</td><td>A stall, or an unstated check</td><td>Say what pass looks like, then "continue"</td></tr>
+  </tbody>
+</table>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the two tests that tell you a prompt is outcome-sized? And which parts of the job stay with you?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>One sentence of result, and one look to check it. You keep <strong>what</strong>, <strong>why</strong>, and <strong>how much is enough</strong>; the agent keeps the steps, the file choices, and the order of work.</p></div>
+</div>
+
+<h2>A prompt you can size with</h2>
+<p>Fill this in for any task. The first two lines carry the outcome; the rest keep it sized.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Outcome: when you are done, [one result I can look at].
+It is for [who], who will [how they use it].
+Done means: [the one check I can perform myself].
+Do not [one boundary], and do not start [the next obvious thing] yet.
+Work out the steps yourself. If you hit a choice that changes what I see, ask me once instead of guessing twice.
+When you finish, tell me what you checked and what you did not check.</pre>
+</div>
+<p>If you find yourself unable to fill the "Done means" line, stop. That is the signal to cut the request, not to write a longer prompt. If the outcome line reads like a to-do list, stop as well: you have slipped back into being the planner.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> In your practice folder, with approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>), write down four small chores you would normally send one at a time, such as "add a title", "add a footer", "change the colour", "open the page".</label></li>
+    <li><label><input type="checkbox"> Send them first as four separate micro-managed messages. Count the turns and note who decided the order.</label></li>
+    <li><label><input type="checkbox"> In a new session, send the same work as one outcome-sized prompt using the template: one result, one reader, one check, one boundary.</label></li>
+    <li><label><input type="checkbox"> Compare: which run needed you to hold the plan? Which one told you what it had not checked?</label></li>
+  </ol>
+  <div class="expect"><p>You should see the second run need one turn instead of four, and should be able to perform the check you named without asking the agent what to look at. Expect the agent to choose some details differently from what you had in mind; that is the trade. If the second run instead asks you several questions, your outcome line was too broad. Narrow it to one screen or one flow and retry.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Which request is sized to one outcome?</p>
+  <button class="opt" type="button">Now create the stylesheet, then add a header.</button>
+  <button class="opt" type="button">Make the menu page readable on a phone.</button>
+  <button class="opt" type="button">Write the page file first, then its styles.</button>
+  <button class="opt" type="button">Open the folder and list every single file.</button>
+  <div class="why"><p>Only the second names a result a person can look at. The others name steps or an errand, which means you keep the plan.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You have sent nine messages, each naming the next file to change. What is the cost?</p>
+  <button class="opt" type="button">You decide the order of every step yourself.</button>
+  <button class="opt" type="button">The agent stops asking you questions at all.</button>
+  <button class="opt" type="button">You now choose every step before you send.</button>
+  <button class="opt" type="button">The agent writes fewer files than you planned.</button>
+  <div class="why"><p>Micro-managing moves the planning onto you. The agent still types, but you own the sequence and every wrong step in it.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Which is a sign that a request is too big for one turn?</p>
+  <button class="opt" type="button">You cannot say in one short sentence what done means.</button>
+  <button class="opt" type="button">You can name the one screen that this change affects.</button>
+  <button class="opt" type="button">You described the person who will use the app daily.</button>
+  <button class="opt" type="button">You asked for one check that you can run yourself.</button>
+  <div class="why"><p>Without a one-sentence finish line there is nothing to check, so the agent invents one. The other three are exactly what a well-sized prompt contains.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> (Anthropic). Read "Write a specific prompt" and "Let Claude run without you". Together they show both ends of the size question: give the agent what it cannot see, then say what done looks like and what stops it. The advice is tool-specific but the shape works in any agent.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Unsure whether your request is one outcome or three? Ask the agent that gave you this course. Try: <em>"Here is my prompt. Tell me which parts are steps I chose, and rewrite it as one outcome with a check."</em> or <em>"Split this request at its natural seams and tell me which piece to send first."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-p1">Anthropic, <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">Prompting best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b7">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> size a request to one result you can check, leave the sequence to the agent, and spot the two failure shapes, the errand you typed yourself and the open-ended epic.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0027-project-rules-file.html">Previous: Project rules file</a> · <a href="0029-run-yourself.html">Next: Run it yourself</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

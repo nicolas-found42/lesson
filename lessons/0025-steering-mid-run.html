@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steering an agent that is already running</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 1 · Telling the agent what you want · Lesson 1.10</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.10 · First-ship path ★</p>
+  <h1>Steering an agent that is already running</h1>
+  <p class="lede">A run that takes twenty minutes is not a black box. You can add a condition, stop a wrong turn, ask where things stand, and send it on again, all without losing the work it already did.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0001-what-a-coding-agent-is.html">0.1 What a coding agent is</a></span><span>Win: you can redirect a running agent without restarting it</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>The first lesson showed that one message can become fifty tool calls. That is useful right up to the moment the agent is fifty calls into the wrong idea. Beginners then face a false choice: sit and watch, or stop everything and start over. Both waste the thing you have least of, which is time before your app exists.</p>
+<p>There is a third way. A <span class="term" title="One message from you plus the agent's whole response to it.">turn</span> can be steered while it runs. You can add a condition it should respect, halt one bad action, ask what it thinks it is doing, and then let it continue. Used well, steering is how a fifteen-minute wait becomes a fifteen-minute result instead of a fifteen-minute lesson.</p>
+
+<h2>Three moves, in order of force</h2>
+<p>Everything in this lesson is one of three moves. Learn the difference and you will stop reaching for the biggest one first.</p>
+<table class="ref">
+  <tr><th>Move</th><th>What it does</th><th>Reach for it when</th></tr>
+  <tr><td><strong>Queue</strong></td><td>Adds a message the agent reads after the work in flight finishes.</td><td>The current step is still useful; you have one more condition.</td></tr>
+  <tr><td><strong>Interrupt</strong></td><td>Stops the action in progress and hands control back to you.</td><td>The next action would be wrong, or expensive to undo.</td></tr>
+  <tr><td><strong>Continue</strong></td><td>Sends the agent on with the intent it already had.</td><td>You stopped at a good point and want the same task to go on.</td></tr>
+</table>
+<p>There is also a move that is not a move at all: asking. "What is the task and its state?" costs one message and often saves an interruption you did not need.</p>
+
+<h2>Queue: say it now, act later</h2>
+<p>You are watching a run and notice something the agent should also honour. You do not have to wait for it to finish, and you do not have to stop it. In Claude Code, <q>Type a message and press <code>Enter</code> while Claude is working. Claude Code queues the message instead of interrupting the turn</q><sup class="cite"><a href="#src-a1">[1]</a></sup> and passes it on as soon as the running <span class="term" title="One use of a tool: read a file, run a command, change a file.">tool call</span> finishes, still inside the same turn.</p>
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>Rename the “Submit” button to “Send” everywhere it appears, then run the checks.</span></div>
+  <div class="row tool"><span class="who">agent</span><span>searching 14 files for “Submit”…</span></div>
+  <div class="row you"><span class="who">you</span><span>Also keep the wording “Send feedback” unchanged; that one is a different button.</span></div>
+  <div class="row"><span class="who">agent</span><span class="note">Message queued. It will be read when the search finishes.</span></div>
+  <div class="row tool"><span class="who">agent</span><span>found 9 matches in 6 files…</span></div>
+  <div class="row you"><span class="who">you</span><span class="note">Now the agent reads your line before it edits anything.</span></div>
+</div>
+<p>That is the whole trick, and it is the one to practise first. A queued message is cheap: the agent has not been derailed, and you have not lost your place in the work. What you must not do is queue a contradiction and expect it to be read instantly. It lands after the current action, not before it.</p>
+<p>One caution: a queued message is not a pause. If the action already running is the wrong one, queueing does not save you. That is what the next section is for.</p>
+
+<h2>Interrupt: Esc stops the action, not the work</h2>
+<p>When the agent is about to do something you do not want, stop it. In Claude Code, <q>Press <code>Esc</code></q> and <q>the running tool call is canceled and Claude waits for your next instruction</q>; the documentation is explicit that <q>Claude keeps the work done so far.</q><sup class="cite"><a href="#src-a2">[2]</a></sup> The same page puts it plainly: Esc <q>stops Claude mid-action and keeps everything up to that point, so you can redirect without losing work.</q><sup class="cite"><a href="#src-a3">[3]</a></sup></p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user set an agent to test a small desktop app by launching it and driving its menus with scripted keystrokes. Each run took twenty minutes, and the first screenshot was only taken at minute fourteen. Two minutes into a run, the user stopped it, looked at the frames that existed, and said in effect: stop now, check what you have, then start again. The restart had frames every twenty seconds, so a bad run showed up in the first minute instead of the fourteenth. The interruption cost two minutes. Watching the full run would have cost twenty.</p>
+</div>
+<p>Notice what the interrupt did <em>not</em> do. It did not undo the morning's work, rewrite the script, or end the session. It ended one action. Everything already written to disk stayed written. That is the promise that makes interrupting safe enough to use early, and early is when it is cheapest.</p>
+
+<h2>The state question</h2>
+<p>Before you decide whether to interrupt, you need to know what is actually happening. Do not guess from the last line on screen. Ask, in words:</p>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>What is the task, and what is its state?
+
+Answer in four parts:
+1. The task in one sentence, as you understand it now.
+2. Done: what is finished, and where.
+3. In progress: what you are doing right now.
+4. Not done or blocked: what remains, and anything you could not check.</pre></div>
+<p>This prompt works in any agent because it asks for a summary, not a feature. It is worth memorising, because it is the cheapest way out of the most common bad feeling in this course: the run has been going for a while and you no longer know what it is for.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user came back to a long automated run, found the app had been closed underneath it, and typed: <em>what is the current task and what is the state of it?</em> The answer separated what had been mapped from what had not, and the user then chose to accept a partial result and finish the rest later. One question replaced a re-run that would have taken another twenty minutes.</p>
+</div>
+<p>A word of warning about shortcuts. Each tool has a status command, but they report the <em>session</em>, not the task. Codex's <code>/status</code> is documented as showing <q>session configuration and token usage</q><sup class="cite"><a href="#src-b1">[4]</a></sup>, and omp's status line shows model, path and context use<sup class="cite"><a href="#src-c1">[5]</a></sup>. Neither will tell you that three of five steps are finished. Ask in a sentence instead.</p>
+
+<h2>Continue: the shortest useful message</h2>
+<p>Sometimes you interrupt at exactly the right moment: the agent has finished a coherent piece and is about to start something you would rather sequence yourself. You do not want to restate the task. You want it to carry on.</p>
+<p>The instruction is one word. Claude Code's guidance is direct: <q>If a run does stop short, say <code>continue</code></q><sup class="cite"><a href="#src-a3">[3]</a></sup>. omp gives it a key as well, listing <q>Continue the prior intent</q> against <q>Send <code>.</code> or <code>c</code></q><sup class="cite"><a href="#src-c1">[5]</a></sup>. In every tool, the important part is what you do <em>not</em> say. Do not re-describe the goal, do not paste the original prompt again, and do not add "start over". Those turn a resume into a restart, and a restart is how a fifteen-minute run becomes two.</p>
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>Interrupt to change direction. Continue to resume the direction. Restating the whole task is for when you actually want a fresh start, and that is a different decision.</p>
+</div>
+
+<h2>The same run, three times</h2>
+<p>The three moves are easiest to see side by side. Suppose an agent is halfway through adding a contact form to your page and is about to install a package you do not want.</p>
+<div class="compare">
+  <div class="bad"><span class="label">Restart</span><p>"Stop. Forget all that. Here is the whole task again, and this time do not install anything." The agent starts from zero, re-reads every file, and you wait again.</p></div>
+  <div class="good"><span class="label">Steer</span><p>Press Esc. Then: "Do not add any packages. Use a plain HTML form that posts to the address I gave you. Then continue." The files it already wrote are still there, and it picks up from them.</p></div>
+</div>
+<p>The second version is shorter, and it keeps the work. That is the whole economy of steering: your correction is about the next step, not about the last twenty.</p>
+
+<h2>What each agent calls it</h2>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p><strong>Queue:</strong> type and press <code>Enter</code> while it works. <strong>Interrupt:</strong> <code>Esc</code> cancels the running call and keeps earlier work. <strong>Send queued messages now:</strong> <code>Ctrl+Enter</code> or <code>Ctrl+X Ctrl+S</code>.<sup class="cite"><a href="#src-a1">[1]</a></sup> <strong>Continue:</strong> say <code>continue</code>.<sup class="cite"><a href="#src-a3">[3]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p><strong>Steer:</strong> <q>Press <code>Enter</code> while Codex is working to inject new instructions into the current turn.</q> <strong>Queue:</strong> <code>Tab</code> queues a follow-up <q>for the next turn</q>.<sup class="cite"><a href="#src-b2">[6]</a></sup> From another terminal, <code>codex queue --thread &lt;id&gt; --message "…"</code> does the same by name.</p>
+    <p>OpenAI's CLI page does not document an Esc-to-interrupt key, so do not count on one; it lists <code>Ctrl+C</code> as closing the session.<sup class="cite"><a href="#src-b2">[6]</a></sup> Check your version's shortcut list before relying on a key.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p><strong>Steer:</strong> <code>Enter</code> sends a steering message to the active turn. <strong>Queue:</strong> <code>Ctrl+Q</code> or <code>Ctrl+Enter</code>. <strong>Interrupt:</strong> <code>Escape</code>. <strong>Continue:</strong> <code>.</code> or <code>c</code>.<sup class="cite"><a href="#src-c1">[5]</a></sup></p>
+    <p>Escape is focus-sensitive: if a picker or autocomplete is open, the first press closes that instead.<sup class="cite"><a href="#src-c2">[7]</a></sup> Press it again for the run itself.</p>
+  </div>
+</div>
+<span class="sidenote">Only Claude Code and omp document a one-word resume. If your tool does not, write one short sentence naming the next step instead; the effect is the same.</span>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the three moves, and which one keeps the work already done when it is used? Write your answer, then check.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Queue</strong> a message for after the current action, <strong>interrupt</strong> to stop the action in progress, and <strong>continue</strong> to resume the same intent. All three keep the work; an interrupt cancels one action rather than deleting files or ending the session. Asking for the task's state is the move to make before choosing.</p></div>
+</div>
+
+<div class="doit">
+  <span class="label">Try it, in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Start your agent in your project folder with approvals on, as usual.</label></li>
+    <li><label><input type="checkbox"> Give it a slow, read-only task: “Read every file in this folder and write me a short summary of what each one does. Do not change anything.”</label></li>
+    <li><label><input type="checkbox"> While it is reading, type one more line and send it: “Also tell me which file I should edit to change the page title.” Do not stop the run.</label></li>
+    <li><label><input type="checkbox"> Watch where that second message appears. Then let the run reach its answer.</label></li>
+    <li><label><input type="checkbox"> Start a second read-only task. This time press <code>Esc</code> once, mid-run, and note what the transcript says happened.</label></li>
+    <li><label><input type="checkbox"> Paste the four-part state question from above. Read the reply before doing anything else.</label></li>
+    <li><label><input type="checkbox"> Type <code>continue</code> and see whether it resumes the same task or begins again.</label></li>
+  </ol>
+  <div class="expect"><p><strong>What you should see:</strong> the second message listed as pending or greyed out until the current step ends, then answered. Esc leaves a cancelled or interrupted marker, keeps the files untouched (the task was read-only), and does not close the session. The state answer names the task and separates finished work from what remains. <code>continue</code> picks the task back up instead of re-reading everything.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">An agent is 40 seconds into a slow run. You realise it must keep the current colours. What is the smallest move?</p>
+  <button class="opt" type="button">Stop with Escape, then start the whole task over.</button>
+  <button class="opt" type="button">Queue a message that states the colour constraint now.</button>
+  <button class="opt" type="button">Keep the colours and then continue with the task.</button>
+  <button class="opt" type="button">Close the session and rewrite the first message again.</button>
+  <div class="why"><p>Queueing adds your condition without cancelling useful work in flight. Interrupting is for when the next action is wrong, not when you have one more requirement.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You press Esc in the middle of a tool call. What has just happened?</p>
+  <button class="opt" type="button">That call stopped, but the finished work remains.</button>
+  <button class="opt" type="button">Every edit from this session was fully undone.</button>
+  <button class="opt" type="button">The session closed and the transcript was lost.</button>
+  <button class="opt" type="button">The agent restarted from your first message again.</button>
+  <div class="why"><p>Esc cancels the running action and returns control to you. Files already written and messages already exchanged stay where they are, which is why interrupting early is cheap.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You come back after a break and cannot tell where the run stands. What should you do first?</p>
+  <button class="opt" type="button">Tell it to restart so the state looks simpler.</button>
+  <button class="opt" type="button">Run the status command and copy the whole count.</button>
+  <button class="opt" type="button">Ask it to state the task, progress, and blockers.</button>
+  <button class="opt" type="button">Press Escape twice and then retype your whole goal.</button>
+  <div class="why"><p>A status command reports session settings, not the state of your task. Asking in words gets you the four things you need before you decide whether to interrupt.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/interactive-mode">Claude Code: interactive mode</a> — the queue section and the key table. It is written for one tool, but the distinction between "queue this" and "stop this" is the same everywhere. Read only the queue and Esc parts; the rest belongs to later lessons.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure which move fits your situation? Describe the last three lines on your screen and ask: <em>"Should I queue this, interrupt, or just ask for the state?"</em> That question is always fair.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/interactive-mode">Interactive mode</a> (queue messages, Esc, send-now keys). Retrieved 2026-11-02.</li>
+  <li id="src-a2">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a> (interrupt and steer). Retrieved 2026-11-02.</li>
+  <li id="src-a3">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> (steer the session, continue). Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex CLI commands reference</a> (<code>/status</code>). Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/using">omp: Using omp</a> (steer, queue, stop, continue). Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-b2">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex CLI commands reference</a> (interactive shortcuts). Retrieved 2026-11-02.</li>
+  <li id="src-c2">Stencil Labs, <a href="https://omp.sh/docs/keybindings">omp: Keybindings</a> (Escape is focus-sensitive). Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> queue a condition without stopping the run, interrupt one action without losing the work, ask for the task's state, and send the agent on with "continue".</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/agent-loop.html">The agent loop</a></p>
+  <div class="pager"><a href="0024-show-dont-tell.html">Previous: Show, don't tell</a> · <a href="0026-skills-slash-commands-mentions.html">Next: Skills, slash commands, mentions</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

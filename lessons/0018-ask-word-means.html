@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ask what a word means</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 1 · Telling the agent what you want · Lesson 1.3</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.3 · First-ship path ★</p>
+  <h1>Ask what a word means</h1>
+  <p class="lede">Half of a beginner's trouble with an agent is vocabulary. One question, asked at the moment the word appears, turns a paragraph you skim into a decision you can check.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0001-what-a-coding-agent-is.html">0.1 What a coding agent is</a></span><span>Win: you can get a usable explanation in two turns</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You will judge the agent's work mostly by reading what it says. Every word you do not know is a place where your only option is to nod and hope. The app may still ship, but you stop being able to say why it works, what to change when a friend reports a problem, or whether the next step is safe. Asking costs one <span class="term" title="One message from you plus the agent's whole response, including every tool call in between.">turn</span>. Not asking costs your ability to direct the work.</p>
+
+<h2>The habit: ask at the word, not after the task</h2>
+<p>All three agents in this course explain themselves gladly. Anthropic's guide for people new to the terminal says plainly that <q>Claude can explain things, help you learn, or plan out a project</q><sup class="cite"><a href="#src-a2">[2]</a></sup>, and its own documentation is blunt about it: <q>Claude Code can teach you how to use it.</q><sup class="cite"><a href="#src-a1">[1]</a></sup> Codex's CLI page makes the same offer in its first-task instructions: <q>ask Codex to explain the project, make a focused change, or help debug an issue.</q><sup class="cite"><a href="#src-b1">[3]</a></sup> Nothing about asking is unusual, and nothing is broken by it.</p>
+<p>What matters is <em>when</em>. The word shows up in the middle of a reply, while the agent still holds the task in mind. That is the best moment to ask: the agent can point at the exact line it wrote, and the answer arrives before ten more decisions are built on top of it. Ask at the end of the session and you will get a tidy definition that has lost its connection to your app.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user was partway through tightening a project's automatic code checks when the agent mentioned a data structure by name. The user typed a four-word question about it. The agent answered in three lines, then carried on with the same task where it had left off. Later in the same session the user hit a numbered question they did not follow, typed "explain 14", and got the same treatment: a short answer, then the work resumed.</p>
+  <p>Notice what did not happen. No new session, no lost work, no restart, no change of plan. Two questions, two short answers, one task that kept moving.</p>
+</div>
+
+<h2>Ask so the answer is usable</h2>
+<p>A vague "what does that mean?" leaves the agent guessing which word you mean, and how much you already know. Three details fix both problems: name the exact word, say what you are not, and ask for one example from your own project.</p>
+<div class="prompt">
+<button class="copy" type="button">Copy</button>
+<pre>I don't know the word "TERM" from your last message.
+
+Explain it in two sentences, in plain words, as if I were not a programmer.
+Then give one example of where it appears in my project, and what would
+change if it were wrong.</pre>
+</div>
+<p>The quotation marks are doing real work. Without them the agent may explain a neighbouring word it thinks you must mean. The phrase <em>as if I were not a programmer</em> is not an apology; it is the context that tells the agent which of its several vocabularies to use. Anthropic's prompting guide makes the general point: <q>explaining to Claude why such behavior is important, can give Claude more information about your goals</q><sup class="cite"><a href="#src-p1">[5]</a></sup>. Saying why you are asking is part of the question.</p>
+
+<h2>When the answer still doesn't land: re-pitch it</h2>
+<p>The first explanation is a draft, not a verdict. Sometimes it arrives in words that are themselves unfamiliar, or at a level of detail that answers a different question. Do not reply "I still don't get it": that tells the agent nothing about what to change, so it produces a near-copy of the answer you already rejected.</p>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Asks for a repeat</span>
+    <p>"I still don't understand. Explain again."</p>
+    <p>The agent has no signal about the form, the depth, or the setting. Expect the same answer, slightly reworded.</p>
+  </div>
+  <div class="good">
+    <span class="label">Asks for a <span class="term" title="The same idea stated again in a different form, usually with a concrete example, instead of louder or longer.">re-pitch</span></span>
+    <p>"Re-pitch that with an example from my app. Which file would break if this were wrong?"</p>
+    <p>The second request names the form (an example), the setting (my app) and the test you will use to judge the answer (which file would break).</p>
+  </div>
+</div>
+<div class="prompt">
+<button class="copy" type="button">Copy</button>
+<pre>That still doesn't land. Re-pitch it with an example, the way you would
+explain it to a friend over coffee.
+
+Use something from my project rather than a generic example, and keep it
+under four sentences. If there is a simpler word for it, use that word.</pre>
+</div>
+<p>Two or three re-pitches is normal for a genuinely new idea. Ten means the idea is not the problem: the agent is answering a different question than the one you are asking, and you should say what you already understand so far. "I follow the first half, up to the part about caching" is a far more useful message than "still confused".</p>
+
+<h2>Say it back</h2>
+<p>The last move is the one beginners skip. Write the idea in your own words and send it as a question:</p>
+<div class="prompt">
+<button class="copy" type="button">Copy</button>
+<pre>So it means: &lt;your sentence in your own words&gt;.
+
+Is that right? If it is wrong, correct the part that is wrong and leave
+the rest alone.</pre>
+</div>
+<p>A correction is the fastest proof that you now hold the idea, in the form you will actually use it. This checks your understanding, not the agent's honesty; a confident answer is still a claim, which is a separate habit (<a href="0030-claims-vs-evidence.html">lesson 2.2</a>).</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three details that make a question about a word easy to answer, and say what you should ask for when the first answer still doesn't land.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Name the <strong>exact word</strong> in quotes, say you are <strong>not a programmer</strong>, and ask for <strong>one example from your own project</strong>. If it still doesn't land, ask for a <strong>re-pitch with an example</strong> — the same idea in a different form — then say it back in your own words and ask whether you got it right.</p></div>
+</div>
+
+<h2>Explain as you go, without asking every time</h2>
+<p>If you want the reasoning attached to every change for a whole session, one of the three agents has a built-in setting for it. Claude Code calls it an <em>output style</em>: a session-wide instruction that sets the agent's role, tone and response format, so you do not repeat the request in each prompt<sup class="cite"><a href="#src-a3">[4]</a></sup>. Its <q>Explanatory</q> style adds <q>short <code>Insight</code> blocks that explain the choices behind the code it writes</q>, and those notes <q>aren't written into your files as comments</q><sup class="cite"><a href="#src-a3">[4]</a></sup>. Turn it on for a session where you want to learn, and turn it off when you only want the work.</p>
+
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Run <code>/output-style explanatory</code>, or run <code>/config</code> and choose <strong>Output style</strong>. With no argument, <code>/output-style</code> lists the styles and marks the current one. Switch back with <code>/output-style default</code>; the change applies from your next message.<sup class="cite"><a href="#src-a3">[4]</a></sup></p>
+    <p>You can still ask about a single word at any time. The style only changes what you get without asking.</p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>I found no documented equivalent style in Codex's docs, so use a standing instruction in your prompt instead: <em>"After each change, add one sentence in plain words explaining what changed and why."</em></p>
+    <p>To ask while it is still working, <q>Press Enter while Codex is working to inject new instructions into the current turn.</q><sup class="cite"><a href="#src-b2">[6]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>omp's docs describe no equivalent style. Its guidance is that <q>A steering message is for now; a follow-up is for after the agent yields.</q><sup class="cite"><a href="#src-c1">[7]</a></sup> Pressing Enter while it works steers the current turn; one documented example of a queued follow-up is <q>After that, explain the migration risk.</q><sup class="cite"><a href="#src-c1">[7]</a></sup></p>
+    <p>omp's documentation comes only from its own authors, so check anything surprising against your installed version.</p>
+  </div>
+</div>
+<span class="sidenote">An output style makes every reply longer, because it explains work you may not care about. Switch it off once the vocabulary stops being the obstacle. Permissions are a different setting entirely; see <a href="0006-approvals-and-permissions.html">lesson 0.6</a>.</span>
+
+<h2>Keep the words you learn</h2>
+<p>A <span class="term" title="A short list of words with a plain-words definition you wrote yourself, kept where you and the agent can both read it.">glossary</span> turns one conversation into a lasting gain. Keep a notes file in the project folder with one line per word, written in your own words, and add to it after each session. The act of writing the line is the check: if you cannot write it, you have not understood it yet. Later, the agent can read that file and match its language to yours, and you stop paying for the same explanation twice. Our <a href="../reference/glossary.html">course glossary</a> is a starting point, not a substitute for your own lines.</p>
+<div class="callout">
+  <span class="label">Two rules of thumb</span>
+  <p>Ask about words, not about whole tasks. One word, one question, then back to work. And keep the answer to a length you will actually read: two sentences and one example beats a lecture you skim.</p>
+</div>
+
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>I don't know the word "build step". Explain in two sentences, not as a programmer, then one example from my project.</span></div>
+  <div class="row"><span class="who">agent</span><span>A build step is a small job that runs before your site is published, such as copying your files into a folder the host can serve. It matters because the published site comes from that folder, not from your source files.</span></div>
+  <div class="row"><span class="who">agent</span><span>In your project, the step copies everything in <code>src/</code> into <code>dist/</code>. If it were wrong, the page you open online would show old text even though your file on disk is correct.</span></div>
+  <div class="row you"><span class="who">you</span><span>So it means: the published site is built from a copy, so editing my file is not enough until the copy runs again. Right?</span></div>
+  <div class="row tool"><span class="who">agent</span><span>Right, with one addition: the copy runs when you publish, so a local edit that was never published has no effect on the live page.</span></div>
+  <div class="row"><span class="who">note</span><span class="note">Three short turns. No files changed, and the next instruction can be written in words the user owns.</span></div>
+</div>
+
+<div class="doit">
+  <span class="label">Do it now, in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your project folder and start your agent there, as in <a href="0007-first-prompt-to-a-page.html">lesson 0.7</a>.</label></li>
+    <li><label><input type="checkbox"> Find one word from your last session that you nodded past. Paste the first prompt above with that word in place of <code>TERM</code>.</label></li>
+    <li><label><input type="checkbox"> Read the answer. If any part of it is still opaque, send the re-pitch prompt, naming the part you did follow.</label></li>
+    <li><label><input type="checkbox"> Write the meaning in one sentence of your own and send it back as "So it means: … Is that right?"</label></li>
+    <li><label><input type="checkbox"> Add that sentence to your notes file, one line, then ask the agent to continue whatever you were doing.</label></li>
+  </ol>
+  <div class="expect"><p>You should get a two- or three-sentence answer, then a second answer that uses something from your own folder, then a short "right" or a correction. Nothing in your project should change, and no approval prompt should appear, because you asked a question rather than requested an edit.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">The agent writes "I moved the build step into CI." You do not know "build step". What is the best move?</p>
+  <button class="opt" type="button">Ask it to rewrite the whole project from scratch.</button>
+  <button class="opt" type="button">Skip the word and approve whatever comes next here.</button>
+  <button class="opt" type="button">Ask what a build step is, with one example.</button>
+  <button class="opt" type="button">Search the web for a long tutorial about it.</button>
+  <div class="why"><p>Ask at the word, while the agent still has the task in view, and ask for one example from your project. Restarting or approving blind both cost more than the question.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">What makes a re-pitch different from asking the same question again?</p>
+  <button class="opt" type="button">It repeats the original words but much louder now.</button>
+  <button class="opt" type="button">It rephrases the same idea in a different form.</button>
+  <button class="opt" type="button">It changes the subject to a different idea entirely.</button>
+  <button class="opt" type="button">It asks the agent to restart the whole task.</button>
+  <div class="why"><p>A re-pitch changes the form — a concrete example, a familiar setting, a shorter length — so the agent has something new to work with. A repeat produces a reworded copy.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You have asked twice and still cannot follow the answer. What is the most useful next message?</p>
+  <button class="opt" type="button">Tell me the answer to the whole task now.</button>
+  <button class="opt" type="button">Repeat the last answer without any changes at all.</button>
+  <button class="opt" type="button">Explain it once more using the very same words.</button>
+  <button class="opt" type="button">Explain it again with an example from my app.</button>
+  <div class="why"><p>Change the form and anchor it in something you already know: your own app. Repeating or demanding the final answer skips the step you are stuck on.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/output-styles">Output styles</a> (Anthropic). Read only the table at the top and the row for <strong>Explanatory</strong>. It is the one documented, built-in way among the three agents to have explanations arrive without asking each time — and it shows what a good explanation is meant to contain: why this choice, for this code.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Here are three words from my last session I nodded past: … Explain each in two sentences with an example from my project."</em> or <em>"Quiz me on the vocabulary in this lesson, one word at a time."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a2">Anthropic, <a href="https://code.claude.com/docs/en/terminal-guide">Terminal guide for new users</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a3">Anthropic, <a href="https://code.claude.com/docs/en/output-styles">Output styles</a>. Retrieved 2026-11-02.</li>
+  <li id="src-p1">Anthropic, <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">Prompting best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b2">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex CLI commands</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> ask about a word at the moment it appears, get a re-pitch with an example when the first answer fails, and say the idea back to confirm it.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a></p>
+  <div class="pager"><a href="0017-orient-first.html">Previous: Orient first</a> · <a href="0019-interview.html">Next: The interview</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

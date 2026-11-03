@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repository, working tree, uncommitted change</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control · Lesson 3.2</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.2 · First-ship path ★</p>
+  <h1>Repository, working tree, uncommitted change</h1>
+  <p class="lede">Your project sits in two places at once: the files you can open, and the history git keeps. Two commands show you where those two disagree. Reading them is how you know what your agent actually changed.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0009-why-save-points-exist.html">3.1 Why save points exist</a></span><span>Win: you can say exactly what is not yet in your history</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>An agent edits files. It does not automatically save those edits into your project's history. So after a long run, two different questions have two different answers: "what is on my disk right now?" and "what is recorded as a save point?" Beginners answer the first and assume it is the second. That assumption is how a working app and a broken one get mixed into one commit, and how a change you wanted to keep disappears when you ask for a clean slate.</p>
+<p>This lesson gives you the two commands that answer both questions, and teaches you to read their output before you decide anything.</p>
+
+<h2>Two places, one folder</h2>
+<p>A <span class="term" title="The project folder plus the history git keeps for it.">repository</span> (usually shortened to <em>repo</em>) is your project folder together with a hidden folder named <code>.git</code>, where git stores every commit you have made. The <span class="term" title="The files as they actually sit on disk right now.">working tree</span> is everything you see when you open the project folder: the files as they are on disk at this moment.</p>
+<p>Git's own glossary defines the working tree as <q>The tree of actual checked out files.</q><sup class="cite"><a href="#src-gg">[3]</a></sup> The same entry adds that it normally holds the last commit's contents <q>plus any local changes that you have made but not yet committed.</q><sup class="cite"><a href="#src-gg">[3]</a></sup></p>
+<p>That gap is the whole subject of this lesson. A commit records a copy of the working tree at one moment. Editing a file afterwards does not change the commit. The file on disk moves forward; the history stays where it was.</p>
+
+<h2>Uncommitted change: the plain definition</h2>
+<p>An <span class="term" title="A difference between the files on disk and the last commit.">uncommitted change</span> is any difference between your working tree and your most recent commit. There are three shapes you will meet constantly:</p>
+<ul>
+  <li><strong>Modified.</strong> A file that is already in the history has been edited since the last commit.</li>
+  <li><strong>Untracked.</strong> A file exists on disk that has never been committed. Git does not know about it yet.</li>
+  <li><strong>Deleted.</strong> A file that was in the last commit is no longer on disk.</li>
+</ul>
+<p>A fourth word, <em>staged</em>, names changes you have picked for the next commit. It belongs to lesson 3.4, but you will see the heading in the output below, so know that it exists and ignore it for now.</p>
+
+<h2>Command one: <code>git status</code></h2>
+<p>Pro Git says it directly: <q>The main tool you use to determine which files are in which state is the git status command.</q><sup class="cite"><a href="#src-pg">[1]</a></sup> The command lists file names, grouped by what kind of uncommitted change each one is. Git's reference page describes it as showing <q>paths in the working tree that are not tracked by Git</q>, alongside paths that differ from the last commit.<sup class="cite"><a href="#src-gs">[2]</a></sup></p>
+<p>Here is real output from a small project. One committed file was edited by hand, and one new file was added:</p>
+<pre><code>$ git status
+On branch main
+Changes not staged for commit:
+  (use "git add &lt;file&gt;..." to update what will be committed)
+  (use "git restore &lt;file&gt;..." to discard changes in working directory)
+	modified:   index.html
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+	ideas.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")</code></pre>
+<p>Read it in three passes. First, the branch line: which line of work you are on. Second, <em>Changes not staged for commit</em>: files that exist in history and now differ. Third, <em>Untracked files</em>: files that have never been committed. Everything after a file name that starts with <code>use</code> is advice, not a report. You can skip it.</p>
+<p>When there is nothing to report, the output is one short sentence:</p>
+<pre><code>$ git status
+On branch main
+nothing to commit, working tree clean</code></pre>
+<p>Pro Git explains it: <q>This means you have a clean working directory; in other words, none of your tracked files are modified.</q><sup class="cite"><a href="#src-pgclean">[9]</a></sup> Note the careful wording. Clean means the files git knows about match the last commit, and no untracked files are present either. It does not mean your app works, and it does not mean the last commit is good.</p>
+<p>For a shorter list, add <code>--short</code>. Two columns of letters appear before each path:</p>
+<pre><code>$ git status --short
+ M index.html
+ M style.css
+?? ideas.txt</code></pre>
+<p>The left column describes what is picked for the next commit, the right column describes the working tree. An empty left column and <code>M</code> on the right means "edited, not yet picked". <code>??</code> means untracked.<sup class="cite"><a href="#src-gs">[2]</a></sup> This form is handy when the agent shows you a status summary, because it fits on one screen.</p>
+
+<h2>Command two: <code>git diff</code></h2>
+<p>Status gives you names. Diff gives you lines. Pro Git describes the pair this way: status answers "very generally by listing the file names", while diff <q>shows you the exact lines added and removed — the patch, as it were.</q><sup class="cite"><a href="#src-pg">[4]</a></sup></p>
+<p>With no arguments, diff compares the working tree to what is picked for the next commit, which usually means your last commit:<sup class="cite"><a href="#src-gd">[5]</a></sup></p>
+<pre><code>$ git diff
+diff --git a/index.html b/index.html
+index 00b1dc1..9c5cfd9 100644
+--- a/index.html
++++ b/index.html
+@@ -1,4 +1,5 @@
+ &lt;!doctype html&gt;
+ &lt;html&gt;&lt;head&gt;&lt;title&gt;My app&lt;/title&gt;&lt;/head&gt;
+-&lt;body&gt;&lt;h1&gt;Hello&lt;/h1&gt;
++&lt;body&gt;&lt;h1&gt;Hello, friends&lt;/h1&gt;
++&lt;p&gt;Coming soon.&lt;/p&gt;
+ &lt;/body&gt;&lt;/html&gt;</code></pre>
+<p>You only need four things from this. Lines beginning with <code>-</code> were removed. Lines beginning with <code>+</code> were added. Lines with a leading space are there for context and did not change. The <code>@@</code> line is a position marker inside the file; you can ignore it.</p>
+<p>For a summary instead of every line, add <code>--stat</code>:</p>
+<pre><code>$ git diff --stat
+ index.html | 3 ++-
+ style.css  | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)</code></pre>
+<p>This is the form to ask for when a change touched many files and you want to see the shape before the detail.</p>
+
+<div class="warn">
+  <span class="label">The trap that catches everyone</span>
+  <p><code>git diff</code> says nothing about untracked files. In the example above, <code>ideas.txt</code> is on disk and <code>git diff</code> does not mention it. A new file that has never been committed is invisible to diff until it is added. If you check only the diff, you will miss every new file the agent created. Check status first, then diff.</p>
+</div>
+
+<table class="ref">
+  <caption class="sidenote" style="caption-side:bottom;text-align:left">What each state looks like in the two commands.</caption>
+  <thead><tr><th>State</th><th>In <code>git status</code></th><th>In <code>git diff</code></th></tr></thead>
+  <tbody>
+    <tr><td>Committed</td><td>not listed</td><td>not shown</td></tr>
+    <tr><td>Modified</td><td>under "Changes not staged for commit"</td><td>removed and added lines</td></tr>
+    <tr><td>Untracked</td><td>under "Untracked files"</td><td>nothing at all</td></tr>
+    <tr><td>Deleted</td><td>listed as "deleted"</td><td>the whole file as removed</td></tr>
+    <tr><td>Staged</td><td>under "Changes to be committed"</td><td>only with <code>--staged</code> (lesson 3.4)</td></tr>
+  </tbody>
+</table>
+
+<h2>What your agent does to these two places</h2>
+<p>Every agent in this course edits the working tree, not the history. omp's documentation states it plainly: <q>File changes are applied to your working tree as omp works.</q> It adds: <q>They are not committed unless you ask for a commit.</q><sup class="cite"><a href="#src-omp">[6]</a></sup> Claude Code's documentation lists what it can see when it starts in a folder, and one item is <q>Your git state. Current branch, uncommitted changes, and recent commit history.</q><sup class="cite"><a href="#src-cc">[7]</a></sup> Codex's security guidance recommends you <q>keep <code>git status</code> clean before delegating.</q><sup class="cite"><a href="#src-cx">[8]</a></sup></p>
+<p>Two consequences follow. First, an uncommitted change is normal and expected in the middle of a task; it is not an error. Second, an uncommitted change is fragile: it can be overwritten, undone, or swept into an unrelated commit, and no history entry will help you recover it. Lesson 3.13 covers checkpointing for that reason.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user finished a long session on a small dashboard and typed "commit all". Earlier that afternoon they had hand-edited two files while trying an unrelated idea, and left a scratch note in the folder. They had forgotten both. The agent did exactly what was asked and produced one commit containing about thirty-five files: the dashboard work, the abandoned idea, and the scratch note. Nothing was lost. But the history now claims that one piece of work happened, when three did, and unwinding the abandoned part later needed more care than it should have.</p>
+</div>
+<p>The agent was not careless. "Commit all" means all. The information that could have prevented it was already on the user's screen: two lines of <code>git status</code>. Reading them takes ten seconds and belongs to you, not the agent.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what is the difference between the working tree and the repository? Which of the two does the agent edit? And which command shows you file names but not lines?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The <strong>repository</strong> is the project folder plus <code>.git</code>, where commits live. The <strong>working tree</strong> is the files as they sit on disk now. Agents edit the <strong>working tree</strong>, so their work is uncommitted until someone commits it. <code>git status</code> lists file names by state; <code>git diff</code> shows the added and removed lines.</p></div>
+</div>
+
+<div class="doit">
+  <span class="label">Try it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> In your terminal, go to your project folder with <code>cd</code>, then run <code>git status</code>.</label></li>
+    <li><label><input type="checkbox"> Read the output and note whether it says "working tree clean" or lists files. Note each file's group.</label></li>
+    <li><label><input type="checkbox"> Ask your agent for one tiny visible change, such as rewording the page heading. Approve the edit when it asks.</label></li>
+    <li><label><input type="checkbox"> Run <code>git status</code> again. Find the changed file and say its group out loud.</label></li>
+    <li><label><input type="checkbox"> Run <code>git diff</code> and find the line you asked for, marked with a leading <code>+</code>.</label></li>
+    <li><label><input type="checkbox"> Ask the agent: "Show me <code>git status --short</code> and <code>git diff --stat</code>, then list any untracked files by name."</label></li>
+  </ol>
+  <div class="expect">
+    <p>After the edit, status shows a <code>modified:</code> line for the file the agent touched, and diff shows the old heading with <code>-</code> and the new one with <code>+</code>. The short form shows something like <code>&nbsp;M index.html</code>, with a blank left column. Your wording and colours may differ slightly by git version and settings; the groups and the <code>+</code>/<code>-</code> markers will not. If your project is still clean after the edit, the agent may have edited a file in a different folder. Ask which path it changed.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You edit a committed page by hand. Status lists it as modified. What is now true?</p>
+  <button class="opt" type="button">The disk copy differs from the last commit.</button>
+  <button class="opt" type="button">The last commit changed to include that edit.</button>
+  <button class="opt" type="button">The file is no longer tracked by your repo.</button>
+  <button class="opt" type="button">The edit was rejected and never reached disk.</button>
+  <div class="why"><p>Editing touches the working tree only. The commit is a fixed snapshot; a modified file is a difference from it, not a change inside it.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">An agent creates a brand-new file. <code>git diff</code> shows nothing. Why?</p>
+  <button class="opt" type="button">The agent saved the file outside your project folder.</button>
+  <button class="opt" type="button">Git deleted the new file before you could inspect it.</button>
+  <button class="opt" type="button">Diff ignores files that were never committed before.</button>
+  <button class="opt" type="button">The new file is empty, so there is nothing to show.</button>
+  <div class="why"><p>Diff compares tracked content. A file that has never been committed has no earlier version to compare against, so <code>git status</code> lists it instead.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Before you say "commit all", what is the useful check?</p>
+  <button class="opt" type="button">Ask the agent whether it believes the work is good.</button>
+  <button class="opt" type="button">Open the app and click through every single page.</button>
+  <button class="opt" type="button">Delete the hidden folder so the history starts fresh.</button>
+  <button class="opt" type="button">Read status and name each file that will go in.</button>
+  <div class="why"><p>"Commit all" means all. Status shows which files are uncommitted, including forgotten scratch notes and someone else's work in progress. Naming them first is the cheap guard.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, chapter 2.2: Recording Changes to the Repository</a> — the clearest free explanation of the three states and the status output, with worked examples. Read up to "Viewing Your Staged and Unstaged Changes", then stop; the staging detail belongs to lesson 3.4.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me my <code>git status</code> output and translate each line into plain words"</em> or <em>"Why does diff not list a file I just created?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-pg">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, 2.2 Git Basics — Recording Changes to the Repository</a>, git-scm.com. Retrieved 2026-11-02. Used for status, untracked files, and the status-versus-diff distinction.</li>
+  <li id="src-gs">Git project, <a href="https://git-scm.com/docs/git-status">git-status(1)</a>. Retrieved 2026-11-02. Used for what status reports and for the short-format codes.</li>
+  <li id="src-gg">Git project, <a href="https://git-scm.com/docs/gitglossary">gitglossary(7)</a>. Retrieved 2026-11-02. Used for the definition of working tree.</li>
+  <li id="src-gd">Git project, <a href="https://git-scm.com/docs/git-diff">git-diff(1)</a>. Retrieved 2026-11-02. Used for what a bare <code>git diff</code> compares. Also checked locally with <code>man git-diff</code> (git 2.56.0).</li>
+  <li id="src-pgclean">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, 2.2</a>. Retrieved 2026-11-02. Used for the meaning of "working tree clean".</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source. Used for edits landing in the working tree.</li>
+  <li id="src-cc">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02. Used for what git state the agent can see.</li>
+  <li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/docs/agent-approvals-security">Agent approvals &amp; security</a>. Retrieved 2026-11-02. Used for the recommendation to start from a clean status.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain repository, working tree and uncommitted change, read <code>git status</code> and <code>git diff</code>, and name the files a "commit all" would include before you ask for one.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure modes</a></p>
+  <div class="pager"><a href="0009-why-save-points-exist.html">Previous: 3.1 Why save points exist</a> · <a href="0011-remote-origin-push.html">Next: 3.6 Remote, origin, push</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

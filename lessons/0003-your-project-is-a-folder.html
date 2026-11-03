@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your project is a folder</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 0 · Orientation · Lesson 0.3</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 0 · Lesson 0.3 · First-ship path ★</p>
+  <h1>Your project is a folder</h1>
+  <p class="lede">An app is not a cloud, a database or a website. Before any of that, it is a folder of text files on your computer, and the agent only works on the folder it was pointed at.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Needs: nothing</span><span>Win: you can find your project on disk and say exactly which folder the agent works in</span></div>
+</header>
+<main>
+
+<h2>Why this is the first real thing to learn</h2>
+<p>Your mission ends with a public app. Every step between here and there happens inside one folder on your computer: the page, the styles, the pictures, the notes, and later the record of every change you made. When you ask an agent to build something, it reads and writes files in that folder. If you do not know where the folder is, you cannot check what the agent did, and you cannot tell it where to look when it gets lost.</p>
+<p>This lesson is short and physical. You will make a folder, put a text file in it, open the file in a browser, and see the whole app-to-be sitting in one place.</p>
+
+<h2>A project is a folder, and folders nest</h2>
+<p>A <span class="term">project folder</span> is an ordinary folder, the same kind you already make to hold photos or tax papers. It has a name you choose. Inside it are files, and inside it you can make more folders. Nothing about it is special to the agent; it is special because that is the thing you point the agent at.</p>
+<figure style="margin: 1.2rem 0;">
+<pre><code>my-app/                 ← the project folder
+├── index.html          ← the page people will see
+├── notes.txt           ← a note to yourself
+└── images/
+    └── cover.jpg       ← a picture, used by the page</code></pre>
+<figcaption class="sidenote" style="margin-top:.4rem">One folder, two or three files, and one folder inside it. Real projects grow deeper than this; the shape stays the same.</figcaption>
+</figure>
+<p>To talk about a file, you give its <span class="term">file path</span>: the route from a starting point down to the file. MDN puts it plainly: <q>To reference one file from another, you have to provide a file path — basically a route, so one file knows where another one is.</q><sup class="cite"><a href="#src-mdn-files">[1]</a></sup> In the picture above, one path to the picture is <code>my-app/images/cover.jpg</code>. Read it left to right, entering each folder in turn.</p>
+<p>The same idea in your file manager is a series of windows: open <code>my-app</code>, open <code>images</code>, there is the picture. The path is that journey written as one line. Paths matter later because the page will use them to find its own pictures and other pages.</p>
+
+<h2>Files are text (most of the ones you will touch)</h2>
+<p>Open <code>index.html</code> in a plain text editor and you see characters: letters, angle brackets, spaces, line breaks. That is the whole file. A web page is text that a browser knows how to read. MDN says of the <code>.html</code> ending that it <q>identifies the type of file we are dealing with</q> and tells the computer <q>what kind of content it can expect in the file, which program it should use to open the file</q>.<sup class="cite"><a href="#src-mdn-files">[1]</a></sup></p>
+<p>That last part is the <span class="term">file extension</span>: the bit after the last dot in the name. It is a label, not magic. <code>notes.txt</code> and <code>index.html</code> are both plain text; the label tells your computer that one is a note and the other should open in a browser. A photo such as <code>cover.jpg</code> is different: it is binary, not readable as text, and you leave it alone. The code you and the agent write is text you can open, read, search and compare.</p>
+<div class="callout">
+  <span class="label">Why this is good news</span>
+  <p>Because the app is text in a folder, it can be copied, backed up, compared line by line, and undone. Everything in Unit 3 about save points rests on this plain fact.</p>
+</div>
+<p>An editor does not invent a second copy of your project. MDN notes, after you open a folder in an editor, that <q>VS Code is using the underlying OS file system, not using some weird file system of its own.</q><sup class="cite"><a href="#src-mdn-files">[1]</a></sup> The same is true of every editor you might use: it is a window onto the same folder.</p>
+
+<h2>The working directory: where the agent is standing</h2>
+<p>When you start an agent, you start it in one folder. That folder is its <span class="term">working directory</span>: the place it treats as "here" for the whole session. Relative names resolve from there, and the files beneath it are the ones it treats as part of the project.</p>
+<p>This is not a technicality. Codex's documentation says to <q>Open a project directory and run codex</q>.<sup class="cite"><a href="#src-cx">[2]</a></sup> Anthropic's memory documentation says project instruction files are loaded <q>from your current working directory and every directory above it</q> — the starting folder decides what the agent picks up at launch.<sup class="cite"><a href="#src-cc-memory">[3]</a></sup> omp keeps its session tied to the same place: <q>omp records completed messages and tool activity in a session associated with the working directory.</q><sup class="cite"><a href="#src-omp-sessions">[4]</a></sup></p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>You start <code>claude</code> from inside your project folder, after moving there in a terminal.<sup class="cite"><a href="#src-cc-quickstart">[5]</a></sup> Files and rules are read from that folder and the folders above it.<sup class="cite"><a href="#src-cc-memory">[3]</a></sup> Lesson 0.4 shows the move; lesson 0.5 covers install and sign-in.</p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Codex's own instruction is the shortest version of the rule: <q>Open a project directory and run codex.</q><sup class="cite"><a href="#src-cx">[2]</a></sup> The folder you open is the workspace it reads and edits inside.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>omp ties a session to the working directory it was started in, so the folder you launch from is the folder the conversation belongs to.<sup class="cite"><a href="#src-omp-sessions">[4]</a></sup> Start it somewhere else and you are in a different session with a different "here".</p>
+  </div>
+</div>
+<p>Two words you will hear for a place on disk: <em>absolute</em> and <em>relative</em>. An absolute path starts from the top of your computer and always means the same place. A relative path is measured from where you are; as MDN writes, omitting the leading slash <q>makes the path relative to your present working directory</q>.<sup class="cite"><a href="#src-mdn-cli">[6]</a></sup> That is why "open <code>index.html</code>" is a complete instruction only when both of you agree on the "here".</p>
+
+<h2>Two times the folder was the whole bug</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to apply two files she had saved for it in a folder. The agent's first listing of that folder came back empty. Instead of inventing work, it searched the disk, found both files in a neighbouring folder, said what had happened, and only then continued. Nothing was wrong with the files or with the request. The listing and the location did not agree, and one extra look settled it.</p>
+</div>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A different user asked for the contents of their most recent download to be added to a catalogue. The download existed twice: as a compressed file and as the folder it had been unpacked into. Before copying anything, the agent compared the two, confirmed they matched, and worked from the folder as the authoritative copy. Same bytes, two shapes; knowing which shape is the project mattered.</p>
+</div>
+<p>Both stories are about the same thing. The agent is competent inside the folder you give it. Outside that folder it is guessing, and guesses about location waste turns and produce confusing reports.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what is a working directory, and why does the folder you start the agent in change what it can find? Answer in two sentences.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The <strong>working directory</strong> is the folder an agent treats as its current place: relative names resolve from it, and the project files beneath it are the ones it works with. Starting in a different folder means a different set of files, a different "here", and often a different session.</p></div>
+</div>
+
+<h2>Name things so the path stays boring</h2>
+<p>Filenames become part of paths, and paths later become web addresses. MDN recommends <q>writing your folder and file names in lowercase with no spaces and with words separated by hyphens</q>.<sup class="cite"><a href="#src-mdn-files">[1]</a></sup> So <code>my-app</code> and <code>cover-photo.jpg</code>, not <code>My App</code> or <code>cover photo.jpg</code>. A space in a filename has to be quoted or escaped in many tools, and some tools treat it as two separate names.</p>
+<p>The extension is the other half of the name. Keep it, and keep it correct: <code>.html</code> for a page, <code>.css</code> for styles, <code>.js</code> for scripts, <code>.txt</code> for notes. MDN warns that <q>Removing or changing the file extension is likely to cause errors</q>.<sup class="cite"><a href="#src-mdn-files">[1]</a></sup> If a file is called <code>index.html.txt</code>, your browser will show you text instead of a page, and you will spend an evening on it.</p>
+<div class="warn">
+  <span class="label">Check the name, not the icon</span>
+  <p>Some systems hide extensions by default, so a file that looks like <code>index.html</code> may really be <code>index.html.txt</code>. Ask your file manager to show full names before you trust one. This is the single most common beginner file problem.</p>
+</div>
+
+<div class="doit">
+  <span class="label">Do it now: build the folder by hand</span>
+  <ol>
+    <li><label><input type="checkbox"> In Finder (macOS) or File Explorer (Windows), open your home folder and create a new folder named <code>my-app</code>.</label></li>
+    <li><label><input type="checkbox"> Open a plain text editor, write one sentence such as <code>Hello from my folder.</code>, and save it inside <code>my-app</code> as <code>hello.html</code>.</label></li>
+    <li><label><input type="checkbox"> Look at the saved file's full name. If it ends in <code>.txt</code>, rename it so it ends in <code>.html</code>.</label></li>
+    <li><label><input type="checkbox"> Double-click the file. Your browser should open and show your sentence.</label></li>
+    <li><label><input type="checkbox"> In the browser, note the address at the top. It should point inside <code>my-app</code> on your own disk, not to a website.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You now have a folder containing one text file, and that file opens as a page in your browser. You built a (very plain) web page without installing anything, because a page is a text file with an <code>.html</code> name. Note the path you just used: that is the shape of every project you will make in this course.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<p>When you do have an agent running, the sentence to practise is a location sentence, not a task sentence. Try this one the first time you open a session:</p>
+<div class="prompt"><button class="copy">Copy</button><pre>Before you change anything: tell me which folder you are working in, list the files you can see there, and say which one you think is the page. Do not edit anything yet.</pre></div>
+<p>If the answer names a folder you did not expect, stop and fix the start. That is cheaper than fixing the work.</p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">What does the folder you start your agent in decide?</p>
+  <button class="opt" type="button">Which files it reads and where commands run</button>
+  <button class="opt" type="button">How much money the entire session will cost</button>
+  <button class="opt" type="button">Which model and version the agent will use</button>
+  <button class="opt" type="button">Whether your app is allowed to go online</button>
+  <div class="why"><p>The starting folder is the working directory: relative names resolve there and the project files beneath it are the ones the agent works with. Cost, model and publishing are separate settings.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">The file is named <code>index.html</code>. What does the ending tell your computer?</p>
+  <button class="opt" type="button">Who created the file and when it changed</button>
+  <button class="opt" type="button">Which program opens it and what it holds</button>
+  <button class="opt" type="button">How much space the file may take up</button>
+  <button class="opt" type="button">Which folder the file has to live in</button>
+  <div class="why"><p>The extension is a label for the kind of content and the program that should open it. It does not fix the folder, the size or the author.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You name a page <code>my page.html</code>. What is likely to go wrong?</p>
+  <button class="opt" type="button">The folder will be renamed by the system</button>
+  <button class="opt" type="button">The page will never appear in any browser</button>
+  <button class="opt" type="button">The browser will show a blank grey page</button>
+  <button class="opt" type="button">Tools that expect one word may then fail</button>
+  <div class="why"><p>A space splits a name into two arguments for many tools and must be quoted or escaped; some systems also encode it awkwardly in a web address. Lowercase words joined by hyphens avoid the whole class of problems.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Environment_setup/Dealing_with_files">Dealing with files</a> — MDN's beginner guide to folders, filenames, extensions and file paths. Read the sections on file names and file paths; skip the editor shortcuts if you already have a favourite.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me where my project folder is using an analogy to a filing cabinet"</em> or <em>"Why does a space in a filename cause trouble?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-mdn-files">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Environment_setup/Dealing_with_files">Dealing with files</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cx">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cc-memory">Anthropic, <a href="https://code.claude.com/docs/en/memory">How Claude remembers your project</a>. Retrieved 2026-11-02.</li>
+  <li id="src-omp-sessions">Stencil Labs, <a href="https://omp.sh/docs/sessions">omp sessions</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-cc-quickstart">Anthropic, <a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a>. Retrieved 2026-11-02.</li>
+  <li id="src-mdn-cli">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Environment_setup/Command_line">Command line crash course</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> say what a project folder is, read a file path, explain why files are text, and name the folder your agent works in.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: <a href="0004-the-terminal-in-five-commands.html">0.4 The terminal in five commands</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

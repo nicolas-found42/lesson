@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Goal and audience, not method</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 1 · Telling the agent what you want · Lesson 1.1</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.1 · First-ship path ★</p>
+  <h1>Goal and audience, not method</h1>
+  <p class="lede">Tell the agent what should exist and who it is for. Let it choose the steps. Your two sentences about the person at the other end do more work than twenty about tools.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0007-first-prompt-to-a-page.html">0.7 First prompt to a page</a></span><span>Win: you can write a prompt the agent can aim at</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You are going to ship an app to people who are not you. The agent cannot see those people. It can see your folder, and it can read what you type. If you never say who the app is for, the agent fills the gap with a guess, and a guess about strangers is usually "a developer like me". That is how beginners end up with an app that works on their screen and confuses everyone else.</p>
+
+<h2>Three things a prompt can contain</h2>
+<p>A <span class="term" title="What you type to the agent in one turn.">prompt</span> can say <em>what</em>, <em>who</em> or <em>how</em>. The course will use these words the same way every time:</p>
+<ul>
+  <li><strong>Goal:</strong> what should be true when the work is done. "My recipe collection is on the web."</li>
+  <li><strong>Audience:</strong> who will use the result, and what they cannot or will not do. "My relatives, on their phones, without installing anything."</li>
+  <li><strong>Method:</strong> the steps and tools used to get there. "Create a deploy workflow and turn on hosting."</li>
+</ul>
+<p>Beginners tend to write only method, because method is what they imagine the work to be. But method is the agent's strong side. It reads your files, measures them, and picks a way. The goal and the audience are the parts only you hold.</p>
+<p>The official guides agree on this. Codex's best-practices page recommends a default of four parts, and the first is <q>Goal: What are you trying to change or build?</q> The others are Context, Constraints and "Done when". It says this structure <q>helps Codex stay scoped, make fewer assumptions, and produce work that’s easier to review.</q><sup class="cite"><a href="#src-b7">[1]</a></sup> Claude Code's page says to <q>name the file, describe the symptom, and say what “fixed” looks like up front.</q><sup class="cite"><a href="#src-a7">[2]</a></sup> Anthropic's prompting guide offers a picture to hold on to: <q>Think of Claude as a brilliant but new employee who lacks context on your norms and workflows.</q><sup class="cite"><a href="#src-p1">[3]</a></sup></p>
+<span class="sidenote">The audience usually slots into the "Context" and "Constraints" parts of Codex's four-part prompt. This lesson pulls it out because beginners forget it most often.</span>
+
+<h2>The same request, two ways</h2>
+<div class="compare">
+  <div class="bad"><span class="label">Method only</span><p>"Set up a deploy workflow and turn on free hosting for this folder."</p></div>
+  <div class="good"><span class="label">Goal and audience</span><p>"I want my recipe collection online so my relatives can open it from a link on their phones. They won't install or sign up for anything. When it works, give me the link and put it at the top of the project's front page."</p></div>
+</div>
+<p>The first version only works if you already know what "deploy workflow" means and whether it is the right tool. The second leaves the method open and adds three facts the agent could never find alone: the readers use phones, they will not create accounts, and "done" includes a link in a named place. Everything else follows from those facts.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>Remember the gallery in lesson 0.1, where one message led to about fifty tool calls? That message was two sentences. One said who the page was for: friends who are not technical and would not know how to use a code repository. The other said where the link should go afterwards. It named no tool and no step. Because the audience was stated, the agent decided that the deliverable was a web address rather than a list of instructions, and it measured the project and changed its plan when it found the folder was too big for free hosting.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three things a prompt can contain, and say which two only you can supply.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A prompt can contain a <strong>goal</strong>, an <strong>audience</strong> and a <strong>method</strong>. Only you hold the goal and the audience. The agent can usually work out the method itself.</p></div>
+</div>
+
+<h2>A fill-in template</h2>
+<p>When you are unsure how to start, fill in these blanks. Delete anything that does not apply.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>I want [what should exist when we are done].
+It is for [who], who [what they cannot or will not do, such as install software or use a laptop].
+When it works, I should be able to [one thing I can check myself].
+Please do not [one thing I do not want].
+If you have to choose between options, pick the simplest one that works and tell me why.</pre>
+</div>
+<p>The last line matters more than it looks. It gives the agent permission to decide, and it asks for the reason, so you can learn what it chose.</p>
+
+<h2>When method does belong in the prompt</h2>
+<p>Sometimes you do care about the how. Claude Code's guide says a preference between two reasonable approaches cannot be read from your files: <q>if you care which one it picks, say so up front.</q><sup class="cite"><a href="#src-a7">[2]</a></sup> "No new libraries", "keep it one file", "no sign-up" are all fair. Write them as constraints on the result, next to the goal. Do not write the whole recipe of steps. A constraint tells the agent what to avoid. A recipe makes you responsible for every step, and you do not yet know the steps.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in the practice folder from lesson 0.7, with approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</label></li>
+    <li><label><input type="checkbox"> Copy the template above and fill it in for a small page you want, for example a one-page menu for a friend's café that must read well on a phone.</label></li>
+    <li><label><input type="checkbox"> Send it. Approve only the actions you understand, and say no to anything that surprises you.</label></li>
+    <li><label><input type="checkbox"> When it finishes, ask: "Who did you assume this was for, and which choices changed because of that?"</label></li>
+  </ol>
+  <div class="expect"><p>You should see a page built to your description, opened or described so you can look at it. The agent's answer to the last question should name your audience (phones, no sign-up) and point to specific choices, such as large text or a single column. If it names a generic reader, your audience line was too vague. Rewrite it and try again.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Which prompt gives the agent a goal and an audience?</p>
+  <button class="opt" type="button">Add a build step and a hosting config to my folder.</button>
+  <button class="opt" type="button">Use the usual web tools and make the page fast.</button>
+  <button class="opt" type="button">Put my photos online so my gran can open them.</button>
+  <button class="opt" type="button">Create the files for a web page in my folder.</button>
+  <div class="why"><p>Only the third says what should exist (photos online) and who it is for (a gran who needs to open them). The others describe steps or tools without a reader.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You wrote only method steps and the agent built something odd. What is the likeliest cause?</p>
+  <button class="opt" type="button">The agent never learned who the result was for.</button>
+  <button class="opt" type="button">The agent could not read the files in your folder.</button>
+  <button class="opt" type="button">The agent needs more steps written out for it.</button>
+  <button class="opt" type="button">The agent works better with shorter and vaguer prompts.</button>
+  <div class="why"><p>Steps tell the agent what to do but not why. Without a reader in mind, it fills the gap with a guess. More steps would only make you responsible for more details.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You really do not want an account system. Where does that belong?</p>
+  <button class="opt" type="button">Nowhere, because the agent will work it out.</button>
+  <button class="opt" type="button">As a ten-step recipe for building the page.</button>
+  <button class="opt" type="button">In a second chat that the agent never sees.</button>
+  <button class="opt" type="button">As a stated constraint beside the goal itself.</button>
+  <div class="why"><p>A preference the agent cannot read from your files has to be stated. Write it as a constraint ("no sign-up") next to the goal, not as a recipe.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a> (OpenAI). Read the section "Strong first use: Context and prompts". It is the clearest official statement of a goal-first prompt, and it applies to every agent in this course.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a blank? Ask the agent that gave you this course. Try: <em>"Here is my app idea. Who might its users be, and which of them should I write for first?"</em> or <em>"Rewrite my prompt so it states the goal and audience, but keep my wording where you can."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-b7">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-p1">Anthropic, <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">Prompting best practices</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> write a prompt that states the goal and the audience, leave the method to the agent, and add a constraint only where you truly care how.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0015-ship-a-hello-world-page.html">Previous: Ship a hello world page</a> · <a href="0017-orient-first.html">Next: Orient first</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

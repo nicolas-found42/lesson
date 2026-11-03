@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The agent loop: reference</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb">Reference · from <a href="../lessons/0001-what-a-coding-agent-is.html">Lesson 0.1</a></nav>
+<header class="lesson-head">
+  <p class="kicker">Reference card</p>
+  <h1>The agent loop</h1>
+  <p class="lede">One page. Print it or keep it open while you work.</p>
+</header>
+<main>
+<h2>Chat vs agent</h2>
+<ul>
+  <li><strong>Chat:</strong> your message in, text out.</li>
+  <li><strong>Agent:</strong> your message in, then many tool calls (read, edit, run), then a report.</li>
+</ul>
+<h2>The loop</h2>
+<ol>
+  <li><strong>Gather</strong> context: read files, look around.</li>
+  <li><strong>Act:</strong> edit files, run commands.</li>
+  <li><strong>Verify:</strong> run or check the result. Repeat until the agent believes it is done.</li>
+</ol>
+<h2>Three tools, same loop</h2>
+<ul>
+  <li>Start: <code>claude</code> · <code>codex</code> · <code>omp</code>, typed inside your project folder.</li>
+  <li>Source: <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>.</li>
+</ul>
+<div class="callout"><span class="label">Remember</span><p>"Done" is a claim, not a proof. Look at the real result.</p></div>
+</main>
+<footer class="lesson-foot"><p><a href="../lessons/0001-what-a-coding-agent-is.html">Back to lesson 0.1</a></p></footer>
+</body>
+</html>

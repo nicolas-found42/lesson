@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orient first: ask before you change anything</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 1 · Telling the agent what you want · Lesson 1.2</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.2 · First-ship path ★</p>
+  <h1>Orient first</h1>
+  <p class="lede">Before you ask for a change, ask for a map. One question that only reads costs almost nothing. One change built on a wrong guess has to be found and undone.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0007-first-prompt-to-a-page.html">0.7 First prompt to a page</a></span><span>Win: you can open any folder with a question that changes nothing</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You have a page on your screen from lesson 0.7. The next thing you want is a change: different words, a photo, a button that does something. The tempting move is to describe that change immediately, because you can already picture the result.</p>
+<p>The agent cannot picture it. It has never seen your folder. Ask for a change first, and it has to guess where things live, what the page already does, and which of your files matters. Then it acts on those guesses. Guesses made while editing turn into edits, and edits have to be found and undone later.</p>
+<p>A question asked first becomes knowledge you keep for the rest of the project. That is the whole habit this lesson teaches: <span class="term" title="Finding out what already exists before you decide to change it.">orient first</span>.</p>
+
+<h2>The cheapest question is one that only reads</h2>
+<p>To orient is to find out what exists before you decide anything. A cheap question asks the agent to read and report. It cannot break your project, because nothing is written down. Here are four that fit almost any folder:</p>
+<ul>
+  <li>"What files are in this folder, and what is each one for?"</li>
+  <li>"How does this page get the text in its header today?"</li>
+  <li>"If I wanted a second page, where would it go and what would link to it?"</li>
+  <li>"What else uses the file I just named? What would break if it changed?"</li>
+</ul>
+<p>Cheap here means low risk, not zero effort. The agent still reads and thinks. But reading cannot damage anything, and the answer makes your next request sharper: a minute of looking against an afternoon of undoing.</p>
+<p>The opposite move is expensive. "Make the header dark green" sounds small until you learn there are three pages, each with its own header, and you meant the first one. The agent edits all three because you never told it there were three.</p>
+
+<h2>The same request, two openings</h2>
+<div class="compare">
+  <div class="bad"><span class="label">Straight to the change</span><p>"Add a dark mode to my site."</p></div>
+  <div class="good"><span class="label">One question first</span><p>"Before changing anything: how are colours set on this site, which files control them, and what would a dark mode touch? Answer only, no edits."</p></div>
+</div>
+<p>The first opening asks the agent to invent a plan in the dark. It will pick a file, invent a mechanism, and build it. Sometimes that works. When it does not, you own a change you did not ask for in a place you cannot name.</p>
+<p>The second opening costs one turn and produces a map. With that map, your next message can be short and exact: "Good. Change the one colour rule in the styles file, nowhere else." You are no longer guessing, and neither is the agent.</p>
+
+<h2>A map, then a change</h2>
+<p>Here is what orienting looks like in a real session. The user had never opened this project before.</p>
+<div class="transcript" role="group" aria-label="A short orienting exchange">
+  <div class="row you"><span class="who">you</span><span>Before you change anything: how are the pictures on this page made? Which files decide that? Answer only, no edits.</span></div>
+  <div class="row tool"><span class="who">tool</span><span>read index.html, read render.js</span></div>
+  <div class="row agent"><span class="who">agent</span><span>Nothing is stored as an image file. Each picture is drawn by one function in render.js from a list of shapes and numbers. index.html only reserves a space for it. Changing the look means editing that list, not swapping a file.</span></div>
+  <div class="row note">Nothing on disk changed. The answer is the map.</div>
+</div>
+<p>Only after that answer did the user describe the work they wanted. Because they now knew there was no image file to replace, they asked for the shapes to be adjusted instead of asking for "a new picture", which would have sent the agent hunting for something that did not exist.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user opened an unfamiliar project and typed one plain question about how it worked before asking for any change. The agent read the code, named the two files involved, and explained the mechanism in a short paragraph. No file was touched. The answer also exposed a limit in the existing design, so the user scoped the real task around it instead of hitting the limit later.</p>
+</div>
+
+<h2>Ask for three things</h2>
+<p>A useful map has three parts, and you can ask for all three in one message: the files involved, how the thing works now, and the one surprise worth knowing. The third part is where the value hides, because the agent has read the code and you have not.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Before changing anything, read the project and answer three things.
+1. Which files would I touch to change [the thing I care about]?
+2. How does that work today, in two or three sentences?
+3. What would surprise me, or what would break if I changed it?
+Do not edit any files yet. Just report.</pre>
+</div>
+<p>That last line is not politeness. It is an instruction the agent will follow, and it protects you while you are still deciding. Lesson 1.7 builds on this when the answer grows into a full plan you approve.</p>
+
+<h2>The agent is built for this</h2>
+<p>Asking first is not a trick to slow the agent down. Reading is what it does best. Anthropic's guidance says it plainly: <q>Claude starts every task by reading your code, and current models are very good at this.</q><sup class="cite"><a href="#src-a7">[1]</a></sup> OpenAI's Codex CLI page offers the same first move, suggesting you <q>ask Codex to explain the project</q>.<sup class="cite"><a href="#src-b1">[2]</a></sup> Asking for a map uses the strongest part of the tool before spending its weakest part: guessing what you meant.</p>
+<span class="sidenote">Reading is not free in every sense: what the agent reads fills its context window (lesson <a href="0068-context-window.html">5.1</a>). It costs no edits and no undo, which is the kind of cost that matters here.</span>
+
+<h2>Say "do not edit" out loud</h2>
+<p>An agent told to "look into" a problem may decide the fastest way to be helpful is to fix it. Each tool offers a way to keep the read-only promise. Learn the one for your agent, and keep approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Plan mode is the built-in version of this habit: <q>Plan mode tells Claude to research and propose changes without making them.</q><sup class="cite"><a href="#src-a4">[3]</a></sup> Anthropic lists it for <q>Exploring a codebase before changing it.</q><sup class="cite"><a href="#src-a4">[3]</a></sup> You enter it by <q>pressing `Shift+Tab` or prefixing a single prompt with `/plan`</q>.<sup class="cite"><a href="#src-a4">[3]</a></sup> The status bar shows when it is on.</p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>The CLI quickstart's example first message is simply <code>Tell me about this project</code>.<sup class="cite"><a href="#src-b1">[2]</a></sup> If you want a hard boundary rather than a polite request, start with the read-only sandbox: <q>read-only: The agent can inspect files, but it can't edit files or run commands without approval.</q><sup class="cite"><a href="#src-b4">[4]</a></sup> The flag is <code>--sandbox read-only</code>.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>The omp docs give the exact sentence to use: <q>If you only want an explanation, say “investigate, but do not edit.”</q><sup class="cite"><a href="#src-c1">[5]</a></sup> For anything larger, <code>/plan</code> gives you <q>a separate planning turn</q> before execution.<sup class="cite"><a href="#src-c1">[5]</a></sup> omp documents only itself, so treat these pages as single-vendor sources.</p>
+  </div>
+</div>
+<p>These features differ in name and in strength. The habit does not: one message that asks for understanding, and no edits, before the message that asks for work.</p>
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what makes a question cheap, which three things should its answer contain, and what do you say so the agent does not start editing?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A cheap question only reads; it cannot break the project. Its answer should name the <strong>files involved</strong>, explain <strong>how the thing works today</strong>, and flag <strong>the surprise or risk</strong>. Say "do not edit any files yet", or use your agent's read-only or plan mode.</p></div>
+</div>
+
+<h2>Check the map before you build on it</h2>
+<p>A map is also a claim, and it can be wrong in a large or unusual project. You do not need to audit all of it. Check one thing yourself: open the file it named, or look at the page and see whether the description matches. If that one check is wrong, treat the rest as unproven too. Lesson <a href="0030-claims-vs-evidence.html">2.2</a> makes this routine.</p>
+
+<h2>When not to bother</h2>
+<p>Orienting is a tool, not a ritual. Skip it when you already hold the map: a file you wrote ten minutes ago, a page with one heading, a change of a single word you can point at. A long questionnaire about a three-line file wastes the attention you were trying to save. Lesson <a href="0065-over-asking.html">4.11</a> covers where that turns into over-asking.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in the project folder from lesson 0.7, with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Send: "Before changing anything, tell me which files make this page, what each one does, and what would break if I edited the main one. Do not edit anything."</label></li>
+    <li><label><input type="checkbox"> Read the answer and write down the file names it gives you. Open one of them yourself and look.</label></li>
+    <li><label><input type="checkbox"> Then ask for one small change, naming that same file. Notice how much shorter your second message is than your first.</label></li>
+  </ol>
+  <div class="expect"><p>You should see a short list of real files that you can find in your folder, a one- or two-sentence explanation, and no edits at all in the agent's report. Your second message should now name a file instead of describing the whole page. If the agent edited something during step 2, its read-only setting is off: check lesson 0.6 before going further.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">What makes a question cheap to ask before a change?</p>
+  <button class="opt" type="button">It asks the agent to edit several files right away.</button>
+  <button class="opt" type="button">It asks the agent to install one large package now.</button>
+  <button class="opt" type="button">It asks the agent to read and report back only.</button>
+  <button class="opt" type="button">It asks the agent to delete the entire project folder.</button>
+  <div class="why"><p>A question is cheap because it cannot damage anything and it improves your next request. Reading is the work; writing is what you are postponing.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">You want a change to a page you did not build. What comes first?</p>
+  <button class="opt" type="button">Ask what the page does and which files set it.</button>
+  <button class="opt" type="button">Ask for the change and accept whatever it gives back.</button>
+  <button class="opt" type="button">Ask for three changes at once and save one turn.</button>
+  <button class="opt" type="button">Ask the agent to rewrite the whole page from scratch.</button>
+  <div class="why"><p>The first message buys a map: the files, the current behaviour, the risk. Every other option asks the agent to act on guesses about a page it has never read.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Which instruction keeps the agent reading instead of editing?</p>
+  <button class="opt" type="button">Investigate the folder and rewrite every file it contains.</button>
+  <button class="opt" type="button">Investigate the folder and explain it, but edit nothing.</button>
+  <button class="opt" type="button">Investigate the folder and then guess the rest quickly.</button>
+  <button class="opt" type="button">Investigate the folder and delete every file it contains.</button>
+  <div class="why"><p>"But edit nothing" sets the boundary in the same sentence as the request. Guessing, rewriting and deleting all break the read-only promise before the answer exists.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a> (Anthropic). Read only the section "Analyze before you edit with plan mode". It is the clearest official description of an agent that researches without writing, and the idea transfers to the other two tools even where the names differ.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Unsure what to ask? Ask the agent that gave you this course. Try: <em>"Here is my project. What are the three questions I should ask before changing it?"</em> or <em>"I want to [change]. What should I find out first?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a4">Anthropic, <a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a>. Retrieved 2026-11-02. Page changes often; check the labels in your version.</li>
+  <li id="src-b4">OpenAI, <a href="https://learn.chatgpt.com/docs/sandboxing">Sandbox</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs">omp documentation</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> open any unfamiliar folder with a question that only reads, ask for files, behaviour and risk in one message, and turn on a mode that refuses edits while you decide.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0016-goal-audience-not-method.html">Previous: Goal and audience, not method</a> · <a href="0018-ask-word-means.html">Next: Ask what a word means</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

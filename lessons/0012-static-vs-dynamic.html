@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Static or dynamic, and what hosting means</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 6 · Shipping a static app · Lesson 6.1</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 6 · Lesson 6.1 · First-ship path ★</p>
+  <h1>Static or dynamic, and what hosting means</h1>
+  <p class="lede">Some apps are a pile of files that a host hands over untouched. Others need a program running all the time. Which one you are building decides whether free hosting is enough.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0008-anatomy-of-a-web-page.html">0.8 Anatomy of a web page</a></span><span>Win: you can say whether your app needs a server</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You have made a page appear on your own screen. To let a friend open it, the files have to live on a machine that stays awake and answers requests. That arrangement is called <span class="term" title="A machine, plus the software on it, that stores your site's files and sends them to visitors.">hosting</span>. Before you choose a host, you need one fact about your app: is it <em>static</em> or <em>dynamic</em>? That single fact decides whether a free host is enough, whether you need a database, and whether your agent can finish the job in one sitting.</p>
+
+<h2>A page is a set of files</h2>
+<p>Lesson 0.8 gave you the three languages: HTML describes the content, CSS styles it, JavaScript makes it respond. Add images, fonts and video, and that is the whole site. Each of those is a separate file with its own address. When someone opens your page, this is what happens:</p>
+
+<div class="order">
+  <span class="label">Put one page view in order</span>
+  <button class="item" type="button" data-pos="3">The host sends the file back to the browser</button>
+  <button class="item" type="button" data-pos="1">The browser asks the host for one file by its address</button>
+  <button class="item" type="button" data-pos="4">The browser draws the page and asks for the next file</button>
+  <button class="item" type="button" data-pos="2">The host finds that file in its storage</button>
+  <p class="status"></p>
+</div>
+
+<p>Every image and stylesheet repeats steps two to four. A host, then, is mostly a machine that answers "here is that file". The word covers both the machine and the software on it. MDN's explanation opens with exactly that: <q>The term web server can refer to hardware or software, or both of them working together.</q><sup class="cite"><a href="#src-mdn-server">[1]</a></sup></p>
+
+<h2>Static: the host hands over files as they are</h2>
+<p>A static site is one where the host makes no decisions. It looks up the requested file and sends its bytes unchanged. MDN puts the name's origin plainly: <q>We call it "static" because the server sends its hosted files as-is to your browser.</q><sup class="cite"><a href="#src-mdn-server">[1]</a></sup></p>
+<p>GitHub Pages is a static host, and its own description is a good definition: <q>GitHub Pages is a static site hosting service that takes HTML, CSS, and JavaScript files straight from a repository</q> and publishes them.<sup class="cite"><a href="#src-pages-about">[2]</a></sup> Pages is available <q>in public repositories with GitHub Free</q>, which is why Unit 6 uses it.<sup class="cite"><a href="#src-pages-about">[2]</a></sup></p>
+<span class="sidenote">Static does not mean plain or old-fashioned. It means "no decisions are made on the host". The look of the page is a separate question.</span>
+<p>The practical consequence is large. Any machine that can store files and answer requests can serve a static site. There is no program of yours to keep running, no database to keep alive, and nothing to crash at three in the morning.</p>
+
+<h2>Buttons are not the dividing line</h2>
+<p>Here is the mistake almost every beginner makes. Your page has a filter, a dark-mode switch, a dropdown that opens with animation. Surely that is dynamic? No. All of that JavaScript runs in the visitor's browser, on the visitor's own machine. MDN names it: <q>Code running in the browser is known as client-side code</q>.<sup class="cite"><a href="#src-mdn-ssr">[3]</a></sup> The host still did nothing but hand over files.</p>
+
+<div class="compare">
+  <div class="good"><span class="label">Feels alive, still static</span><p>A filter that sorts a list already contained in the page. A light and dark theme. An image gallery that opens a larger picture on click. Every visitor receives the same files, and their own browser does the rest.</p></div>
+  <div class="bad"><span class="label">Actually dynamic</span><p>Comments that every visitor can read. A score that another player sees. A page assembled from rows in a database. Here the answer depends on who is asking, and on what happened before.</p></div>
+</div>
+
+<p>Ask the question this way: <em>does one visitor's action change what the next visitor receives?</em> If the answer is no, you can probably ship static files.</p>
+
+<h2>Dynamic: code runs for each request</h2>
+<p>A dynamic site adds software between the request and the reply. In MDN's words: <q>A dynamic web server consists of a static web server plus extra software, most commonly an application server and a database.</q><sup class="cite"><a href="#src-mdn-server">[1]</a></sup> The application server <q>updates the hosted files before sending content to your browser</q>, for example by filling a template with rows from a database.<sup class="cite"><a href="#src-mdn-server">[1]</a></sup></p>
+<p>That is more power and more obligations: the program must be running whenever a visitor arrives, it may hold secrets such as a password for the database, and someone must keep it patched. Free tiers exist, but the shape of the work changes. Unit 8 covers backends properly; for now, the point is only that this is a different kind of project.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what does "static" mean here, and why does a page with buttons and animations still count as static?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Static</strong> means the host sends stored files exactly as they are, making no decision per visitor. Buttons and animations are produced by <strong>JavaScript running in the visitor's browser</strong> (client-side code), so the host still only handed over files.</p></div>
+</div>
+
+<h2>What hosting actually is</h2>
+<p>Hosting is somebody else's computer, kept on and connected, with software that answers requests for your files at a public address. MDN lists why people rent one instead of using their own machine, starting with the plainest reason: <q>A dedicated web server is typically more available (up and running).</q><sup class="cite"><a href="#src-mdn-server">[1]</a></sup> Your laptop sleeps, closes its lid, and joins a different network when you take it to a café.</p>
+<p>The address and the machine are two different things. The address is what a person types or clicks; the files still have to live somewhere that answers. When you later read about custom domain names (lesson 6.10), that is the address changing, not the host.</p>
+
+<h2>The trap: a folder that is too big to publish</h2>
+<p>Static hosting is simple, but it is not unlimited. GitHub states the ceiling in one short line: <q>Published GitHub Pages sites may be no larger than 1 GB.</q><sup class="cite"><a href="#src-pages-limits">[4]</a></sup> A beginner rarely knows this number, and an agent working alone will not raise it unless it measures first.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to put a gallery of 3D models online so friends could browse it from a link. The project folder held about 3.6 GB, mostly model files; the free host allows 1 GB. The agent measured the folder before choosing a plan. It published only the small app and its index, and made the page load the large model files from the code-hosting site at a fixed version, so the links would never change. Then it opened the real public address and checked that a model loaded. The user's one message had said nothing about size, because the user did not know the limit existed.</p>
+</div>
+
+<p>Two lessons sit in that story. First, the limit is real and worth measuring before you promise a link to anyone. Second, the fix was a design decision, not a compression trick: keep the published site small and let big files live elsewhere. Lesson 6.4 goes into that trade-off; lesson 6.2 covers the step that turns source files into the published set.</p>
+
+<h2>Three questions that decide</h2>
+<p>You do not need to understand servers to classify your own idea. Ask:</p>
+<ul>
+  <li><strong>Does one visitor's action change what another visitor sees?</strong> Comments, shared scores, bookings, a leaderboard.</li>
+  <li><strong>Does anything need a secret?</strong> A password or an API key that must not be visible to visitors.</li>
+  <li><strong>Must data survive after the visitor closes the browser, on your side?</strong> Orders, accounts, messages sent to you.</li>
+</ul>
+<p>If all three answers are no, start static. You can ship this week, for free, with a public link. If one answer is yes, you are building a dynamic app, and the honest move is to say so before the agent starts rather than discover it during deployment.</p>
+<div class="warn">
+  <span class="label">Do not add a server "just in case"</span>
+  <p>A server brings hosting bills, secrets to protect and a second thing that can break. Add one when a real user needs something static files cannot do. Lesson 8.9 covers the choice between hosting, functions and a database.</p>
+</div>
+
+<h2>Do it: have your agent classify your folder</h2>
+<p>Your agent can read the folder and tell you which side you are on. This works the same in all three tools; the only rule is to keep approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Read the files in this project folder and answer in plain words.
+1. Which files would a browser need in order to show the site?
+2. Does anything here have to run on a server, or can every file be sent exactly as it is?
+3. What is the total size of the files that would be published?
+Then tell me: could this go on a free static host with a 1 GB limit? If not, say what you would leave out and where the rest would live.</pre>
+</div>
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in the practice folder from lesson 0.7, with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Paste the prompt above and send it. Approve reading commands; refuse anything that changes files.</label></li>
+    <li><label><input type="checkbox"> Read the answer and check that it names actual files from your folder, not generic examples.</label></li>
+    <li><label><input type="checkbox"> Ask one follow-up: "Which single fact would make this dynamic instead?"</label></li>
+  </ol>
+  <div class="expect"><p>You should get a short list of files, a verdict (static or needs a server) with a reason, and a size in megabytes. The follow-up should name something like shared data, a login, or a secret key. If the agent only describes static sites in general and never opens your files, ask it to list the folder first.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">Which of these needs a server, rather than static files?</p>
+  <button class="opt" type="button">A photo gallery with a search box and filters</button>
+  <button class="opt" type="button">A guestbook where any visitor can add a note</button>
+  <button class="opt" type="button">A menu page with large text for phone screens</button>
+  <button class="opt" type="button">A page full of animations that play when clicked</button>
+  <div class="why"><p>A guestbook stores what one visitor wrote so the next visitor can read it. The other three are files plus JavaScript running in each visitor's own browser.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">What does "static" describe about a site?</p>
+  <button class="opt" type="button">Its pages never move or respond to a click</button>
+  <button class="opt" type="button">Its files are stored only on your own laptop</button>
+  <button class="opt" type="button">Its pages have no colours, images or any styles</button>
+  <button class="opt" type="button">Its host sends stored files exactly as they are</button>
+  <div class="why"><p>"Static" is about what the host does, not what the page looks like. The host looks up a file and returns it unchanged, every time, to everyone.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">Your folder is 3.6 GB and the free host allows 1 GB. What is the sound move?</p>
+  <button class="opt" type="button">Publish the small files and load big ones elsewhere</button>
+  <button class="opt" type="button">Delete half of the photos until the folder fits</button>
+  <button class="opt" type="button">Upload everything anyway and hope the host allows it</button>
+  <button class="opt" type="button">Give up on hosting and email the folder instead</button>
+  <div class="why"><p>Keep the published site under the limit and let large assets live somewhere built for large files. Deleting content or ignoring the quota both fail at the moment you share the link.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">Which sentence best describes hosting?</p>
+  <button class="opt" type="button">A folder on your laptop that holds page files</button>
+  <button class="opt" type="button">A program that writes out the HTML and CSS</button>
+  <button class="opt" type="button">A live machine that sends your files to visitors</button>
+  <button class="opt" type="button">A browser window that keeps your page open always</button>
+  <div class="why"><p>Hosting is a machine kept on and reachable, with software that answers requests. Your laptop can do it in principle, but it sleeps and changes networks, which is why people rent one.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_web_server">What is a web server?</a> — MDN's short explainer. Read the sections on hosting files and on static versus dynamic servers; they are the clearest plain-language version of this lesson. Stop before the "Communicating through HTTP" detail unless you are curious.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure which side your idea is on? Ask the agent that gave you this course. Try: <em>"Here is my app idea: … Tell me whether it can be static, and what would have to change to make it dynamic."</em> Bring the answer to the next lesson.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-mdn-server">MDN Web Docs (Mozilla), <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_web_server">What is a web server?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-pages-about">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages">What is GitHub Pages?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-mdn-ssr">MDN Web Docs (Mozilla), <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/First_steps/Introduction">Introduction to the server side</a>. Retrieved 2026-11-02.</li>
+  <li id="src-pages-limits">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits">GitHub Pages limits</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> tell a static site from a dynamic one, explain what a host does, and decide whether your own idea needs a server.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a></p>
+  <div class="pager"><span>Next: 6.2 The build step — <a href="0079-build-step.html">source to deployable files</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

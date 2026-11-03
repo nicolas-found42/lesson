@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Approvals and permissions: what your agent may do</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 0 · Orientation · Lesson 0.6</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 0 · Lesson 0.6 · First-ship path ★</p>
+  <h1>Approvals and permissions: what your agent may do</h1>
+  <p class="lede">The agent works with your account and your files. One setting decides whether it stops to ask you before it acts, and that setting is the difference between a helpful assistant and a mess you did not see coming.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0001-what-a-coding-agent-is.html">0.1 What a coding agent is</a></span><span>Win: you can put your agent in a mode that asks, and answer the prompt</span></div>
+</header>
+<main>
+
+<h2>Why this comes before your first real prompt</h2>
+<p>Your mission ends with a public app. On the way there, an agent will create files, delete files, install things and run commands inside the folder that holds your work. It does that with your permissions, on your computer. Nothing in the previous lesson changes that: the tools are real, and so are their effects.</p>
+<p>You are not going to read every line the agent writes. You are going to make one decision well: how often it must stop and get your yes. This lesson is about that decision, the switches behind it, and why the safe setting is also the one that teaches you the most.</p>
+
+<h2>Two questions, not one</h2>
+<p>People talk about "permissions" as if it were a single dial. It is two, and they answer different questions.</p>
+<p>The first question is <em>what may the agent touch at all?</em> That is the <span class="term">sandbox</span>: a boundary, usually enforced by your operating system, around the files and network the agent's commands can reach. Claude Code's documentation calls its version <q>a boundary that the operating system enforces around the shell commands Claude runs on your machine.</q><sup class="cite"><a href="#src-cc-sandbox">[1]</a></sup></p>
+<p>The second question is <em>when must it stop and ask me?</em> That is the <span class="term">permission mode</span>, and the thing you actually see is an <span class="term">approval prompt</span>: the agent pauses, shows you an action, and waits. Claude Code defines a permission mode as the setting that decides <q>which actions Claude can take in a session without asking you first.</q><sup class="cite"><a href="#src-cc-modes">[2]</a></sup></p>
+<p>OpenAI draws the same line for Codex, in almost the same words. A <q>sandbox mode</q> is <q>what Codex can do technically</q>, while an <q>approval policy</q> is <q>when Codex must ask you before it executes an action</q>.<sup class="cite"><a href="#src-cx-security">[3]</a></sup></p>
+<div class="callout">
+  <span class="label">Keep the two apart</span>
+  <p>A fence and a gatekeeper. The fence is the sandbox: it decides where the agent can go even if nobody is watching. The gatekeeper is the approval prompt: it decides which actions wait for your yes. You can have either one without the other, and that is exactly where beginners get hurt.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what is the difference between a sandbox and an approval prompt? Say it in one sentence each.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A <strong>sandbox</strong> is a boundary the computer enforces around what the agent's commands can reach, whether or not you are watching. An <strong>approval prompt</strong> is the agent stopping to show you one action and wait for your yes or no. The first limits damage; the second gives you a say.</p></div>
+</div>
+
+<h2>The modes, in plain words</h2>
+<p>Every agent has the same four postures, even when the names differ. Read them as a ladder: each step lets more happen without asking.</p>
+<table class="ref">
+  <tr><th>Posture</th><th>Runs without asking you</th><th>Right when</th></tr>
+  <tr><td>Read only</td><td>Looking at files. No changes, no commands.</td><td>You want an opinion or a plan first.</td></tr>
+  <tr><td>Ask before changes</td><td>Reads. Stops before edits and commands.</td><td>Learning, or working on something you care about.</td></tr>
+  <tr><td>Ask before commands</td><td>Reads and edits inside the folder. Stops before running programs.</td><td>Routine building after the first week.</td></tr>
+  <tr><td>Ask nothing</td><td>Everything, up to the sandbox boundary.</td><td>Only in a disposable container or virtual machine.</td></tr>
+</table>
+<p>Claude Code's Manual mode is the second row: <q>Reads only</q> run without a prompt.<sup class="cite"><a href="#src-cc-modes">[2]</a></sup> Codex calls its second-row-and-sandbox arrangement <q>read-only</q>, where the agent <q>can inspect files, but it can't edit files or run commands without approval.</q><sup class="cite"><a href="#src-cx-sandbox">[4]</a></sup> omp calls its asking row <q>write</q>, and the docs recommend it <q>for an interactive coding session</q>.<sup class="cite"><a href="#src-omp-appr">[5]</a></sup></p>
+<p>All three ship with something faster than that, and this is the part beginners miss.</p>
+<table class="ref">
+  <tr><th>Agent</th><th>What a fresh session does</th><th>The asking mode</th><th>The "off" switch</th></tr>
+  <tr><td>Claude Code</td><td>Starts in auto mode from v2.1.283: it runs most things and a second model reviews them.<sup class="cite"><a href="#src-cc-modes">[2]</a></sup></td><td><code>manual</code> (shown as Manual)</td><td><code>bypassPermissions</code>: "isolated containers and VMs only"<sup class="cite"><a href="#src-cc-modes">[2]</a></sup></td></tr>
+  <tr><td>Codex</td><td>In a version-controlled folder: <code>workspace-write</code> sandbox with <code>on-request</code> approvals.<sup class="cite"><a href="#src-cx-security">[3]</a></sup></td><td>leave the default, or <code>read-only</code></td><td><code>danger-full-access</code>, or <code>--dangerously-bypass-approvals-and-sandbox</code></td></tr>
+  <tr><td>omp</td><td><q>The built-in default is yolo.</q><sup class="cite"><a href="#src-omp-appr">[5]</a></sup></td><td><code>write</code>, or <code>always-ask</code></td><td><code>yolo</code></td></tr>
+</table>
+<p>Claude Code's own table marks <code>bypassPermissions</code> for <q>isolated containers and VMs only</q>.<sup class="cite"><a href="#src-cc-modes">[2]</a></sup> Codex labels its equivalent flag <q>EXTREMELY DANGEROUS</q> in the command-line help. That is not politeness. It means the tool cannot protect you if the thing it is running is wrong.</p>
+
+<h2>What a sandbox is, and what it is not</h2>
+<p>A sandbox limits consequences; it does not decide whether an action is a good idea. Codex's default is a decent example: in a folder tracked by version control the agent can edit inside that folder and run routine commands, but <q>By default, the agent runs with network access turned off</q>, and it <q>asks for approval to edit files outside the workspace or to run commands that require network access.</q><sup class="cite"><a href="#src-cx-security">[3]</a></sup></p>
+<p>omp is the honest counterexample, and worth knowing before you trust a mode name. Its own approvals page says the modes <q>do not make model output trustworthy or sandbox an allowed command.</q><sup class="cite"><a href="#src-omp-appr">[5]</a></sup> In omp, an approved command runs with the access your account already has. The prompt is the only boundary there is. Claude Code behaves the same way unless you turn its Bash sandbox on: that sandbox <q>is off by default</q> and you enable it with <code>/sandbox</code>.<sup class="cite"><a href="#src-cc-sandbox">[1]</a></sup></p>
+<div class="warn">
+  <span class="label">Do not read a mode name as a guarantee</span>
+  <p>"Ask before commands" means the agent asks. It does not mean the approved command was safe, and it does not mean the command ran in a box. Approvals and sandboxing are separate protections, and some tools give you only the first.</p>
+</div>
+
+<h2>Set your agent to ask</h2>
+<p>Your agent is installed from lesson 0.5. Open it in your practice folder and check the mode before you type anything else. The three tools differ; pick your tab.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Start with <code>claude --permission-mode manual</code>. That is the mode the CLI shows as Manual, and it is the one that stops before edits and commands.<sup class="cite"><a href="#src-cc-modes">[2]</a></sup> During a session, <kbd>Shift</kbd>+<kbd>Tab</kbd> cycles the modes, so you can see the name change in the status area. To make Manual the default for every session on this machine, put <code>"defaultMode": "default"</code> under <code>permissions</code> in <code>~/.claude/settings.json</code>; the same page shows that exact snippet.<sup class="cite"><a href="#src-cc-modes">[2]</a></sup></p>
+    <p>A good first action to watch: "create a file called notes.txt with one line". In Manual mode the edit waits for you.</p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Leave the default alone for now. In a folder tracked by version control, Codex starts with the <code>workspace-write</code> sandbox and <code>on-request</code> approvals, and OpenAI's advice for newcomers is direct: <q>If you're new to coding agents, start with the default permissions.</q><sup class="cite"><a href="#src-cx-bp">[6]</a></sup> Inside a session, <code>/permissions</code> shows and changes the settings.<sup class="cite"><a href="#src-cx-modes">[7]</a></sup></p>
+    <p>A good first action to watch: ask it to fetch a page from the internet. With network off by default, that request has to come to you.<sup class="cite"><a href="#src-cx-security">[3]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>omp needs a change, because its built-in default asks nothing. Either run <code>omp --approval-mode write</code> for one session, or set <code>tools: approvalMode: write</code> in <code>~/.omp/agent/config.yml</code> to keep it. Both forms are on the approvals page, which recommends <code>write</code> for interactive work.<sup class="cite"><a href="#src-omp-appr">[5]</a></sup> Check what is in force with <code>omp config get tools.approvalMode</code>.</p>
+    <p>A good first action to watch: "list the files here and tell me how many there are". The listing itself runs; the shell command that produces it should stop for you in <code>write</code> mode.</p>
+  </div>
+</div>
+<span class="sidenote">Your tab choice is remembered, so later lessons open on the same agent.</span>
+
+<h2>Why you keep prompts on for now</h2>
+<p>The fast settings exist for a reason, and experienced people use them. Here is the honest version of that, from three anonymized long runs.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>Three separate pieces of work — a gallery put online, a catalogue updated, a site rebuilt over four hours — all ran with prompts switched off. All three finished cleanly, and none needed the person to step in. That looks like an argument for turning prompts off. It is not, because of what those folders already contained: a rules file describing the workflow, a check script that failed loudly, and a habit of reporting what was skipped. The autonomy was earned by the project before the person granted it.</p>
+</div>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Prompts off, day one</span>
+    <p>The agent decides what "done" means, edits files you have not seen, and installs what it thinks it needs. You find out at the end, when the folder no longer matches what you pictured.</p>
+  </div>
+  <div class="good">
+    <span class="label">Prompts on, week one</span>
+    <p>Every unusual action pauses and shows its name. You learn the four or five commands your project actually uses, and you can say no before an edit lands rather than after.</p>
+  </div>
+</div>
+<p>There are four concrete reasons to stay in an asking mode until you have shipped something.</p>
+<p><strong>You cannot yet judge a command.</strong> A prompt forces the question at the moment it matters. Reading "delete the build folder and rebuild" is easy; deciding later whether it was fine is guesswork.</p>
+<p><strong>The prompts are the curriculum.</strong> After a week you will recognise the handful of actions your project repeats. That knowledge is what makes a faster mode safe later.</p>
+<p><strong>There is no undo yet.</strong> Version control arrives in Unit 3. Until then an unwanted overwrite is simply gone.</p>
+<p><strong>A prompt costs seconds.</strong> A wrong blanket yes can cost an afternoon, and you will not know which file did it.</p>
+
+<h2>How to answer a prompt well</h2>
+<p>An approval prompt is not a yes/no quiz with a right answer hidden from you. Read the line the agent shows. If you can explain the action in one plain sentence, you are allowed to approve it. If you cannot, deny it and ask the agent to explain what the command does and why it is needed.</p>
+<p>Three habits cover most of it:</p>
+<p><strong>Approve one action, not a category, while you are learning.</strong> A prompt that offers "always allow this kind of command" is offering to stop teaching you. Decline it in week one.</p>
+<p><strong>Refuse anything that reaches outside your project folder.</strong> Editing your home folder, installing a global tool, changing your shell settings: none of that is needed to build a web page, and all of it is hard to reverse.</p>
+<p><strong>Treat a denial as information.</strong> If the agent immediately tries the same thing another way, that is worth noticing. A good agent reports what it could not do, as one of the sessions above did when a tool was missing: it said so instead of pretending.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in the practice folder, using the command in your tab above, so it is in the asking mode.</label></li>
+    <li><label><input type="checkbox"> Ask it for one small action that touches your files, using the example in your tab.</label></li>
+    <li><label><input type="checkbox"> When the prompt appears, read it, then deny it once. Watch what the agent says next.</label></li>
+    <li><label><input type="checkbox"> Ask again and approve this time. Then look in the folder yourself and confirm only that one thing changed.</label></li>
+  </ol>
+  <div class="expect"><p>You should see a prompt that names the exact tool and, where there is one, the exact command. After your denial the agent should stop and report, not repeat the action or find a way around you. After your approval the file or listing should exist, and nothing else in the folder should have changed.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">What does a permission mode decide?</p>
+  <button class="opt" type="button">Which actions run without asking you at all</button>
+  <button class="opt" type="button">How quickly the model finishes writing your app</button>
+  <button class="opt" type="button">Which model your session will use by default</button>
+  <button class="opt" type="button">How many questions the agent may ask today</button>
+  <div class="why"><p>A permission mode is about the stopping, not the speed or the model. It sets which actions the agent may take before it asks you.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">The agent asks to run a command you do not understand. What is the best move?</p>
+  <button class="opt" type="button">Approve it quickly so the agent can keep working</button>
+  <button class="opt" type="button">Deny it and ask the agent to explain first</button>
+  <button class="opt" type="button">Close the session and start a fresh one soon</button>
+  <button class="opt" type="button">Turn off all approvals so it never asks again</button>
+  <div class="why"><p>If you cannot explain the action in one sentence, do not approve it. Denying is reversible; asking for an explanation costs one turn and teaches you the command.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">You switch every approval prompt off on your first day. What is the main risk?</p>
+  <button class="opt" type="button">The agent may change files you never saw before</button>
+  <button class="opt" type="button">The model will answer each of your questions slowly</button>
+  <button class="opt" type="button">The project folder will refuse to open up again</button>
+  <button class="opt" type="button">Your editor will stop saving every file without warning</button>
+  <div class="why"><p>With prompts off, edits happen without a moment where you could object, and Unit 3's undo does not exist yet. Speed and editors are not what changes.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">What is a sandbox?</p>
+  <button class="opt" type="button">A folder where the agent keeps all its notes</button>
+  <button class="opt" type="button">A list of every forbidden command for your agent</button>
+  <button class="opt" type="button">A fence the system puts around every command run</button>
+  <button class="opt" type="button">A backup copy made before the agent edits files</button>
+  <div class="why"><p>A sandbox is enforced by the operating system and limits what commands can reach, including the network. An approval prompt is a separate protection, and some agents do not sandbox at all.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a> — Anthropic's table of what each mode runs without asking. Read the "Available modes" table and the row for Manual mode. If you use another agent, the shape is the same; the names are not.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a prompt you do not understand? Paste the line into the chat and ask: <em>"What would this command do, and what could go wrong?"</em> You are allowed to ask before you answer.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-cc-sandbox">Anthropic, <a href="https://code.claude.com/docs/en/sandboxing">Sandboxing</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cc-modes">Anthropic, <a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cx-security">OpenAI, <a href="https://learn.chatgpt.com/docs/agent-approvals-security">Agent approvals &amp; security</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cx-sandbox">OpenAI, <a href="https://learn.chatgpt.com/docs/sandboxing">Sandboxing</a>. Retrieved 2026-11-02.</li>
+  <li id="src-omp-appr">Stencil Labs, <a href="https://omp.sh/docs/approvals">Tool approvals</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-cx-bp">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cx-modes">OpenAI, <a href="https://learn.chatgpt.com/docs/permission-modes">Permissions</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> tell a sandbox from an approval prompt, put your agent in a mode that asks, and decide on a prompt by whether you can explain the action.</p>
+  <p>Quick reference: <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/setup.html">Setup</a></p>
+  <div class="pager"><a href="0005-install-and-sign-in.html">Previous: 0.5 Install and sign in</a> · <a href="0007-first-prompt-to-a-page.html">Next: 0.7 First prompt to a page</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One command gate: put the checks in the repo</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.6</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.6</p>
+  <h1>One command gate: put the checks in the repo</h1>
+  <p class="lede">When all your checks live behind one short command, the agent can grade its own work before it tells you it is finished. You type the same command, and you get the same verdict.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0031-test.html">2.3 What a test is</a> · <a href="0027-project-rules-file.html">1.12 The project rules file</a></span><span>Win: you can run one command and know whether the project is acceptable</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You are going to put an app in front of other people. Before that, something has to answer a plain question: does this project still work? You can answer it by clicking around for ten minutes, but you will get tired and skip steps. The agent has the opposite problem. It stops when the work <em>looks</em> done. Anthropic's own best-practices page names the failure: <q>Claude said it was done and it wasn't quite, usually because it had no way to check its own work.</q><sup class="cite"><a href="#src-a7">[1]</a></sup></p>
+<p>A gate fixes both problems at once. A <strong>gate</strong> is one command, stored in your project, that runs every check you care about and ends with a pass or a fail. The agent runs it. You run it. A robot can run it later. Nobody has to remember the list.</p>
+
+<h2>Pass or fail is the whole contract</h2>
+<p>Every command on your computer finishes with an <strong>exit code</strong>: a small number the shell keeps after the command ends. Zero means success. Anything else means something went wrong. Most tools you will use follow this, and their documentation says so. Node's test runner states: <q>If any tests fail, the process exit code is set to 1.</q><sup class="cite"><a href="#src-n1">[2]</a></sup> Deno's type checker <q>exits with a non-zero status code if there are type errors</q>.<sup class="cite"><a href="#src-dn1">[3]</a></sup></p>
+<p>That little number is why a gate works. The agent does not need to judge your code. It needs one thing that comes back pass or fail, and then it can loop: make a change, run the gate, read the failure, fix it, run again. Claude Code's guide puts it exactly this way: <q>Give Claude something it can run that comes back pass or fail.</q><sup class="cite"><a href="#src-a7">[1]</a></sup></p>
+
+<h2>Two ordinary homes for the gate</h2>
+<p>The gate must live <em>in the repository</em>, as a file that is committed along with the app. If it lives in your head, in a chat message, or in your terminal history, it disappears the moment someone else — or a fresh agent session — arrives.</p>
+<p>There are two common places to put it, and neither is more correct than the other.</p>
+<div class="compare">
+  <div class="good"><span class="label">A package script</span><p>A JavaScript project usually has a <code>package.json</code> file with a <code>scripts</code> section. <code>npm run check</code> <q>runs an arbitrary command from a package's "scripts" object</q>, and npm runs it <q>from the root of the package folder</q>.<sup class="cite"><a href="#src-npm">[4]</a></sup> The command is short and the tool is already installed with Node.</p></div>
+  <div class="good"><span class="label">A Makefile</span><p>A <code>Makefile</code> holds named rules. A rule has a target, a colon, and a recipe — the commands to run.<sup class="cite"><a href="#src-mk">[5]</a></sup> Recipe lines must start with a tab character, a detail the manual warns <q>catches the unwary</q>.<sup class="cite"><a href="#src-mk">[5]</a></sup> Declaring the target <code>.PHONY</code> means "this is an action, not a file", so it runs every time.<sup class="cite"><a href="#src-ph">[6]</a></sup></p></div>
+</div>
+<p>The same gate, written both ways, for a small project with one source file and one test file:</p>
+<pre><code># Makefile
+.PHONY: check
+check:
+	node --check price.js
+	node --test
+
+# package.json
+"scripts": { "check": "node --check price.js &amp;&amp; node --test" }</code></pre>
+<p>The <code>&amp;&amp;</code> matters. It means "run the next command only if this one succeeded", so the gate stops at the first failure instead of burying it under later noise. With several checks, the order should be cheapest first: a syntax check takes a second, the tests take longer.</p>
+
+<h2>A real run, failing then passing</h2>
+<p>I ran this in a throwaway folder with a small discount function and one test that says ten percent off 50 is 45. First, the function was wrong.</p>
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>make check</span></div>
+  <div class="row tool"><span class="who">tool</span><span>✖ 10 percent off 50 is 45<br>AssertionError: Expected values to be strictly equal:<br>40 !== 45<br>make: *** [check] Error 1</span></div>
+  <div class="row note"><span class="note">The gate failed, and it said why: 40 is not 45. Exit code 2.</span></div>
+  <div class="row you"><span class="who">you</span><span>(fix the function)</span></div>
+  <div class="row you"><span class="who">you</span><span>make check</span></div>
+  <div class="row tool"><span class="who">tool</span><span>✔ 10 percent off 50 is 45<br>ℹ pass 1<br>ℹ fail 0</span></div>
+  <div class="row note"><span class="note">Exit code 0. That is a verdict, not an opinion.</span></div>
+</div>
+<p>Notice what the agent gains here. It does not have to reason about whether the discount looks right. It runs a command, reads a number, and either continues or fixes something. You gain the same thing, plus one line to ask for when you want proof.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>In one session a user typed only "does the project work?" The agent ran the project's documented checks — formatting, type checking, linting, the test suite — plus a real start-up and a quick smoke test, and answered yes. It also listed what it had <em>not</em> tried: real credentials, live providers, some slower tests. That honest gap list became the user's next request, with a spending cap attached. In another session, the whole build phase rested on a single command: the user wrote a three-word instruction to implement a reorganization, and the agent knew it was finished only because that command came back green.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what does an exit code of zero mean, and why is that number more useful to an agent than a paragraph of explanation?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Zero means the command succeeded; any other number means it failed. The number is a verdict the agent can act on without judging the code itself, so it can keep fixing and re-running until the gate passes.</p></div>
+</div>
+
+<h2>Name the gate in the rules file</h2>
+<p>Lesson <a href="0027-project-rules-file.html">1.12</a> taught the rules file: a small text file at the top of the project that the agent reads at the start of every session. It is the natural place to record the gate, because the gate is a procedure you do not want to repeat in every prompt. Claude Code's guide calls this <q>the single most useful line in your CLAUDE.md</q> when the repo already has checks.<sup class="cite"><a href="#src-a7">[1]</a></sup></p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Put the line in <code>CLAUDE.md</code>, which Claude Code loads as <q>persistent instructions for a project</q>.<sup class="cite"><a href="#src-a5">[7]</a></sup> The page is careful about what that buys you: Claude treats these files <q>as context, not enforced configuration</q>.<sup class="cite"><a href="#src-a5">[7]</a></sup> So the line tells Claude what to run; it does not force it to run.</p>
+  </div>
+  <div class="tabpanel" data-panel="codex" hidden>
+    <p>Put the line in <code>AGENTS.md</code>. Codex <q>reads AGENTS.md files before doing any work</q>.<sup class="cite"><a href="#src-b5">[8]</a></sup> The same caveat applies: this is guidance the model reads, not a lock on its behaviour.</p>
+  </div>
+  <div class="tabpanel" data-panel="omp" hidden>
+    <p>Put the line in <code>AGENTS.md</code> at the repository root, which omp loads and applies <q>throughout the session</q>.<sup class="cite"><a href="#src-c5">[9]</a></sup> Keep it to the command and one sentence about when to run it.</p>
+  </div>
+</div>
+<span class="sidenote">Exact filenames and load rules differ slightly between tools; lesson 1.12 has the table. The sentence you write inside the file is the same.</span>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>## Checks
+Before you report a task as done, run `make check` from the repository root.
+It must exit with code 0. If it fails, read the output, fix the cause, and run it again.
+Paste the last ten lines of its output in your final message, including any counts.</pre>
+</div>
+<p>The last line is the part beginners skip. A gate produces evidence, and evidence is what turns "done" into something you can check without redoing the work. Lesson <a href="0030-claims-vs-evidence.html">2.2</a> covers that habit; here you are just arranging for the evidence to exist.</p>
+
+<h2>Where a gate stops short</h2>
+<p>A gate is only as honest as the checks inside it, and it can only see what it runs.</p>
+<ul>
+  <li><strong>It says nothing about a check you left out.</strong> A project with no browser test can pass its gate while the page is blank on a phone. Lesson <a href="0035-real-vs-simulated.html">2.7</a> takes that case.</li>
+  <li><strong>A skipped test is not a passing test.</strong> Node's runner reports skipped tests separately and they <q>do not affect the process exit code</q>.<sup class="cite"><a href="#src-n1">[2]</a></sup> Read the counts, not only the final line.</li>
+  <li><strong>Green on your laptop is not green in the cloud.</strong> A command can pass locally because a file or a setting happens to exist there. Lesson <a href="0046-local-vs-ci.html">2.12</a> is about that gap.</li>
+  <li><strong>The gate itself can be wrong.</strong> A test with a mistaken expectation fails a correct app, and then "fixing" the code makes things worse. Lesson <a href="0039-checker-can-be-wrong.html">2.11</a> covers this.</li>
+</ul>
+
+<div class="doit">
+  <span class="label">Do it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in your project folder, approvals on.</label></li>
+    <li><label><input type="checkbox"> Send: "List every check this project can run — tests, type check, lint, format. For each, give the exact command and say whether it currently passes. Do not change any files yet."</label></li>
+    <li><label><input type="checkbox"> Send: "Create one command that runs those checks in order, cheapest first, and stops at the first failure. Put it in the repository. Tell me the command and where you put it."</label></li>
+    <li><label><input type="checkbox"> Run the command yourself in the terminal. Then break something small on purpose and run it again.</label></li>
+    <li><label><input type="checkbox"> Ask the agent to add the command to the rules file with the wording above.</label></li>
+  </ol>
+  <div class="expect"><p>First run: every check passes and the command exits 0. Second run, after your deliberate break: it fails, names the broken check, and exits with a non-zero code. If the second run still passes, the gate is not really checking that part of the project — fix that before you trust it.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">What is a one-command gate?</p>
+  <button class="opt" type="button">One command runs every project check.</button>
+  <button class="opt" type="button">One command prints every changed file.</button>
+  <button class="opt" type="button">One command opens the app window.</button>
+  <button class="opt" type="button">One command lists every known error.</button>
+  <div class="why"><p>A gate gathers your checks behind one name and returns pass or fail. Printing changes, opening the app and listing errors are separate jobs that a gate may call, but none of them is the gate itself.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">The agent reports "all tests pass". What should you ask for?</p>
+  <button class="opt" type="button">Which files did you edit just now?</button>
+  <button class="opt" type="button">Which model are you using right now?</button>
+  <button class="opt" type="button">Which exact command did you run here?</button>
+  <button class="opt" type="button">Which folder is the project kept in?</button>
+  <div class="why"><p>The claim is only as good as the command behind it. A named command, plus its output and counts, is evidence you can check in seconds. The other questions do not test the claim at all.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Where should the gate live so everyone uses the same one?</p>
+  <button class="opt" type="button">In a message you send every session.</button>
+  <button class="opt" type="button">In the repository, as a script or rule.</button>
+  <button class="opt" type="button">In a notes app outside the project.</button>
+  <button class="opt" type="button">In your shell history on this machine.</button>
+  <div class="why"><p>A message is forgotten and terminal history is local to you. A file in the repository travels with the project, so every session, every helper and later the cloud runner use the same command.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>, section "Give Claude a check to run". It explains the loop from the agent's side and lists the kinds of check that work. The examples name one vendor's tools, but the idea applies to all three agents in this course.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Not sure what your project can even check? Ask the agent that gave you this course: <em>"Here is my project folder. What checks could I run in one command, and which one would catch the most likely breakage?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-n1">Node.js, <a href="https://nodejs.org/api/test.html">Test runner</a>. Retrieved 2026-11-02.</li>
+  <li id="src-dn1">Deno, <a href="https://docs.deno.com/runtime/reference/cli/check/">deno check</a>. Retrieved 2026-11-02.</li>
+  <li id="src-npm">npm, <a href="https://docs.npmjs.com/cli/v11/commands/npm-run/">npm run</a>. Retrieved 2026-11-02.</li>
+  <li id="src-mk">GNU Project, <a href="https://www.gnu.org/software/make/manual/html_node/Rule-Introduction.html">What a Rule Looks Like</a> (GNU make manual). Retrieved 2026-11-02.</li>
+  <li id="src-ph">GNU Project, <a href="https://www.gnu.org/software/make/manual/html_node/Phony-Targets.html">Phony Targets</a> (GNU make manual). Retrieved 2026-11-02.</li>
+  <li id="src-a5">Anthropic, <a href="https://code.claude.com/docs/en/memory">How Claude remembers your project</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b5">OpenAI, <a href="https://learn.chatgpt.com/docs/agent-configuration/agents-md">Custom instructions with AGENTS.md</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c5">Stencil Labs, <a href="https://omp.sh/docs/context-files">Context files</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> create one command that runs your checks, run it yourself, and ask the agent for its output as evidence.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure modes (one page)</a> · <a href="../reference/setup.html">Setup</a></p>
+  <div class="pager"><span>Next: 2.7 Real vs simulated → <a href="0035-real-vs-simulated.html">A green gate is not a working screen</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

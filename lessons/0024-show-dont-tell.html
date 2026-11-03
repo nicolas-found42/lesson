@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Show, don't tell: screenshots as bug reports</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 1 · Telling the agent what you want · Lesson 1.9</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.9 · First-ship path ★</p>
+  <h1>Show, don't tell: screenshots as bug reports</h1>
+  <p class="lede">The agent reads files and command output. It does not look at your screen. When something is wrong in a way words keep missing, a picture is the shortest true description you can give.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0007-first-prompt-to-a-page.html">0.7 First prompt to a page</a></span><span>Win: you can report a visual problem so the agent fixes the real one</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your app will be judged on a screen: a phone, a laptop, a friend's old browser. Most of what goes wrong there is visual and slightly absurd — a button half off the edge, white text on a white card, an image covering the heading. You can describe that in a paragraph and watch the agent fix a different paragraph. Or you can show it.</p>
+<p>This lesson is about that gap. It is not about pretty design. It is about handing over the one piece of information the agent has no other way to get: what your screen actually looks like right now.</p>
+
+<h2>What the agent can see</h2>
+<p>A coding agent works through <span class="term" title="One request from the agent to a tool: read a file, edit a file, run a command.">tool calls</span>. Each call returns text: a file's contents, a command's output, an error message. That is the world it reasons about. Your browser window is not in that world.</p>
+
+<table class="ref">
+  <thead><tr><th>Thing</th><th>Can the agent see it?</th><th>How it gets there</th></tr></thead>
+  <tbody>
+    <tr><td>Files in your project folder</td><td>Yes, once it reads them</td><td>Its read tool</td></tr>
+    <tr><td>Command output, errors, test results</td><td>Yes, once it runs them</td><td>Its run tool</td></tr>
+    <tr><td>The page as it looks in your browser</td><td>No, unless you show it</td><td>A screenshot you attach, or a browser tool it drives itself</td></tr>
+    <tr><td>Your screen, other windows, your cursor</td><td>No</td><td>Nothing in this course shares these</td></tr>
+  </tbody>
+</table>
+
+<p>Read the third row twice. The agent can read the HTML that produces a page and still not know that the page looks broken. It has the recipe, not the cake.</p>
+<p>Some setups close part of that gap. Claude Code can drive a Chrome window it opens, and can record what it sees there.<sup class="cite"><a href="#src-chrome">[1]</a></sup> A separate computer-use feature lets it see and click on your screen after you approve each app.<sup class="cite"><a href="#src-cu">[2]</a></sup> Both are opt-in and both are narrow: with computer use, <q>Claude never sees your terminal window</q>, and screenshots are downscaled before the model sees them.<sup class="cite"><a href="#src-cu">[2]</a></sup> Do not assume either is on. The screenshots you attach are the reliable channel, on all three agents.</p>
+
+<h2>A screenshot is a bug report</h2>
+<p>Anthropic's guidance for images is blunt about the division of labour: <q>Use images when text descriptions would be unclear or cumbersome.</q><sup class="cite"><a href="#src-cw">[3]</a></sup> Codex's image page says the same thing from the other side: <q>Explain what ChatGPT should inspect and what outcome you want; don't rely on the image alone to communicate the task.</q><sup class="cite"><a href="#src-img">[4]</a></sup> The image carries the evidence. Your words say what to do about it.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user had asked for a small training app with a statistics panel. The agent wrote tests for the panel, and the tests passed. Then the user sent one screenshot: black rectangles sitting on top of the labels, text half hidden behind them. The agent had never seen the app window; it had only checked numbers in a simulated display. Confronted with the picture, it reproduced the fault on a real screen, found that a drawing layer was being filled with an opaque colour, and fixed that. No paragraph the user could have written would have pointed at the right layer as quickly as one picture did.</p>
+</div>
+
+<p>Notice what the screenshot did and did not do. It did not explain the cause. It fixed the <em>location</em> of the search: this panel, this overlap, this moment. The agent still had to find the reason. That is the right split of work. You are the only one who can see the symptom; the agent is better at tracing the cause.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name two things the agent can see on its own, and one thing it cannot see unless you hand it over.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>The agent can see <strong>files it reads</strong> and <strong>command output it runs</strong>. It cannot see <strong>the page as it appears in your browser</strong> — or your screen at all — unless you attach a screenshot or it is driving a browser or screen tool you approved.</p></div>
+</div>
+
+<h2>Handing over a screenshot</h2>
+<p>All three agents accept an image in the prompt. The mechanics differ, so pick your tab.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>In the terminal, <q>Drag and drop an image into the Claude Code window</q>, paste one with <kbd>Ctrl</kbd>+<kbd>V</kbd> (<kbd>Alt</kbd>+<kbd>V</kbd> on Windows and WSL), or type its path in the message.<sup class="cite"><a href="#src-cw">[3]</a></sup> A pasted image is attached to that turn, not to the whole session; attach it again if you continue in a new turn.</p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Paste the image into the interactive composer, or start a run with a file: <code>codex -i screenshot.png "Explain this error and suggest the smallest fix"</code>. For several, <code>codex --image before.png,after.png "Compare these states"</code>. PNG and JPEG are accepted.<sup class="cite"><a href="#src-img">[4]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>Paste with <kbd>Ctrl</kbd>+<kbd>V</kbd>, drag the file in, or mention it as <code>@path/to/image.png</code>. A chip in the composer confirms the attachment.<sup class="cite"><a href="#src-omp">[5]</a></sup> The docs add the sentence this whole lesson is about: <q>Say what each attachment is for; a path by itself supplies context but not intent.</q><sup class="cite"><a href="#src-omp">[5]</a></sup></p>
+  </div>
+</div>
+
+<h2>What to type around the image</h2>
+<p>A picture with no words leaves the agent guessing which part of it matters, and which of the many things it can see is the mistake. Four short lines remove the guess.</p>
+<p>Compare these two messages, both with the same screenshot attached.</p>
+<div class="compare">
+  <div class="bad"><span class="label">Picture only</span><p>"This looks wrong, fix it."</p></div>
+  <div class="good"><span class="label">Picture plus four lines</span><p>"This is my page at a narrow window width. The heading runs under the photo and the last word is cut off. I expected it to wrap above the photo. Fix only that, then take a new screenshot at the same width and show me."</p></div>
+</div>
+<p>The weak version asks the agent to find a problem in an image with no stated target. The strong version names the view, points at the exact symptom, states the expectation, and asks for a picture back. That last clause matters: it gives the agent a way to check its own work instead of declaring success.</p>
+
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>This screenshot shows [the page and the window size or place].
+The problem is [exactly what is wrong, and where to look].
+I expected [what should happen instead].
+Fix that and change nothing else. Then take a new screenshot at the same size and show it to me.</pre>
+</div>
+<p>Keep the screenshot cropped to the part that matters. A full desktop with your mail client in the corner gives the agent more to interpret and gives you something to leak. Crop first, then attach.</p>
+<p>Claude Code's best-practices page makes the same request from the agent's side: ask for <q>the command it ran and its output, or the screenshot</q> as evidence, because "all tests pass" on its own tells you very little.<sup class="cite"><a href="#src-bp">[6]</a></sup> A returned screenshot is not decoration; it is the proof that the thing you complained about is gone.</p>
+
+<div class="warn">
+  <span class="label">Careful with what is in the frame</span>
+  <p>A screenshot can carry your name, your email, a private message, a file path, or a key pasted into a form. Crop it, or cover those parts before attaching. The same caution applies to recordings: Claude Code's own page warns that a browser recording <q>captures everything visible in the browser, including account details on logged-in pages</q>.<sup class="cite"><a href="#src-chrome">[1]</a></sup> Unit 8 covers secrets properly; here, the rule is simply: look at the picture before you send it.</p>
+</div>
+
+<h2>Two habits that keep it honest</h2>
+<p><strong>Show the state you mean.</strong> If the bug appears only after you click a button, click it, then screenshot the result. A picture of the page before the click describes a page that works.</p>
+<p><strong>Ask for the after picture.</strong> The fix is not proven by the agent saying it is fixed. Ask it to repeat the same view and attach the result, or reopen the page yourself. This is the same rule as lesson 0.1 — "done" is a claim — applied to something you can now see side by side.</p>
+<p>If the agent has a browser tool, you can also tell it to keep its own screenshot as a file: <q>Take a screenshot of the checkout page and save it to disk</q> is the example in Claude Code's Chrome page.<sup class="cite"><a href="#src-chrome">[1]</a></sup> That file is evidence you can compare later, not just a message that scrolls away.</p>
+
+<div class="doit">
+  <span class="label">Do it now, in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Start your page from lesson 0.7 and open it in your browser.</label></li>
+    <li><label><input type="checkbox"> Make the window much narrower, until something looks wrong — text overlapping, an image too wide, a button off-screen.</label></li>
+    <li><label><input type="checkbox"> Take a screenshot of just that area: <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>4</kbd> on macOS, <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> on Windows.</label></li>
+    <li><label><input type="checkbox"> In your agent, attach the image and paste the four-line prompt above, filled in with what you see.</label></li>
+    <li><label><input type="checkbox"> Approve its edits as usual, then look at the new screenshot it produces and compare it with yours.</label></li>
+  </ol>
+  <div class="expect"><p>You should see the specific overlap fixed, and nothing unrelated changed. If the agent's new screenshot is taken at a different window width, say so and ask for the same width — otherwise you are comparing two different pages. Keep approval prompts on; attaching an image does not change what the agent may do.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">You attach the right screenshot but write only "this looks wrong, fix it". What usually goes wrong?</p>
+  <button class="opt" type="button">Attach a screenshot badly cropped to the wrong area</button>
+  <button class="opt" type="button">Describe the wrong area in one more careful sentence</button>
+  <button class="opt" type="button">Send the stylesheet and then ask it to guess</button>
+  <button class="opt" type="button">Wait for it to notice the problem by itself</button>
+  <div class="why"><p>With no stated target, the agent picks its own interpretation of "wrong" and may fix something you did not mean. The image locates the screen; your words must locate the fault.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">Which of these does a terminal agent have by default, before you attach anything?</p>
+  <button class="opt" type="button">The exact picture on your screen right now</button>
+  <button class="opt" type="button">The project files and all the command output</button>
+  <button class="opt" type="button">The mouse pointer and each open window there</button>
+  <button class="opt" type="button">The sound coming from your app just now</button>
+  <div class="why"><p>Files and command output arrive through its tools. The screen, pointer and sound do not, unless a browser or screen feature you approved is supplying them.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">The agent says the layout bug is fixed. What is the strongest next step?</p>
+  <button class="opt" type="button">A fresh screenshot of the screen you reported</button>
+  <button class="opt" type="button">A written summary of every single change made</button>
+  <button class="opt" type="button">A firm promise that nothing else has changed</button>
+  <button class="opt" type="button">A list of every file that it edited today</button>
+  <div class="why"><p>A new picture at the same window size is evidence you can check yourself. Summaries and promises are claims about the work, not observations of the result.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">Your screenshot shows a whole desktop with private messages in it. What do you do?</p>
+  <button class="opt" type="button">Take a screenshot and point at the problem</button>
+  <button class="opt" type="button">Describe the problem in several more careful words</button>
+  <button class="opt" type="button">Ask it to read the whole folder by itself</button>
+  <button class="opt" type="button">Retype the error message from your own memory</button>
+  <div class="why"><p>Cropping to the app area is the practical habit: it removes private material and also removes distraction, so the agent looks at the thing you meant. Recopying text by hand loses detail.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/common-workflows">Claude Code: common workflows — work with images</a> lists the three ways to add an image and five example messages. It is written for one tool, but the examples are agent-agnostic. Then skim <a href="https://learn.chatgpt.com/docs/image-inputs">Codex: image inputs</a> for the prompt pattern around the picture.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a bad screenshot? Ask the agent giving you this course: <em>"Here is my screenshot. What are the three most likely causes, and how would you check each one?"</em> Then send the best answer back to your coding agent with the image attached.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-chrome">Anthropic, <a href="https://code.claude.com/docs/en/chrome">Use Claude Code with Chrome</a>. Retrieved 2026-11-02. Quoted: "Browser actions run in a visible Chrome window in real time." and "Take a screenshot of the checkout page and save it to disk".</li>
+  <li id="src-cu">Anthropic, <a href="https://code.claude.com/docs/en/computer-use">Let Claude use your computer from the CLI</a>. Retrieved 2026-11-02. Quoted: "Claude never sees your terminal window" and "Claude sees what you see."</li>
+  <li id="src-cw">Anthropic, <a href="https://code.claude.com/docs/en/common-workflows">Common workflows</a> (section "Work with images"). Retrieved 2026-11-02. Quoted: "Drag and drop an image into the Claude Code window" and "Use images when text descriptions would be unclear or cumbersome."</li>
+  <li id="src-img">OpenAI, <a href="https://learn.chatgpt.com/docs/image-inputs">Image inputs</a>. Retrieved 2026-11-02. Quoted: "Explain what ChatGPT should inspect and what outcome you want; don't rely on the image alone to communicate the task."</li>
+  <li id="src-omp">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source. Quoted: "Say what each attachment is for; a path by itself supplies context but not intent."</li>
+  <li id="src-bp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02. Quoted: "the command it ran and its output, or the screenshot".</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> describe what an agent can and cannot see, attach a cropped screenshot with a four-line explanation, and ask for a fresh screenshot as proof.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/failure-modes.html">Failure modes</a></p>
+  <div class="pager"><span>Previous: <a href="0023-reference-as-spec.html">1.8 A reference as a spec</a></span> · <span>Next: <a href="0025-steering-mid-run.html">1.10 Steering mid-run</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

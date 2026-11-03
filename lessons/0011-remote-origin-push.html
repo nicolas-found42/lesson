@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remote, origin and push: getting commits off your laptop</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control as the safety net · Lesson 3.6</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.6 · First-ship path ★</p>
+  <h1>Remote, origin and push</h1>
+  <p class="lede">A commit saves your work on your own machine. A push copies those commits to a server, where they can survive a lost laptop and where the rest of this course can publish them.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0009-why-save-points-exist.html">3.1 Why save points exist</a></span><span>Win: your commits exist somewhere other than your laptop</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Your app becomes public in Unit 6, and what gets published is not a folder on your desk. It is a repository on GitHub: a server holding a copy of your commits. Until you push, every commit is one dropped laptop away from gone, and no link can point at it. This lesson moves your work from "mine, here" to "ours, online".</p>
+<p>You need not memorise the commands, but you must know what a push does, because the agent will report one and you will have to judge whether it happened. The habit from lesson <a href="0001-what-a-coding-agent-is.html">0.1</a> applies: a success message is a claim until you look at the server.</p>
+
+<h2>What a remote is</h2>
+<p>A <span class="term" title="A named address of another copy of the same repository">remote</span> is a named address of another copy of the same repository. GitHub's own explanation is plain: <q>A remote URL is Git's fancy way of saying "the place where your code is stored."</q><sup class="cite"><a href="#src-gh-remotes">[1]</a></sup> That place can be your own repository on GitHub, a copy someone else made, or a server inside a company.</p>
+<p>Git never assumes the address is reachable or that you are allowed in. It only stores the name and the URL, and tries when you ask it to. This is why a remote can be configured correctly and a push can still fail: configuration and permission are two different facts.</p>
+<p>GitHub says the name and the address travel together: <q>Git associates a remote URL with a name, and your default remote is usually called origin.</q><sup class="cite"><a href="#src-gh-remotes">[1]</a></sup> That single sentence explains most of the confusing vocabulary in this lesson.</p>
+
+<h2>origin is a nickname, not a place</h2>
+<p><span class="term" title="The conventional name for the remote you cloned from, or the one you treat as the main copy">Origin</span> is the conventional name for the remote you treat as the main copy. It is not a website, and it is not special to GitHub. Pro Git describes the same convention: if you cloned a repository, <q>origin — that is the default name Git gives to the server you cloned from</q><sup class="cite"><a href="#src-pg-remotes">[2]</a></sup>. You could call it <code>home</code> or <code>backup</code>; almost nobody does, and every tutorial you read will say <code>origin</code>.</p>
+<p>To see what your project actually has, ask Git to list the names and addresses:</p>
+<pre><code>$ git remote -v
+origin  https://github.com/YOUR_USERNAME/my-app.git (fetch)
+origin  https://github.com/YOUR_USERNAME/my-app.git (push)</code></pre>
+<p>Two lines appear because Git stores one address for reading (<em>fetch</em>) and one for writing (<em>push</em>); for a normal setup they are the same. On a project you have only kept on your laptop, this command prints nothing at all. That is the normal starting state, not an error.</p>
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the two things a remote stores, and what does an empty result from <code>git remote -v</code> tell you?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A remote stores a <strong>name</strong> (usually <code>origin</code>) and a <strong>URL</strong> pointing at another copy of the repository. An empty list means this project has no remote configured yet, so there is nowhere for a push to go until you add one.</p></div>
+</div>
+
+<h2>Push sends commits, not files</h2>
+<p>This is the distinction beginners get wrong most often. A <span class="term" title="Copying commits from your local repository to a remote one">push</span> copies <em>commits</em> to the remote. It does not copy the current contents of your folder. Anything you edited but never committed is not part of a commit, so it has nothing to travel with.</p>
+<p>Git's reference for the command states the simplest form directly: <q>The simplest way to push is git push &lt;remote&gt; &lt;branch&gt;.</q> It then spells out the meaning: <q>git push origin main will push the local main branch to the main branch on the remote named origin.</q><sup class="cite"><a href="#src-git-push">[3]</a></sup></p>
+<p>I ran that sequence in a throwaway project to see what the terminal reports. After one commit, a second commit, and one uncommitted edit, the state was:</p>
+<pre><code>$ git status -sb
+## main...origin/main
+ M index.html
+
+$ git push
+Everything up-to-date</code></pre>
+<p>Two things are worth noticing. The modified file is visible as <code>M index.html</code>, yet the push had nothing to send, because that edit was never committed. And the line <code>## main...origin/main</code> says your branch and its remote counterpart are level: no arrow, no <code>ahead</code> or <code>behind</code>. After one more commit the same command printed <code>## main...origin/main [ahead 1]</code>, meaning one commit exists only locally. That status line is the cheapest check you have that a push is pending.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked their agent to commit and push everything. The agent pushed to one copy of the repository owned by the user, then paused before a second, shared copy: the user had earlier said not to touch it. When the user answered "push all", the push was refused for lack of permission. Nothing in the code was wrong; the user's account simply had no write access to that shared copy. The user granted access in the browser, said "I gave access", and the agent retried the same push successfully. The agent could not have fixed this itself, and it did not pretend it had.</p>
+</div>
+
+<p>The lesson in that pattern: a push is an act on someone else's machine, and permission belongs to your account, not to the agent's cleverness. A refusal is information, not a bug to route around. Lesson <a href="0051-permission-errors.html">3.12</a> covers the refusal messages; this lesson only asks you to recognise one when it appears.</p>
+
+<h2>The first push: naming the branch once</h2>
+<p>On GitHub, create an empty repository, copy its URL, and attach it to your local project. GitHub's own instructions for an existing local project are exactly this pair: <q>git remote add origin REMOTE-URL</q>, then <q>git push -u origin main</q><sup class="cite"><a href="#src-gh-addlocal">[4]</a></sup>. The page also warns not to initialise the new repository with a README, licence or gitignore if you are pushing an existing project, because those files would exist on both sides and the first push would be rejected as unrelated history.</p>
+<p>The <code>-u</code> is the part worth understanding. Git's documentation says it adds an <q>upstream (tracking) reference, used by argument-less git-pull</q><sup class="cite"><a href="#src-git-push">[3]</a></sup>. In plain words: it records that your local <code>main</code> belongs with <code>origin/main</code>, so later you can type <code>git push</code> with no arguments and Git knows where to go. Pro Git calls these <q>tracking branches</q> and explains that they are <q>local branches that have a direct relationship to a remote branch</q><sup class="cite"><a href="#src-pg-branches">[5]</a></sup>.</p>
+<p>That relationship is what lets <code>git status</code> tell you <code>ahead 1</code> or <code>behind 2</code>. Without it, Git's push reference notes that <q>git push may fail if you haven't set an upstream for the current branch</q><sup class="cite"><a href="#src-git-push">[3]</a></sup> — which is the confusing first-push failure that <code>-u</code> prevents.</p>
+
+<div class="transcript" aria-label="A first push, simplified">
+  <div class="row you"><span class="who">you</span><span>Add my GitHub repo as the remote and push my commits. Ask me before anything that needs my account.</span></div>
+  <div class="row tool"><span class="who">tool</span><span>git remote add origin https://github.com/YOUR_USERNAME/my-app.git</span></div>
+  <div class="row tool"><span class="who">tool</span><span>git push -u origin main</span></div>
+  <div class="row"><span class="who">git</span><span>branch 'main' set up to track 'origin/main'.</span></div>
+  <div class="row tool"><span class="who">tool</span><span>git status -sb</span></div>
+  <div class="row"><span class="who">git</span><span>## main...origin/main</span></div>
+  <div class="row"><span class="who">agent</span><span>Pushed. Your branch tracks origin/main. I did not verify the page renders; that is Unit 6.</span></div>
+</div>
+
+<h2>Your GitHub account is the permission</h2>
+<p>GitHub requires <q>a personal account and a verified email address</q> before you can create a repository<sup class="cite"><a href="#src-gh-account">[6]</a></sup>. Signing up is a browser task, and it is yours: the agent never needs your password, and you should not paste one into a chat. When you push over an HTTPS address, Git asks for credentials; GitHub notes that its <q>Password-based authentication for Git has been removed</q> and that when prompted for a password you enter a personal access token instead<sup class="cite"><a href="#src-gh-remotes">[1]</a></sup>. A credential helper can remember it for you, which is why your second push may not ask at all.</p>
+<div class="warn">
+  <span class="label">Before your first push</span>
+  <p>Never commit or push passwords or API keys. GitHub's import guide opens with that warning: <q>Never git add, commit, or push sensitive information, for example passwords or API keys</q><sup class="cite"><a href="#src-gh-addlocal">[4]</a></sup>. A pushed secret is harder to remove than an unpushed one, because the server now has a copy. Lesson <a href="0042-gitignore.html">3.3</a> covers keeping such files out of commits, and Unit 8 covers what to do after a leak.</p>
+</div>
+
+<h2>What a push does not do</h2>
+<table class="ref">
+  <tr><th>You did this</th><th>What is on the server afterwards</th></tr>
+  <tr><td>Edited a file, did not commit</td><td>Nothing new. The edit stays local.</td></tr>
+  <tr><td>Committed on a branch you never pushed</td><td>Nothing new. Only pushed branches appear.</td></tr>
+  <tr><td>Committed and pushed <code>main</code></td><td>Those commits, on the remote's <code>main</code>.</td></tr>
+  <tr><td>Pushed, but your site still looks old</td><td>The commits are there; publishing is a separate step (lesson <a href="0014-deploy-merge-live.html">6.6</a>).</td></tr>
+</table>
+<p>Two more limits belong here because they surprise people. A push is refused, not merged, when someone else pushed first: Pro Git says <q>your push will rightly be rejected</q> and you must incorporate their work first<sup class="cite"><a href="#src-pg-remotes">[2]</a></sup>. And a push only updates the server; it does not change your own working files, so a file you see locally is not proof that the server has it.</p>
+
+<h2>Checking it yourself</h2>
+<p>The agent will usually offer a summary. Replace that with two observations you can make in ten seconds.</p>
+<div class="compare">
+  <div class="bad">
+    <span class="label">Not evidence</span>
+    <p>"Pushed successfully." A sentence in a chat window. It may be true, and it may describe a push to a different remote than the one you meant.</p>
+  </div>
+  <div class="good">
+    <span class="label">Evidence</span>
+    <p><code>## main...origin/main</code> with no <code>ahead</code>, plus the commit visible on the repository page in your browser. Two independent views agree.</p>
+  </div>
+</div>
+
+<div class="doit">
+  <span class="label">Do it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> In a browser, sign in to GitHub and create a new repository for your project. Do not add a README, licence or gitignore. Keep the page open.</label></li>
+    <li><label><input type="checkbox"> Copy the repository URL. Open your agent in the project folder, with approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>), and paste the prompt below.</label></li>
+    <li><label><input type="checkbox"> Read each command before you approve it. The only network action should be <code>git push</code> to the URL you just copied.</label></li>
+    <li><label><input type="checkbox"> Run <code>git remote -v</code> and confirm both lines name your repository, not a placeholder and not someone else's.</label></li>
+    <li><label><input type="checkbox"> Run <code>git status -sb</code>. Confirm it shows <code>## main...origin/main</code> with no <code>ahead</code>.</label></li>
+    <li><label><input type="checkbox"> Refresh the repository page in your browser and confirm your most recent commit message is listed.</label></li>
+  </ol>
+  <div class="prompt">
+    <button class="copy" type="button">Copy</button>
+    <pre>This project already has commits on the main branch and no remote yet.
+
+Do this, one step at a time, and show me each command before running it:
+1. Add my GitHub repository as the remote named origin. The URL is:
+   PASTE_YOUR_REPO_URL_HERE
+2. Push main and set it to track origin/main.
+3. Show me the output of `git remote -v` and `git status -sb`.
+
+Do not rewrite history, do not force push, and do not commit any file I have not reviewed.
+If the push is refused, stop and tell me the exact message instead of trying another approach.</pre>
+  </div>
+  <div class="expect"><p>You should see two <code>origin</code> lines pointing at your repository, a push that reports the new branch or the commits sent, and a status line reading <code>## main...origin/main</code> with no <code>ahead</code>. The repository page in your browser should list the same commit message. If the status line still says <code>ahead</code>, the push did not happen, whatever the summary said.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>If your agent asks for approval</h2>
+<p>A push leaves your machine, so every one of the three agents can be configured to ask first. Keep the asking mode on while you learn; lesson <a href="0006-approvals-and-permissions.html">0.6</a> owns the details.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>The prompt should appear before the command runs, and you can read the whole command in it. If you are unsure which mode you are in, the documentation's page on permission modes lists each one and what it allows without asking.<sup class="cite"><a href="#src-cc-modes">[7]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Codex separates the sandbox from approvals; its documentation recommends starting with "Ask for approval" for most work, and the CLI opens the same settings with <code>/permissions</code>.<sup class="cite"><a href="#src-cx-perms">[8]</a></sup> A push needs network access, so expect a prompt that names the command.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>omp's documentation says its built-in default is <code>yolo</code>, which prompts for nothing, and recommends setting <code>tools.approvalMode</code> to <code>write</code> for interactive use.<sup class="cite"><a href="#src-omp-approvals">[9]</a></sup> If you have not changed that setting, ask before you let an agent push.</p>
+  </div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 4</span>
+  <p class="q">What does a remote in Git actually point at?</p>
+  <button class="opt" type="button">A copy of commits on another machine</button>
+  <button class="opt" type="button">A list of files you deleted today</button>
+  <button class="opt" type="button">A snapshot kept only inside an editor</button>
+  <button class="opt" type="button">A branch living on your own laptop</button>
+  <div class="why"><p>A remote is a name plus a URL for another copy of the same repository. It is not a folder on your disk and not a branch.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 2 of 4</span>
+  <p class="q">You edit a file but do not commit it. What does push send?</p>
+  <button class="opt" type="button">Only committed snapshots, never your newer uncommitted edit</button>
+  <button class="opt" type="button">Every file on disk, including your newer uncommitted edit</button>
+  <button class="opt" type="button">The uncommitted edit, but not the older commit snapshots</button>
+  <button class="opt" type="button">Nothing at all, until you close your agent session</button>
+  <div class="why"><p>Push copies commits. An edit that was never committed is not inside any commit, so it stays on your machine until you commit it and push again.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 3 of 4</span>
+  <p class="q">What does git push -u origin main do the first time?</p>
+  <button class="opt" type="button">Sends main and makes it track origin/main</button>
+  <button class="opt" type="button">Deletes origin/main and starts a fresh branch</button>
+  <button class="opt" type="button">Copies the remote down into your folder</button>
+  <button class="opt" type="button">Marks main as protected from future pushes</button>
+  <div class="why"><p><code>-u</code> sets the upstream reference, so later <code>git push</code> and <code>git status</code> know which remote branch belongs with your local one. Nothing is downloaded and nothing is protected.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 4 of 4</span>
+  <p class="q">A friend opens your link and sees an old page. Why?</p>
+  <button class="opt" type="button">The newest commit was never pushed to origin</button>
+  <button class="opt" type="button">The friend must install Git on their phone</button>
+  <button class="opt" type="button">GitHub Pages only updates one time each month</button>
+  <button class="opt" type="button">The page is committed only after it goes live</button>
+  <div class="why"><p>The published site is built from the repository on GitHub. A commit that stayed on your laptop cannot appear there. Check <code>git status -sb</code> for <code>ahead</code> before blaming the host; lesson 6.6 separates deploying from pushing.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes">Pro Git, chapter 2.5: Working with Remotes</a> — the clearest free explanation of remotes, tracking branches and the rejected-push case. Read the sections "Showing Your Remotes" and "Pushing to Your Remotes"; the branch material applies to the next two lessons.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Draw my project's remotes and branches as a diagram"</em> or <em>"Explain what changed on the server after my last push, using my actual git log."</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-gh-remotes">GitHub, <a href="https://docs.github.com/en/get-started/git-basics/about-remote-repositories">About remote repositories</a>. Retrieved 2026-11-02.</li>
+  <li id="src-pg-remotes">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes">Pro Git: Working with Remotes</a>. Retrieved 2026-11-02.</li>
+  <li id="src-git-push">Git project, <a href="https://git-scm.com/docs/git-push">git-push documentation</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gh-addlocal">GitHub, <a href="https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github">Adding locally hosted code to GitHub</a>. Retrieved 2026-11-02.</li>
+  <li id="src-pg-branches">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Branching-Remote-Branches">Pro Git: Remote Branches</a>. Retrieved 2026-11-02.</li>
+  <li id="src-gh-account">GitHub, <a href="https://docs.github.com/en/account-and-profile/how-tos/account-management/creating-an-account-on-github">Creating an account on GitHub</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cc-modes">Anthropic, <a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cx-perms">OpenAI, <a href="https://learn.chatgpt.com/docs/permission-modes">Permission modes</a>. Retrieved 2026-11-02.</li>
+  <li id="src-omp-approvals">Stencil Labs, <a href="https://omp.sh/docs/approvals">omp tool approvals</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> explain what a remote and <code>origin</code> are, push your commits to GitHub, and prove the push happened instead of trusting a summary.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><a href="0010-repo-working-tree-uncommitted-change.html">Previous: Repo, working tree, uncommitted change</a> · <a href="0012-static-vs-dynamic.html">Next: Static vs dynamic</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

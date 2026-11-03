@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>When to override a recommendation</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 1 · Telling the agent what you want · Lesson 1.6</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.6</p>
+  <h1>When to override a recommendation</h1>
+  <p class="lede">Every question in an interview comes with an answer the agent would pick for you. Some of those answers are technical guesses you should accept. A few are decisions about your product, and those are yours.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0020-yes-all.html">1.5 "Yes to all"</a></span><span>Win: you can spot a product decision and overrule it with a reason</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You are building something other people will open. The agent will never meet them. It knows the files, the request you typed, and a great deal about how software is usually built. What it does not know is what your app should feel like to the person on the other end.</p>
+<p>If you accept every recommended answer, you still ship something. It is just shaped by the agent's assumptions instead of your intent. The difference rarely shows up as a bug. It shows up as an app that opens on the wrong screen, buries the one action you cared about, or feels like a tool built for someone else.</p>
+
+<h2>What "recommended" actually means</h2>
+<p>In the interview pattern from lesson 1.4, each question arrives with a default: the option the agent would choose if you said "whatever you think". Anthropic's guidance for asking an agent to interview you describes the shape of that exchange: <q>Claude comes back with multiple-choice questions about the parts you haven’t pinned down.</q><sup class="cite"><a href="#src-a7">[1]</a></sup> It keeps going until the answers form a written spec.<sup class="cite"><a href="#src-a7">[1]</a></sup></p>
+<p>That default is a proposal, built from three things: general norms about software, the words of your request, and whatever it could read in your folder. None of those is knowledge of your users. OpenAI's Codex guide makes the same assumption explicit when it suggests asking Codex to <q>challenge your assumptions and turn the fuzzy idea into something concrete</q>.<sup class="cite"><a href="#src-b7">[2]</a></sup> The recommendation is the agent's best guess, offered so you can move quickly. It is not a verdict.</p>
+
+<h2>Two kinds of question, one test</h2>
+<p>Interview questions fall into two rough groups. <strong>Product intent</strong> questions decide what the app is like to use: what appears first, what a beginner sees, what gets hidden, what the tone is. <strong>Mechanism</strong> questions decide how the thing is built: file layout, which library, how a page is generated. The agent is usually better than you at mechanism. You are the only source of intent.</p>
+<table class="ref">
+  <thead><tr><th>Question</th><th>Kind</th><th>Who decides</th></tr></thead>
+  <tbody>
+    <tr><td>"Should the whole app be one page or several?"</td><td>Mechanism</td><td>Accept the recommendation</td></tr>
+    <tr><td>"What should a first-time visitor see when it opens?"</td><td>Product intent</td><td>You</td></tr>
+    <tr><td>"Where should the stylesheet live?"</td><td>Mechanism</td><td>Accept the recommendation</td></tr>
+    <tr><td>"Should search be the first action, or should everything be visible first?"</td><td>Product intent</td><td>You</td></tr>
+  </tbody>
+</table>
+<p>Two questions separate them in practice.</p>
+<ol>
+  <li><strong>Would a user notice or feel this?</strong> Not "would they see the file", but would the experience change. A folder name is invisible. A default screen is the whole first impression.</li>
+  <li><strong>Could I want the opposite, for a reason I can say in one sentence?</strong> "My relatives will open this once and never read instructions" is a reason. "It feels wrong" is a feeling worth naming too, but turning it into a sentence is what lets the agent apply it elsewhere.</li>
+</ol>
+<p>If both answers are yes, the decision is yours and the recommendation is only a starting point. If either is no, accept it and save your attention. A third question helps with the borderline cases: <em>how expensive is this to change later?</em> A cheap, invisible choice can stay with the agent even if you have an opinion.</p>
+
+<div class="callout">
+  <span class="label">A useful asymmetry</span>
+  <p>The agent can be wrong about your product and still be right about your code. Overriding it on layout does not mean doubting it on how the layout is built.</p>
+</div>
+
+<h2>Override with a reason, not a verdict</h2>
+<p>Comparing two ways to reject the same recommendation:</p>
+<div class="compare">
+  <div class="bad"><span class="label">Override as a verdict</span><p>"Q4: no. Full network."</p><p>The agent knows your choice and nothing else. Every later question that depends on it is a fresh guess, and the reason may never reach the code.</p></div>
+  <div class="good"><span class="label">Override with the reason</span><p>"Q4: full network first. Someone opening this cold needs to see the shape before searching for one person. Keep search visible, but not as the opening screen."</p><p>The agent now knows the audience ("someone opening this cold"), the intent (see the shape), and the constraint (search stays visible). It can apply all three to questions you never answered.</p></div>
+</div>
+<p>This is not politeness. Anthropic's prompting guide notes that <q>Providing context or motivation behind your instructions</q> gives the model more information about your goals and produces more targeted results.<sup class="cite"><a href="#src-p1">[3]</a></sup> A one-line reason is the cheapest form of that context, and it survives into the next turn.</p>
+<p>It also composes with the habit from lesson 1.5. "Yes to all, except the opening screen: show everything first" is one message that accepts twenty defaults and corrects the one that matters.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to make an app that maps connections between records feel less clunky for beginners. The agent interviewed them for about half an hour: twenty-six questions, each with a recommended answer. The user replied "yes to all" several times, and overrode exactly three answers. All three were about what a newcomer sees first: open on the whole picture rather than a search box, make finding one specific record the obvious next action, and design for a desktop screen before a phone. The agent's recommendations had pointed the other way on each, toward search-first and both-screens-at-once.</p>
+  <p>The user never argued about how the app was built. The three overrides changed the default view, the hint text on the map, and the order of the controls. Those were the parts a first-time visitor would actually meet.</p>
+</div>
+
+<h2>When not to override</h2>
+<p>Override too often and the interview stops being an interview. If you disagree with nearly every recommendation, the likely cause is upstream: the request described a feeling ("make it less clunky") without saying who it was clunky for. Fix the goal (lesson 1.1), rerun the questions (lesson 1.4), and the defaults get closer. The three overrides above were right precisely because they were rare and specific.</p>
+<p>Two more cases where "override" is the wrong move:</p>
+<ul>
+  <li><strong>Safety defaults are not taste.</strong> A recommendation to keep approval prompts on, or to avoid putting a key in the code, is not a product opinion. Keep prompts on; lesson 0.6 explains the modes, and Unit 8 covers secrets.</li>
+  <li><strong>Factual claims need evidence, not a vote.</strong> If the agent says a host has a size limit, overriding it does not change the limit. Ask for the source, then decide what to do about it.</li>
+</ul>
+<span class="sidenote">Agents do not always surface the trade-offs inside their own recommendations. Claude Code ships an optional notice that looks for <q>a tradeoff Claude chose without calling it out</q>; it is off by default.<sup class="cite"><a href="#src-im">[4]</a></sup> Asking "what did you decide for me here?" is the manual version, and it works in every tool.</span>
+
+<h2>Where the questions show up</h2>
+<p>All three agents can run an interview, but the mechanics differ. What does not differ: you answer in your own words whenever the offered options do not fit.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Claude Code has a built-in question tool named <code>AskUserQuestion</code>, listed in its permissions documentation among tools that <q>require user interaction</q>.<sup class="cite"><a href="#src-pm">[5]</a></sup> Its best-practices page describes the interview as several rounds of multiple-choice questions written to a spec file.<sup class="cite"><a href="#src-a7">[1]</a></sup> If no option says what you mean, type the answer instead of picking the nearest one.</p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Codex's guide recommends plan mode for tasks that are <q>complex, ambiguous, or hard to describe well</q>, and suggests asking Codex to question you first and to <q>challenge your assumptions</q>.<sup class="cite"><a href="#src-b7">[2]</a></sup> Treat each proposed answer as an opening position, then say which one you are changing and why.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>omp's usage guide frames this as one of the ways you intervene: <q>Send a steering message while it works, answer a question, or reject an unsafe action.</q><sup class="cite"><a href="#src-cu">[6]</a></sup> Its documentation comes only from its own authors, so confirm the exact prompt shape in your session.</p>
+  </div>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: give the two-question test that tells a product decision from a technical one, and say what an override should always include.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Ask whether a user would notice or feel the choice, and whether you could want the opposite for a reason you can state in one sentence. If both are yes, it is product intent and yours to decide. An override should carry that reason, not just the verdict, so the agent can apply it to later questions.</p></div>
+</div>
+
+<h2>Practice: sort the agent's defaults</h2>
+<p>This works on any project, before any code is written. You are not building yet; you are finding out which decisions were about to be made without you.</p>
+<div class="doit">
+  <span class="label">Do this now</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in your project folder and start a session, with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Paste the prompt below. It asks for decisions, not files.</label></li>
+    <li><label><input type="checkbox"> Read the list and apply the two-question test to each row. Mark each row "mine" or "yours".</label></li>
+    <li><label><input type="checkbox"> Reply with your overrides, each followed by one sentence of reason. For the rest, write "recommended is fine".</label></li>
+  </ol>
+  <div class="prompt">
+    <button class="copy" type="button">Copy</button>
+    <pre>Before you change any files, list the five decisions you would otherwise make for me in this task.
+For each one: the options, the option you recommend, and one sentence on what that recommendation is based on.
+Mark each as "product" (what a user sees or feels) or "technical" (how it is built).
+Do not edit anything yet.</pre>
+  </div>
+  <div class="expect">
+    <p>A numbered list of five rows, each with a recommendation and its basis. The <em>product</em> rows are the ones where the basis sounds like a guess about people ("most users prefer…", "a typical layout…") rather than a fact about your folder. Those are the rows to check first. If every row is marked technical, your request may be too narrow to have product decisions in it, which is worth knowing too.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">The agent recommends one option. When is overriding it the right call?</p>
+  <button class="opt" type="button">The choice changes what new users see first.</button>
+  <button class="opt" type="button">The choice affects which code files it edits.</button>
+  <button class="opt" type="button">The choice makes the page load slightly faster.</button>
+  <button class="opt" type="button">The choice keeps the project layout fairly standard.</button>
+  <div class="why"><p>What a first-time user meets is product intent, and the agent cannot know your users. File layout, speed and convention are mechanism: the agent is a better judge, and a wrong call is cheap to change.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">What makes an override work well?</p>
+  <button class="opt" type="button">Say only the choice, then let the agent guess why.</button>
+  <button class="opt" type="button">Say yes to every single question, then edit the result.</button>
+  <button class="opt" type="button">Say the choice you want and the reason behind it.</button>
+  <button class="opt" type="button">Say nothing now, then change the result much later on.</button>
+  <div class="why"><p>The reason is context the agent can reuse on questions you never saw. A bare "no" changes one answer; a reason changes how the rest of the work is aimed.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You disagree with nearly every recommendation. What should you do?</p>
+  <button class="opt" type="button">Accept all of them, since the recommendations are usually right.</button>
+  <button class="opt" type="button">Rewrite your prompt first, since the goal got misread there.</button>
+  <button class="opt" type="button">Answer them all now, then check what the agent builds.</button>
+  <button class="opt" type="button">Stop answering these, and write your own plan by hand.</button>
+  <div class="why"><p>Blanket disagreement usually means the request did not say who the app is for or what it should feel like. Fix the goal and rerun the interview; the defaults get closer and your attention goes where it matters.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> — the section "Brainstorm with Claude first" shows the interview prompt and what comes back. Read it for the shape of the questions; the advice applies to Codex and omp as well, even though the wording is Claude-specific.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Unsure whether a recommendation is yours? Paste the question and the recommended answer into a message and ask: <em>"Is this a product decision or a technical one, and what would change if I chose the opposite?"</em> That question is useful even when the answer is "either is fine".</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b7">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Best practices — Codex</a>. Retrieved 2026-11-02.</li>
+  <li id="src-p1">Anthropic, <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">Prompting best practices</a>. Retrieved 2026-11-02.</li>
+  <li id="src-im">Anthropic, <a href="https://code.claude.com/docs/en/interactive-mode">Interactive mode</a>. Retrieved 2026-11-02.</li>
+  <li id="src-pm">Anthropic, <a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a>. Retrieved 2026-11-02.</li>
+  <li id="src-cu">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+<p class="sidenote">Also useful: the <a href="../reference/prompt-patterns.html">prompt patterns</a> page collects the interview and plan prompts in one place. Terms used here are defined in the <a href="../reference/glossary.html">glossary</a>.</p>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> tell a product decision from a technical one, accept the technical defaults, and overrule the product ones with a reason the agent can carry forward.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns (one page)</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Next: 1.7 Plan, then a human "go" — <a href="0022-plan-then-human-go.html">continue</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

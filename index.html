@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building Apps with a Coding Agent — Course Home</title>
+<link rel="stylesheet" href="assets/lesson.css">
+<style>
+  .unit-section { margin-top: 2.2rem; margin-bottom: 2rem; }
+  .unit-title { font-size: 1.4rem; font-weight: 400; font-style: italic; border-bottom: 1px solid var(--rule); padding-bottom: 0.4rem; margin-bottom: 1rem; }
+  .lesson-grid { display: grid; gap: 0.9rem; margin-top: 0.8rem; }
+  .lesson-card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 0.9rem 1.1rem;
+    transition: border-color 0.15s ease;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+  }
+  .lesson-card:hover {
+    border-color: var(--accent);
+  }
+  .lesson-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+  }
+  .lesson-card-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0;
+  }
+  .lesson-card-tag {
+    font: 600 0.72rem system-ui, sans-serif;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .star-badge {
+    color: var(--accent);
+    font-weight: bold;
+    margin-right: 0.2rem;
+  }
+  .lesson-card-lede {
+    font-size: 0.92rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.45;
+  }
+  .hero-box {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    border-radius: 0 6px 6px 0;
+    margin: 1.5rem 0 2rem;
+  }
+  .hero-box p { margin: 0 0 0.6rem; }
+  .hero-box p:last-child { margin: 0; }
+  .path-note {
+    font: 0.82rem/1.4 system-ui, sans-serif;
+    color: var(--muted);
+    margin-top: 0.4rem;
+  }
+</style>
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb">Course Home</nav>
+<header class="lesson-head">
+  <p class="kicker">Zero to Shipped · Static Web Applications</p>
+  <h1>Building Apps with a Coding Agent</h1>
+  <p class="lede">A complete beginner's curriculum for directing Claude Code, Codex, and omp to take an idea and ship a working, public web app—without writing code and without losing control.</p>
+  <div class="meta">
+    <span>Target: General Users &amp; Non-Programmers</span>
+    <span>~15 Minutes Per Lesson</span>
+    <span>One Tangible Win Per Module</span>
+  </div>
+</header>
+<main>
+
+<div class="hero-box">
+  <p><strong>How to use this course:</strong> Each lesson tackles one tightly focused concept with interactive recalls, real anonymized vignettes, tool-specific command tabs, and self-checks.</p>
+  <p>Start with <strong>Unit 0</strong> and follow the <strong>★ First-Ship Path</strong> to deploy your first static page to GitHub Pages as early as possible. Lessons are currently being authored and published in this repository.</p>
+</div>
+<section class="unit-section">
+  <h2 class="unit-title">Unit 0 &mdash; Orientation & setup</h2>
+  <div class="lesson-grid">
+    <a class="lesson-card" href="lessons/0001-what-a-coding-agent-is.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>What a coding agent actually is</h3>
+        <span class="lesson-card-tag">0.1 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">A chat can only talk. An agent can look at your files, run things, and check what happened. Everything else in this course builds on that difference.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0002-the-three-agents.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>The three agents: same ideas, different shells</h3>
+        <span class="lesson-card-tag">0.2 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">Claude Code, Codex and omp all run the loop you met in lesson 0.1. What changes is the shell around it: the start command, the rules file, the mode names, the key that stops a run.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0003-your-project-is-a-folder.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Your project is a folder</h3>
+        <span class="lesson-card-tag">0.3 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">An app is not a cloud, a database or a website. Before any of that, it is a folder of text files on your computer, and the agent only works on the folder it was pointed at.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0006-approvals-and-permissions.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Approvals and permissions: what your agent may do</h3>
+        <span class="lesson-card-tag">0.6 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">The agent works with your account and your files. One setting decides whether it stops to ask you before it acts, and that setting is the difference between a helpful assistant and a mess you did not see coming.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0015-ship-a-hello-world-page.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Ship a hello world page</h3>
+        <span class="lesson-card-tag">M.1 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">A file in a folder and a page a stranger can open are separated by five named states. This milestone walks all five once, with a page too small to distract you.</p>
+    </a>
+  </div>
+</section>
+<section class="unit-section">
+  <h2 class="unit-title">Unit 1 &mdash; Telling the agent what you want</h2>
+  <div class="lesson-grid">
+    <a class="lesson-card" href="lessons/0016-goal-audience-not-method.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Goal and audience, not method</h3>
+        <span class="lesson-card-tag">1.1 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">Tell the agent what should exist and who it is for. Let it choose the steps. Your two sentences about the person at the other end do more work than twenty about tools.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0017-orient-first.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Orient first: ask before you change anything</h3>
+        <span class="lesson-card-tag">1.2 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">Before you ask for a change, ask for a map. One question that only reads costs almost nothing. One change built on a wrong guess has to be found and undone.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0018-ask-word-means.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Ask what a word means</h3>
+        <span class="lesson-card-tag">1.3 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">Half of a beginner's trouble with an agent is vocabulary. One question, asked at the moment the word appears, turns a paragraph you skim into a decision you can check.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0019-interview.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>The interview: numbered questions with a recommended answer</h3>
+        <span class="lesson-card-tag">1.4 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">You have said what the app is for. Now the agent needs the hundred small decisions that turn a goal into something buildable. A good interview asks them as numbered questions, and answers every one of them with a recommendation you can accept in a single word.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0020-yes-all.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>"Yes to all": accepting an interview in one line</h3>
+        <span class="lesson-card-tag">1.5 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">An interview can return twenty questions. You do not have to answer twenty times. One message can accept the whole list, name the two answers you want changed, and still leave you in control of what gets built.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0021-when-override-recommendation.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title">When to override a recommendation</h3>
+        <span class="lesson-card-tag">1.6 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">Every question in an interview comes with an answer the agent would pick for you. Some of those answers are technical guesses you should accept. A few are decisions about your product, and those are yours.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0024-show-dont-tell.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Show, don't tell: screenshots as bug reports</h3>
+        <span class="lesson-card-tag">1.9 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">The agent reads files and command output. It does not look at your screen. When something is wrong in a way words keep missing, a picture is the shortest true description you can give.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0025-steering-mid-run.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Steering an agent that is already running</h3>
+        <span class="lesson-card-tag">1.10 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">A run that takes twenty minutes is not a black box. You can add a condition, stop a wrong turn, ask where things stand, and send it on again, all without losing the work it already did.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0027-project-rules-file.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Write the procedure once: a project rules file</h3>
+        <span class="lesson-card-tag">1.12 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">You have typed the same correction twice this week. There is a place for it: a short text file inside the project, which the agent reads at the start of every session. Write it once and stop repeating yourself.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0028-outcome-sized-prompts-vs-micro-managing.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title">Outcome-sized prompts, not micro-managing</h3>
+        <span class="lesson-card-tag">1.13 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">One prompt should buy one result you can look at. Smaller than that and you are doing the agent's job of choosing steps. Larger than that and nobody can tell when it is finished.</p>
+    </a>
+  </div>
+</section>
+<section class="unit-section">
+  <h2 class="unit-title">Unit 2 &mdash; Knowing what it actually did (verification)</h2>
+  <div class="lesson-grid">
+    <a class="lesson-card" href="lessons/0030-claims-vs-evidence.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Claims versus evidence</h3>
+        <span class="lesson-card-tag">2.2 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">"Done" is a sentence about what the agent believes. Evidence is something that would have come out differently if the work were wrong. Only the second one lets you ship.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0033-linter-formatter-type-checker.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title">Linters, formatters and type checkers</h3>
+        <span class="lesson-card-tag">2.5 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">A test runs your app and watches what happens. Three cheaper readers never run it at all: they read the code and complain. Knowing which one to ask for turns a vague "looks fine" into a pass or a fail.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0034-one-command-gate.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title">One command gate: put the checks in the repo</h3>
+        <span class="lesson-card-tag">2.6 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">When all your checks live behind one short command, the agent can grade its own work before it tells you it is finished. You type the same command, and you get the same verdict.</p>
+    </a>
+  </div>
+</section>
+<section class="unit-section">
+  <h2 class="unit-title">Unit 3 &mdash; Version control as the safety net</h2>
+  <div class="lesson-grid">
+    <a class="lesson-card" href="lessons/0009-why-save-points-exist.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Why save points exist</h3>
+        <span class="lesson-card-tag">3.1 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">An agent can rewrite twenty files while you watch one paragraph of text scroll by. A commit is how you decide that this state of the folder is worth keeping, and give it a name you can come back to.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0010-repo-working-tree-uncommitted-change.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Repository, working tree, uncommitted change</h3>
+        <span class="lesson-card-tag">3.2 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">Your project sits in two places at once: the files you can open, and the history git keeps. Two commands show you where those two disagree. Reading them is how you know what your agent actually changed.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0011-remote-origin-push.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Remote, origin and push: getting commits off your laptop</h3>
+        <span class="lesson-card-tag">3.6 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">A commit saves your work on your own machine. A push copies those commits to a server, where they can survive a lost laptop and where the rest of this course can publish them.</p>
+    </a>
+  </div>
+</section>
+<section class="unit-section">
+  <h2 class="unit-title">Unit 6 &mdash; Shipping a static app</h2>
+  <div class="lesson-grid">
+    <a class="lesson-card" href="lessons/0012-static-vs-dynamic.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>Static or dynamic, and what hosting means</h3>
+        <span class="lesson-card-tag">6.1 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">Some apps are a pile of files that a host hands over untouched. Others need a program running all the time. Which one you are building decides whether free hosting is enough.</p>
+    </a>
+    <a class="lesson-card" href="lessons/0013-github-pages.html">
+      <div class="lesson-card-header">
+        <h3 class="lesson-card-title"><span class="star-badge" title="First-ship path">★</span>GitHub Pages: what your URL will be</h3>
+        <span class="lesson-card-tag">6.3 · Lesson</span>
+      </div>
+      <p class="lesson-card-lede">Pages turns your repository into a website at a predictable address. Learn the address shape now, and your links will keep working after you send them to someone.</p>
+    </a>
+  </div>
+</section>
+
+<div class="source-box">
+  <span class="label">Canonical Index &amp; Full Curriculum</span>
+  <p>The complete 10-unit curriculum graph (116 planned concepts) is tracked in <code>.scratch/lesson-index.md</code> and <code>.scratch/curriculum.json</code>. As background authoring completes, new lessons automatically link into this index.</p>
+</div>
+
+<footer class="lesson-foot" style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: 0.85rem; color: var(--muted);">
+  <p>Built with Tufte-inspired typography for Claude Code, Codex, and omp.</p>
+</footer>
+
+</main>
+<script src="assets/lesson.js"></script>
+</body>
+</html>

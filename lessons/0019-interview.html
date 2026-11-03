@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The interview: numbered questions with a recommended answer</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 1 · Telling the agent what you want · Lesson 1.4</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.4 · First-ship path ★</p>
+  <h1>The interview: numbered questions with a recommended answer</h1>
+  <p class="lede">You have said what the app is for. Now the agent needs the hundred small decisions that turn a goal into something buildable. A good interview asks them as numbered questions, and answers every one of them with a recommendation you can accept in a single word.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0016-goal-audience-not-method.html">1.1 Goal and audience, not method</a></span><span>Win: you can turn a vague idea into a decided spec without writing a spec</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>An agent can only build what it can decide. When a detail is missing, it fills the gap with a guess, and the guess is invisible until the app is finished and wrong. The cheapest place to catch a wrong guess is before any code exists, in a list of questions you can read in two minutes. Claude Code's documentation says you <q>don't have to work it all out before you prompt</q>, and suggests that you <q>ask Claude to interview you instead</q>.<sup class="cite"><a href="#src-a1">[1]</a></sup> That is the whole technique. You bring the goal from lesson 1.1; the agent brings the list of decisions that goal implies.</p>
+
+<h2>What an interview looks like</h2>
+<p>You give a goal in plain words. The agent replies with questions instead of code. Each question is numbered, names one decision, and ends with the answer it would pick if you said nothing. Here is the shape, using a made-up reading-list app:</p>
+
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>I want a small site where my book club keeps a reading list. Interview me until you could write the spec.</span></div>
+  <div class="row"><span class="who">agent</span><span>Q1. Who may add a book: anyone with the link, or only members you approve?<br><b>Recommended:</b> anyone with the link — it is a six-person club and the friction is worse than the risk.</span></div>
+  <div class="row"><span class="who">agent</span><span>Q2. What does a book entry need: title and author, or also a cover image and a rating?<br><b>Recommended:</b> title, author, rating. Covers need a place to store images; add that later if you miss it.</span></div>
+  <div class="row"><span class="who">agent</span><span>Q3. When someone finishes a book, does it stay in the list or move to a "read" shelf?<br><b>Recommended:</b> move to a read shelf, so the main list stays short.</span></div>
+  <div class="row you"><span class="who">you</span><span>1. members only. 2. your rec. 3. your rec, but keep the finished date visible.</span></div>
+  <div class="row"><span class="who">agent</span><span>Spec written: three decisions confirmed, one amendment (finished date). Ready to plan.</span></div>
+</div>
+
+<p>Three questions, one line of answers, and the two riskiest guesses — who can write, and what happens to finished books — are now decisions you made rather than defaults the agent smuggled in. Anthropic describes the same exchange as <q>multiple-choice questions about the parts you haven’t pinned down</q>.<sup class="cite"><a href="#src-a1">[1]</a></sup> OpenAI's guidance is equally direct: <q>ask Codex to question you first</q>.<sup class="cite"><a href="#src-a2">[2]</a></sup></p>
+
+<h2>Why every question carries a recommendation</h2>
+<p>A bare question moves the work back to you: now you must invent an answer, in the agent's vocabulary, with no idea which options are cheap and which are expensive. A question with a recommendation does the opposite. The agent has already thought about the trade-off, chosen a side, and told you why in one sentence. Your job shrinks from "design this" to "agree or disagree".</p>
+<p>That matters most when you are not technical. You cannot evaluate "per-user versus per-key rate limits", but you can read "per-user, because your friends each get a fair share" and say yes. The recommendation is not a command and not a promise. It is a proposal with its reasoning attached, which is exactly what a decision needs in order to be checked.</p>
+<span class="sidenote">Recommendations are only as good as the agent's picture of your project. That is why the interview usually comes after a quick look at the folder, not before. Lesson 1.2 covers that first look.</span>
+
+<h2>Answering by number</h2>
+<p>Answer in the same numbering, one line per question. Accepting a recommendation needs one word: <em>yes</em>, <em>your rec</em>, or the number alone. That is not laziness; it keeps the whole exchange inside one screen, so you can still see question 4 while answering question 7. Codex's documentation makes the point that the agent should <q>turn the fuzzy idea into something concrete before writing code</q>.<sup class="cite"><a href="#src-a2">[2]</a></sup> A numbered answer list is what "concrete" looks like in practice.</p>
+
+<div class="compare">
+  <div class="bad">
+    <span class="label">Slow, and easy to misread</span>
+    <p>"I don't know, whatever you think. Maybe make it look nice? And I guess people should be able to add books."</p>
+    <p>Three answers are buried in one sentence. The agent must guess which question each fragment belongs to, and "look nice" is not a decision anyone can check.</p>
+  </div>
+  <div class="good">
+    <span class="label">Same person, two minutes later</span>
+    <p>"1. members only. 2. your rec. 3. your rec, but keep the finished date visible. 4. you decide."</p>
+    <p>Every line maps to one question. The one override is stated as a change, not a mood. "You decide" is a real answer too: the agent records the choice it makes, and you can read it back.</p>
+  </div>
+</div>
+
+<p>Three moves cover almost every interview:</p>
+<ul>
+  <li><strong>Accept:</strong> "your rec", "yes", or just the number.</li>
+  <li><strong>Override:</strong> state the answer you want and, if it matters, the reason. Product intent is yours, not the agent's; lesson 1.6 is about knowing when to do this.</li>
+  <li><strong>Amend inside a yes:</strong> "yes to all, except question 3 — keep the finished date". One batch, one correction. Lesson 1.5 covers that move in detail.</li>
+</ul>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked for a redesign of a small data-explorer app in one sentence: it felt clunky, a beginner would get lost, and it looked dated. The agent looked at the app, then asked sixteen numbered questions, each with a recommended answer. The user replied "yes to all" in one line, plus one hard rule: deleting a folder must delete everything inside it, never leave orphans. That rule was the only thing the user had actually decided, and it was the only thing the agent could not have guessed. It became a test in the project before the redesign shipped.</p>
+</div>
+
+<p>Note what the user did <em>not</em> do. They did not write a specification, learn the app's jargon, or answer sixteen questions one at a time over an hour. They read a list, accepted the proposed defaults, and spent their attention on the single decision that carried real risk.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what three things should a well-formed interview question contain, and what does a one-word answer like "your rec" actually mean?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A number, one clearly stated decision, and the answer the agent recommends with a short reason. "Your rec" means you accept that proposal; it does not mean the agent may now decide everything else, and it does not start the build.</p></div>
+</div>
+
+<h2>Asking for an interview</h2>
+<p>You do not need a special command in any of the three agents. The request is a plain prompt, and it works best when it names the goal, the deliverable, and a stopping point for the questions:</p>
+
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>I want [your goal in one sentence, and who it is for].
+
+Before you write any code, interview me. Ask numbered questions, one
+decision each, and give your recommended answer with a one-line reason.
+Group them into rounds of at most 6. Stop asking when you could write a
+one-page spec, then show me the spec and wait for my go-ahead.</pre>
+</div>
+
+<p>The cap matters. Without it, an interview can grow past what you are willing to read: one real session produced 26 questions for a request that said "make it less clunky". Lesson 4.11 is about recognising that and cutting it short. The "wait for my go-ahead" line keeps the interview separate from the build; lesson 1.7 explains why that gate is worth keeping.</p>
+
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>The interview is a prompt, not a mode. Anthropic's own example is: <q>Interview me until you could write the spec, then write it to SPEC.md.</q><sup class="cite"><a href="#src-a1">[1]</a></sup> Answers arrive as ordinary chat text, and the approval prompts you set in lesson 0.6 stay exactly as they were.</p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Same idea, stated as an instruction: <q>ask Codex to question you first</q>.<sup class="cite"><a href="#src-a2">[2]</a></sup> In the desktop app the questions may appear with selectable options, which is the same numbered list in a different shape; typing a numbered reply in the chat works in every version.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>omp ships one shortcut for this shape: the documentation says <code>/guided-goal</code> <q>Starts an interview in chat, then configures goal mode from the result.</q><sup class="cite"><a href="#src-a3">[3]</a></sup> That last part also starts a persistent objective, so use the plain prompt above if you only want the questions. Its docs also list "answer a question" as a normal way to <q>intervene when needed</q>.<sup class="cite"><a href="#src-a4">[4]</a></sup></p>
+  </div>
+</div>
+
+<div class="doit">
+  <span class="label">Do it now: run one short interview</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your project folder and start your agent, with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Paste the prompt above, replacing the bracketed line with your own goal in one sentence.</label></li>
+    <li><label><input type="checkbox"> Read the questions without answering yet. Count them, and find one whose recommendation you disagree with.</label></li>
+    <li><label><input type="checkbox"> Reply in numbered form: accept the rest with "your rec", and override that one in your own words.</label></li>
+    <li><label><input type="checkbox"> Ask it to show the spec and stop. Do not let it start building in the same turn.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see a numbered list where every item ends in a recommended answer, and a spec afterwards that contains your override, not the agent's original default. If a question has no recommendation, ask for one: "add your recommended answer and a one-line reason to each question". If it starts editing files instead, stop it and repeat the last line of the prompt.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<h2>The interview is not a build order</h2>
+<p>An answered interview feels like progress, and it is easy to read the agent's "spec written" as permission to continue. It is not. The output of an interview is a set of decisions you can read back; the next step is a plan you approve, which is lesson 1.7. Keeping those two gates separate is what makes the interview safe: nothing has changed on disk yet, so a wrong answer costs one sentence to fix rather than a rewrite.</p>
+
+<div class="callout">
+  <span class="label">The habit</span>
+  <p>Never answer a question you cannot restate. If a question is unclear, ask for a re-pitch with an example (lesson 1.3) before answering. A guessed answer to an unclear question is worse than no answer, because it looks like a decision.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">The agent sends six numbered questions, each ending with a recommended answer. What is that recommendation for?</p>
+  <button class="opt" type="button">A fixed rule that the agent follows when building.</button>
+  <button class="opt" type="button">A proposed default you may accept or replace now.</button>
+  <button class="opt" type="button">A test the agent runs before it asks anything.</button>
+  <button class="opt" type="button">A summary of the choices earlier users made here.</button>
+  <div class="why"><p>It is a proposal with a reason, offered so you can decide quickly. You may accept it, override it, or ask for a different option entirely.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A user replies "yes to all" to twelve questions, including one about deleting old entries permanently. What went wrong?</p>
+  <button class="opt" type="button">Nothing at all; accepting every default is the fastest path.</button>
+  <button class="opt" type="button">The agent should never ask about deleting any stored data.</button>
+  <button class="opt" type="button">Twelve questions is far too few for any real product.</button>
+  <button class="opt" type="button">A blanket yes accepted a risky default without being read.</button>
+  <div class="why"><p>Batch acceptance is fine, but it must be read. The destructive question needed its own answer, or an explicit amendment inside the yes.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A recommendation conflicts with what you want your app to feel like. What should you do?</p>
+  <button class="opt" type="button">Override it and state the behaviour you want.</button>
+  <button class="opt" type="button">Accept it, since the agent knows trade-offs well.</button>
+  <button class="opt" type="button">Stop the session and find another agent quickly.</button>
+  <button class="opt" type="button">Answer yes and fix things after the build.</button>
+  <div class="why"><p>Product intent is yours; the agent's reasoning covers cost and feasibility, not taste or purpose. Say the behaviour, then let it re-plan around that.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> — read the short "Brainstorm with Claude first" section. It shows the exact prompt Anthropic uses for an interview and what comes back. Then compare it with OpenAI's <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>, which asks the agent to challenge your assumptions. Same technique, two vocabularies.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a question the agent asked? Paste it here and ask: <em>"What is this question really deciding, and what happens if I pick each way?"</em> That is a fair question, and cheaper than guessing.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>, "Brainstorm with Claude first". Retrieved 2026-11-02.</li>
+  <li id="src-a2">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>, "Ask Codex to interview you". Retrieved 2026-11-02.</li>
+  <li id="src-a3">Stencil Labs, <a href="https://omp.sh/docs/slash">omp slash commands</a> (<code>/guided-goal</code>). Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-a4">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> ask for an interview, answer numbered questions in one line each, and accept or replace a recommended answer on purpose.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns (the interview)</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Next: 1.5 "Yes to all" — and amending inside the yes</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

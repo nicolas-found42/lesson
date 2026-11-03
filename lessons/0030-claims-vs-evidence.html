@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claims versus evidence</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.2</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.2 · First-ship path ★</p>
+  <h1>Claims versus evidence</h1>
+  <p class="lede">"Done" is a sentence about what the agent believes. Evidence is something that would have come out differently if the work were wrong. Only the second one lets you ship.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0029-run-yourself.html">2.1 Run it yourself</a></span><span>Win: you can ask for proof, and name what is still unproven</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Soon you will send a link to people who do not know you and cannot fix anything themselves. At that moment, the only question that matters is not "did the agent say it was done?" but "what is actually true about this app?" The gap between those two questions is where beginners get hurt: they publish on a cheerful summary, and a stranger finds the broken part first.</p>
+<p>This lesson gives you one habit and one question. The habit is to ask for <span class="term" title="A fact you can check for yourself, such as a command and its output, a screenshot, or a URL that opens.">evidence</span> rather than accept a <span class="term" title="A statement of what the agent believes, with nothing shown that would prove it.">claim</span>. The question is "what did you <em>not</em> verify?" It is short, and it finds the part of the job that is still guesswork.</p>
+
+<h2>Two kinds of sentence</h2>
+<p>A claim is a statement with no support behind it. "The page works on phones" is a claim. It may be true, and it is still a claim, because nothing in it would change if it were false.</p>
+<p>Evidence is different in kind. It is an artifact that had to be produced by the work itself: a command and its output, a file diff, a screenshot, a URL that opens. The test is simple. <em>If this thing had gone wrong, would the artifact look different?</em> If yes, it can serve as evidence. If no, it is decoration.</p>
+<table class="ref">
+  <tr><th>What you hear</th><th>What would actually settle it</th></tr>
+  <tr><td>"It works."</td><td>You open it and look, or a screenshot you can see.</td></tr>
+  <tr><td>"All tests pass."</td><td>The command, its full output, and how many tests ran.</td></tr>
+  <tr><td>"The link is live."</td><td>The URL opening in your own browser.</td></tr>
+  <tr><td>"I fixed the search."</td><td>The exact search that failed before, run again.</td></tr>
+</table>
+<p>Anthropic's best-practices page says it directly: <q>ask Claude for evidence: the command it ran and its output, or the screenshot.</q> It adds that a summary on its own is nearly worthless: <q>“All tests pass” on its own tells you very little.</q><sup class="cite"><a href="#src-a7">[1]</a></sup></p>
+<span class="sidenote">The evidence does not have to be long. One command line and twenty lines of output are usually enough to change "I hope so" into "I know so".</span>
+
+<h2>Why the report drifts from reality</h2>
+<p>An agent's turn ends when it believes the task is finished. Anthropic describes the same loop you met in lesson 0.1 as gathering context, taking action and verifying results.<sup class="cite"><a href="#src-a2">[2]</a></sup> But the last phase only happens if the agent has something to run and chooses to run it. Its guide states the consequence plainly: <q>Claude stops when the work looks done.</q><sup class="cite"><a href="#src-a7">[1]</a></sup> Earlier documentation admits the failure from the other side: <q>Claude said it was done and it wasn't quite, usually because it had no way to check its own work.</q><sup class="cite"><a href="#src-a7">[1]</a></sup></p>
+<p>This is usually not dishonesty. The agent sees a partial picture. It read the file it changed and not the one that calls it. It ran the check before the last edit. It has no account to log in with, so it skipped the screen that needs one. Each gap is invisible from inside the run, and each one turns a true sentence into an overclaim.</p>
+<p>A vendor page for another agent lands on the same point from the interface side. A green tool card, it warns, only means that the action finished: <q>A successful card means that action completed, not that the whole task is correct.</q><sup class="cite"><a href="#src-c5">[3]</a></sup> Everything can look calm while the app is wrong.</p>
+
+<h2>What a good report sounds like</h2>
+<p>The useful signal is not confidence. It is specificity: which commands ran, which files changed, which checks passed with what counts, and what was left untried. Anthropic's research note makes the general version of the point: agents need <q>“ground truth” from the environment at each step</q>, and <q>human review remains crucial</q> for whether a solution fits what people actually need.<sup class="cite"><a href="#src-d1">[5]</a></sup></p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user typed one line into their agent: "does the project work?" The agent read the project's documented checks, ran them, and answered yes, with a table of what had passed. Then came the part worth keeping. Under a heading like "not exercised", it listed the things it had not tried: real credentials, a live outside service, and about two dozen tests the project marks as skipped. The yes was true and narrow, and the report said where the edge was.</p>
+  <p>The user's next message took that list and made it the job: do those too, but spend no more than a set amount and do not invent credentials. The gap the agent named became the next task instead of a surprise in production.</p>
+</div>
+<p>Compare that with a report that ends at "everything works". Both may be honest. Only one gives you something to act on.</p>
+
+<h2>Ask for the hole, not the whole</h2>
+<p>Here is the question this lesson is built around:</p>
+<div class="callout">
+  <span class="label">Keep this one in your pocket</span>
+  <p><strong>"What did you not verify, and what would it take to verify it?"</strong></p>
+</div>
+<p>It works for three reasons. It is answerable: the agent knows which tools it did not call and which files it only read. It is finite: instead of "is it finished?", which can always be argued, you get a list you can count. And it is checkable: every item on the list names a thing you or the agent could do next.</p>
+<p>The answer is still a claim, so treat it as a lead rather than a certificate. But a specific gap is far more useful than a broad assurance, and an answer of "nothing" to that question is a warning sign, not a comfort. In one session where an agent was asked to explain how an existing app worked, the final answer ended with a line saying that no walkthrough in the running app had been done. That single line was the most valuable sentence in the report, because it told the reader exactly how far the findings could be trusted.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Before you tell me it is done, give me the evidence:
+1. The exact commands you ran, with their full output, not a summary.
+2. Which files you changed, and how I can see the change myself.
+3. What you did NOT verify, and why you could not.
+4. For each item in 3, the smallest check that would settle it.
+
+Do not describe a check you did not run. If you are unsure whether something works, say so plainly.</pre>
+</div>
+<p>Question 3 is the one beginners skip. Question 4 turns the answer into a plan. When you have that list, you can hand part of it back as a bounded task, with a spending cap and a stopping point (lessons <a href="0058-budgets.html">4.4</a> and <a href="0057-stop-conditions.html">4.3</a>).</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what makes a piece of output count as evidence rather than a claim? And why is "what did you not verify?" a better question than "are you sure?"</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Evidence is something that would have come out differently if the work were wrong: a command and its output, a diff, a screenshot, a URL that opens. "Are you sure?" only asks for another opinion. "What did you not verify?" asks for the specific gaps in the run, which you can then check or turn into the next task.</p></div>
+</div>
+
+<h2>Evidence goes stale</h2>
+<p>One more trap, because it catches careful people. Evidence has to match the final state of the work. A test run from before the last edit proves something about an older version. A screenshot of a tab you loaded ten minutes ago may show a page that has since changed. A command run in the wrong folder can pass beautifully while saying nothing about your app.</p>
+<p>So when you look at evidence, ask two questions, not one: <em>what did this check?</em> and <em>when, and where, did it run?</em> If the answer is "before the change", the evidence is history, not proof. Lesson <a href="0075-stale-invented-claims.html">5.8</a> goes deeper into stale and invented claims; lesson <a href="0039-checker-can-be-wrong.html">2.11</a> covers the case where the check itself is unreliable.</p>
+
+<h2>Where to look in each agent</h2>
+<p>The three agents show evidence in different places, but all of them let you see the raw material rather than only the summary.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Tool activity appears in the session as it runs, so you can read the commands rather than the summary. The best-practices page also documents a command for the end of a task: once the agent says it is done you can run <code>/verify</code>, which makes it <q>build and run the app and look at the result</q>.<sup class="cite"><a href="#src-a7">[1]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Two commands in the CLI reference are useful here. <code>/diff</code> will <q>Show the Git diff, including files Git isn’t tracking yet.</q> And <code>/review</code> asks for a fresh review of your working tree; the reference suggests it <q>after Codex completes work</q>.<sup class="cite"><a href="#src-b6">[4]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>Each read, command or change appears as a card in the transcript; the docs tell you to <q>Expand tool cards and diffs</q> and to <q>Check the changed paths, command exit status, test result, and final explanation.</q> Press <kbd>Ctrl+O</kbd> to expand or collapse tool output.<sup class="cite"><a href="#src-c5">[3]</a></sup></p>
+  </div>
+</div>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in the practice folder from lesson 2.1, with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Pick a small thing the agent has already finished, and send the four-question prompt above.</label></li>
+    <li><label><input type="checkbox"> Read the answer and mark every line that is a claim with no artifact after it.</label></li>
+    <li><label><input type="checkbox"> Choose one check the agent said it ran, and run it yourself in the terminal. Compare what you see with the output it quoted.</label></li>
+    <li><label><input type="checkbox"> Copy the "did not verify" list into a new message and ask the agent to do the first item only, then stop.</label></li>
+  </ol>
+  <div class="expect"><p>You should see a report that separates what ran from what did not, and at least one command you can repeat yourself. If the answer is all reassurance and no commands, send one more line: "Which commands did you actually run? Paste their output." If the "did not verify" list is empty, ask again: "Name at least one thing you assumed rather than checked."</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Which of these is evidence rather than a claim?</p>
+  <button class="opt" type="button">The agent says the tests all passed.</button>
+  <button class="opt" type="button">The command and output the agent shows.</button>
+  <button class="opt" type="button">The agent promises the page is live.</button>
+  <button class="opt" type="button">A confident summary written by the agent.</button>
+  <div class="why"><p>Only the command and its output could have come out differently if the work were wrong. The others are sentences of belief, however confident.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">After "done", which question teaches you most?</p>
+  <button class="opt" type="button">Can you make the colors a bit warmer?</button>
+  <button class="opt" type="button">Why did this task take so long today?</button>
+  <button class="opt" type="button">What did you not verify, and why not?</button>
+  <button class="opt" type="button">Would you like to keep working on it?</button>
+  <div class="why"><p>It asks for the specific gaps in the run, which you can check or turn into the next task. The others are about style, time or preference, not about what is true.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A report says "0 failed, 3 skipped". What do you know?</p>
+  <button class="opt" type="button">Three checks never ran, so real gaps exist.</button>
+  <button class="opt" type="button">The three checks ran and every check passed.</button>
+  <button class="opt" type="button">The app broke, so it must be fixed.</button>
+  <button class="opt" type="button">The checks were removed to save some time.</button>
+  <div class="why"><p>Skipped means not run. Nothing failed, and nothing was proven either. Treat skipped checks as items for the "not verified" list.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a> — the section called "Give Claude a check to run" is the clearest official statement of this lesson's idea, including the line about asking for evidence. It is written for one tool, but the reasoning holds for all three.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Unsure whether something counts as evidence? Describe it and ask. Try: <em>"Is a screenshot of the terminal enough to prove the link works?"</em> or <em>"How do I tell an honest 'not verified' list from a lazy one?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a2">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c5">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a>. Retrieved 2026-11-02. Single-vendor source; no independent documentation exists.</li>
+  <li id="src-b6">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex developer commands</a>. Retrieved 2026-11-02.</li>
+  <li id="src-d1">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as dated). Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> separate a report from its proof, ask for the artifacts that would settle a claim, and turn a "not verified" list into the next task.</p>
+  <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/agent-loop.html">The agent loop (one page)</a></p>
+  <div class="pager"><a href="0031-test.html">Next: 2.3 What a test is</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

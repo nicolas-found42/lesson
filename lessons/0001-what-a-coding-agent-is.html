@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What a coding agent actually is</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 0 · Orientation · Lesson 0.1</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 0 · Lesson 0.1 · First-ship path ★</p>
+  <h1>What a coding agent actually is</h1>
+  <p class="lede">A chat can only talk. An agent can look at your files, run things, and check what happened. Everything else in this course builds on that difference.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Needs: nothing</span><span>Win: you can tell an agent's work from its claims</span></div>
+</header>
+<main>
+
+<h2>Why start here</h2>
+<p>Your mission is to take an idea to a public app by directing a coding agent. You will do that well only if you hold the right picture of what the agent is doing while you wait. With the wrong picture you will trust it when you shouldn't, and interrupt it when you needn't.</p>
+
+<h2>A chat talks. An agent acts.</h2>
+<p>A plain AI chat takes your message and sends back text. A coding agent is the same kind of AI, but it is also allowed to use <em>tools</em>: read a file, change a file, run a command on your computer. Anthropic's documentation puts it bluntly: <q>Tools are what make Claude Code agentic. Without tools, Claude can only respond with text.</q><sup class="cite"><a href="#src-a3">[1]</a></sup></p>
+<span class="sidenote">Anthropic's older essay defines agents as <q>typically just LLMs using tools based on environmental feedback in a loop.</q> It carries a note that its tooling details are dated, but this core definition still holds.<sup class="cite"><a href="#src-d1">[2]</a></sup></span>
+<p>That is the whole idea. The model supplies the judgement. The tools let that judgement touch the real world, which in your case means a folder of files that will become your app.</p>
+
+<h2>The loop</h2>
+<p>When you give a task, the agent doesn't answer once. It cycles. Claude Code's documentation names three phases: <q>gather context, take action, and verify results.</q><sup class="cite"><a href="#src-a3">[1]</a></sup> After each tool use, <q>information feeds back into the loop, informing Claude's next decision.</q><sup class="cite"><a href="#src-a3">[1]</a></sup></p>
+
+<figure style="margin: 1.2rem 0;">
+<svg viewBox="0 0 520 150" role="img" aria-labelledby="loop-t loop-d" style="width:100%;height:auto;max-width:520px">
+  <title id="loop-t">The agent loop</title>
+  <desc id="loop-d">Three boxes in a cycle: gather context, take action, verify results, with an arrow from verify back to gather context.</desc>
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <g fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--fg)">
+    <rect x="10" y="40" width="140" height="50" rx="6"/><rect x="190" y="40" width="140" height="50" rx="6"/><rect x="370" y="40" width="140" height="50" rx="6"/>
+    <path d="M150 65H188" marker-end="url(#ah)"/><path d="M330 65H368" marker-end="url(#ah)"/>
+    <path d="M440 90V125H80V92" marker-end="url(#ah)"/>
+  </g>
+  <g fill="currentColor" font-family="system-ui,sans-serif" font-size="13" text-anchor="middle" style="color:var(--fg)">
+    <text x="80" y="62">1. Gather</text><text x="80" y="79" font-size="11" opacity=".7">read files, look around</text>
+    <text x="260" y="62">2. Act</text><text x="260" y="79" font-size="11" opacity=".7">edit files, run commands</text>
+    <text x="440" y="62">3. Verify</text><text x="440" y="79" font-size="11" opacity=".7">did it work? run, check</text>
+    <text x="260" y="143" font-size="11" opacity=".7">repeat until it believes the task is done</text>
+  </g>
+</svg>
+<figcaption class="sidenote" style="margin-top:.4rem">Simplified from Anthropic's description of how Claude Code works. Codex and omp follow the same shape.</figcaption>
+</figure>
+
+<h2>One message, many tool calls</h2>
+<p>This is the part that surprises beginners. You type <em>one</em> message. The agent may then make dozens of tool calls before it speaks again.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to put their photo-and-model gallery online so non-technical friends could open it, and to put the link in the project's front page. That was one message. In about sixteen minutes the agent made roughly fifty-five tool calls. It checked how big the project was, found it was too large for the free host, changed its plan so only the small part was published, ran the project's checks, opened the finished page in a real browser, and only then wrote the link where the user had asked.</p>
+</div>
+<p>A simplified picture of that run:</p>
+<pre><code>you      "Put my gallery online for my friends."
+agent    read   project files, size of everything     (gather)
+agent    run    a command to measure folder size      (gather)
+agent    edit   publish only the small part           (act)
+agent    run    the project's checks                  (verify)
+agent    run    open the live page in a browser       (verify)
+agent    edit   add the link to the front page        (act)
+agent    says   "Done. Here is the link."</code></pre>
+<p>Only the first and last lines are a conversation. Everything between is the loop.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the three phases of the loop, and what makes an agent different from a plain chat? Write it in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Gather</strong> context (read, look around), <strong>act</strong> (edit files, run commands), <strong>verify</strong> (check whether it worked), repeating until done. An agent differs from a chat because it can use <strong>tools</strong>, and what those tools return feeds its next decision.</p></div>
+</div>
+
+<h2>Three tools, one shape</h2>
+<p>This course covers three agents. They look different but all run the same loop. You start each one from inside a project folder; the next lessons cover folders, the terminal and installation.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Made by Anthropic. Its overview says it <q>helps you build features, fix bugs, and automate development tasks.</q><sup class="cite"><a href="#src-a1">[3]</a></sup> You start it by typing <code>claude</code> in your project folder.<sup class="cite"><a href="#src-a2">[4]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Made by OpenAI. It can <q>inspect code, make changes, run commands, and automate repeatable work without leaving your terminal.</q><sup class="cite"><a href="#src-b1">[5]</a></sup> You start it by typing <code>codex</code> in your project folder. It also lives inside the ChatGPT desktop app.<sup class="cite"><a href="#src-b1">[5]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>An independent open-source agent from Stencil Labs, describing itself as <q>a coding agent with the IDE wired in.</q><sup class="cite"><a href="#src-c1">[6]</a></sup> You start it by typing <code>omp</code> in your project folder.<sup class="cite"><a href="#src-c3">[7]</a></sup> Its documentation comes only from its own authors, so check anything surprising with your teacher.</p>
+  </div>
+</div>
+<span class="sidenote">Your choice of tab is remembered, so later lessons show your agent first.</span>
+
+<h2>"Done" is a claim, not a proof</h2>
+<p>Because the loop ends when the agent <em>believes</em> the task is finished, "done" is a statement about what it believes. Claude Code's own best-practices page admits the common failure: <q>Claude said it was done and it wasn't quite, usually because it had no way to check its own work.</q><sup class="cite"><a href="#src-a7">[8]</a></sup></p>
+<div class="callout">
+  <span class="label">The habit this whole course builds</span>
+  <p>Treat the agent's report as a claim. Look at the real result yourself, and give the agent a way to check its own work. Unit 2 teaches how.</p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You send one message to a coding agent. What usually happens next?</p>
+  <button class="opt" type="button">It writes a single paragraph of text and stops.</button>
+  <button class="opt" type="button">It reads files and runs commands before it replies.</button>
+  <button class="opt" type="button">It forwards your whole message to someone who codes.</button>
+  <button class="opt" type="button">It opens fresh chat windows for every single step.</button>
+  <div class="why"><p>The agent loops through tools (reading, editing, running) and only then reports back. One message can mean dozens of tool calls.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">What is the main difference between an agent and a plain chat?</p>
+  <button class="opt" type="button">It always uses a faster model than normal chats.</button>
+  <button class="opt" type="button">It asks a human before each and every action.</button>
+  <button class="opt" type="button">It works only inside one single web browser tab.</button>
+  <button class="opt" type="button">It can run tools and observe what they return.</button>
+  <div class="why"><p>Tools plus feedback from what they return is what makes it agentic. Speed and approval prompts are separate matters (lesson 0.6 covers approvals).</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">The agent ends with "Done!" What is the best next move?</p>
+  <button class="opt" type="button">Look at the real result yourself before moving on.</button>
+  <button class="opt" type="button">Trust it and move on, because agents never fail.</button>
+  <button class="opt" type="button">Say "are you sure?" until the answer changes twice.</button>
+  <button class="opt" type="button">Delete the project and then start over from scratch.</button>
+  <div class="why"><p>"Done" reports what the agent believes. Checking the real result is your job, and the agent can help by running checks too.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a> — Anthropic's own explanation of the loop, tools and sessions. It is written for users of one tool, but the loop applies to all three. Read the first section only; the rest belongs to later lessons.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Explain the loop again using a cooking example"</em> or <em>"Why can a chat not do what an agent does?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a3">Anthropic, <a href="https://code.claude.com/docs/en/how-claude-code-works">How Claude Code works</a>. Retrieved 2026-11-02.</li>
+  <li id="src-d1">Anthropic, <a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents</a> (Dec 2024; tooling details noted as outdated). Retrieved 2026-11-02.</li>
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/overview">Claude Code overview</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a2">Anthropic, <a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/">omp.sh</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-c3">Stencil Labs, <a href="https://omp.sh/docs/quickstart">omp quickstart</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-a7">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> describe the loop, explain why one message means many tool calls, and treat "done" as a claim to check.</p>
+  <p>Quick reference: <a href="../reference/agent-loop.html">The agent loop (one page)</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><span>Next: 0.2 The three agents (coming)</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

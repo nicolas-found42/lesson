@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The three agents: same ideas, different shells</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 0 · Orientation · Lesson 0.2</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 0 · Lesson 0.2 · First-ship path ★</p>
+  <h1>The three agents: same ideas, different shells</h1>
+  <p class="lede">Claude Code, Codex and omp all run the loop you met in lesson 0.1. What changes is the shell around it: the start command, the rules file, the mode names, the key that stops a run.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0001-what-a-coding-agent-is.html">0.1 What a coding agent is</a></span><span>Win: you can find the same four controls in any of the three</span></div>
+</header>
+<main>
+
+<h2>Why this lesson exists</h2>
+<p>This course is written for three agents because they are the ones you are likely to have, and because the habits you learn work in all of them. You do not need all three. You need one, plus a clear picture of which parts are the agent and which parts are its packaging.</p>
+<p>That distinction matters for shipping your app. Tutorials, videos and advice are usually written for one tool. If you follow them in another tool, the <em>idea</em> may still be right while the <em>words</em> are wrong. Knowing where the difference sits saves you from blaming yourself for a command that was never meant for your program.</p>
+
+<h2>What a "shell" means here</h2>
+<p>Think of the model as the part that reads and reasons, and the shell as everything you actually touch: how you start it, what it calls its settings, which file it reads for project rules, which keys steer it. Anthropic calls its shell a <span class="term" title="the program around the model: its start command, interface, settings and keys">harness</span>. The loop is the same; the buttons are not.</p>
+<p>All three are programs you launch from a <a href="0003-your-project-is-a-folder.html">project folder</a> in a terminal, and all three keep a <span class="term" title="a saved run you can return to">session</span> you can resume later. You will install one in lesson 0.5 and learn the terminal in 0.4. Nothing here depends on having them yet.</p>
+
+<h2>The same three things, in each shell</h2>
+<p>Each agent below starts from a folder, reads a plain-text file of standing instructions, shows you an approval prompt before risky actions, and lets you stop a run in progress. Those are the four things to learn. The next section shows what each one calls them.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Made by Anthropic, and described by its own docs as <q>an AI-powered coding assistant that helps you build features, fix bugs, and automate development tasks.</q><sup class="cite"><a href="#src-a1">[1]</a></sup> Type <code>claude</code> inside your project folder to start. It reads a rules file called <code>CLAUDE.md</code>, and from version 2.1.283 it opens in <em>auto</em> mode, where a second model reviews actions instead of you.<sup class="cite"><a href="#src-a2">[2]</a></sup> Press <kbd>Esc</kbd> to stop a turn; the work done so far stays.<sup class="cite"><a href="#src-a4">[4]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Made by OpenAI. Its CLI page says it can <q>inspect code, make changes, run commands, and automate repeatable work without leaving your terminal.</q><sup class="cite"><a href="#src-b1">[5]</a></sup> Start it by running <code>codex</code> in a project folder.<sup class="cite"><a href="#src-b1">[5]</a></sup> It reads <code>AGENTS.md</code>: <q>Codex reads AGENTS.md files before doing any work.</q><sup class="cite"><a href="#src-b3">[6]</a></sup> Its default posture pairs a <code>workspace-write</code> sandbox with <code>on-request</code> approvals, where the agent <q>asks when it needs to go beyond that boundary.</q><sup class="cite"><a href="#src-b2">[7]</a></sup> While it works, <kbd>Enter</kbd> adds instructions to the current turn and <kbd>Tab</kbd> queues a follow-up.<sup class="cite"><a href="#src-b4">[8]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>An independent open-source agent from Stencil Labs, describing itself as <q>a coding agent with the IDE wired in.</q><sup class="cite"><a href="#src-c1">[9]</a></sup> Start it with <code>omp</code> in your project folder. It reads <code>AGENTS.md</code> from the repository root, which it <q>loads it automatically and applies it throughout the session.</q><sup class="cite"><a href="#src-c3">[10]</a></sup> Its built-in default is the least cautious of the three: <q>The built-in default is yolo.</q><sup class="cite"><a href="#src-c2">[11]</a></sup> Press <kbd>Esc</kbd> to stop the active turn.<sup class="cite"><a href="#src-c4">[12]</a></sup> All omp documentation comes from its own authors, so treat surprising claims with care.</p>
+  </div>
+</div>
+<span class="sidenote">Your tab choice is remembered; later lessons put your agent first.</span>
+
+<h2>Four names that differ</h2>
+<p>Here is the whole map. Read down the column for the agent you picked; you do not need the other two columns.</p>
+<table class="ref">
+  <thead><tr><th>Idea</th><th>Claude Code</th><th>Codex</th><th>omp</th></tr></thead>
+  <tbody>
+    <tr><td>Start in a folder</td><td><code>claude</code></td><td><code>codex</code></td><td><code>omp</code></td></tr>
+    <tr><td>Project rules file</td><td><code>CLAUDE.md</code></td><td><code>AGENTS.md</code></td><td><code>AGENTS.md</code></td></tr>
+    <tr><td>Permission names</td><td>manual, auto, plan</td><td>read-only, workspace-write, full</td><td>always-ask, write, yolo</td></tr>
+    <tr><td>Stop a running turn</td><td><kbd>Esc</kbd></td><td>not documented</td><td><kbd>Esc</kbd></td></tr>
+    <tr><td>Continue last session</td><td><code>claude -c</code></td><td><code>/resume</code></td><td><code>omp -c</code></td></tr>
+  </tbody>
+</table>
+<p>Two cells deserve a warning. The permission names are not a ranking, and the same word can mean different things in different shells. More importantly, none of these defaults is a promise of safety: Claude's auto mode uses a classifier, Codex's default keeps writes inside the project folder, and omp's default asks nothing at all. Lesson <a href="0006-approvals-and-permissions.html">0.6</a> covers how to put any of them into a mode that asks before it acts, and why a beginner should.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user installed two agents in the same week and switched between them depending on which window was open. Each session started in the same project folder, so the work was always in the right place. What broke was quieter: the standing instructions had been written into the rules file of the first tool only. The second tool never read that file, so it ignored the project's build command and test procedure for several days. Nothing errored. The user simply re-explained the same things, and the agent sometimes guessed differently.</p>
+  <p>The fix took one prompt: write the same instructions into the file the other tool reads, or keep a single <code>AGENTS.md</code> and let both tools read that. The user then picked one agent for the rest of the project.</p>
+</div>
+<p>That is the ordinary cost of mixing shells. It is not a bug in either tool. The lesson is not "never try another agent"; it is "know which file your current agent reads, and do not assume the last tool's words still apply".</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Cover the table. Name the four things every one of these agents has, and say which of them changes from tool to tool. Write it before revealing.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>Every shell has a way to <strong>start in a project folder</strong>, a <strong>project rules file</strong>, <strong>permission or approval modes</strong>, and a way to <strong>stop a running turn</strong>. The ideas are constant; their names, defaults and keys differ. Resuming a session and the exact mode labels also differ.</p></div>
+</div>
+
+<h2>Choosing, once</h2>
+<p>For this course, choose one agent and stay with it through the first shipped page. The choice is mostly practical: whatever you can install and sign into, on the machine you have. All three can read and edit the files in a folder and run commands there, which is all the first-ship path needs.</p>
+<p>Two honest differences, from the vendors' own pages. Codex also runs inside the ChatGPT desktop app, not only the terminal; Claude Code also exists as a desktop and IDE surface.<sup class="cite"><a href="#src-b5">[13]</a></sup> omp is terminal-first and its docs are its only documentation.<sup class="cite"><a href="#src-c1">[9]</a></sup> Neither fact changes the loop.</p>
+<div class="callout">
+  <span class="label">The rule for this course</span>
+  <p>One project, one agent, one rules file, until the page is live. Switching is allowed later, and lesson 1.12 shows how to write the rules file so a switch is cheap.</p>
+</div>
+
+<div class="doit">
+  <span class="label">Do it now — name your shell in four lines</span>
+  <ol>
+    <li><label><input type="checkbox"> Pick the agent you will use for the first-ship path. Write its name on paper or in a note.</label></li>
+    <li><label><input type="checkbox"> Copy its start command from the table, and its rules-file name next to it.</label></li>
+    <li><label><input type="checkbox"> Copy its permission-mode names, then mark the one that asks before acting. Lesson 0.6 will tell you how to select it.</label></li>
+    <li><label><input type="checkbox"> Write down how to stop a run in that tool. If the table says "not documented", write "ask my teacher" instead of guessing.</label></li>
+  </ol>
+  <div class="expect"><p>You should have four short lines that mention one tool only, for example: <code>omp</code> · <code>AGENTS.md</code> · <code>always-ask</code> · <kbd>Esc</kbd>. If a line mixes two tools, fix it now. That mixture is exactly what confused the user in the example above.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You move to a different agent halfway through a project. What carries over unchanged?</p>
+  <button class="opt" type="button">Your project folder and its saved files</button>
+  <button class="opt" type="button">The list of keyboard shortcuts and menus</button>
+  <button class="opt" type="button">The rules-file name that the agent loads</button>
+  <div class="why"><p>The folder and its files are yours, not the tool's. The keys, mode labels and rules filename belong to the shell, and they do change.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Two agents show different approval prompts for the same file edit. What follows?</p>
+  <button class="opt" type="button">One agent must be safer than the other agent</button>
+  <button class="opt" type="button">The edit will produce a different file result still</button>
+  <button class="opt" type="button">The two tools use different names for one idea</button>
+  <div class="why"><p>Prompts are labels on the same underlying decision: may this action run without asking? The labels differ; the edit does not.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A guide written for one agent gives you a command that fails in yours. Best response?</p>
+  <button class="opt" type="button">Conclude that your agent is broken and reinstall it</button>
+  <button class="opt" type="button">Look up that idea in your own tool's documentation</button>
+  <button class="opt" type="button">Type the same command again until it eventually works</button>
+  <div class="why"><p>The idea usually transfers; the spelling of the command does not. Your tool's own docs are the source for its command names and flags.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a> — a first-session page from the vendor, showing what starting in a folder and signing in actually look like. Read it as one concrete example of the pattern; the other two agents publish equivalents, linked below.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a name that does not match? Ask: <em>"Which rules file does my agent read, and how do I check it loaded?"</em> or <em>"My tool's mode names differ from the table — which one asks before acting?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/overview">Claude Code overview</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a2">Anthropic, <a href="https://code.claude.com/docs/en/permission-modes">Choose a permission mode</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a3">Anthropic, <a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a4">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b2">OpenAI, <a href="https://learn.chatgpt.com/docs/sandboxing">Sandboxing</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b3">OpenAI, <a href="https://learn.chatgpt.com/docs/agent-configuration/agents-md">Custom instructions with AGENTS.md</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b4">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Developer commands (CLI)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b5">OpenAI, <a href="https://learn.chatgpt.com/docs/app">ChatGPT desktop app</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/">omp.sh</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-c2">Stencil Labs, <a href="https://omp.sh/docs/approvals">Tool approvals</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-c3">Stencil Labs, <a href="https://omp.sh/docs/context-files">Context files</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-c4">Stencil Labs, <a href="https://omp.sh/docs">omp documentation overview</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> name the four controls every coding agent shares, say which names and defaults change between Claude Code, Codex and omp, and choose one shell without losing your project.</p>
+  <p>Quick reference: <a href="../reference/setup.html">Setup for all three agents</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+  <div class="pager"><a href="0001-what-a-coding-agent-is.html">← Previous: 0.1 What a coding agent is</a><a href="0003-your-project-is-a-folder.html">Next: 0.3 Your project is a folder →</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

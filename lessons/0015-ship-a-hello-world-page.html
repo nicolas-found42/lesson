@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ship a hello world page</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Milestone · First-ship path · Lesson M.1</nav>
+<header class="lesson-head">
+  <p class="kicker">Milestone · Lesson M.1 · First-ship path ★</p>
+  <h1>Ship a hello world page</h1>
+  <p class="lede">A file in a folder and a page a stranger can open are separated by five named states. This milestone walks all five once, with a page too small to distract you.</p>
+  <div class="meta"><span>About 20 minutes of reading, plus the ship itself</span><span>Builds on: <a href="0007-first-prompt-to-a-page.html">0.7 First prompt to a page</a> · <a href="0009-why-save-points-exist.html">3.1 Why save points exist</a> · <a href="0011-remote-origin-push.html">3.6 Remote, origin, push</a> · <a href="0013-github-pages.html">6.3 GitHub Pages</a> · <a href="0014-deploy-merge-live.html">6.6 Deploy, merge, live</a></span><span>Win: a public link to a page that is yours</span></div>
+</header>
+<main>
+
+<h2>Why this milestone exists</h2>
+<p>Everything after this point assumes you have felt the whole path once: a file you can see, a commit you can name, a push that reached GitHub, a publish that finished, and a public address that answered. Read about those steps and they blur together. Do them once with a page that says almost nothing, and they stop blurring.</p>
+<p>The page is deliberately trivial. A heading and one sentence are enough. Its job is to be a vehicle, not a portfolio. Keep the ambition for the capstone; here you are learning the road.</p>
+<p>This is also your first taste of the habit the rest of the course is built on. The agent will say it is done. You will open the link yourself, in a window that has never seen your project, and check.</p>
+
+<h2>Five states, five names</h2>
+<p>You have met each of these words in an earlier lesson. The milestone adds no new machinery. What it adds is the ability to say which state you are in, which is what tells you what to do next.</p>
+<table class="ref">
+  <thead><tr><th>State</th><th>What is true</th><th>How you know</th></tr></thead>
+  <tbody>
+    <tr><td><strong>1. On your screen</strong></td><td>A local server serves the file to your own browser. Nobody else can reach it.</td><td><code>localhost</code> plus a port number appears in the address bar.</td></tr>
+    <tr><td><strong>2. Committed</strong></td><td>A snapshot exists in the project's history on your machine.</td><td><code>git log --oneline -1</code> shows one line with your message.</td></tr>
+    <tr><td><strong>3. Pushed</strong></td><td>That snapshot also exists on GitHub, the <span class="term" title="The copy of your repository that lives on a server such as GitHub.">remote</span>.</td><td>The repository page shows your commit; <code>git status</code> says the branch is up to date.</td></tr>
+    <tr><td><strong>4. Published</strong></td><td>GitHub Pages has taken the files from the repository and built the site it will serve.</td><td>The repository's Pages settings show a finished build, not "queued" or "building".</td></tr>
+    <tr><td><strong>5. Live</strong></td><td>A stranger's browser at the public address receives your page.</td><td>You opened the address yourself, logged out or in a private window.</td></tr>
+  </tbody>
+</table>
+<p>The vocabulary is not decoration. Pro Git describes a commit as <q>a snapshot of your project that you can revert to or compare to later</q>.<sup class="cite"><a href="#src-g2">[6]</a></sup> A push is the step that puts that snapshot on a server: <q>The command for this is simple: git push &lt;remote&gt; &lt;branch&gt;.</q><sup class="cite"><a href="#src-g1">[5]</a></sup> Publishing is separate again. GitHub Pages <q>takes HTML, CSS, and JavaScript files straight from a repository on GitHub</q> and serves them, and GitHub's own description says <q>whenever changes are pushed to the source branch, the changes in the source folder will be published</q>.<sup class="cite"><a href="#src-p1">[1]</a><a href="#src-p2">[2]</a></sup></p>
+<span class="sidenote">A <span class="term" title="A site made only of files a browser can read: HTML, CSS, JavaScript, images. No server program runs.">static site</span> is the only kind GitHub Pages hosts. Lesson 6.1 explains why that is enough for most first projects.</span>
+<p>Notice what the fifth state adds. The first four are all things that exist somewhere in a system. The fifth is an observation. Nothing in your repository can prove it. Only a request to the public address can.</p>
+
+<h2>A run, end to end</h2>
+<p>Here is the shape of a real session, rewritten without names or project details. The person had a folder, a working local page, and a GitHub account. They had never published anything.</p>
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>I want to ship a one-page hello world site to a public address. A friend will open the link on a phone and will not sign up for anything. Set it up, publish it, and give me the URL. Do not change my approval settings.</span></div>
+  <div class="row tool"><span class="who">tool</span><span>read the project folder; write index.html with a heading and one sentence</span></div>
+  <div class="row tool"><span class="who">tool</span><span>start a local server; open localhost in a browser; confirm the heading renders</span></div>
+  <div class="row tool"><span class="who">tool</span><span>git init, add, commit — "add hello world page"</span></div>
+  <div class="row tool"><span class="who">tool</span><span>create a public repository, add it as the remote, push</span></div>
+  <div class="row tool"><span class="who">tool</span><span>turn on Pages for the main branch; wait for the build</span></div>
+  <div class="row tool flag"><span class="who">tool</span><span>open the public URL → 404; the entry file was not at the top of the publishing source</span></div>
+  <div class="row tool"><span class="who">tool</span><span>move the page to the top level; commit; push; wait; open the URL again</span></div>
+  <div class="row tool"><span class="who">tool</span><span>page loads; write the link at the top of the README; commit; push</span></div>
+  <div class="row agent"><span class="who">agent</span><span>Live at the URL below. The first attempt returned a 404 because the page was one folder too deep. I checked the address in a browser before writing it down.</span></div>
+  <div class="row"><span class="note">Anonymized from a real first-publish session. The 404 is the common one, and it is a naming or placement problem, not a broken site.</span></div>
+</div>
+<p>Three things in that run are the whole milestone. The commit happened before the push. The push happened before the publish. And the publish was not believed until an address answered. Everything else was typing.</p>
+
+<h2>The prompt that gets you there</h2>
+<p>You have written goal-first prompts before. This one adds the states as the definition of done, so the agent knows the job is not finished at "file created".</p>
+<div class="prompt">
+<button class="copy" type="button">Copy</button>
+<pre>I want to ship a one-page hello world site to a public web address.
+
+The page should show a heading with my name and one sentence about
+what I am learning.
+
+The audience is a friend I will send the link to. They will open it
+on a phone and will not sign up for anything.
+
+Please:
+1. Create the page and check it on localhost.
+2. Commit it with a clear message.
+3. Create a public GitHub repository for this folder and push.
+4. Turn on GitHub Pages for the main branch.
+5. Give me the public URL, and put the same link at the top of the
+   README.
+
+Do not change my approval settings. Ask me before creating anything
+on GitHub.
+
+Done when: I can open the URL in a private window and see the page.</pre>
+</div>
+<p>If your agent asks which host to use, or whether the repository should be public, answer in one line and let it proceed. Those are method questions, and method is its side of the table.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the five states in order, and say which one you have not reached yet. Be honest about the fifth.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>On your screen</strong> (localhost), <strong>committed</strong> (a snapshot on your machine), <strong>pushed</strong> (the snapshot is on GitHub), <strong>published</strong> (Pages has built the site), <strong>live</strong> (you opened the public address and saw it). Most beginners stop at the first or second and assume the rest.</p></div>
+</div>
+
+<h2>Do it</h2>
+<p>Use your own folder and your own agent. Keep approval prompts on: every step below either edits files or creates something on GitHub, and you want to see each one before it happens.</p>
+<div class="doit">
+  <span class="label">Ship the page</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your terminal in the project folder, start your agent, and paste the prompt above, replacing the name and the sentence.</label></li>
+    <li><label><input type="checkbox"> Answer its questions in one line each. Approve steps one at a time and read what each approval asks for.</label></li>
+    <li><label><input type="checkbox"> After it says committed, ask: <em>"Show me the last commit and the working tree state."</em> You want one commit line and a clean tree.</label></li>
+    <li><label><input type="checkbox"> If it asks you to sign in to GitHub, do that yourself in the browser. Never paste a password into the chat.</label></li>
+    <li><label><input type="checkbox"> When it reports the publish, ask: <em>"Is the Pages build finished, and what is the exact URL?"</em> Write the URL down yourself.</label></li>
+    <li><label><input type="checkbox"> Open that URL in a private window, and on your phone if you can. Not the localhost address — the public one.</label></li>
+    <li><label><input type="checkbox"> Send the link to one person, or open it on a device that has never seen the project.</label></li>
+  </ol>
+  <div class="expect"><p>A page at <code>https://YOUR_USERNAME.github.io/my-app/</code> showing your heading. A clean <code>git status</code>. A README whose first line is the link. The build can take a few minutes; GitHub's quickstart warns of <q>up to 10 minutes</q> after a push.<sup class="cite"><a href="#src-p3">[3]</a></sup> If the URL answers with a 404, read the next section before changing anything.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>What goes wrong, and which state it means</h2>
+<p>Almost every first-publish problem is one of four, and each one tells you where you are. The table is worth keeping beside you for the rest of the course.</p>
+<table class="ref">
+  <thead><tr><th>What you see</th><th>State you are probably in</th><th>What to check</th></tr></thead>
+  <tbody>
+    <tr><td>A 404 at the public address</td><td>4, attempted</td><td>Pages <q>will look for an index.html file as the entry file for your site</q>, and it must sit at the top of the publishing source. The name is case-sensitive.<sup class="cite"><a href="#src-p4">[4]</a></sup></td></tr>
+    <tr><td>The old text after a push</td><td>4, in progress</td><td>The build has not finished, or your browser cached the old page. Reload in a private window.</td></tr>
+    <tr><td>The repository page has your file, the URL does not</td><td>3</td><td>Pages is off, or pointed at another branch or folder.</td></tr>
+    <tr><td>Everything "worked", a friend sees nothing</td><td>5, unverified</td><td>You checked a local address, not the public one, or your repository is private on a free plan: Pages is <q>available in public repositories with GitHub Free</q>.<sup class="cite"><a href="#src-p1">[1]</a></sup></td></tr>
+  </tbody>
+</table>
+<div class="warn">
+  <span class="label">One rule for this milestone</span>
+  <p>Do not accept "it should be live" as the answer. The only evidence is the public address opening in a window that is not logged in to your account. Ask the agent for the URL, then use it.</p>
+</div>
+
+<h2>Put the states in order</h2>
+<p>Click them in the order they happen. A wrong click tells you which step you placed too early.</p>
+<div class="order">
+  <span class="label">Order the five states</span>
+  <button class="item" type="button" data-pos="3">Pushed to GitHub</button>
+  <button class="item" type="button" data-pos="5">Live at the public address</button>
+  <button class="item" type="button" data-pos="1">Open on your screen at localhost</button>
+  <button class="item" type="button" data-pos="4">Published by GitHub Pages</button>
+  <button class="item" type="button" data-pos="2">Committed in your project</button>
+  <p class="status"></p>
+</div>
+
+<h2>Starting and resuming the same job</h2>
+<p>The five states are the same in all three agents, because the agent runs the same <code>git</code> and <code>gh</code> commands in your terminal. What differs is how you get back into the session if you close the window halfway through.</p>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Start with <code>claude</code> in the folder. To pick the session back up, <code>claude -c</code> will <q>Continue most recent conversation in current directory</q>.<sup class="cite"><a href="#src-a1">[7]</a></sup> Recent versions start in <em>auto</em> mode, which does not ask before every action; lesson 0.6 covers how to move to a mode that asks, and why a beginner should.</p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Start with <code>codex</code> in the folder. <code>codex resume</code> will <q>Continue a previous interactive session by ID or resume the most recent chat.</q><sup class="cite"><a href="#src-b1">[8]</a></sup> Keep the approval setting where lesson 0.6 left it; the publishing steps should stop and ask you.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>Start with <code>omp</code> in the folder. <code>omp -c</code> <q>continues this terminal's last session in the current directory.</q><sup class="cite"><a href="#src-c1">[9]</a></sup> omp's built-in default approval mode is <code>yolo</code>, which prompts for nothing; lesson 0.6 explains how to move to a mode that asks before you run this milestone.</p>
+  </div>
+</div>
+<p>If you get stuck between states, the useful question is not "is it done?" but "which state am I in, and what is the next one?" That question also works on the agent: <em>"Tell me which of these five states we are in: local, committed, pushed, published, live."</em></p>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your page opens at <code>localhost:8000</code>. Which state is that?</p>
+  <button class="opt" type="button">Local only, on your own machine today</button>
+  <button class="opt" type="button">Committed, saved in your project history</button>
+  <button class="opt" type="button">Pushed, sent to GitHub and waiting</button>
+  <button class="opt" type="button">Live, because a browser shows it now</button>
+  <div class="why"><p><code>localhost</code> means this machine. A local server proves the file renders, not that anyone else can reach it. The next four states are about the copy that leaves your laptop.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">The agent writes "the site is live". What is the best evidence?</p>
+  <button class="opt" type="button">The message says it plainly and confidently</button>
+  <button class="opt" type="button">A green check on the repository page</button>
+  <button class="opt" type="button">The public URL opens in a private window</button>
+  <button class="opt" type="button">The commit message mentions the word live</button>
+  <div class="why"><p>Only the public address answering is evidence of the fifth state. A green build or a confident sentence can both be true while the URL still serves a 404 or an older page.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You pushed a fix ten seconds ago and the site is unchanged. Most likely?</p>
+  <button class="opt" type="button">GitHub lost your push and needs another</button>
+  <button class="opt" type="button">The host has not finished the new build</button>
+  <button class="opt" type="button">The page needs a different file extension</button>
+  <button class="opt" type="button">The repository must be made public first</button>
+  <div class="why"><p>Publishing lags the push; GitHub's quickstart warns of up to ten minutes. Wait, reload in a private window, and only then look for a real fault such as the entry file's name or location.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.8rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">Configuring a publishing source for your GitHub Pages site</a> (GitHub Docs). It shows the settings page you just used, the difference between publishing from a branch and from an Actions workflow, and the note that Pages sites are public even when the repository is private. Read the first two sections; the workflow part belongs to lesson 6.5.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>If the link does not work, ask the agent that gave you this course. Try: <em>"Here is the public URL and the repository name. Which of the five states am I in, and what is the next concrete step?"</em> Paste the exact error text, not a description of it.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-p1">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages">What is GitHub Pages?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-p2">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">Configuring a publishing source for your GitHub Pages site</a>. Retrieved 2026-11-02.</li>
+  <li id="src-p3">GitHub, <a href="https://docs.github.com/en/pages/quickstart">Quickstart for GitHub Pages</a>. Retrieved 2026-11-02.</li>
+  <li id="src-p4">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/troubleshooting-404-errors-for-github-pages-sites">Troubleshooting 404 errors for GitHub Pages sites</a>. Retrieved 2026-11-02.</li>
+  <li id="src-g1">Chacon &amp; Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes">Pro Git: Working with Remotes</a>. Retrieved 2026-11-02.</li>
+  <li id="src-g2">Chacon &amp; Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git: Recording Changes to the Repository</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex developer commands (CLI)</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/sessions">omp sessions</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> take a one-page site through all five states to a public URL, and check the last state yourself instead of trusting a report.</p>
+  <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0014-deploy-merge-live.html">Previous: 6.6 Deploy, merge, live</a> · <a href="0016-goal-audience-not-method.html">Next: 1.1 Goal and audience</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

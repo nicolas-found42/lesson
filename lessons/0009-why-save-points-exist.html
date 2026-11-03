@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why save points exist</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 3 · Version control as the safety net · Lesson 3.1</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 3 · Lesson 3.1 · First-ship path ★</p>
+  <h1>Why save points exist</h1>
+  <p class="lede">An agent can rewrite twenty files while you watch one paragraph of text scroll by. A commit is how you decide that this state of the folder is worth keeping, and give it a name you can come back to.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0003-your-project-is-a-folder.html">0.3 Your project is a folder</a></span><span>Win: you can say what a commit stores and when to take one</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>You will hand your project folder to an agent many times. Each time it may add files, delete a section, or move text between files. If the result is worse, you want a way back that does not depend on the agent remembering what it did, or on you remembering which paragraph looked right an hour ago. That way back is <span class="term" title="A system that stores ordered snapshots of a project's files inside the project folder.">version control</span> — a record of past states kept inside the folder itself — and its unit is the commit.</p>
+<p>This lesson is about the idea, not the commands; the next lesson (<a href="0010-repo-working-tree-uncommitted-change.html">3.2 Repository, working tree, uncommitted change</a>) puts names on the parts and shows you how to inspect them.</p>
+
+<h2>Your files change with no record</h2>
+<p>When you save a file in a text editor, the old text is gone. The editor replaces the contents and nothing keeps the previous version. Coding agents edit the same files on disk, so a run can leave your folder better, worse, or merely different, and the folder keeps no memory of how it got there.</p>
+<p>The fallback most beginners use is asking the agent to undo. That depends on the agent's account of what it changed, and an agent that misread a file will misread its own summary too. A save point does not: it lives in the folder, in a hidden subfolder, and does not care what the agent believes.</p>
+
+<h2>What a commit actually is</h2>
+<p>A <span class="term" title="A recorded snapshot of your project's tracked files, with a message, kept in the project's history.">commit</span> is a recorded snapshot of your project's files, taken at one moment, with a short message attached. Pro Git describes the mechanism plainly: <q>Git basically takes a picture of what all your files look like at that moment and stores a reference to that snapshot.</q><sup class="cite"><a href="#src-g1">[1]</a></sup> GitHub's own quickstart puts the same idea in one sentence: <q>A commit is like a snapshot of all the files in your project at a particular point in time.</q><sup class="cite"><a href="#src-g4">[2]</a></sup></p>
+<p>Three things go into every commit:</p>
+<ul>
+  <li><strong>The state of the files.</strong> Not just the lines you changed — the whole picture of every file the project is already keeping track of, at that instant. Git is efficient about it: <q>if files have not changed, Git doesn’t store the file again, just a link to the previous identical file it has already stored.</q><sup class="cite"><a href="#src-g1">[1]</a></sup></li>
+  <li><strong>A message</strong> in your own words: "Add a contact page", "Fix the broken menu on phones". The message is for the person reading the history later, which is usually you.</li>
+  <li><strong>A place in the chain.</strong> The new commit points back to the one before it, so the snapshots form an ordered line you can walk backwards.</li>
+</ul>
+<p>The command that creates one is <code>git commit</code>, and its manual says it will <q>Create a new commit containing the current contents of the index and the given log message describing the changes.</q><sup class="cite"><a href="#src-g5">[3]</a></sup> You will not type that by hand much: you will ask the agent. What matters now is that you know what you are asking for.</p>
+
+<table class="ref">
+  <tr><th>Save in an editor</th><th>Commit</th></tr>
+  <tr><td>Replaces the file's contents.</td><td>Adds a new state to the history.</td></tr>
+  <tr><td>The previous text is gone.</td><td>The previous snapshot still exists.</td></tr>
+  <tr><td>No message, no date, no author.</td><td>Stores a message, a time and an author.</td></tr>
+  <tr><td>One file at a time.</td><td>The whole project as it stands.</td></tr>
+</table>
+
+<h2>A chain you can walk back</h2>
+<p>Because each commit links to its parent, the project carries its own log. <code>git log</code> shows it <q>in reverse chronological order; that is, the most recent commits show up first.</q><sup class="cite"><a href="#src-g3">[4]</a></sup> Here is a real two-commit history from a throwaway folder used to prepare this lesson:</p>
+<pre><code>$ git log --oneline
+bfa5e7b Say when we are open
+fef94e8 Add a first page</code></pre>
+<p>The seven characters on the left are the commit's short identifier; the rest is the message. In a project with sixty commits that list is your outline of what happened, and you can point at any line and ask the agent to show it, compare against it, or return the project to it. That last move is what makes a save point useful rather than decorative.</p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: name the three things that go into a commit, and explain why "the agent says it undid the change" is weaker than a save point.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A commit holds the <strong>state of every tracked file</strong>, a <strong>message</strong>, and a <strong>place in a chain</strong> of earlier commits. The agent's account lives only in the session and depends on its own memory; a commit lives in the folder, is dated, and can be inspected or returned to without asking the agent anything.</p></div>
+</div>
+
+<h2>The moment you choose matters</h2>
+<p>A commit records the folder exactly as it is, including work that has nothing to do with the task you had in mind. Timing is therefore part of the skill, and so is knowing what is in the snapshot.</p>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent for a large reorganization, then said "commit and push all pending changes" once the checks were green. The agent did exactly that: one commit of about thirty-five files. It included the reorganization, a test update, a dependency removal — and several files the user had been editing for a different reason, which had been sitting uncommitted the whole time. The save point existed, but it told two stories at once. Untangling them later meant reading the diff file by file, because there was no earlier point to fall back to.</p>
+</div>
+<p>A commit is only as useful as the state it captures: save before a risky change, save after something works, and glance at what is going in. <a href="0043-commit-messages.html">3.4 Commit messages and staging</a> covers that choice; here you only need to notice it exists.</p>
+
+<h2>When to make a save point</h2>
+<p>Three moments cover most of what a beginner needs:</p>
+<ul>
+  <li><strong>Before a risky change.</strong> "Reorganize the files", "replace the styling", "try a different layout" — anything where a bad result would be costly to unpick.</li>
+  <li><strong>After something works.</strong> You ran it, you looked at the screen, and it does what you wanted. That state is the one you will want back in an hour.</li>
+  <li><strong>At the end of a session.</strong> Work that is only in the working folder is work you have not decided to keep.</li>
+</ul>
+<p>Pro Git states the underlying habit: you commit a snapshot <q>each time the project reaches a state you want to record.</q><sup class="cite"><a href="#src-g2">[5]</a></sup> In this course the habit is called checkpointing, and <a href="0052-checkpoint-often.html">3.13 Checkpoint often</a> is the lesson devoted to it. For now, remember that a long agent run with no save point before it is a bet, not a plan.</p>
+<div class="callout">
+  <span class="label">Keep approvals on</span>
+  <p>When you ask the agent to commit, it proposes a command and waits. Read the command rather than the agent's summary of it: you are checking for the word <code>commit</code> and a message you recognise. Approvals are covered in <a href="0006-approvals-and-permissions.html">0.6 Approvals and permissions</a>.</p>
+</div>
+
+<h2>Try it in your own project</h2>
+<div class="doit">
+  <span class="label">Do it now — about five minutes</span>
+  <ol>
+    <li><label><input type="checkbox"> In your project folder, start your agent and ask it to check whether the folder is already a repository. Ask it to show the command it used and the raw output.</label></li>
+    <li><label><input type="checkbox"> If the answer is no, ask it to set one up and make a first commit of the current files without changing any of them. Approve only the git commands it shows you.</label></li>
+    <li><label><input type="checkbox"> Ask: "Show me the last five commits, one line each, with the short id first."</label></li>
+    <li><label><input type="checkbox"> Write one sentence: what would be lost if this folder's history disappeared tonight?</label></li>
+  </ol>
+  <p class="progress"></p>
+  <div class="expect">
+    <p>A list shaped like the one above: a short id, then your message, most recent first. If the agent reports "not a git repository", that is a normal first answer — step two fixes it. If the list is empty, the folder has a repository but no commits yet, and step two is still the fix.</p>
+  </div>
+</div>
+<div class="prompt"><button class="copy" type="button">Copy</button><pre>Check whether this folder is a git repository, and show me the command and its raw output. If it is not one, initialise a repository here and make one commit containing the current files with a short message. Do not change the contents of any file. Then show me the last five commits, one line each.</pre></div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your agent has just finished a change you like. What does committing it add?</p>
+  <button class="opt" type="button">A new snapshot in the project history</button>
+  <button class="opt" type="button">A cloud backup copy stored far away</button>
+  <button class="opt" type="button">A lock that freezes every file forever</button>
+  <button class="opt" type="button">A temporary file the agent deletes later</button>
+  <div class="why"><p>A commit records the current state inside the project's own history. It is not a cloud backup, and later commits can follow it; the old snapshot simply stays available.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">The agent says it undid a bad edit by editing the files again. Why is a commit stronger?</p>
+  <button class="opt" type="button">It stops the agent from editing files again</button>
+  <button class="opt" type="button">It compresses the folder to use less space</button>
+  <button class="opt" type="button">It keeps a state that edits cannot rewrite</button>
+  <button class="opt" type="button">It sends a folder copy to your account</button>
+  <div class="why"><p>A snapshot is an independent record in the folder. A re-edit depends on the agent's memory of what the old text was, and on it getting every file right the second time.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">You are about to ask for a large, risky reorganization. What is the best save point?</p>
+  <button class="opt" type="button">A chat message asking it be more careful</button>
+  <button class="opt" type="button">A commit of the state before any work</button>
+  <button class="opt" type="button">A copy of one file it might edit</button>
+  <button class="opt" type="button">A note in your notebook about the plan</button>
+  <div class="why"><p>The snapshot must cover everything the agent may touch, and it must be taken before the work begins. A partial copy or a warning in the chat does not give you a state to return to.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F">Pro Git — What is Git?</a> by Scott Chacon and Ben Straub. Two pages, free online, and the best explanation of why a snapshot is not a list of changes. Read the "Snapshots, Not Differences" section only; the rest of the chapter belongs to later lessons.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me my project's history and explain what the ids mean"</em> or <em>"What would happen if I committed in the middle of the agent's work?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-g1">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F">Pro Git — What is Git?</a> (2nd edition, updated online). Retrieved 2026-11-02.</li>
+  <li id="src-g4">GitHub, <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/quickstart-for-repositories">Quickstart for repositories</a>. Retrieved 2026-11-02.</li>
+  <li id="src-g5">Git project, <code>git help commit</code> (git 2.56.0, local manual page). Read 2026-11-02.</li>
+  <li id="src-g3">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History">Pro Git — Viewing the Commit History</a>. Retrieved 2026-11-02.</li>
+  <li id="src-g2">Scott Chacon and Ben Straub, <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git — Recording Changes to the Repository</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> say what a commit stores, read a one-line history, and choose when to take a save point before risky work.</p>
+  <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../index.html">Course index</a></p>
+  <div class="pager"><a href="0008-anatomy-of-a-web-page.html">Previous: 0.8 Anatomy of a web page</a><a href="0010-repo-working-tree-uncommitted-change.html">Next: 3.2 Repository, working tree, uncommitted change</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

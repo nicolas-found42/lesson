@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>"Yes to all": accepting an interview in one line</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 1 · Telling the agent what you want · Lesson 1.5</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.5 · First-ship path ★</p>
+  <h1>"Yes to all" — and amending inside the yes</h1>
+  <p class="lede">An interview can return twenty questions. You do not have to answer twenty times. One message can accept the whole list, name the two answers you want changed, and still leave you in control of what gets built.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0019-interview.html">1.4 The interview: numbered questions with a recommended answer</a></span><span>Win: you can accept a whole interview in one line without losing the decisions that matter</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping</h2>
+<p>In lesson 1.4 the agent asked numbered questions, each with a recommended answer. That format was built for speed, and this lesson spends the speed. If every question needs its own paragraph from you, a thorough interview costs an evening and you stop asking for one. If a single "yes" can swallow the list, you have traded an evening for the risk of agreeing to something you never read.</p>
+<p>There is a middle move, and it is the one experienced users make: accept the batch in one line, then amend the two or three answers that carry real risk. You keep the interview cheap and you keep the decisions that are actually yours. That is what "yes to all" is for.</p>
+
+<h2>What a batch yes actually says</h2>
+<p>It says: <em>I have read your list, and I accept every recommended answer in it except the ones I name.</em> The reading is part of the sentence. Because each question already carries a recommendation with a one-line reason, the list is designed to be decided in one pass — Anthropic describes the interview as <q>multiple-choice questions about the parts you haven’t pinned down</q>.<sup class="cite"><a href="#src-a1">[1]</a></sup> OpenAI's guidance asks for the same exchange, with the agent told to <q>challenge your assumptions</q> before any code is written.<sup class="cite"><a href="#src-b1">[2]</a></sup></p>
+<p>So a batch yes is a decision about the recommendations, not a surrender of judgement. The recommendations cover cost, effort and ordinary defaults — the kind of thing an agent is better placed to choose than you are. Anthropic's own style documentation makes this split explicit: one built-in style has the agent <q>make reasonable assumptions rather than asking about routine decisions</q>, while leaving the exceptional cases to a separate check.<sup class="cite"><a href="#src-a2">[3]</a></sup> Your batch yes is that idea, applied to a list you can read.</p>
+
+<h2>The three parts of a batch yes</h2>
+<p>A good reply to a long interview has the same three parts every time.</p>
+<ol>
+  <li><strong>The acceptance.</strong> "Yes to all", "your rec on all", or "all recommended". One phrase, no explanation needed.</li>
+  <li><strong>The exceptions, by number.</strong> "Except 7: keep the finished date visible." The number is what makes the exception unambiguous; a bare sentence about dates could attach to three different questions.</li>
+  <li><strong>The read-back request.</strong> "List the decisions you recorded, with my changes marked." This is the part most people skip, and the part that catches a misread batch.</li>
+</ol>
+<p>The read-back costs the agent one message and costs you thirty seconds. It converts a silent summary into a claim you can check: fourteen lines, thirteen of which you can skim, two of which should contain your amendments word for word. If an amendment is missing, you can fix it before anything is built, when a correction is a sentence rather than a rewrite.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user wanted one small site to hold several design drafts so a team could compare them. The agent came back with about twenty numbered questions across five rounds, each with a recommended answer. The user replied "yes to all" — and added one hard rule in the same message: deleting a draft's folder removes that draft and nothing else. That rule was not a preference; it was a behaviour that could be checked, so it became an automated test before the build started. The rest of the list was accepted unread, twice as fast as answering it.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the three parts of a batch yes, and why does the read-back matter more than the acceptance?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><strong>Accept</strong> the whole list, <strong>name exceptions by number</strong>, and <strong>ask for a read-back</strong> of the recorded decisions. The read-back is where a misread batch becomes visible while it is still a sentence to fix, not code to unwind.</p></div>
+</div>
+
+<h2>Amending inside the yes</h2>
+<p>The amendment is the interesting half of the technique. It is one clause in the same message, and it does three things: names the question, states the behaviour you want, and — when it matters — states what must never happen.</p>
+
+<div class="transcript">
+  <div class="row you"><span class="who">you</span><span>Yes to all. Two changes. 7: keep the finished date visible on the read shelf. 12: deleting a folder removes only that folder's drafts. Then list the decisions you recorded.</span></div>
+  <div class="row"><span class="who">agent</span><span>Recorded 14 decisions; two amended.<br>Q7 — read shelf shows title, author, finished date.<br>Q12 — folder delete is scoped to that folder; other drafts untouched.</span></div>
+  <div class="row"><span class="who">agent</span><span>Spec updated. No files changed yet. Say when you want a plan.</span></div>
+  <div class="row you"><span class="who">you</span><span>Good. Make Q12 a rule the checks can enforce, not a note in the spec.</span></div>
+</div>
+
+<p>Notice what the amendments are made of. "Keep the finished date visible" is a behaviour someone could look at and confirm. "Deleting a folder removes only that folder's drafts" is a boundary that a test can fail on. Compare those with "make it feel nicer" or "I don't like the shelf" — both are real reactions, and both leave the agent to guess which part of the screen you mean. A mood is not an amendment; a behaviour is.</p>
+<p>The second useful shape is a negative constraint, the thing you do not want at all. One user ended a batch yes with a single bracketed line: no extra toggle for reduced motion, just honour the system setting. Another asked that draggable pieces drift with a little weight instead of sticking where they are dropped. Both are short, both are checkable, and both would have been lost if the user had answered "yes" and planned to mention it later.</p>
+
+<h2>Which questions never belong in a blanket yes</h2>
+<p>Most of a list is safe to accept in bulk. A few items are not, and they are recognisable before you know anything about code.</p>
+<ul>
+  <li><strong>Anything irreversible or shared.</strong> Deleting other people's work, overwriting a published version, publishing at all, spending money. A batch yes is a decision about a plan, not permission for an action. Anthropic's documentation keeps the two apart: even a style that assumes routine decisions still tells the agent to check before <q>an action that deletes data or changes a shared or production system</q>, and that check <q>is separate from permission prompts</q>.<sup class="cite"><a href="#src-a2">[3]</a></sup> Your approval prompts stay on for exactly this reason (lesson 0.6).</li>
+  <li><strong>Product direction where the recommendation may be backwards.</strong> A recommendation is a guess about what you want, made from a short description. When the question is "what should a newcomer see first?", the agent's default is a guess about taste, and taste is yours. In one recorded interview the user chose differently from the recommendation on three such questions out of twenty-six; those three changed what the app opened on. Lesson 1.6 is about spotting them.</li>
+  <li><strong>Anything you cannot restate.</strong> If you cannot say in your own words what a question is deciding, do not bury it in a yes. Ask for a re-pitch with an example (lesson 1.3), then answer it by number.</li>
+</ul>
+<p>And if the list is very long, the fix is a shorter list, not a faster yes. A twenty-six-question interview for "make it less clunky" is a real recorded cost; lesson 4.11 covers capping the questions before they arrive.</p>
+
+<h2>"Yes" is not "go"</h2>
+<p>An accepted spec changes nothing on disk. The agent has a set of decisions and no edits, and the next gate is a plan you approve (lesson 1.7). Keeping the two apart is what makes batch acceptance safe: if the read-back shows a wrong amendment, you correct a line. If you had let the same yes start the build, you would be correcting a screen.</p>
+
+<div class="callout">
+  <span class="label">The rule of thumb</span>
+  <p>Accept in bulk, amend by number, ask for the read-back, and never let the batch yes stand in for an approval prompt. Two amendments in a one-line reply is normal. Seven amendments means you wanted a conversation, not a batch.</p>
+</div>
+
+<h2>Do it in your own session</h2>
+<p>Use the interview you already have, or ask for a fresh one on any small goal. The point of this exercise is the reply, not the questions.</p>
+<div class="doit">
+  <span class="label">Practice: one line, two amendments</span>
+  <ol>
+    <li><label><input type="checkbox"> Ask for the list again if it scrolled away: "repeat the numbered questions with your recommendation on each, in one message".</label></li>
+    <li><label><input type="checkbox"> Read all of it. Mark every question that deletes something, publishes something, spends money, or decides what a first-time visitor sees.</label></li>
+    <li><label><input type="checkbox"> Reply in one line: accept the rest, then amend the marked ones by number, stating a behaviour rather than a feeling.</label></li>
+    <li><label><input type="checkbox"> End with: "List the decisions you recorded and mark my amendments. Change no files."</label></li>
+    <li><label><input type="checkbox"> Compare the read-back with what you wrote. If an amendment is missing or softened, say which one and ask again.</label></li>
+  </ol>
+  <div class="expect">
+    <p>You should see a numbered read-back in which your amendments appear as behaviour you could check, and a closing line saying nothing has been changed yet. If the agent starts editing files, stop it and repeat "change no files". If an amendment comes back as "improved the shelf", it was too vague — restate it as something you could look at on screen.</p>
+  </div>
+  <p class="progress"></p>
+</div>
+
+<div class="compare">
+  <div class="bad">
+    <span class="label">A yes that agreed to more than it read</span>
+    <p>"yes to all" — sent from a phone, without opening the full list. Question 9 had recommended replacing the published version on every update; it was accepted with the rest. No read-back, so nobody saw the decision until the old version was gone.</p>
+  </div>
+  <div class="good">
+    <span class="label">Same list, one extra clause</span>
+    <p>"Yes to all. (9: publish the new version beside the old one; never replace it.) List what you recorded." The destructive default is named, replaced with a behaviour, and confirmed back before any file changes.</p>
+  </div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You receive fourteen numbered questions, each with a recommended answer. What makes "yes to all" a real decision?</p>
+  <button class="opt" type="button">You send it quickly, then check the result much later on.</button>
+  <button class="opt" type="button">You ask the same agent to answer every question by itself now.</button>
+  <button class="opt" type="button">You read the list and name any exceptions in the same reply.</button>
+  <button class="opt" type="button">You answer only the questions that really look technical enough.</button>
+  <div class="why"><p>The acceptance is only a decision if it was read and, where needed, amended. The exceptions are what make the batch yours rather than the agent's.</p></div>
+</div>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Which question should you answer by name instead of folding it into the batch?</p>
+  <button class="opt" type="button">One that permanently deletes the drafts that your friends made.</button>
+  <button class="opt" type="button">One that picks a font size for the main heading.</button>
+  <button class="opt" type="button">One that names the folder where the app source lives.</button>
+  <button class="opt" type="button">One that chooses a light grey colour for the background.</button>
+  <div class="why"><p>Deleting other people's work is irreversible and shared. Font sizes, folder names and background colours are ordinary defaults that a batch yes can safely carry.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">The read-back lists thirteen decisions but one of your two amendments is missing. What is the best next move?</p>
+  <button class="opt" type="button">Accept the spec and fix the behaviour after the build.</button>
+  <button class="opt" type="button">Start a new session and repeat all of the questions.</button>
+  <button class="opt" type="button">Assume that the missing amendment was silently recorded for you.</button>
+  <button class="opt" type="button">Say which amendment is missing and ask it to restate.</button>
+  <div class="why"><p>The read-back exists to catch exactly this. Naming the gap costs one sentence now; discovering it after the build costs a change to working code.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>, section "Brainstorm with Claude first" — it shows the interview prompt and what comes back, in Anthropic's words. Then read OpenAI's <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a> on planning first, which names "Constraints" as a field of its own: a natural home for the amendments you add inside a yes.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Stuck on a question that feels risky but you cannot say why? Paste it here and ask: <em>"What would I have to check after accepting this, and could I undo it?"</em> That is exactly the question a batch yes needs you to ask.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>, "Brainstorm with Claude first". Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>, "Plan first for difficult tasks". Retrieved 2026-11-02.</li>
+  <li id="src-a2">Anthropic, <a href="https://code.claude.com/docs/en/output-styles">Output styles</a> (Proactive style: routine assumptions and the separate destructive-action check). Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/using">Using omp</a> (question dialog, the "Other" row, Escape). Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> accept a numbered interview in one message, amend the few answers that carry risk, and check the agent's read-back before anything is built.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns (the interview and the batch yes)</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Next: 1.6 When to override a recommendation</span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

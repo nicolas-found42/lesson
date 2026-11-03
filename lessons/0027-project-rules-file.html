@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Write the procedure once: a project rules file</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 1 · Telling the agent what you want · Lesson 1.12</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 1 · Lesson 1.12 · First-ship path ★</p>
+  <h1>Write the procedure once</h1>
+  <p class="lede">You have typed the same correction twice this week. There is a place for it: a short text file inside the project, which the agent reads at the start of every session. Write it once and stop repeating yourself.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0003-your-project-is-a-folder.html">0.3 Your project is a folder</a></span><span>Win: you can move a repeated instruction into the project itself</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>Getting an app live takes many sessions across several days. Each new session, the agent starts with an empty memory of your project. So you explain again where the files live, which command starts the app, and that the pictures must stay under a certain size. Then a week later you forget one line, and the agent does the thing you already corrected.</p>
+<p>A <span class="term" title="A plain-text file in the project folder that the agent reads at the start of every session, holding standing instructions.">rules file</span> fixes that. It is a small file you write for the agent, kept with the project so it travels with it. Every session begins by reading it.</p>
+
+<h2>The correction you typed twice</h2>
+<p>Claude Code's documentation gives a simple trigger for adding to the file: when <q>Claude makes the same mistake a second time</q>, or when <q>you type the same correction or clarification into chat that you typed last session</q>.<sup class="cite"><a href="#src-a5">[1]</a></sup> Both sentences describe the same moment. You are about to say something you have already said. That is the signal to stop typing and write it down.</p>
+<p>The rule of thumb: a fact needed in every session goes in the file. A one-off task does not. "The app starts with <code>npm run dev</code>" is a fact. "Today, change the heading to blue" is a task.</p>
+
+<h2>An instruction file, not a lock</h2>
+<p>All three agents read a file like this before doing any work. Anthropic calls them <q>markdown files that give Claude persistent instructions for a project, your personal workflow, or your entire organization</q>.<sup class="cite"><a href="#src-a5">[1]</a></sup> OpenAI's page opens with: <q>Codex reads AGENTS.md files before doing any work.</q><sup class="cite"><a href="#src-b5">[2]</a></sup> omp's page says: <q>Put an AGENTS.md in your repository root. omp loads it automatically and applies it throughout the session</q>.<sup class="cite"><a href="#src-c5">[3]</a></sup></p>
+<p>One honest caveat, because it changes how you write the file. Anthropic says plainly: <q>Claude treats them as context, not enforced configuration.</q><sup class="cite"><a href="#src-a5">[1]</a></sup> A rule raises the chance the agent does what you want; it does not guarantee it. If something must never happen, that belongs in permissions and approval prompts (lesson <a href="0006-approvals-and-permissions.html">0.6</a>), not only in a text file.</p>
+
+<h2>The file name depends on your agent</h2>
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>The file is <code>CLAUDE.md</code>, in the project root or in a <code>.claude/</code> folder inside it. Run <code>/init</code> and Claude <q>analyzes your codebase and creates a file with build commands, test instructions, and project conventions it discovers.</q><sup class="cite"><a href="#src-a5">[1]</a></sup> Check what loaded with <code>/context</code>, under "Memory files". If a project has an <code>AGENTS.md</code> and no <code>CLAUDE.md</code>, Claude reads that instead; if both exist, it reads the <code>CLAUDE.md</code> files only.<sup class="cite"><a href="#src-a5">[1]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>The project file is <code>AGENTS.md</code> at the repository root. Codex also reads a personal one in <code>~/.codex/AGENTS.md</code>, and files in subfolders, with the closer file overriding. <code>/init</code> in the CLI will <q>generate an AGENTS.md scaffold in the current directory.</q><sup class="cite"><a href="#src-b6">[4]</a></sup> Files that add up past <code>project_doc_max_bytes</code>, 32 KiB by default, are cut off.<sup class="cite"><a href="#src-b5">[2]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>The project file is <code>AGENTS.md</code> at the repository root. omp also reads a user-wide <code>~/.omp/agent/AGENTS.md</code> and a stricter <code>.omp/RULES.md</code> for rules that should always apply. Changes are picked up after <code>/new</code> or a restart, and <code>/extensions</code> shows which files loaded.<sup class="cite"><a href="#src-c5">[3]</a></sup> omp's documentation comes only from its own authors, so check anything surprising with your teacher.</p>
+  </div>
+</div>
+<span class="sidenote">Claude Code reads <code>AGENTS.md</code> when no <code>CLAUDE.md</code> exists, so one file can serve all three tools if your project has no Claude-specific instructions. Keep the name your agent actually reads.</span>
+
+<h2>What belongs inside</h2>
+<p>OpenAI's best-practices guide suggests a useful picture: <q>Think of AGENTS.md as an open-format README for agents.</q><sup class="cite"><a href="#src-b7">[5]</a></sup> Four kinds of content earn a place:</p>
+<ul>
+  <li><strong>How to run it.</strong> The command that starts the app locally, and the command that runs the checks.</li>
+  <li><strong>Where things live.</strong> "Pages are in <code>site/</code>; the pictures are in <code>site/images/</code>." The agent can find these, but telling it saves a hunt and prevents edits in the wrong copy.</li>
+  <li><strong>Conventions and boundaries.</strong> "Plain HTML and CSS, no build step." "Never edit files in <code>vendor/</code>." "Do not add accounts or a database."</li>
+  <li><strong>What done means.</strong> "Done means the page opens from a link and the text is readable on a phone."</li>
+</ul>
+<p>Write each line so that someone could check it. Anthropic's examples make the difference clear: <q>Use 2-space indentation</q> instead of <q>Format code properly</q>; <q>Run <code>npm test</code> before committing</q> instead of <q>Test your changes</q>.<sup class="cite"><a href="#src-a5">[1]</a></sup> A rule you cannot check is a mood, and the agent will treat it as one.</p>
+
+<h2>What does not belong inside</h2>
+<p>Length is not free. omp's page puts it best: <q>Keep it short and concrete: every loaded instruction consumes context.</q><sup class="cite"><a href="#src-c5">[3]</a></sup> Anthropic asks for <q>under 200 lines per CLAUDE.md file</q>, because longer files are followed less reliably.<sup class="cite"><a href="#src-a5">[1]</a></sup> Three things usually push a beginner's file over that line:</p>
+<ul>
+  <li><strong>A long procedure.</strong> If a rule needs ten steps, it is a job, not a standing fact. Claude's docs send multi-step procedures to a skill; lesson <a href="0026-skills-slash-commands-mentions.html">1.11</a> covers those.</li>
+  <li><strong>Personal taste.</strong> Your own scratch URLs and test names are not the project's rules. Keep them in a personal file, such as <code>CLAUDE.local.md</code>, which the docs say to add to <code>.gitignore</code> so it stays out of version control.<sup class="cite"><a href="#src-a5">[1]</a></sup></li>
+  <li><strong>Secrets.</strong> A key belongs in an environment variable, never in a file that gets committed. Unit 8 covers this; for now, the rules file holds no passwords.</li>
+</ul>
+
+<h2>One rule, written badly and well</h2>
+<div class="compare">
+  <div class="bad"><span class="label">Rules that cannot be followed</span>
+    <p>"Always write clean, modern code. Make sure everything works before you say you are done. Remember the important files. Be careful with the images."</p>
+  </div>
+  <div class="good"><span class="label">Rules that can be checked</span>
+    <p>"Run <code>npm run check</code> before saying a task is done. Pages live in <code>site/</code>. Images must stay under 500 KB; ask before replacing one. Never edit <code>vendor/</code>."</p>
+  </div>
+</div>
+<p>The left column is advice. The right column is a set of facts and limits, each of which you could test. The agent can act on the right column on its first try, without a conversation about what "clean" means.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to put a small site online for friends, then edit the project's front page to show the link. That was the entire message. The project already had a rules file: it named the branch convention, the review step, the check command, and the fact that large media files are served from elsewhere. The agent read it, followed the same path the project always used, ran the checks, opened the real public address, and only then wrote the link in. The user sent nothing else. The speed came from the file, not from a clever sentence. On a project without those rules, the same request produces a longer conversation and more chances to drift.</p>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what are the four kinds of content that belong in a rules file, and what happens to the agent's behaviour when the file is long?</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>How to run the project, where things live, conventions and boundaries, and what "done" means. A long file is followed less reliably and eats context, so keep it short and keep each line checkable.</p></div>
+</div>
+
+<h2>Draft it with the agent, then cut it</h2>
+<p>The fastest way to get a first version is to ask the agent to write it from what it can see. Do not let it invent commands: tell it to check. This prompt works in any of the three agents.</p>
+<div class="prompt">
+  <button class="copy" type="button">Copy</button>
+  <pre>Read this project first: the folder listing, the README if there is one,
+and whatever file lists the commands. Then draft a project rules file.
+
+Use the file name your tool reads at the start of a session
+(CLAUDE.md for Claude Code, AGENTS.md for Codex and omp).
+Put it in the project root.
+
+Include only:
+- the exact command that starts the app locally
+- the exact command that runs the checks, if one exists
+- where the main files live
+- three rules a beginner would otherwise break
+- one sentence for what "done" means
+
+For every command, say where you found it. If you cannot find one,
+write "unknown" instead of guessing. Keep the whole file under 40 lines.
+Do not change any other file yet.</pre>
+</div>
+<p>Then read the draft as its editor. Delete every line you do not understand, replace every guessed command with one you have seen work, and add the one correction you have already typed twice.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own agent</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in the practice folder from lesson <a href="0003-your-project-is-a-folder.html">0.3</a>, with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Paste the prompt above. Approve reading the project; stop it if it starts editing other files.</label></li>
+    <li><label><input type="checkbox"> Check its claims. Does the start command really work? Open the file and read the bullets aloud; if a line sounds like advice, cut it.</label></li>
+    <li><label><input type="checkbox"> Save the file. In Claude Code run <code>/context</code> and look for it under "Memory files"; in omp run <code>/extensions</code>. In Codex, ask: "List the instruction sources you loaded."</label></li>
+    <li><label><input type="checkbox"> Start a fresh session and send one short task that depends on a rule, such as "add a page with the same header as the others". Do not repeat the rule.</label></li>
+  </ol>
+  <div class="expect"><p>You should see the file listed as a loaded instruction source, and the short task should follow it without a reminder. If the task ignores a rule, either the file did not load (check the list) or the rule was too vague to act on (rewrite it as something you could test). If it follows the rule, you have just removed one sentence from every future session.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">You type the same correction in three sessions in a row. Where does it belong?</p>
+  <button class="opt" type="button">Put it in the project rules file once.</button>
+  <button class="opt" type="button">Put it in a new chat message daily.</button>
+  <button class="opt" type="button">Put it in the README's long help paragraph.</button>
+  <button class="opt" type="button">Write it as a comment in the code.</button>
+  <div class="why"><p>A correction you repeat is a standing fact about the project. The rules file is read at the start of every session, so you write it once; a chat message is gone when the session ends.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">Your agent keeps editing files in a folder you said to leave alone. What is the durable fix?</p>
+  <button class="opt" type="button">Repeat the warning in every prompt you send now.</button>
+  <button class="opt" type="button">Rename the folder so the agent cannot find it.</button>
+  <button class="opt" type="button">Add one clear rule to the project rules file.</button>
+  <button class="opt" type="button">Delete the folder and restore it after each run.</button>
+  <div class="why"><p>A clear boundary in the file is read at the start of every session, so you stop repeating it. Renaming or deleting the folder breaks your own project, and repeating the warning lasts only one turn. For a limit that must hold, approvals still matter.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">A rules file says "write clean code". What is wrong with that line?</p>
+  <button class="opt" type="button">It belongs in some settings file, not here.</button>
+  <button class="opt" type="button">It is vaguer than any agent can check.</button>
+  <button class="opt" type="button">It uses words that the agent cannot read.</button>
+  <button class="opt" type="button">It repeats what the agent already knows here.</button>
+  <div class="why"><p>"Clean" has no test. The docs' pattern is the opposite: name the concrete habit, such as indentation width or the command to run. A line you cannot check gives the agent nothing to act on.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://code.claude.com/docs/en/memory">How Claude remembers your project</a> — Anthropic's page on CLAUDE.md. It is the most detailed of the three, and its advice on size, concreteness and when to add a line applies to Codex and omp too. Read "When to add to CLAUDE.md" and "Write effective instructions".</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Unsure whether a line belongs? Ask the agent that gave you this course: <em>"Here is my draft rules file. Which lines could you not check, and which are one-off tasks rather than standing rules?"</em> or <em>"Explain what happens to my rules file in a brand-new session."</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-a5">Anthropic, <a href="https://code.claude.com/docs/en/memory">How Claude remembers your project</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b5">OpenAI, <a href="https://learn.chatgpt.com/docs/agent-configuration/agents-md">Custom instructions with AGENTS.md</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c5">Stencil Labs, <a href="https://omp.sh/docs/context-files">Context files</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+  <li id="src-b6">OpenAI, <a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">Codex developer commands</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b7">OpenAI, <a href="https://learn.chatgpt.com/guides/best-practices">Codex best practices</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> put a repeated instruction into a short project rules file, name the file your agent reads, and tell a checkable rule from advice.</p>
+  <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><a href="0026-skills-slash-commands-mentions.html">Previous: Skills and slash commands</a> · <a href="0028-outcome-sized-prompts-vs-micro-managing.html">Next: Outcome-sized prompts</a></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

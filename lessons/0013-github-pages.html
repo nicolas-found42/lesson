@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Pages: what your URL will be</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.3</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 6 · Lesson 6.3 · First-ship path ★</p>
+  <h1>GitHub Pages: what your URL will be</h1>
+  <p class="lede">Pages turns your repository into a website at a predictable address. Learn the address shape now, and your links will keep working after you send them to someone.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0012-static-vs-dynamic.html">6.1 Static vs dynamic</a>, <a href="0011-remote-origin-push.html">3.6 Remote, origin, push</a></span><span>Win: you can predict any page's URL and write links that survive it</span></div>
+</header>
+<main>
+
+<h2>Why the address matters</h2>
+<p>Lesson 6.1 established that a static site is a folder of files, and that hosting means putting those files somewhere a browser can ask for them. This lesson is about the <em>somewhere</em>: GitHub Pages, the free host that comes with a GitHub account. It reads the files straight out of your repository and serves them as a website.<sup class="cite"><a href="#src-g1">[1]</a></sup></p>
+<p>You care because your finished app is a link you send to a friend. If that link opens a page with no styling, or a menu whose items go nowhere, the app looks broken even though every file is present. Almost always the cause is a mismatch between the address you expected and the address the host actually gave you.</p>
+
+<h2>Two kinds of Pages site</h2>
+<p>GitHub documents exactly two shapes. A <strong>user site</strong> lives in a repository named after your account, <code>YOUR_USERNAME.github.io</code>, and appears at <code>http(s)://YOUR_USERNAME.github.io</code>. A <strong>project site</strong> lives in any other repository and appears at <code>http(s)://YOUR_USERNAME.github.io/REPOSITORY</code>.<sup class="cite"><a href="#src-g1">[1]</a></sup></p>
+<span class="sidenote">Your username and repository name are case-insensitive in GitHub's URLs in practice, but the path to a <em>file</em> on a Pages site is not: the docs warn that <code>Index.html</code> will not be found.<sup class="cite"><a href="#src-g3">[3]</a></sup> Match your file names exactly.</span>
+
+<table class="ref">
+  <caption class="sidenote" style="caption-side:bottom;text-align:left">Shapes quoted from GitHub's "What is GitHub Pages?" page.<sup class="cite"><a href="#src-g1">[1]</a></sup></caption>
+  <thead><tr><th>Kind of site</th><th>Repository name</th><th>Public address</th></tr></thead>
+  <tbody>
+    <tr><td>User site</td><td><code>YOUR_USERNAME.github.io</code></td><td><code>https://YOUR_USERNAME.github.io/</code></td></tr>
+    <tr><td>Project site</td><td><code>my-app</code></td><td><code>https://YOUR_USERNAME.github.io/my-app/</code></td></tr>
+  </tbody>
+</table>
+
+<p>Most first projects are project sites, because you already have a repository called something like <code>my-app</code> and you do not want to rename it. That single fact — the repository name sits in the middle of the address — is the source of nearly every broken link beginners hit. The extra piece is called a <span class="term" title="The part of a URL after the domain name; here, the repository name.">subpath</span>: your site is not at the root of the domain, it is one level down.</p>
+
+<h2>The folder becomes the path</h2>
+<p>Inside the site, nothing is renamed or flattened. GitHub says that each file <q>will be available on your site in the same directory structure as your publishing source</q>.<sup class="cite"><a href="#src-g2">[2]</a></sup> The docs give a worked case: a file at <code>/about/contact-us.md</code> in the published branch appears at <code>https://&lt;user&gt;.github.io/&lt;repository&gt;/about/contact-us.html</code>.<sup class="cite"><a href="#src-g2">[2]</a></sup></p>
+<p>There is one required starting file. Pages looks for an entry file and the docs name <q><code>index.html</code>, <code>index.md</code>, or <code>README.md</code></q>, which must sit <q>at the top level of the source folder</q>.<sup class="cite"><a href="#src-g2">[2]</a></sup> That file answers a request for the folder itself, which is why <code>https://YOUR_USERNAME.github.io/my-app/</code> can show a page without you typing a filename.</p>
+
+<div class="compare">
+  <div class="bad">
+    <span class="label">File in your folder</span>
+    <p><code>my-app/pages/contact.html</code></p>
+    <p><code>my-app/style.css</code></p>
+  </div>
+  <div class="good">
+    <span class="label">Address on a project site</span>
+    <p><code>https://YOUR_USERNAME.github.io/my-app/pages/contact.html</code></p>
+    <p><code>https://YOUR_USERNAME.github.io/my-app/style.css</code></p>
+  </div>
+</div>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: your project is a project site in a repository called <code>my-app</code>. Write the public address of the file <code>pages/contact.html</code>. Then say, in one sentence, what part of that address would disappear if the site were a user site instead.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p><code>https://YOUR_USERNAME.github.io/my-app/pages/contact.html</code>. On a user site the repository segment <code>my-app</code> is gone, so the same file sits at <code>https://YOUR_USERNAME.github.io/pages/contact.html</code> — the domain root is the site root.</p></div>
+</div>
+
+<h2>Why <code>/style.css</code> breaks</h2>
+<p>A link's meaning depends on the page it sits in. MDN explains the rule: because <q>the browser already has the document's own URL, it can use this information to fill in the missing parts of any URL available inside that document.</q><sup class="cite"><a href="#src-m1">[4]</a></sup> A link that omits the domain is resolved against the page you are on. A link that starts with a slash keeps the domain but throws away the rest of the path — MDN calls it a <q>domain-relative URL</q>.<sup class="cite"><a href="#src-m1">[4]</a></sup></p>
+<p>Put those two facts together. GitHub places a project site under <code>/my-app/</code>; a leading slash sends the browser to the domain root instead. The repository name, and with it your whole site, is skipped.</p>
+
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to publish a small interactive gallery so non-technical friends could open it, and to put the link where visitors would look first. The site worked perfectly on the user's own machine, where it was opened at the root of a local server. Before publishing, the agent served the finished folder under the same <code>/my-app/</code> subpath the public host would use, opened it in a browser, and found the stylesheet and two navigation links pointing at the domain root. It changed them to relative links, checked again under the subpath, and only then published. The friend who received the link saw the intended page on the first try.</p>
+</div>
+
+<p>Here is that difference as a table. The page is <code>https://YOUR_USERNAME.github.io/my-app/pages/contact.html</code> and each row is a link written inside it. The right column is what a browser actually requests; I produced it with Python's standard <code>urljoin</code>, which implements the same resolution rule.</p>
+
+<table class="ref">
+  <thead><tr><th>Link as written</th><th>What the browser requests</th></tr></thead>
+  <tbody>
+    <tr><td><code>style.css</code></td><td><code>…/my-app/pages/style.css</code></td></tr>
+    <tr><td><code>./style.css</code></td><td><code>…/my-app/pages/style.css</code></td></tr>
+    <tr><td><code>../style.css</code></td><td><code>…/my-app/style.css</code></td></tr>
+    <tr><td><code>/style.css</code></td><td><code>…/style.css</code> — repo name lost</td></tr>
+  </tbody>
+</table>
+
+<h2>The habit: relative inside, absolute outside</h2>
+<p>A <strong>relative link</strong> is written without the domain, so the browser completes it from the current page. An <strong>absolute URL</strong> contains every part, including <code>https://</code> and the host name. MDN's example of going up one level, <code>../Web/CSS/Reference</code>, is relative in exactly this sense.<sup class="cite"><a href="#src-m1">[4]</a></sup></p>
+<p>The rule that keeps you out of trouble is short. Links between pages of your own site: relative. Links to somebody else's site: absolute. When a link must point into your own site from a page at an unknown depth, a relative path that climbs with <code>../</code> still works, because it is measured from wherever the page happens to be.</p>
+
+<div class="callout">
+  <span class="label">Two free repairs</span>
+  <p>Relative links survive a repository rename, a switch between a project site and a user site, and a later custom domain — all of which change the part of the address before your files. GitHub also notes that switching a repository between public and private <q>will change the URL of your GitHub Pages site, which will result in broken links until the site is rebuilt</q>.<sup class="cite"><a href="#src-g3">[3]</a></sup> Relative links are the version that does not need repairing.</p>
+</div>
+
+<div class="doit">
+  <span class="label">Do it now</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your site's public address in a browser. Read the address bar and write down the part between the domain and your first page. That is your subpath.</label></li>
+    <li><label><input type="checkbox"> Click through to a second page or a menu item, then look at the address bar again. If the address lost that subpath, a link is written with a leading slash or with a full <code>github.io</code> URL.</label></li>
+    <li><label><input type="checkbox"> Ask your agent to find candidates: <em>"Search the files I publish for links and asset paths that start with a slash or with https://YOUR_USERNAME.github.io. List each one with its file and line. Do not change anything yet."</em></label></li>
+    <li><label><input type="checkbox"> Have it rewrite only the links between your own pages as relative paths, then reload the live page and repeat step 2.</label></li>
+  </ol>
+  <div class="expect"><p>Every internal link keeps the repository segment in the address bar, and the styling still loads on a page you reached by clicking rather than by typing. If a page is missing entirely, check that its file name matches the link exactly, including capital letters, and that <code>index.html</code> sits at the top of the publishing folder.<sup class="cite"><a href="#src-g3">[3]</a></sup></p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>One detail worth knowing before you publish</h2>
+<p>Pages does not serve your page the instant you push. GitHub's quickstart warns that <q>it can take up to 10 minutes for changes to your site to publish after you push the changes to GitHub</q>.<sup class="cite"><a href="#src-g2">[2]</a></sup> So a link that returns "not found" right after a push is not automatically a broken link; give it time and reload. Whether the site is genuinely live is the subject of lesson 6.6, and the build step that usually sits in front of Pages is lesson 6.2.</p>
+
+<div class="agent-tabs">
+  <div role="tablist" aria-label="Agent">
+    <button role="tab" data-tab="claude" aria-selected="true">Claude Code</button>
+    <button role="tab" data-tab="codex" aria-selected="false">Codex</button>
+    <button role="tab" data-tab="omp" aria-selected="false">omp</button>
+  </div>
+  <div role="tabpanel" data-panel="claude">
+    <p>Start it with <code>claude</code> inside your project folder, then paste the request from step 3 as a normal message. Approvals stay on, so you see each edit before it happens; lesson 0.6 explains the modes and how to keep them.<sup class="cite"><a href="#src-a1">[5]</a></sup></p>
+  </div>
+  <div role="tabpanel" data-panel="codex" hidden>
+    <p>Start it with <code>codex</code> inside your project folder. It can <q>inspect code, make changes, run commands, and automate repeatable work without leaving your terminal</q>, which covers both the search and the rewrite.<sup class="cite"><a href="#src-b1">[6]</a></sup> Keep the approval prompts as they are; lesson 0.6 covers them.</p>
+  </div>
+  <div role="tabpanel" data-panel="omp" hidden>
+    <p>Start it with <code>omp</code> inside your project folder. Its documentation comes only from its own authors, so treat anything surprising there as worth double-checking; the prompts in this lesson work the same way in all three agents.<sup class="cite"><a href="#src-c1">[7]</a></sup></p>
+  </div>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your project site is published at <code>https://YOUR_USERNAME.github.io/my-app/</code>. Which address serves the file <code>about/contact.html</code>?</p>
+  <button class="opt" type="button">https://YOUR_USERNAME.github.io/my-app/about/contact.html</button>
+  <button class="opt" type="button">https://YOUR_USERNAME.github.io/about/contact.html</button>
+  <button class="opt" type="button">https://YOUR_USERNAME.github.io/contact/about.html</button>
+  <button class="opt" type="button">https://YOUR_USERNAME.github.io/my-app/contact/about.html</button>
+  <div class="why"><p>Pages keeps the folder structure and adds the repository name once, after the domain. The other three either drop the subpath or reorder the folders.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">A page at <code>…/my-app/pages/contact.html</code> contains <code>&lt;link href="style.css"&gt;</code>. Where is <code>style.css</code> looked for?</p>
+  <button class="opt" type="button">At the root of the entire github.io domain here.</button>
+  <button class="opt" type="button">Inside a folder named after the page file itself.</button>
+  <button class="opt" type="button">In the same pages folder as the asking page.</button>
+  <button class="opt" type="button">In the my-app folder, one whole level above it.</button>
+  <div class="why"><p>A relative link with no leading slash is completed from the page's own address, so it resolves next to <code>contact.html</code>. A leading slash would jump to the domain root and lose the repository name.</p></div>
+</div>
+<div class="quiz" data-correct="1">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Which link keeps working after the same site is served from a different subpath or a custom domain?</p>
+  <button class="opt" type="button">A full URL that spells out the github.io host name.</button>
+  <button class="opt" type="button">A relative path written from the page's own folder.</button>
+  <button class="opt" type="button">A slash-first path anchored at the domain root.</button>
+  <button class="opt" type="button">A hard-coded address inside the shared style file.</button>
+  <div class="why"><p>Relative paths are measured from the page that contains them, so the moving prefix in front of your files does not matter. The other three bake in a location that changes.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages">What is GitHub Pages?</a> — two short sections, and the table of user versus project sites is the one worth memorising. If you publish from a branch, read <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site">Creating a GitHub Pages site</a> next for the entry-file rule.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me my site's URL shape with my actual username and repository name"</em> or <em>"Which of my links would break if I renamed the repository?"</em> Questions are the point.</p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-g1">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages">What is GitHub Pages?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-g2">GitHub, <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site">Creating a GitHub Pages site</a>, and <a href="https://docs.github.com/en/pages/quickstart">Quickstart for GitHub Pages</a>. Retrieved 2026-11-02.</li>
+  <li id="src-g3">GitHub, <a href="https://docs.github.com/en/pages/troubleshooting-404-errors-for-github-pages-sites">Troubleshooting 404 errors for GitHub Pages sites</a>. Retrieved 2026-11-02.</li>
+  <li id="src-m1">MDN Web Docs, <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_URL">What is a URL?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-a1">Anthropic, <a href="https://code.claude.com/docs/en/quickstart">Claude Code quickstart</a>. Retrieved 2026-11-02.</li>
+  <li id="src-b1">OpenAI, <a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI</a>. Retrieved 2026-11-02.</li>
+  <li id="src-c1">Stencil Labs, <a href="https://omp.sh/docs/quickstart">omp quickstart</a>. Retrieved 2026-11-02. Single-vendor source.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> read a GitHub Pages address, predict where any file will appear, and write links that keep working from a subpath.</p>
+  <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
+  <div class="pager"><span>Previous: <a href="0012-static-vs-dynamic.html">6.1 Static vs dynamic</a></span><span>Next: <a href="0014-deploy-merge-live.html">6.6 Deploy, merge, live</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linters, formatters and type checkers</title>
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 2 · Knowing what it actually did · Lesson 2.5</nav>
+<header class="lesson-head">
+  <p class="kicker">Unit 2 · Lesson 2.5</p>
+  <h1>Linters, formatters and type checkers</h1>
+  <p class="lede">A test runs your app and watches what happens. Three cheaper readers never run it at all: they read the code and complain. Knowing which one to ask for turns a vague "looks fine" into a pass or a fail.</p>
+  <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0031-test.html">2.3 What a test is</a></span><span>Win: you can name the three checks and ask for each one</span></div>
+</header>
+<main>
+
+<h2>Why this matters for shipping your app</h2>
+<p>An agent can write more code in ten minutes than you can read in an evening. You will not catch its mistakes by staring at files you did not write. What you can do is ask for checks that read the code for you, quickly, in the same way every time.</p>
+<p>These checks also give the agent something to check itself against, which is the habit from lesson <a href="0030-claims-vs-evidence.html">2.2</a>. Anthropic's guidance for Claude Code names the three commands as the first thing a project should record: <q>the exact test, typecheck, and lint commands</q><sup class="cite"><a href="#src-bp">[5]</a></sup>. This lesson explains what those words mean, because you cannot ask for a check you cannot name.</p>
+
+<h2>Three readers, three complaints</h2>
+<p>All three are <span class="term" title="A check that reads source code as text and reports problems, without running the program.">static checks</span>: they read the files, not the running app. They differ in what they look at and what they say.</p>
+<table class="ref">
+  <thead><tr><th>Check</th><th>What it reads</th><th>What it tells you</th><th>Fixes itself?</th></tr></thead>
+  <tbody>
+    <tr><td>Formatter</td><td>Spacing, quotes, line breaks</td><td>"This file is not formatted"</td><td>Yes, it rewrites the file</td></tr>
+    <tr><td>Linter</td><td>Suspicious patterns and unused names</td><td>Rule name, line, and a hint</td><td>Sometimes, for simple rules</td></tr>
+    <tr><td>Type checker</td><td>What kind of value each name holds</td><td>"This value does not fit here"</td><td>No; the fix is a decision</td></tr>
+  </tbody>
+</table>
+<p>Each one ends by reporting a result, and the result is what you act on. When there is a problem these tools finish with a <span class="term" title="A status number a program returns to the shell. Zero means success; any other number means something went wrong.">non-zero exit status</span>, which is how your agent and your terminal know the check failed.</p>
+
+<h2>The formatter: one style, no arguments</h2>
+<p>A formatter chooses how code looks and applies that choice everywhere. Prettier, a widely used one, describes itself as <q>an opinionated code formatter</q> and says that <q>It removes all original styling and ensures that all outputted code conforms to a consistent style.</q><sup class="cite"><a href="#src-prettier">[4]</a></sup> Deno's built-in formatter works the same way: it <q>auto-formats your code to a consistent style.</q><sup class="cite"><a href="#src-fmt">[2]</a></sup></p>
+<p>Two consequences matter to you. First, formatting is about appearance, not correctness: the same program, printed differently. Second, there is nothing to debate. If your project has a formatter, run it and accept the result. Arguing about indentation wastes the one resource you cannot get back.</p>
+<p>Formatters also have a checking mode. With Deno, <code>deno fmt --check</code> will <q>verify files are formatted without modifying them</q>, and it <q>exits with a non-zero status code if any files are unformatted.</q><sup class="cite"><a href="#src-fmt">[2]</a></sup> That mode is what you want in an automated check, because it cannot quietly change your files while reporting success.</p>
+
+<h2>The linter: a second reader looking for trouble</h2>
+<p>A <span class="term" title="A tool that reads code and flags patterns that often indicate a mistake, plus style rules a project has agreed on.">linter</span> does not reformat anything. It scans for patterns that tend to go with bugs. Deno's documentation states the job plainly: the linter <q>analyzes your code for potential errors, bugs, and stylistic issues.</q><sup class="cite"><a href="#src-lint">[1]</a></sup></p>
+<p>Notice the word <em>potential</em>. A linter is a set of rules written by people, and rules can be wrong for your situation. An unused variable is usually a leftover; sometimes it is deliberate. That is why linters let a project switch rules on and off, and why a silenced rule should carry a written reason. Lesson <a href="0039-checker-can-be-wrong.html">2.11</a> takes up what to do when a check is mistaken; for now, remember that "the linter is happy" is evidence about the rules, not a proof of quality.</p>
+<p>The report names a rule, a line, and often a hint. Like the other two, it fails the run with a non-zero status: Deno's linter <q>exits with a non-zero status code when it finds violations.</q><sup class="cite"><a href="#src-lint">[1]</a></sup></p>
+
+<div class="recall">
+  <span class="label">Recall before you read on</span>
+  <p>Without scrolling up: what does a formatter change, and what does a linter report that a formatter never would? Write it in your own words.</p>
+  <textarea aria-label="Your answer"></textarea>
+  <button class="btn reveal" type="button">Check my answer</button>
+  <div class="answer"><p>A formatter changes only appearance: indentation, quotes, line breaks, all toward one consistent style. It never judges whether the code is right. A linter reports suspicious patterns and rule violations, such as an unused variable, with a rule name and a line number, and it leaves the text alone.</p></div>
+</div>
+
+<h2>The type checker: catching a whole class of mistakes</h2>
+<p>A <span class="term" title="The kind of value a name may hold, such as a number, a piece of text, or a list.">type</span> is the kind of value something holds: a number, a piece of text, a list. A <span class="term" title="A tool that reads the code and checks that every value is used as the kind it claims to be, without running the program.">type checker</span> follows values through your functions and asks whether each one fits where it lands.</p>
+<p>Deno's checker <q>type-checks your TypeScript (or JavaScript) code without running it</q>, and it <q>exits with a non-zero status code if there are type errors</q><sup class="cite"><a href="#src-check">[3]</a></sup>. Here is a real run, in a scratch folder, on a two-function file where one call passes a number to a function that expects text:</p>
+<pre><code>$ deno check greet.ts
+Check greet.ts
+TS2345 [ERROR]: Argument of type 'number' is not assignable
+to parameter of type 'string'.
+const message = greet(7);
+                      ^
+error: Type checking failed.</code></pre>
+<p>Nothing was executed. The tool followed the value <code>7</code> into <code>greet</code>, compared it with the declared kind of the parameter, and refused. That is why type errors are worth taking seriously: in a language without types, the same mistake survives until a person clicks the wrong button on the live site.</p>
+<p>The same scratch file also shows the split between the checks. Its linter reported one problem, an unused variable, at line 2. Its formatter reported that the file needed indentation and semicolons, then fixed exactly that. And the type error stayed, because no formatter or linter rule can decide what you meant to pass. Three tools, three different sentences about one small file.</p>
+
+<h2>A real pattern: the strictness loop</h2>
+<div class="vignette">
+  <span class="label">A real pattern, anonymized</span>
+  <p>A user asked an agent to apply two patches, get the project's tests passing, and then tighten the lint rules <em>until nothing was left</em>. The tests passed. The formatter passed. Then the agent went through the relaxed rules one at a time, counted how many complaints each one produced, fixed what it could, and kept a written reason only where a rule truly did not fit the code. The final report listed one remaining exception instead of the nineteen the project had started with.</p>
+  <p>The useful part was not the clean result. It was the method: one rule at a time, a count before and after, and a reason attached to every silence. A later request for "maximum strictness" produced warnings about diminishing returns, which is exactly what an honest checker looks like when you push it past usefulness.</p>
+</div>
+<p>That pattern is worth copying when you talk to your agent: name the check, ask for the count, and ask which rules were switched off and why. A linter report that is clean because forty rules were disabled is a different fact from a clean report on the rules you chose.</p>
+
+<h2>What the three checks cannot tell you</h2>
+<p>None of these tools opened your app. They never loaded the page, clicked the button, or logged in. So a project can pass all three and still be broken in the way a visitor notices first.</p>
+<div class="compare">
+  <div class="bad">
+    <span class="label">What green checks mean</span>
+    <p>The code is consistently printed, no chosen rule objects, and every value fits the kinds you declared.</p>
+    <p>They say nothing about whether the page loads, the layout holds, or the form submits.</p>
+  </div>
+  <div class="good">
+    <span class="label">What you still have to do</span>
+    <p>Start the app, open it, and use it as a visitor would. That is the loop from <a href="0029-run-yourself.html">2.1</a> and the real-browser check in <a href="0035-real-vs-simulated.html">2.7</a>.</p>
+    <p>Tests and these checks narrow the search. They do not replace looking.</p>
+  </div>
+</div>
+<p>This is the same boundary as in lesson <a href="0031-test.html">2.3</a>, one step earlier. A test executes code and asserts a result. A static check only reasons about text. Both produce evidence; neither produces a working app.</p>
+
+<h2>Read the exit status, not the adjectives</h2>
+<p>When you ask an agent to run checks, ask for the command and its output. Anthropic's page makes the same point about a check in general: <q>A linter</q> is one of the things an agent can run that <q>comes back pass or fail</q><sup class="cite"><a href="#src-bp">[5]</a></sup>, and the printed output is what tells you which happened.</p>
+<div class="callout">
+  <span class="label">The request that works</span>
+  <p>"Run the formatter check, the linter, and the type checker. Paste the exact command and its full output for each, and tell me the exit status. If anything is silenced with a rule exception, list it and say why."</p>
+</div>
+<p>Two details make that request strong. It asks for the command, so you can run the same thing yourself later. And it asks about exceptions, because the cheapest way to make a check pass is to switch it off. You do not need to read every line of output; you need to see that the command ran and what it returned.</p>
+
+<div class="doit">
+  <span class="label">Do it in your own project</span>
+  <ol>
+    <li><label><input type="checkbox"> Open your agent in your practice project, with approval prompts on.</label></li>
+    <li><label><input type="checkbox"> Paste: <em>"Does this project have a formatter, a linter, and a type checker? Find the exact commands from the project files. Do not install anything yet; just report the commands and what each one covers."</em></label></li>
+    <li><label><input type="checkbox"> Ask it to run each check in its checking mode, and paste the command and output. Approve the read-only runs.</label></li>
+    <li><label><input type="checkbox"> Pick one complaint, ask for the smallest fix, then run the same check again and compare the count.</label></li>
+  </ol>
+  <div class="expect"><p>You should see three commands, or an honest "this project has no linter or type checker yet". A check that reports nothing still prints something, and its exit status is zero; a failing check prints the rule or error and returns a non-zero status. If the agent reports "clean" with no command and no output, ask again: you have a claim, not evidence. If a check does not exist, that is a normal starting point, and lesson <a href="0034-one-command-gate.html">2.6</a> shows how to put the ones you want into one command.</p></div>
+  <p class="progress"></p>
+</div>
+
+<h2>Check yourself</h2>
+<div class="quiz" data-correct="0">
+  <span class="label">Question 1 of 3</span>
+  <p class="q">Your page loads, but a name is passed where a number belongs. Which check is built to catch that before you open the browser?</p>
+  <button class="opt" type="button">The type checker, which follows each value into its use.</button>
+  <button class="opt" type="button">The formatter, which reprints each line to one standard.</button>
+  <button class="opt" type="button">The linter, which scans the text for unused names.</button>
+  <button class="opt" type="button">The test runner, which executes every path in order.</button>
+  <div class="why"><p>Types describe the kind of value each name holds, so a mismatch between a call and a function's declared parameter is exactly what a type checker reports. Formatters change appearance; linters flag patterns; tests only catch what they execute.</p></div>
+</div>
+<div class="quiz" data-correct="2">
+  <span class="label">Question 2 of 3</span>
+  <p class="q">The formatter reports nothing, the linter is clean, and the page's main button still does nothing. What is the best explanation?</p>
+  <button class="opt" type="button">The rules were too strict for a project of this size.</button>
+  <button class="opt" type="button">The agent must have skipped the checks and then lied.</button>
+  <button class="opt" type="button">These checks read code and never ran the page at all.</button>
+  <button class="opt" type="button">The type checker automatically repaired the broken button.</button>
+  <div class="why"><p>All three are static: they reason about source text without starting the app. A dead button is a behaviour problem, so it needs a test or a real click to show up.</p></div>
+</div>
+<div class="quiz" data-correct="3">
+  <span class="label">Question 3 of 3</span>
+  <p class="q">Your agent writes: "Lint is clean." What should you ask for next?</p>
+  <button class="opt" type="button">A short summary of which style choices the project uses.</button>
+  <button class="opt" type="button">A promise that no rules were disabled during the run.</button>
+  <button class="opt" type="button">The name of the linter and its version number only.</button>
+  <button class="opt" type="button">The exact command, its output, and its exit status.</button>
+  <div class="why"><p>A clean report is a claim until you can see the command that produced it, what it printed, and what it returned. That is the evidence habit from lesson 2.2, applied to checks.</p></div>
+</div>
+<p class="quiz-score" aria-live="polite" style="font:0.85rem system-ui,sans-serif;color:var(--muted)"></p>
+
+<div class="source-box">
+  <span class="label">Read this next (primary source)</span>
+  <p><a href="https://docs.deno.com/runtime/reference/cli/check/">deno check</a> — Deno's three CLI pages (check, lint, fmt) are short and concrete, and each shows a command with its output. They are written for one runtime, but the three jobs are the same in every project you will meet. Read the "Basic usage" and "Using in CI" sections; the flag tables can wait for lesson 2.6.</p>
+</div>
+
+<div class="ask">
+  <span class="label">Ask your teacher</span>
+  <p>Anything unclear? Ask the agent that gave you this course. Try: <em>"Show me a type error in my own project and explain it in plain words"</em> or <em>"Which lint rules does this project turn off, and why might that be?"</em></p>
+</div>
+
+<h2>Sources</h2>
+<ol class="cite" style="font:0.8rem/1.5 system-ui,sans-serif">
+  <li id="src-lint">Deno, <a href="https://docs.deno.com/runtime/reference/cli/lint/">deno lint</a>. Retrieved 2026-11-02.</li>
+  <li id="src-fmt">Deno, <a href="https://docs.deno.com/runtime/reference/cli/fmt/">deno fmt</a>. Retrieved 2026-11-02.</li>
+  <li id="src-check">Deno, <a href="https://docs.deno.com/runtime/reference/cli/check/">deno check</a>. Retrieved 2026-11-02.</li>
+  <li id="src-prettier">Prettier, <a href="https://prettier.io/docs/">What is Prettier?</a>. Retrieved 2026-11-02.</li>
+  <li id="src-bp">Anthropic, <a href="https://code.claude.com/docs/en/best-practices">Best practices for Claude Code</a>. Retrieved 2026-11-02.</li>
+</ol>
+</main>
+<footer class="lesson-foot">
+  <p><strong>You can now:</strong> tell a formatter from a linter and a type checker, ask for each one by name, and read a check result as evidence rather than a slogan.</p>
+  <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure modes</a></p>
+  <div class="pager"><span>Next: <a href="0034-one-command-gate.html">2.6 One command that runs every check</a></span></div>
+</footer>
+<script src="../assets/lesson.js"></script>
+</body>
+</html>
