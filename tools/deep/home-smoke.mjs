@@ -193,6 +193,19 @@ const repeat = await page.evaluate(async () => {
     dur: getComputedStyle(d, '::details-content').transitionDuration };
 });
 check('repeated toggles leave no motion class or running animation', !repeat.cls && repeat.anims === 0 && repeat.dur === '0s', JSON.stringify(repeat));
+const retoggle = await page.evaluate(async () => {
+  const d = document.querySelector('#unit-9 details');
+  const size = () => parseFloat(getComputedStyle(d, '::details-content').blockSize);
+  const summary = d.querySelector('summary');
+  summary.click();
+  await new Promise((r) => setTimeout(r, 300));
+  summary.click();
+  await new Promise((r) => setTimeout(r, 120));
+  const mid = { cls: d.classList.contains('animatable'), size: size() };
+  await new Promise((r) => setTimeout(r, 500));
+  return { mid, end: { cls: d.classList.contains('animatable'), anims: document.getAnimations().length } };
+});
+check('re-toggling mid-run keeps the class past the first 400 ms deadline', retoggle.mid.cls && retoggle.mid.size > 1 && !retoggle.end.cls && retoggle.end.anims === 0, JSON.stringify(retoggle));
 
 // after-collapse search honesty
 await page.goto(URL);

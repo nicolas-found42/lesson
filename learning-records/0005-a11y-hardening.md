@@ -21,7 +21,7 @@ The unit map (0003) and the one motion effect (0004) changed the page's shape. T
 
 ## Verification
 
-`tools/deep/home-smoke.mjs` (57 assertions, `PASS 57 / FAIL 0`) covers the skip-link focus target, keyboard-reached card ring, the star `aria-pressed` transitions, the expand button's `aria-controls` and absent `aria-pressed`, the status sentence in every state, including a hand-closed matching row, the randomised consistency walk, and zero console errors. W3C Nu reports no HTML or inline-CSS errors; every tab set has a matching panel set. Contrast was computed in-page with relative luminance and alpha compositing across light/dark and four states (default, unit query, star filter, all expanded): 21–22 colour-size pairs per state, zero AA failures across eight combinations (`tools/deep/home-a11y-audit.mjs`).
+`tools/deep/home-smoke.mjs` (58 assertions, `PASS 58 / FAIL 0`) covers the skip-link focus target, keyboard-reached card ring, the star `aria-pressed` transitions, the expand button's `aria-controls` and absent `aria-pressed`, the status sentence in every state, including a hand-closed matching row, the randomised consistency walk, and zero console errors. W3C Nu reports no HTML or inline-CSS errors; every tab set has a matching panel set. Contrast was computed in-page with relative luminance and alpha compositing across light/dark and four states (default, unit query, star filter, all expanded): 21–22 colour-size pairs per state, zero AA failures across eight combinations (`tools/deep/home-a11y-audit.mjs`).
 
 ## Claim ledger
 

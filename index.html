@@ -1387,9 +1387,14 @@
     details.classList.add("animatable");
     // The per-row transitionend listener (bound once, in the units map) clears
     // the class when the height run ends; this timer is the fallback for a row
-    // whose transition never starts. Removing an already-removed class is a
-    // no-op, so repeated clicks cannot leave a stale timer in effect.
-    window.setTimeout(function () { details.classList.remove("animatable"); }, MOTION_MS);
+    // whose transition never starts. Re-toggling mid-run must move the deadline,
+    // not add a second one: an old 400 ms timer would fire inside the new
+    // 220 ms run and drop the class early, snapping the height to its end.
+    if (details.motionTimer) window.clearTimeout(details.motionTimer);
+    details.motionTimer = window.setTimeout(function () {
+      details.motionTimer = 0;
+      details.classList.remove("animatable");
+    }, MOTION_MS);
   }
 
   document.addEventListener("click", function (event) {

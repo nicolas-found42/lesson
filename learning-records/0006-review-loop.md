@@ -22,7 +22,7 @@ Sixteen parameters, scored with a TypeSafe Jev `noul` (a calibrated probability 
 | 11 | Toggle semantics: `aria-pressed` / `aria-controls` | 0.96 | 0.95 | DOM attributes |
 | 12 | No third-party code; small payload | 0.96 | 0.96 | byte + gzip sizes |
 | 13 | Zero console errors across interactions | 0.94 | 0.94 | console listener across the smoke run |
-| 14 | Notes match shipped behaviour and measurements | see amendment | — | `jev_verify` 10/11 (the 11th re-verified 3/3 from verbatim text), `jev_audit` 11/11 `pass`, plus execution |
+| 14 | Notes match shipped behaviour and measurements | see amendment | — | `jev_verify` 10/11 (the 11th re-verified 3/3 from verbatim text), `jev_audit` 12/12 `pass`, plus execution |
 | 15 | Nu clean + tab/panel pairing | 0.93 | 0.92 | `html.mjs` |
 
 Protocol: five runs per parameter, report **min and median**. A parameter is certified when its median is ≥ 0.90; the min is published because single-shot scores move by ±0.05 on identical content.
@@ -45,7 +45,7 @@ A literally true claim — "the block-size transition is declared only under `de
 
 Diagnosis, run on the final tree: re-verifying that single claim with the note's exact sentence and the tool's verbatim output returns **verified 3/3** (1.00, 0.98, 1.00) and `jev_noul` 0.96. The contradiction does not reproduce, so it is recorded as a **paraphrase artifact of the pack, not a factual conflict** — and it stays listed as unresolved-in-origin rather than explained away: the pack that produced it is gone and no re-run of that exact pack reproduces it. The standing lesson is mechanical: verification evidence must quote the note and the tool output verbatim, never a summary of either.
 
-`jev_audit` on the **final** notes (0003–0006, 24,978 chars) returns 11 records, **0 flagged**, `action: pass`, max `p_wrong` 0.53 (the card-count phrasing "124 cards (116 lessons + 8 reference)"); the earlier 7/7 run predated the number edits and was superseded, not cited. `tools/deep/home-smoke.mjs` (57 assertions, including eight rapid toggles of one row) and `tools/deep/home-a11y-audit.mjs` are the primary authority for the measurement side.
+`jev_audit` on the **final** notes (0003–0006) returns 12 records, **0 flagged**, `action: pass`, max `p_wrong` 0.38 (the assertion-count phrasing); the earlier 7/7 and 11-record runs predated the number edits and were superseded, not cited. `tools/deep/home-smoke.mjs` (58 assertions, including eight rapid toggles and one mid-run re-toggle) and `tools/deep/home-a11y-audit.mjs` are the primary authority for the measurement side.
 
 This is a rubric correction, not a relaxation: the check moved from a re-rollable probability to an exact verdict plus a reproducible command.
 
@@ -57,6 +57,7 @@ The loop's value was in the misses, not the scores:
 - **`transitionend` bubbled from the chevron.** The `::before` rotation fires on a descendant at ~150 ms and reached the listener first, dropping `.animatable` mid-way through the 220 ms height run — a visible snap. The listener now requires `event.target === details && propertyName === "block-size"`; measured 607.234 px at 170 ms with the class still present.
 - **A hand-closed matching row did not repaint the status.** `update()` only runs on input, so the count kept claiming 12 matches while three of them sat behind a closed row. Native `toggle` events now repaint the sentence, guarded against the eleven programmatic rewrites inside `update()`.
 - **The motion gate was a timed suppression.** `body.is-bulk` plus a forced reflow worked but was a race waiting to happen; it is now a gesture class (`.animatable`) set on the clicked `<details>` and dropped by the disclosure's own `transitionend`, with a 400 ms fallback.
+- **The 400 ms fallback timer stacked.** A click at t=0 and a re-toggle at t=300 left the first timer to fire at t=400, inside the second 220 ms run, dropping `.animatable` and snapping the height; the `transitionend` guard cannot help once the class is gone. The handle is now kept on the row and cleared on each arm. Proven by running the same probe against `HEAD:index.html`: class present at 420 ms on the fixed build, absent on the old one.
 - **`armMotion` leaked a listener per click.** Each summary click added a fresh bubbling `transitionend` handler to its row and never removed it. The handler is now bound once per row at init (82 lines earlier, where units are built), so eight rapid toggles leave one listener instead of eight; `armMotion` only adds the class and the fallback timer.
 - **Two doc claims were unprovable** (a `2,403`-box sweep from an ad-hoc script, and Nu findings attributed to the smoke run). Both were replaced by tracked tools and separated provenance.
 
