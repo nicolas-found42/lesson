@@ -53,7 +53,7 @@
 <h2>The type checker: catching a whole class of mistakes</h2>
 <p>A <span class="term" title="The kind of value a name may hold, such as a number, a piece of text, or a list.">type</span> is the kind of value something holds: a number, a piece of text, a list. A <span class="term" title="A tool that reads the code and checks that every value is used as the kind it claims to be, without running the program.">type checker</span> follows values through your functions and asks whether each one fits where it lands.</p>
 <p>Deno's checker <q>type-checks your TypeScript (or JavaScript) code without running it</q>, and it <q>exits with a non-zero status code if there are type errors</q><sup class="cite"><a href="#src-check">[5]</a></sup>. Here is a real run, in a scratch folder, on a small file where one call passes a number to a function that expects text:</p>
-<pre><code>$ deno check greet.ts
+<pre tabindex="0"><code>$ deno check greet.ts
 Check greet.ts
 TS2345 [ERROR]: Argument of type 'number' is not assignable to parameter of type 'string'.
 const message = greet(7);

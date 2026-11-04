@@ -7,6 +7,20 @@
  *          Keep every option the same length; vary which index is correct between questions.
  */
 (function () {
+  // Carry the reader's motion choice from the home page into reading pages.
+  try {
+    if (localStorage.getItem("lesson.motion") === "off") document.documentElement.dataset.motion = "off";
+  } catch (error) { /* Reading and quizzes do not require storage. */ }
+  // WebKit does not consistently scroll a focused pre with arrow keys.
+  document.querySelectorAll('pre[tabindex="0"]').forEach(function (block) {
+    block.addEventListener("keydown", function (event) {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
+          (event.key !== "ArrowLeft" && event.key !== "ArrowRight") ||
+          block.scrollWidth <= block.clientWidth) return;
+      block.scrollLeft += event.key === "ArrowRight" ? 40 : -40;
+      event.preventDefault();
+    });
+  });
   var KEY = "lesson.agent";
   function store(get, v) {
     try { return get ? localStorage.getItem(KEY) : localStorage.setItem(KEY, v); } catch (e) { return null; }

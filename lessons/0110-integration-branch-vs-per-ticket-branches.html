@@ -67,21 +67,21 @@
   <span class="label">Do it: build the integration layout</span>
   <ol>
     <li>Make a scratch repo and give it a starting file:
-      <pre><code>mkdir branch-practice &amp;&amp; cd branch-practice
+      <pre tabindex="0"><code>mkdir branch-practice &amp;&amp; cd branch-practice
 git init -b main
 echo "&lt;h1&gt;my app&lt;/h1&gt;" &gt; index.html
 git add . &amp;&amp; git commit -m "first page"</code></pre></li>
     <li>Create the holding branch, then go back to main for ticket work:
-      <pre><code>git switch -c integration
+      <pre tabindex="0"><code>git switch -c integration
 git switch main</code></pre></li>
     <li>Build "ticket A" on its own branch and merge it into integration:
-      <pre><code>git switch -c ticket-search
+      <pre tabindex="0"><code>git switch -c ticket-search
 echo "&lt;p&gt;search&lt;/p&gt;" &gt; search.html
 git add . &amp;&amp; git commit -m "add search page"
 git switch integration
 git merge ticket-search</code></pre></li>
     <li>Build "ticket B" the same way, from main, into integration:
-      <pre><code>git switch main
+      <pre tabindex="0"><code>git switch main
 git switch -c ticket-dark
 echo "body { background: #222; }" &gt; dark.css
 git add . &amp;&amp; git commit -m "add dark styles"

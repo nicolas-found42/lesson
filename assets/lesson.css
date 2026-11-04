@@ -1,20 +1,20 @@
-/* Shared lesson stylesheet. Tufte-inspired: serif text, wide margin, sidenotes, quiet colour. */
+/* Shared reading layout: serif prose, wide margins, and colorful controls. */
 :root {
-  --bg: #fffff8; --fg: #1d1d1b; --muted: #6b6a63; --rule: #d9d6c6;
-  --accent: #8a2c0d; --accent-soft: #f3e6d9; --ok: #2f6b3a; --ok-bg: #e4f0e2;
-  --bad: #a1261c; --bad-bg: #f6e1de; --code-bg: #f4f1e4; --card: #fbf8ea;
+  --bg: #f7f8f2; --fg: #19284a; --muted: #526078; --rule: #cbd1de;
+  --accent: #5141ca; --accent-soft: #eeebff; --ok: #2f6b3a; --ok-bg: #e4f0e2;
+  --bad: #a1261c; --bad-bg: #f6e1de; --code-bg: #eeedf5; --card: #ffffff;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #17161a; --fg: #ece9df; --muted: #a09e93; --rule: #3a383f;
-    --accent: #e8a27a; --accent-soft: #2c2420; --ok: #8fd19a; --ok-bg: #1f2d22;
-    --bad: #f0958c; --bad-bg: #341e1c; --code-bg: #222127; --card: #1e1d22;
+    --bg: #121c31; --fg: #eef0ff; --muted: #bec9df; --rule: #4b5d80;
+    --accent: #bfb1ff; --accent-soft: #282a50; --ok: #8fd19a; --ok-bg: #1f2d22;
+    --bad: #f0958c; --bad-bg: #341e1c; --code-bg: #222b41; --card: #1b2942;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #17161a; --fg: #ece9df; --muted: #a09e93; --rule: #3a383f;
-  --accent: #e8a27a; --accent-soft: #2c2420; --ok: #8fd19a; --ok-bg: #1f2d22;
-  --bad: #f0958c; --bad-bg: #341e1c; --code-bg: #222127; --card: #1e1d22;
+  --bg: #121c31; --fg: #eef0ff; --muted: #bec9df; --rule: #4b5d80;
+  --accent: #bfb1ff; --accent-soft: #282a50; --ok: #8fd19a; --ok-bg: #1f2d22;
+  --bad: #f0958c; --bad-bg: #341e1c; --code-bg: #222b41; --card: #1b2942;
 }
 * { box-sizing: border-box; }
 html { font-size: 17px; -webkit-text-size-adjust: 100%; }
@@ -140,3 +140,20 @@ table.ref th { color: var(--muted); font-weight: 600; }
 .warn { background: var(--bad-bg); border-left: 3px solid var(--bad); padding: 0.7rem 1rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
 .warn .label { font: 700 0.72rem/1 system-ui, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bad); display: block; margin-bottom: 0.4rem; }
 .warn > :last-child { margin-bottom: 0; }
+/* Reading pages share the build lab's visual cues; prose keeps its measure. */
+header.lesson-head h1, h2, h3 {
+  font-family: ui-rounded, "Avenir Next", "Segoe UI", system-ui, sans-serif;
+}
+header.lesson-head h1 { font-weight: 800; letter-spacing: -0.045em; }
+.agent-tabs, .recall, .quiz, .doit, .order, .compare > div { border-radius: 12px; }
+.agent-tabs [role="tab"], .btn, .quiz button.opt, .prompt .copy { min-height: 44px; }
+.btn, .quiz button.opt, .order button.item { border-radius: 8px; }
+:where(a, button, input, textarea, pre[tabindex]):focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"]) .btn,
+  :root:not([data-motion="off"]) .quiz button.opt,
+  :root:not([data-motion="off"]) .order button.item { transition: transform 140ms ease; }
+  :root:not([data-motion="off"]) .btn:active,
+  :root:not([data-motion="off"]) .quiz button.opt:active,
+  :root:not([data-motion="off"]) .order button.item:active { transform: scale(0.98); }
+}
