@@ -4,6 +4,8 @@
   "private": true,
   "description": "Beginner curriculum for building apps with a coding agent. Local dev tooling only; the published site is plain HTML/CSS/JS.",
   "scripts": {
+    "test:ui:audit": "node tools/deep/ui-audit.mjs",
+    "test:ui:lab": "node tools/deep/home-lab-smoke.mjs",
     "layers": "python3 -I tools/run_layers.py",
     "layers:staged": "python3 -I tools/run_layers.py --staged",
     "gate": "python3 -I tools/check_lessons.py",
@@ -12,6 +14,7 @@
     "deep:claims": "python3 tools/deep/claims.py"
   },
   "devDependencies": {
+    "axe-core": "4.14.0",
     "playwright": "^1.64.1"
   }
 }

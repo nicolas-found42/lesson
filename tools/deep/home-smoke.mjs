@@ -233,6 +233,26 @@ s = await state();
 check('rail chip clears the search query', (await page.inputValue('#lesson-search')) === '', await page.inputValue('#lesson-search'));
 check('rail chip opens its unit after a filter', s.open.includes('unit-6'), JSON.stringify(s.open));
 
+// a hand-toggled row is the new default: re-derived layouts must keep it
+await page.goto(URL);
+await page.waitForTimeout(200);
+await page.click('#unit-0 summary');
+await page.waitForTimeout(250);
+await page.fill('#lesson-search', 'git');
+await page.waitForTimeout(120);
+await page.fill('#lesson-search', '');
+await page.waitForTimeout(120);
+s = await state();
+check('manual collapse survives a query and clear', !s.open.includes('unit-0'), JSON.stringify(s.open));
+await page.click('.unit-rail a[href="#unit-5"]');
+await page.waitForTimeout(250);
+s = await state();
+check('manual collapse survives a rail jump', !s.open.includes('unit-0') && s.open.includes('unit-5'), JSON.stringify(s.open));
+await page.evaluate(() => { location.hash = '#unit-1'; });
+await page.waitForTimeout(250);
+s = await state();
+check('manual collapse survives a hash change', !s.open.includes('unit-0') && s.open.includes('unit-1'), JSON.stringify(s.open));
+
 // expand toggle is an action, not a pressed state
 check('expand toggle carries no aria-pressed', (await page.getAttribute('#expand-toggle', 'aria-pressed')) === null);
 
@@ -337,6 +357,19 @@ check('unit summary is focusable', summaryFocusable);
 await page.keyboard.press('Enter');
 await page.waitForTimeout(150);
 check('keyboard Enter toggles the unit', await page.evaluate(() => document.querySelector('#unit-1 details').open));
+
+// page-level landmark and card-copy hygiene
+const land = await page.evaluate(() => ({
+  footerInMain: !!document.querySelector('main footer'),
+  pageFooter: !!document.querySelector('body > footer.lesson-foot'),
+}));
+check('footer sits outside main as the page contentinfo', !land.footerInMain && land.pageFooter, JSON.stringify(land));
+const copy = await page.evaluate(() =>
+  [...document.querySelectorAll('.lesson-card, .unit-title, .unit-blurb')].map((el) => el.textContent));
+check('no double-escaped entities in card copy', copy.every((t) => !/[&](amp|lt|gt|quot);/.test(t)),
+  copy.filter((t) => /[&](amp|lt|gt|quot);/.test(t)).slice(0, 2).join(' | '));
+check('no stray space before a sentence period in card copy', copy.every((t) => !/ \.(?=\s|$)/.test(t)),
+  copy.filter((t) => / \.(?=\s|$)/.test(t)).slice(0, 2).join(' | '));
 
 // randomised consistency walk: the announced count must always equal what is on screen
 await page.goto(URL);
