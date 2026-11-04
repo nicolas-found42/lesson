@@ -1,0 +1,408 @@
+/* Homepage catalog and build lab: one cascade, finite motion. */
+/* Homepage browsing layer: a compact card grid inside one collapsible
+     disclosure per unit, with a live filter over every card. */
+  /* The shared column is a 40rem measure shifted left of centre. The home
+     page's card grid needs more room, so every band of the page widens and
+     centres together; only running prose keeps a readable measure. */
+  @media (min-width: 960px) {
+    header.lesson-head .lede, .hero-box p { max-width: 44rem; }
+  }
+  .hero-box {
+    border-left: 3px solid var(--accent);
+  }
+  .hero-box p:last-child { margin: 0; }
+  .cta-row { display: flex; flex-wrap: wrap; margin: 0.9rem 0 0; }
+  .cta {
+    font: 600 0.8rem/1 system-ui, sans-serif;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .browse {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--bg);
+    border-bottom: 1px solid var(--rule);
+  }
+  .browse-row { display: flex; flex-wrap: wrap; align-items: center; }
+  .browse-label {
+    font: 600 0.7rem system-ui, sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  #lesson-search {
+    flex: 1 1 11rem;
+    min-width: 0;
+    font: 0.9rem/1.3 system-ui, sans-serif;
+    color: var(--fg);
+    background: var(--card);
+    border: 1px solid var(--rule);
+  }
+  #lesson-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .browse-btn {
+    font: 600 0.75rem/1 system-ui, sans-serif;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--rule);
+    color: var(--fg);
+    cursor: pointer;
+  }
+  .browse-btn:hover { border-color: var(--accent); color: var(--accent); }
+  /* The star filter is a real on/off state (aria-pressed); the expand toggle
+     is an action whose label carries the state, so it styles a class. */
+  .browse-btn[aria-pressed="true"], .browse-btn.is-open {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .browse-count {
+    font: 0.78rem/1.4 system-ui, sans-serif;
+    color: var(--muted);
+    margin: 0.4rem 0 0;
+  }
+  .unit-rail { display: flex; flex-wrap: wrap; }
+  .unit-rail a {
+    font: 0.75rem/1 system-ui, sans-serif;
+    color: var(--fg);
+    border: 1px solid var(--rule);
+    text-decoration: none;
+  }
+  .unit-rail a:hover, .unit-rail a:focus-visible { border-color: var(--accent); color: var(--accent); }
+  .unit-rail .rail-num { font-weight: 700; margin-right: 0.15rem; color: var(--accent); }
+  .unit-section { margin-top: 0; }
+  /* Sections carry tabindex="-1" so a rail chip or a #unit-N deep link moves
+     keyboard focus to the unit instead of only scrolling. The ring belongs on
+     the summary the user reaches next, not on the whole region. */
+  .unit-section:focus { outline: none; }
+  .unit { border-top: 1px solid var(--rule); }
+  .unit > summary {
+    display: grid;
+    grid-template-columns: 0.9rem 1fr auto;
+    grid-template-areas: "chev title count" ". blurb blurb";
+    align-items: baseline;
+    padding: 0.8rem 0.2rem 0.8rem 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .unit > summary::-webkit-details-marker { display: none; }
+  .unit > summary::before {
+    grid-area: chev;
+    content: "▸";
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  /* The disclosure chevron rotates only for a unit the user has
+     just clicked (.animatable, set by the script), so neither reduced motion
+     nor a filter keystroke that flips ten chevrons can rotate anything. */
+  @media (prefers-reduced-motion: no-preference) {
+    .unit.animatable > summary::before { transition: transform 0.15s ease; }
+  }
+  .unit[open] > summary::before { transform: rotate(90deg); }
+  .unit > summary:hover .unit-title { color: var(--accent); }
+  .unit > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .unit-title {
+    grid-area: title;
+    line-height: 1.4;
+    margin: 0;
+  }
+  .unit-count {
+    grid-area: count;
+    font: 600 0.7rem/1.8 system-ui, sans-serif;
+    color: var(--muted);
+    text-transform: uppercase;
+    text-align: right;
+  }
+  .unit-blurb {
+    grid-area: blurb;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+  .lesson-grid {
+    display: grid;
+    margin: 0.5rem 0 1.5rem;
+  }
+  .lesson-card {
+    border: 1px solid var(--rule);
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+  /* Under reduced motion nothing on the page transitions, not even a colour
+     fade: the hover state then arrives instantly instead. */
+  @media (prefers-reduced-motion: no-preference) {
+    .lesson-card { transition: border-color 0.15s ease; }
+  }
+  .lesson-card[hidden] { display: none; }
+  .lesson-card:hover, .lesson-card:focus-visible { border-color: var(--accent); }
+  .lesson-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  /* Disclosure height motion lives in assets/home-motion.css; build-lab
+     animation is controlled by assets/home-lab.js. */
+  .lesson-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+  }
+  .lesson-card-tag { margin-top: 0.2rem; }
+  .lesson-card-title {
+    font-weight: 600;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .lesson-card-tag {
+    font: 600 0.68rem system-ui, sans-serif;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .star-badge {
+    font-weight: bold;
+    margin-right: 0.2rem;
+  }
+  .lesson-card-lede {
+    color: var(--muted);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .no-results {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0.4rem 0 1.5rem;
+  }
+  .skip-link {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .skip-link:focus {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    clip-path: none;
+    overflow: visible;
+    padding: 0.5rem 0.8rem;
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 0 0 6px 0;
+    font: 600 0.8rem/1 system-ui, sans-serif;
+    text-decoration: none;
+    z-index: 20;
+  }
+  /* The skip link lands on <main tabindex="-1">; the region takes focus so the
+     next Tab starts inside the content, but it does not need a ring itself. */
+  main:focus, main:focus-visible { outline: none; }
+  @media (max-width: 640px) {
+    .browse { position: static; }
+  }
+  @media (max-width: 560px) {
+    .unit > summary {
+      grid-template-columns: 0.9rem 1fr;
+      grid-template-areas: "chev title" ". count" ". blurb";
+    }
+    .unit-count { text-align: left; }
+    .lede { font-size: 1.05rem; }
+  }
+
+/* Build lab: finite, reader-controlled motion; all course links stay native. */
+:root {
+  --bg: #f7f8f2; --fg: #19284a; --muted: #526078; --rule: #cbd1de;
+  --accent: #5141ca; --accent-soft: #eeebff; --card: #ffffff;
+  --lime: #edff8d; --lab-ink: #19284a; --lab-muted: #bac8e6;
+}
+body { font-family: ui-rounded, "Avenir Next", "Segoe UI", system-ui, sans-serif; }
+main, header.lesson-head, nav.crumbs, footer.lesson-foot {
+  width: min(100% - 48px, 72rem); margin-inline: auto;
+}
+.lab-nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 1.3rem; }
+.lab-nav a { text-decoration: none; color: var(--fg); }
+.lab-brand { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1.15rem; font-weight: 850; letter-spacing: -0.05em; }
+.brand-mark { display: inline-grid; place-items: center; width: 2rem; height: 2rem; background: var(--lime); border: 1.5px solid var(--lab-ink); border-radius: 50%; color: var(--lab-ink); font-size: 1.6rem; }
+.brand-dot { color: var(--accent); margin-left: -0.5rem; }
+.lab-nav-actions { display: flex; align-items: center; gap: 1rem; font-size: 0.75rem; font-weight: 700; }
+.lab-nav-actions a { display: inline-flex; align-items: center; min-height: 44px; }
+#motion-toggle { border: 1px solid var(--rule); border-radius: 999px; padding: 0.4rem 0.7rem; color: var(--fg); background: var(--card); font: inherit; min-height: 44px; cursor: pointer; }
+[hidden] { display: none !important; }
+header.lesson-head { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 2.4rem; padding: 2.4rem 0 2.8rem; border: 0; margin-bottom: 0; }
+.kicker { font-size: 0.68rem; letter-spacing: 0.1em; line-height: 1.5; }
+.hero-copy h1 { font-size: clamp(2.4rem, 4.4vw, 3.65rem); font-weight: 850; letter-spacing: -0.065em; line-height: 1.08; margin: 1rem 0 1.35rem; }
+.hero-highlight { color: var(--accent); }
+.hero-copy .lede { font-size: 1rem; line-height: 1.65; max-width: 28rem; overflow-wrap: normal; }
+.cta-row { gap: 1rem; align-items: center; margin-top: 1.4rem; }
+.cta { font-size: 0.8rem; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 1rem; border-radius: 12px; padding: 0.8rem 1rem; }
+.cta-primary { background: var(--accent); color: #fff; border: 2px solid var(--accent); box-shadow: 0 4px 0 #29215c; }
+.hero-secondary { color: var(--fg); text-underline-offset: 4px; font-size: 0.78rem; font-weight: 650; min-height: 44px; display: inline-flex; align-items: center; gap: 0.5rem; }
+.hero-copy .meta { font-size: 0.67rem; gap: 0.5rem 1rem; margin: 1.3rem 0 0; padding-bottom: 0; }
+.hero-copy .meta span::before { content: "✓ "; color: var(--accent); font-weight: 800; }
+.build-lab { position: relative; padding: 1.25rem; border-radius: 24px; background: var(--lab-ink); color: #fff; box-shadow: 8px 8px 0 #dde3ee; scroll-margin-top: 1rem; min-width: 0; }
+.lab-topline { display: flex; gap: 0.45rem; align-items: center; font: 700 0.57rem/1.5 ui-monospace, monospace; letter-spacing: 0.09em; color: var(--lab-muted); }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); }
+.demo-label { margin-left: auto; border: 1px solid #6c7a97; border-radius: 5px; padding: 0.12rem 0.35rem; letter-spacing: 0; }
+.lab-heading { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.lab-heading h2 { font-family: inherit; font-size: 1.1rem; font-weight: 750; font-style: normal; line-height: 1.3; letter-spacing: -0.03em; margin: 1rem 0 0.4rem; }
+.lab-spark { color: var(--lime); font-size: 2.5rem; line-height: 1; }
+.lab-instruction { font-size: 0.72rem; color: var(--lab-muted); margin: 0 0 1rem; }
+.lab-steps { display: flex; gap: 0.3rem; margin-bottom: 1rem; }
+.lab-steps button { flex: 1; padding: 0.4rem 0.25rem; min-height: 44px; background: #27385d; color: #fff; border: 1px solid #66769a; border-radius: 8px; font-family: inherit; font-size: 0.75rem; font-weight: 650; line-height: 1.3; cursor: pointer; }
+.lab-steps button span { display: inline-grid; place-items: center; width: 1.1rem; height: 1.1rem; border: 1px solid currentColor; border-radius: 50%; margin-right: 0.15rem; }
+.lab-steps button[aria-pressed="true"] { background: var(--lime); color: var(--lab-ink); border-color: var(--lime); }
+.lab-scene { position: relative; }
+.lab-message { padding: 0.7rem 0.8rem; background: #304368; border-radius: 12px 12px 12px 2px; min-height: 5.4rem; }
+#lab-speaker { color: var(--lime); font: 700 0.55rem/1.5 ui-monospace, monospace; letter-spacing: 0.08em; }
+.lab-message p { font-size: 0.82rem; line-height: 1.5; margin: 0.25rem 0 0; }
+.lab-workbench { display: grid; grid-template-columns: 0.7fr 1.3fr; align-items: center; gap: 0.8rem; margin: 1rem 0; }
+.bot { text-align: center; color: var(--lime); }
+.bot svg { display: block; width: 100%; height: 130px; }
+.bot > span { font: 600 0.57rem/1.4 ui-monospace, monospace; color: var(--lab-muted); }
+.mini-preview { background: #fff; color: #26324b; border: 2px solid #aebaee; border-radius: 10px; overflow: hidden; transform: rotate(3deg); }
+.preview-chrome { display: flex; justify-content: space-between; gap: 0.4rem; background: #f0edff; padding: 0.4rem; font: 0.49rem/1.5 ui-monospace, monospace; color: #564893; }
+.preview-chrome > span:first-child { color: #6556af; font-size: 0.4rem; }
+.preview-page { position: relative; text-align: center; padding: 0.8rem 0.35rem; min-height: 139px; background: #f2efff; }
+.preview-page strong { display: block; font-size: 1rem; font-weight: 900; letter-spacing: -0.04em; color: #402f86; }
+.planet { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 50%; background: #6954ce; color: var(--lime); margin: 0 auto 0.35rem; font-size: 1.6rem; box-shadow: 5px 0 0 #bba9ff; }
+.preview-detail { display: block; font-size: 0.48rem; color: #564893; }
+.preview-join { display: block; min-height: 44px; width: 100%; border: 1px solid #536b20; border-radius: 6px; background: #dfff85; color: #26324b; font-family: inherit; font-size: 0.75rem; font-weight: 800; margin: 0.5rem auto 0; padding: 0.35rem; max-width: 9rem; cursor: pointer; }
+.preview-join:disabled { cursor: default; background: #e4e7dc; border-color: #a2aa91; }
+.build-lab .preview-join:focus-visible { outline-color: #5141ca; outline-offset: -4px; }
+.preview-caption { font-size: 0.56rem; font-weight: 650; padding: 0.3rem; text-align: center; }
+.build-lab[data-step="0"] .preview-page > * { visibility: hidden; }
+.build-lab[data-step="0"] .preview-page::after { content: "Your idea starts here"; position: absolute; inset: 0.8rem; display: grid; place-items: center; border: 2px dashed #9c8bc7; border-radius: 8px; font-size: 0.7rem; font-weight: 700; color: #564893; }
+.build-lab[data-step="2"] .mini-preview { border-color: var(--lime); }
+.lab-explanation { font-size: 0.74rem; line-height: 1.5; min-height: 3.4em; margin-bottom: 0.6rem; }
+.lab-note { border-top: 1px solid #526484; padding-top: 0.7rem; margin: 0; color: var(--lab-muted); font-size: 0.61rem; line-height: 1.5; }
+.lab-fallback { font-size: 0.8rem; }
+.lab-confetti { position: absolute; inset: 0; pointer-events: none; overflow: clip; }
+.lab-confetti i { position: absolute; top: 52%; left: 62%; width: 8px; height: 12px; border-radius: 2px; background: var(--lime); }
+.lab-confetti i:nth-child(3n) { background: #ffac94; }
+.lab-confetti i:nth-child(3n + 1) { background: #aa9cff; }
+.hero-box { display: flex; align-items: center; gap: 1.2rem; background: var(--accent-soft); border: 1px solid var(--rule); border-radius: 16px; padding: 1rem 1.2rem; margin: 0 0 2.8rem; }
+.path-icon { flex: none; display: grid; place-items: center; width: 3rem; height: 3rem; background: var(--lime); color: var(--lab-ink); border: 1.5px solid var(--lab-ink); border-radius: 13px; font-size: 1.8rem; transform: rotate(-7deg); }
+.hero-box > div { flex: 1; }
+.hero-box p { font-size: 0.8rem; line-height: 1.55; max-width: 48rem; margin: 0; }
+.hero-box .path-label { font-size: 0.57rem; font-weight: 800; letter-spacing: 0.08em; margin-bottom: 0.25rem; color: var(--accent); }
+.hero-box .cta { flex: none; background: var(--card); font-size: 0.75rem; min-height: 44px; }
+.browse-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: end; margin-bottom: 1rem; }
+.browse-heading h2 { font-size: 1.8rem; font-weight: 850; font-style: normal; line-height: 1.2; letter-spacing: -0.05em; margin: 0.25rem 0 0; }
+.browse-heading h2 span { color: var(--accent); }
+.browse-heading > a { font-size: 0.7rem; min-height: 44px; display: inline-flex; align-items: center; }
+.browse { padding: 0.8rem 0; }
+.browse-row { gap: 0.5rem; }
+.browse-label { font-size: 0.75rem; }
+#lesson-search { min-height: 44px; border-radius: 10px; padding: 0.65rem 0.7rem; font-size: 0.8rem; }
+.browse-btn { min-height: 44px; font-size: 0.75rem; border-radius: 10px; background: var(--card); }
+.browse-btn:disabled { opacity: 0.6; cursor: default; }
+.browse-count { font-size: 0.68rem; }
+.unit-rail { gap: 0.45rem; margin: 1rem 0 1.4rem; }
+.unit-rail a { display: inline-flex; align-items: center; gap: 0.3rem; min-height: 44px; padding: 0.5rem 0.65rem; font-size: 0.75rem; border-radius: 10px; background: var(--card); }
+.rail-num { display: inline-grid; place-items: center; background: var(--accent-soft); border-radius: 5px; width: 1.25rem; height: 1.25rem; }
+.unit-section { margin-bottom: 0.65rem; scroll-margin-top: 7rem; }
+.unit { border: 1px solid var(--rule); border-radius: 14px; padding-inline: 1rem; background: var(--card); }
+.unit > summary { padding-block: 1rem; gap: 0.2rem 0.6rem; }
+.unit-title { font-family: inherit; font-style: normal; font-size: 1rem; font-weight: 750; letter-spacing: -0.025em; }
+.unit-count { font-size: 0.6rem; letter-spacing: 0; }
+.unit-blurb { font-size: 0.75rem; }
+.unit[open] { border-color: var(--accent); }
+.lesson-grid { grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr)); gap: 0.7rem; margin-bottom: 1rem; }
+.lesson-card { border-radius: 12px; padding: 1rem; border-color: var(--rule); background: var(--bg); }
+.lesson-card-title { font-size: 0.87rem; line-height: 1.4; color: var(--fg); }
+.lesson-card-tag { font-size: 0.55rem; }
+.lesson-card-lede { font-size: 0.72rem; line-height: 1.6; margin-top: 0.5rem; -webkit-line-clamp: 3; }
+.star-badge { color: var(--accent); }
+.source-box { border-radius: 12px; font-size: 0.8rem; }
+.lesson-foot { font-family: inherit; }
+:where(a, button, input):focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.build-lab button:focus-visible { outline-color: #fff; outline-offset: 3px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #121c31; --fg: #eef0ff; --muted: #bec9df; --rule: #4b5d80; --accent: #bfb1ff; --accent-soft: #282a50; --card: #1b2942; }
+  .cta-primary { background: #bfb1ff; border-color: #bfb1ff; color: #161b35; box-shadow: 0 4px 0 #6956bb; }
+  .build-lab { box-shadow: 8px 8px 0 #394361; border: 1px solid #647495; }
+}
+@media (max-width: 960px) {
+  header.lesson-head { gap: 1.5rem; }
+  .hero-copy h1 { font-size: 2.6rem; }
+  .hero-copy .lede { font-size: 0.9rem; }
+  .build-lab { padding: 1rem; }
+  .lab-steps button span { display: block; margin: 0 auto 0.2rem; }
+}
+@media (max-width: 760px) {
+  header.lesson-head { grid-template-columns: 1fr; padding-top: 1.1rem; padding-bottom: 1.5rem; gap: 1.8rem; }
+  .hero-copy h1 { font-size: clamp(2.5rem, 8vw, 3.6rem); }
+  .hero-copy .lede { max-width: 34rem; font-size: 1rem; }
+  .build-lab { max-width: 34rem; width: 100%; padding: 1.2rem; justify-self: center; }
+  .lab-steps button span { display: inline-grid; margin: 0 0.15rem 0 0; }
+  .hero-box { flex-wrap: wrap; gap: 0.8rem; margin-bottom: 2rem; }
+  .hero-box > div { flex-basis: calc(100% - 5rem); }
+  .hero-box .cta { margin-left: 3.8rem; }
+  .browse { position: static; }
+  .unit-section { scroll-margin-top: 1rem; }
+}
+@media (max-width: 480px) {
+  main, header.lesson-head, nav.crumbs, footer.lesson-foot { width: calc(100% - 32px); }
+  .lab-nav { gap: 0.5rem; padding-block: 0.8rem; flex-wrap: wrap; }
+  .lab-brand { font-size: 1rem; }
+  .lab-nav-actions { gap: 0.6rem; font-size: 0.75rem; }
+  .lab-nav-actions a { display: none; }
+  #motion-toggle { padding-inline: 0.5rem; }
+  .hero-copy h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+  .hero-copy .lede { font-size: 0.9rem; }
+  .build-lab { padding: 1rem; border-radius: 18px; box-shadow: 5px 5px 0 var(--rule); }
+  .lab-heading h2 { font-size: 1rem; }
+  .lab-spark { font-size: 2rem; }
+  .lab-steps button span { display: block; margin: 0 auto 0.25rem; }
+  .lab-message { min-height: 6.6rem; }
+  .lab-workbench { gap: 0.5rem; margin-block: 0.75rem; }
+  .bot svg { height: 110px; }
+  .preview-page strong { font-size: 0.85rem; }
+  .preview-chrome { font-size: 0.42rem; }
+  .lab-explanation { min-height: 4.5em; }
+  .path-icon { width: 2.4rem; height: 2.4rem; font-size: 1.4rem; }
+  .hero-box { padding: 0.9rem; gap: 0.6rem; }
+  .hero-box p { font-size: 0.75rem; }
+  .hero-box .cta { margin-left: 3rem; }
+  .browse-heading { align-items: start; flex-direction: column; gap: 0.1rem; }
+  .browse-heading h2 { font-size: 1.6rem; }
+  .browse-label { flex-basis: 100%; }
+  .browse-btn { flex: 1 1 0; padding-inline: 0.4rem; line-height: 1.3; }
+  .hero-copy .cta-row { margin-top: 1rem; }
+  .hero-copy .meta { margin-top: 0.9rem; }
+  #lesson-search { flex-basis: 100%; }
+  .unit { padding-inline: 0.75rem; }
+  .unit-section { margin-bottom: 0.45rem; }
+  .unit > summary { padding-block: 0.75rem; }
+  .lesson-grid { gap: 0.5rem; }
+  .lesson-card { padding: 0.7rem; }
+  .lesson-card-header { flex-direction: column; gap: 0.1rem; }
+  .lesson-card-title { font-size: 0.85rem; }
+  .lesson-card-lede { -webkit-line-clamp: 2; margin-top: 0.1rem; }
+  .unit-rail { flex-wrap: nowrap; overflow-x: auto; padding: 0.35rem 0.2rem; }
+  .unit-rail a { flex: none; }
+  .unit-rail a:focus-visible { outline-offset: -3px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion="off"]) .cta,
+  :root:not([data-motion="off"]) .lab-steps button,
+  :root:not([data-motion="off"]) .unit-rail a { transition: transform 160ms ease, box-shadow 160ms ease; }
+  :root:not([data-motion="off"]) .cta:hover { transform: translateY(-3px); }
+  :root:not([data-motion="off"]) .cta:active { transform: translateY(2px); box-shadow: none; }
+  :root:not([data-motion="off"]) .unit-rail a:hover { transform: translateY(-2px); }
+  /* Hover owns individual translate; Anime.js owns transform for the reveal.
+     CSS transitions must not chase the engine's per-frame transform writes. */
+  :root:not([data-motion="off"]) .lesson-card { transition: translate 160ms ease, border-color 160ms ease; }
+  :root:not([data-motion="off"]) .lesson-card:hover { translate: 0 -3px; }
+}
+/* Also cancel a native disclosure transition already in flight. */
+:root[data-motion="off"] *, :root[data-motion="off"] *::before, :root[data-motion="off"] *::after,
+:root[data-motion="off"] details.unit::details-content { transition: none !important; animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after, details.unit::details-content { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}

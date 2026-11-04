@@ -6,284 +6,61 @@
 <title>Building Apps with a Coding Agent — Course Home</title>
 <link rel="stylesheet" href="assets/lesson.css">
 <link rel="stylesheet" href="assets/home-motion.css">
-<style>
-  /* Homepage browsing layer: a compact card grid inside one collapsible
-     disclosure per unit, with a live filter over every card. */
-  /* The shared column is a 40rem measure shifted left of centre. The home
-     page's card grid needs more room, so every band of the page widens and
-     centres together; only running prose keeps a readable measure. */
-  @media (min-width: 960px) {
-    main, header.lesson-head, nav.crumbs, footer.lesson-foot {
-      width: min(100% - 32px, 66rem);
-      margin-inline: auto;
-    }
-    header.lesson-head .lede, .hero-box p { max-width: 44rem; }
-  }
-  .hero-box {
-    background: var(--accent-soft);
-    border-left: 3px solid var(--accent);
-    padding: 0.9rem 1.1rem;
-    border-radius: 0 6px 6px 0;
-    margin: 1rem 0 1.2rem;
-  }
-  .hero-box p { margin: 0 0 0.5rem; }
-  .hero-box p:last-child { margin: 0; }
-  .cta-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.9rem 0 0; }
-  .cta {
-    font: 600 0.8rem/1 system-ui, sans-serif;
-    padding: 0.5rem 0.85rem;
-    border: 1px solid var(--accent);
-    border-radius: 999px;
-    color: var(--accent);
-    text-decoration: none;
-  }
-  .cta-primary { background: var(--accent); color: var(--bg); }
-  .browse {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    background: var(--bg);
-    padding: 0.7rem 0 0.5rem;
-    border-bottom: 1px solid var(--rule);
-  }
-  .browse-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; }
-  .browse-label {
-    font: 600 0.7rem system-ui, sans-serif;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  #lesson-search {
-    flex: 1 1 11rem;
-    min-width: 0;
-    padding: 0.45rem 0.6rem;
-    font: 0.9rem/1.3 system-ui, sans-serif;
-    color: var(--fg);
-    background: var(--card);
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-  }
-  #lesson-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-  .browse-btn {
-    font: 600 0.75rem/1 system-ui, sans-serif;
-    padding: 0.45rem 0.7rem;
-    background: transparent;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    color: var(--fg);
-    cursor: pointer;
-  }
-  .browse-btn:hover { border-color: var(--accent); color: var(--accent); }
-  /* The star filter is a real on/off state (aria-pressed); the expand toggle
-     is an action whose label carries the state, so it styles a class. */
-  .browse-btn[aria-pressed="true"], .browse-btn.is-open {
-    background: var(--accent-soft);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-  .browse-count {
-    font: 0.78rem/1.4 system-ui, sans-serif;
-    color: var(--muted);
-    margin: 0.4rem 0 0;
-  }
-  .unit-rail { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.55rem 0 1rem; }
-  .unit-rail a {
-    font: 0.75rem/1 system-ui, sans-serif;
-    color: var(--fg);
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    padding: 0.32rem 0.55rem;
-    text-decoration: none;
-  }
-  .unit-rail a:hover, .unit-rail a:focus-visible { border-color: var(--accent); color: var(--accent); }
-  .unit-rail .rail-num { font-weight: 700; margin-right: 0.15rem; color: var(--accent); }
-  .unit-section { margin-top: 0; margin-bottom: 0; scroll-margin-top: 5.5rem; }
-  /* Sections carry tabindex="-1" so a rail chip or a #unit-N deep link moves
-     keyboard focus to the unit instead of only scrolling. The ring belongs on
-     the summary the user reaches next, not on the whole region. */
-  .unit-section:focus { outline: none; }
-  .unit { border-top: 1px solid var(--rule); }
-  .unit > summary {
-    display: grid;
-    grid-template-columns: 0.9rem 1fr auto;
-    grid-template-areas: "chev title count" ". blurb blurb";
-    align-items: baseline;
-    gap: 0.1rem 0.55rem;
-    padding: 0.8rem 0.2rem 0.8rem 0;
-    cursor: pointer;
-    list-style: none;
-  }
-  .unit > summary::-webkit-details-marker { display: none; }
-  .unit > summary::before {
-    grid-area: chev;
-    content: "▸";
-    color: var(--muted);
-    font-size: 0.85rem;
-    line-height: 1.6;
-  }
-  /* The only rotation on the page. It is enabled only for a unit the user has
-     just clicked (.animatable, set by the script), so neither reduced motion
-     nor a filter keystroke that flips ten chevrons can rotate anything. */
-  @media (prefers-reduced-motion: no-preference) {
-    .unit.animatable > summary::before { transition: transform 0.15s ease; }
-  }
-  .unit[open] > summary::before { transform: rotate(90deg); }
-  .unit > summary:hover .unit-title { color: var(--accent); }
-  .unit > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-  .unit-title {
-    grid-area: title;
-    font-size: 1.12rem;
-    font-weight: 400;
-    font-style: italic;
-    line-height: 1.4;
-    margin: 0;
-  }
-  .unit-count {
-    grid-area: count;
-    font: 600 0.7rem/1.8 system-ui, sans-serif;
-    color: var(--muted);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    text-align: right;
-  }
-  .unit-blurb {
-    grid-area: blurb;
-    font-size: 0.86rem;
-    line-height: 1.45;
-    color: var(--muted);
-  }
-  .lesson-grid {
-    display: grid;
-    gap: 0.55rem;
-    margin: 0.5rem 0 1.5rem;
-    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
-  }
-  .lesson-card {
-    background: var(--card);
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    padding: 0.7rem 0.9rem;
-    display: block;
-    color: inherit;
-    text-decoration: none;
-  }
-  /* Under reduced motion nothing on the page transitions, not even a colour
-     fade: the hover state then arrives instantly instead. */
-  @media (prefers-reduced-motion: no-preference) {
-    .lesson-card { transition: border-color 0.15s ease; }
-  }
-  .lesson-card[hidden] { display: none; }
-  .lesson-card:hover, .lesson-card:focus-visible { border-color: var(--accent); }
-  .lesson-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-  /* Motion lives in assets/home-motion.css: its properties are newer than the
-     CSS grammar the Layer 3 validator knows, so it is kept out of this block. */
-  .lesson-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 0.5rem;
-    margin-bottom: 0.2rem;
-  }
-  .lesson-card-tag { margin-top: 0.2rem; }
-  .lesson-card-title {
-    font-size: 1rem;
-    font-weight: 600;
-    line-height: 1.35;
-    color: var(--accent);
-    margin: 0;
-    overflow-wrap: anywhere;
-  }
-  .lesson-card-tag {
-    font: 600 0.68rem system-ui, sans-serif;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    white-space: nowrap;
-  }
-  .star-badge {
-    color: var(--accent);
-    font-weight: bold;
-    margin-right: 0.2rem;
-  }
-  .lesson-card-lede {
-    font-size: 0.82rem;
-    line-height: 1.4;
-    color: var(--muted);
-    margin: 0;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-  }
-  .no-results {
-    font-size: 0.9rem;
-    color: var(--muted);
-    margin: 0.4rem 0 1.5rem;
-  }
-  .skip-link {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-  .skip-link:focus {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: auto;
-    height: auto;
-    clip-path: none;
-    overflow: visible;
-    padding: 0.5rem 0.8rem;
-    background: var(--accent);
-    color: var(--bg);
-    border-radius: 0 0 6px 0;
-    font: 600 0.8rem/1 system-ui, sans-serif;
-    text-decoration: none;
-    z-index: 20;
-  }
-  /* The skip link lands on <main tabindex="-1">; the region takes focus so the
-     next Tab starts inside the content, but it does not need a ring itself. */
-  main:focus, main:focus-visible { outline: none; }
-  @media (max-width: 640px) {
-    .browse { position: static; }
-    .unit-section { scroll-margin-top: 1rem; }
-  }
-  @media (max-width: 560px) {
-    .unit > summary {
-      grid-template-columns: 0.9rem 1fr;
-      grid-template-areas: "chev title" ". count" ". blurb";
-    }
-    .unit-count { text-align: left; }
-    .lede { font-size: 1.05rem; }
-  }
-</style>
+<link rel="stylesheet" href="assets/home-lab.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to the content</a>
-<nav class="crumbs" aria-label="Breadcrumb">Course Home</nav>
+<nav class="crumbs lab-nav" aria-label="Course">
+  <a class="lab-brand" href="index.html"><span class="brand-mark" aria-hidden="true">✳</span> zero to shipped<span class="brand-dot" aria-hidden="true">.</span></a>
+  <div class="lab-nav-actions"><a href="#unit-0">The lessons <span aria-hidden="true">↗</span></a><button id="motion-toggle" type="button" aria-pressed="true" hidden>Motion <span class="motion-state" aria-hidden="true">on</span></button></div>
+</nav>
 <header class="lesson-head">
-  <p class="kicker">Zero to Shipped · Static Web Applications</p>
-  <h1>Building Apps with a Coding Agent</h1>
-  <p class="lede">Direct Claude Code, Codex or omp from an idea to a public web app. No coding, and nothing out of your control.</p>
-  <div class="meta">
-    <span>116 lessons · 10 units</span>
-    <span>~15 min per lesson</span>
-    <span>41 ★ first-ship</span>
+  <div class="hero-copy">
+    <p class="kicker"><span aria-hidden="true">✦</span> Big ideas start small</p>
+    <h1>Your idea.<br>Your AI sidekick.<br><span class="hero-highlight">A real web app.</span></h1>
+    <p class="lede">Learn to build with a coding agent: a helper that can change files and try things out. You bring the idea. You stay in charge.</p>
+    <div class="cta-row">
+      <a class="cta cta-primary" href="lessons/0001-what-a-coding-agent-is.html">Let’s build something <span aria-hidden="true">↗</span></a>
+      <a class="hero-secondary" href="#playground">Try the mini demo <span aria-hidden="true">↓</span></a>
+    </div>
+    <div class="meta"><span>116 bite-size lessons</span><span>About 15 min each</span><span>Start from zero</span></div>
   </div>
+  <section class="build-lab" id="playground" aria-labelledby="lab-title" data-step="0">
+    <div class="lab-topline"><span class="live-dot" aria-hidden="true"></span><span>THE BUILD LAB</span><span class="demo-label">Mini demo</span></div>
+    <div class="lab-heading"><h2 id="lab-title">So, what does an agent do?</h2><span class="lab-spark" aria-hidden="true">✳</span></div>
+    <p class="lab-instruction">An idea becomes files. Then you try the page.</p>
+    <div class="lab-steps" role="group" aria-label="Explore the agent loop" hidden>
+      <button type="button" data-lab-step="0" aria-pressed="true"><span>1</span> You ask</button>
+      <button type="button" data-lab-step="1" aria-pressed="false"><span>2</span> Agent builds</button>
+      <button type="button" data-lab-step="2" aria-pressed="false"><span>3</span> You check</button>
+    </div>
+    <div class="lab-scene">
+      <div class="lab-message" aria-live="polite" aria-atomic="true"><span id="lab-speaker">YOU → AGENT</span><p id="lab-message">“Make a page for my space club, with a big purple planet.”</p></div>
+      <div class="lab-workbench">
+        <div class="bot" aria-hidden="true">
+          <svg viewBox="0 0 120 140" fill="none"><path d="M60 27V12" stroke="currentColor" stroke-width="6"/><circle cx="60" cy="9" r="7" fill="#edff8d"/><rect x="13" y="29" width="94" height="73" rx="25" fill="#edff8d" stroke="currentColor" stroke-width="4"/><rect x="26" y="43" width="68" height="37" rx="14" fill="#19284a"/><path d="M42 57v8m35-8v8" stroke="#edff8d" stroke-width="7" stroke-linecap="round"/><path d="M50 90h20M37 108l-9 19m55-19 9 19" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M5 57v18m110-18v18" stroke="#edff8d" stroke-width="8" stroke-linecap="round"/></svg>
+          <span>Your sidekick</span>
+        </div>
+        <div class="mini-preview" role="group" aria-label="Example space club page">
+          <div class="preview-chrome"><span aria-hidden="true">● ● ●</span><span>space-club.html</span></div>
+          <div class="preview-page"><span class="planet" aria-hidden="true">✦</span><strong>SPACE CLUB</strong><span class="preview-detail">Big ideas. Bigger galaxies.</span><button class="preview-join" type="button" disabled>Join the adventure <span aria-hidden="true">↗</span></button></div>
+          <div class="preview-caption" id="preview-caption">Your idea goes here</div>
+        </div>
+      </div>
+      <p class="lab-explanation" id="lab-explanation">You describe what you want. The agent needs a clear goal before it starts.</p>
+      <div class="lab-confetti" aria-hidden="true"></div>
+    </div>
+    <noscript><p class="lab-fallback">You ask → the agent changes files → you open the page and check it. You decide what happens next.</p></noscript>
+    <p class="lab-note">A pretend project to show the idea. Your real project starts in lesson 0.1.</p>
+  </section>
 </header>
 <main id="main" tabindex="-1">
 
 <div class="hero-box">
-  <p><strong>116 short lessons, one idea each.</strong> Follow the ★ lessons to put a real page on the public web; every other unit is optional depth.</p>
-  <div class="cta-row">
-    <a class="cta cta-primary" href="lessons/0001-what-a-coding-agent-is.html">Start with lesson 0.1</a>
-    <a class="cta" href="#reference">Reference cards</a>
-  </div>
+  <span class="path-icon" aria-hidden="true">★</span><div><p class="path-label">YOUR FIRST MISSION</p><p><strong>Make something. Put it on the web.</strong> Follow the 41 ★ lessons for your first launch. Explore the others whenever you’re curious.</p></div><a class="cta" href="lessons/0001-what-a-coding-agent-is.html">Start here <span aria-hidden="true">↗</span></a>
 </div>
 
+<div class="browse-heading"><div><p class="kicker">Pick your next discovery</p><h2>Your learning map<span aria-hidden="true">.</span></h2></div><a href="#reference">Need a quick answer? <span aria-hidden="true">↗</span></a></div>
 <div class="browse" id="browse" role="search" aria-label="Find a lesson" hidden>
   <div class="browse-row">
     <label class="browse-label" for="lesson-search">Find a lesson</label>
@@ -306,7 +83,7 @@
   <a href="#unit-9"><span class="rail-num">9</span>At scale</a>
   <a href="#reference">Reference</a>
 </nav>
-<p class="no-results" id="no-results" hidden>No lesson or reference card matches that search. Try a shorter word, or clear the filters.</p>
+<p class="no-results" id="no-results" hidden>No lesson or reference card matches those filters. Clear the search box or the ★ toggle to see the full list again.</p>
 
 <section class="unit-section" id="unit-0" tabindex="-1">
   <details class="unit" open>
@@ -648,7 +425,7 @@
         <h3 class="lesson-card-title"><span class="star-badge" role="img" aria-label="First-ship">★</span>The pull request: a proposal, not a merge</h3>
         <span class="lesson-card-tag">3.7 · Lesson</span>
       </div>
-      <p class="lesson-card-lede">A branch keeps your work separate. A pull request is how that work gets looked at, checked, and only then allowed into main .</p>
+      <p class="lesson-card-lede">A branch keeps your work separate. A pull request is how that work gets looked at, checked, and only then allowed into main.</p>
     </a>
     <a class="lesson-card" href="lessons/0047-merge-vs-squash.html">
       <div class="lesson-card-header">
@@ -1141,7 +918,7 @@
     </a>
     <a class="lesson-card" href="lessons/0106-assets-licensing.html">
       <div class="lesson-card-header">
-        <h3 class="lesson-card-title">Assets &amp;amp; licensing — and the reverse-engineering caution</h3>
+        <h3 class="lesson-card-title">Assets &amp; licensing — and the reverse-engineering caution</h3>
         <span class="lesson-card-tag">8.18 · Lesson</span>
       </div>
       <p class="lesson-card-lede">Images, sounds, fonts, icons, and other people's files make your app look finished — and each one has an owner. An agent will happily fetch, copy, or rebuild whatever you point at, without checking who owns it. Learn to check the license before an asset enters your repo, to license your own work, and to pause before asking an agent to take apart something you don't own.</p>
@@ -1151,7 +928,7 @@
         <h3 class="lesson-card-title">Performance: measuring what is slow</h3>
         <span class="lesson-card-tag">8.19 · Lesson</span>
       </div>
-      <p class="lesson-card-lede">"It feels slow" is not something an agent can fix. A number can be. This lesson teaches four words — frames per second, benchmark, bottleneck, parallel worker — and how to make the agent measure before it changes .</p>
+      <p class="lesson-card-lede">"It feels slow" is not something an agent can fix. A number can be. This lesson teaches four words — frames per second, benchmark, bottleneck, parallel worker — and how to make the agent measure before it changes.</p>
     </a>
     <a class="lesson-card" href="lessons/0108-accessibility-basics.html">
       <div class="lesson-card-header">
@@ -1331,9 +1108,12 @@
     var heading = section.querySelector(".unit-title");
     var title = heading ? heading.textContent.replace(/\s+/g, " ").trim() : "";
     var number = (/(\d+)/.exec(title) || ["", ""])[1];
-    // Card text carries the unit's subject but not its number, so a query of
-    // "8" does not pull in every card of unit 8; "unit 8" is handled below.
-    var subject = title.replace(/^\d+\s*/, "").toLowerCase();
+    // The search text keeps the unit's own words ("verification",
+    // "shipping") alongside the card's, so "verification" surfaces all of
+    // Unit 2 and "8" matches the 8.x tags and every x.8 lesson; matching a
+    // unit by its number is the wholeUnit branch below. (`title` is
+    // "Unit N — Subject", so no prefix strip happens here.)
+    var subject = title.toLowerCase();
     var items = [].slice.call(section.querySelectorAll(".lesson-card")).map(function (card) {
       var tag = card.querySelector(".lesson-card-tag");
       return {
@@ -1400,7 +1180,16 @@
   document.addEventListener("click", function (event) {
     var summary = event.target.closest ? event.target.closest("summary") : null;
     var details = summary && summary.parentElement;
-    if (details && details.classList.contains("unit")) armMotion(details);
+    if (!details || !details.classList.contains("unit")) return;
+    armMotion(details);
+    // A hand toggle is the row's newest default. The click event runs before
+    // the native toggle flips `open`, so the post-click state is the inverse
+    // of what the DOM still shows. Without this sync, the next update() — a
+    // rail jump, a hash change, clearing the query — re-derives the layout
+    // from stale defaults and silently reopens a row the reader closed.
+    for (var i = 0; i < units.length; i += 1) {
+      if (units[i].details === details) { units[i].defaultOpen = !details.open; break; }
+    }
   });
 
   function filtering() {
@@ -1441,7 +1230,9 @@
     var shownLessons = 0, shownRefs = 0;
 
     units.forEach(function (unit) {
-      var wholeUnit = !!unitQuery && unitQuery[1] === unit.number;
+      // "unit 08" and "unit 8" are the same unit; compare numbers, not
+      // strings, so zero padding cannot dead-end the query.
+      var wholeUnit = !!unitQuery && parseInt(unitQuery[1], 10) === parseInt(unit.number, 10);
       var visible = 0;
       unit.items.forEach(function (item) {
         var ok = (unitQuery ? wholeUnit : (q === "" || item.text.indexOf(q) !== -1)) &&
@@ -1487,6 +1278,9 @@
       // One label describes what is being filtered, so a zero-match sentence
       // never claims to be a count and never offers a collapse hint.
       var q = search.value.trim();
+      // Echo at most the head of the query: a pasted paragraph would be read
+      // aloud in full by the live region and grow the sticky bar with it.
+      if (q.length > 60) q = q.slice(0, 57) + "\u2026";
       var label = q ? "\u201C" + q + "\u201D" : "";
       if (starToggle.getAttribute("aria-pressed") === "true") label += (label ? " " : "") + "\u2605 first-ship";
       if (shown === 0) {
@@ -1526,15 +1320,15 @@
     update();
   });
 
-  // A rail chip is a jump, not a filter: clear the query and the star filter so
-  // the unit it opens is not immediately re-collapsed by the next update().
+  // Every unit shortcut is a jump: clear filters even when its hash already
+  // matches the URL, because that activation will not emit hashchange.
   function clearFilters() {
     if (search.value !== "") search.value = "";
     starToggle.setAttribute("aria-pressed", "false");
     expandMode = "auto";
   }
 
-  [].forEach.call(document.querySelectorAll(".unit-rail a"), function (link) {
+  [].forEach.call(document.querySelectorAll('a[href^="#unit-"], a[href="#reference"]'), function (link) {
     link.addEventListener("click", function () {
       var target = document.getElementById(link.getAttribute("href").slice(1));
       if (!target) return;
@@ -1567,11 +1361,13 @@
   <p>116 concepts across 10 units, plus 8 reference cards for quick lookup. Every lesson links its sources; every reference page is the compressed essence of the lessons it serves.</p>
 </div>
 
+</main>
 <footer class="lesson-foot" style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: 0.85rem; color: var(--muted);">
   <p>Built with Tufte-inspired typography for Claude Code, Codex, and omp.</p>
 </footer>
 
-</main>
 <script src="assets/lesson.js"></script>
+<script src="assets/vendor/anime-4.5.0.umd.min.js"></script>
+<script src="assets/home-lab.js"></script>
 </body>
 </html>
