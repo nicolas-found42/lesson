@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 9 · Working at scale · Lesson 9.2</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 9 · Working at scale · Lesson 9.2</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 9 · Lesson 9.2</p>
   <h1>Integration branch vs per-ticket branches</h1>
   <p class="lede">When you have several tickets in flight at once, you have to decide where finished work collects: straight onto main, or onto a holding branch first. This lesson shows both layouts and when each one saves you pain.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0044-branch.html">3.5 Branch</a></span><span>Win: you can choose a branch layout for a multi-ticket job and say why</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 33 · Lesson 2 of 4</p>
+  <p><strong>Your session goal:</strong> Map ticket dependencies and integrate changes with review checks.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-33">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -63,7 +71,7 @@
 <h2>Try it yourself</h2>
 <p>You can feel both layouts in five minutes with a throwaway folder. This is real git, the same commands your agent would run — check the result at each step.</p>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it: build the integration layout</span>
   <ol>
     <li>Make a scratch repo and give it a starting file:
@@ -147,8 +155,18 @@ ls</code></pre></li>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> describe per-ticket branches and an integration branch, run the integration layout yourself in a scratch repo, and name the layout in your prompt so the agent cannot guess.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/agent-loop.html">The agent loop (one page)</a></p>
-  <div class="pager"><span>Next: 9.3 Parallel agents and shared build folders</span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="110" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0111-parallel-agents-shared-build-folders.html">Continue to lesson 111 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0109-spec-tickets-dependency-graph.html">← Previous lesson</a><a href="0111-parallel-agents-shared-build-folders.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

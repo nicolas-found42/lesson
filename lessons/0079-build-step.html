@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.2</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 6 · Shipping a static app · Lesson 6.2</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 6 · Lesson 6.2 · First-ship path ★</p>
   <h1>The build step: source becomes deployable files</h1>
   <p class="lede">Many projects are not published as-is. A program first turns your source files into a separate folder of finished files, and it is that folder — not your source — that goes online. Knowing which is which stops the classic "works on my machine, blank on the web" surprise.</p>
   <div class="meta"><span>About 15 minutes</span><span>Needs: <a href="0012-static-vs-dynamic.html">6.1 Static vs dynamic</a></span><span>Win: you can point at your build output and say what it is, and check that the host is serving it</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 25 · Lesson 1 of 4</p>
+  <p><strong>Your session goal:</strong> Inspect the build and deployment result and document the live URL.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-25">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -67,7 +75,7 @@
 </div>
 <p>This is a safe ask: it only reads and builds, publishes nothing, and it leaves <em>you</em> knowing the project's shape — which matters the next time a deploy looks wrong.</p>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it now — run a build and find its output</span>
   <ol>
     <li><label><input type="checkbox"> Open your project folder in your agent (or a project your agent built earlier). If your project is a plain <code>index.html</code> with no build tool, say so instead — that is a valid answer, and this lesson still applies to your next project.</label></li>
@@ -129,8 +137,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> say what a build step consumes and produces, name your project's output folder, and check that a host is being pointed at the output — not the source.</p>
   <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><span>Next: <a href="0013-github-pages.html">6.3 GitHub Pages</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="79" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0080-size-limits-big-files.html">Continue to lesson 80 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0078-desktop-app-features.html">← Previous lesson</a><a href="0080-size-limits-big-files.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

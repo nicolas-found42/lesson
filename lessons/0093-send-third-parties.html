@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.5</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.5</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 8 · Lesson 8.5</p>
   <h1>What you send to third parties</h1>
   <p class="lede">Every prompt you type and every request your app makes can leave your machine. Before you ship an app that leans on outside services, you should know exactly what leaves, where it goes, and who is allowed to keep it.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="../lessons/0092-third-party-api-keys.html">8.4 Third-party API keys</a></span><span>Win: you can list what leaves your machine in a run, and check a provider's data policy before sending it anything</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 29 · Lesson 1 of 4</p>
+  <p><strong>Your session goal:</strong> Map data sharing, sign-in, and browser access restrictions.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-29">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -52,6 +60,16 @@
   <textarea aria-label="Your answer"></textarea>
   <button class="btn reveal" type="button">Check my answer</button>
   <div class="answer"><p>One copy stays on your machine (a local transcript, plaintext on disk). The other goes to the model provider, whose policy — and your account's privacy settings — decide retention and training. When your app calls a third-party API, a third copy goes to that provider under its policy.</p></div>
+</div>
+
+<div class="doit" id="lesson-practice">
+  <span class="label">Trace one piece of data</span>
+  <ol>
+    <li><label><input type="checkbox"> Choose an example input your app might send to a service. Use invented data.</label></li>
+    <li><label><input type="checkbox"> Write who receives it, why it is needed, and what could be removed before sending.</label></li>
+  </ol>
+  <div class="expect">Your note names the recipient and contains no real personal information or credentials.</div>
+  <p class="progress" aria-live="polite"></p>
 </div>
 
 <h2>Check yourself</h2>
@@ -115,8 +133,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> name what leaves your machine in an agent run or an API call, read a provider's retention/training policy, and ask the "where does this go?" question before a run.</p>
   <p>Quick reference: <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><span>Prev: <a href="../lessons/0092-third-party-api-keys.html">8.4 Third-party API keys</a></span> · <span>Next: <a href="../lessons/0094-logins-token-expiry.html">8.6 Logins and token expiry</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="93" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0094-logins-token-expiry.html">Continue to lesson 94 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0092-third-party-api-keys.html">← Previous lesson</a><a href="0094-logins-token-expiry.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

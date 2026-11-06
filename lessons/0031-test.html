@@ -13,6 +13,14 @@
   <h1>What a test is</h1>
   <p class="lede">A test is a check a machine can repeat: set up an input, ask the app for a result, compare it with the result you expected. Three words come back with it — pass, fail, skipped — and only two of them tell you anything.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0003-your-project-is-a-folder.html">0.3 Your project is a folder</a></span><span>Win: you can read a test run and say what it proves</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 10 · Lesson 3 of 3</p>
+  <p><strong>Your session goal:</strong> Try the app yourself and record what its tests actually prove.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-10">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -100,7 +108,7 @@ test('applies a coupon', { skip: 'coupons not built yet' }, () =&gt; {
 <p>That is why lesson <a href="0029-run-yourself.html">2.1</a> came before this one, and why lesson <a href="0035-real-vs-simulated.html">2.7</a> comes after it. Tests narrow the space where you have to look. They do not look for you.</p>
 <p>One more caution, because it shapes how much a green tick is worth. Google's testing blog defines a flaky result as <q>a test that exhibits both a passing and a failing result with the same code</q>, and reports that about 1.5% of their test runs were flaky.<sup class="cite"><a href="#src-g">[4]</a></sup> A pass is always a statement about one run of one check. Repeating the run costs little, and it is the honest way to find out whether the result sticks.</p>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own agent</span>
   <ol>
     <li><label><input type="checkbox"> Open your agent in your project folder, with approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</label></li>
@@ -174,8 +182,18 @@ If there are no tests at all, say that instead of inventing a command, and list 
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> describe a test's three parts, read a run's pass, fail and skipped counts, and say what each one proves.</p>
   <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a></p>
-  <div class="pager"><a href="0030-claims-vs-evidence.html">Previous: 2.2 Claims versus evidence</a> · <a href="0032-regression-test.html">Next: 2.4 Regression tests</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="31" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0032-regression-test.html">Continue to lesson 32 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0030-claims-vs-evidence.html">← Previous lesson</a><a href="0032-regression-test.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

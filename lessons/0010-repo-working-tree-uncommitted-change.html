@@ -13,6 +13,14 @@
   <h1>Repository, working tree, uncommitted change</h1>
   <p class="lede">Your project sits in two places at once: the files you can open, and the history git keeps. Two commands show you where those two disagree. Reading them is how you know what your agent actually changed.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0009-why-save-points-exist.html">3.1 Why save points exist</a></span><span>Win: you can say exactly what is not yet in your history</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 4 · Lesson 1 of 3</p>
+  <p><strong>Your session goal:</strong> Make a commit, connect a remote, and check that your page can use static hosting.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-4">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -120,7 +128,7 @@ index 00b1dc1..9c5cfd9 100644
   <div class="answer"><p>The <strong>repository</strong> is the project folder plus <code>.git</code>, where commits live. The <strong>working tree</strong> is the files as they sit on disk now. Agents edit the <strong>working tree</strong>, so their work is uncommitted until someone commits it. <code>git status</code> lists file names by state; <code>git diff</code> shows the added and removed lines.</p></div>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Try it in your own project</span>
   <ol>
     <li><label><input type="checkbox"> In your terminal, go to your project folder with <code>cd</code>, then run <code>git status</code>.</label></li>
@@ -190,8 +198,18 @@ index 00b1dc1..9c5cfd9 100644
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain repository, working tree and uncommitted change, read <code>git status</code> and <code>git diff</code>, and name the files a "commit all" would include before you ask for one.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure modes</a></p>
-  <div class="pager"><a href="0009-why-save-points-exist.html">Previous: 3.1 Why save points exist</a> · <a href="0011-remote-origin-push.html">Next: 3.6 Remote, origin, push</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="10" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0011-remote-origin-push.html">Continue to lesson 11 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0009-why-save-points-exist.html">← Previous lesson</a><a href="0011-remote-origin-push.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

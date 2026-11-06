@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 9 · Working at scale · Lesson 9.5</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 9 · Working at scale · Lesson 9.5</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 9 · Lesson 9.5</p>
   <h1>Fan out the research, reconcile the reports</h1>
   <p class="lede">Some questions are too big for one pass: which free host fits your app, what an API really returns on error, whether the docs match the code. You can send a swarm of helper agents at the question. The win is not the speed — it is ending with one answer you can defend, contradictions resolved against sources.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0071-subagents.html">5.4 Subagents</a></span><span>Win: you can run a research swarm and turn contradictory reports into one defensible answer</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 34 · Lesson 1 of 4</p>
+  <p><strong>Your session goal:</strong> Reconcile research and write a handoff another person can follow.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-34">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -67,7 +75,7 @@ Split it into independent slices and give each helper one slice. Rules for every
 </div>
 
 <h2>Try it yourself</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Try it in your own project</span>
   <ol>
     <li><label><input type="checkbox"> Pick one real research question about your app — for example "which free host fits a small static site, and what are its limits?".</label></li>
@@ -150,8 +158,18 @@ Split it into independent slices and give each helper one slice. Rules for every
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> fan a big research question out to a swarm of read-only helpers, and reconcile contradictory reports into one answer that shows what is agreed, resolved, and still unverified.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Next: <a href="0114-agent-as-scheduler.html">9.6 Agent as scheduler (coming)</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="113" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0114-agent-as-scheduler.html">Continue to lesson 114 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0112-pr-babysitting-auto-fix.html">← Previous lesson</a><a href="0114-agent-as-scheduler.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

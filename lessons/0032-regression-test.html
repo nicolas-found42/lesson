@@ -13,6 +13,14 @@
   <h1>Prove the bug before you fix it</h1>
   <p class="lede">A test written after a fix can only agree with the fix. A test that fails first is evidence that the bug was real, that the test exercises it, and that the repair changed something.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0031-test.html">2.3 What a test is</a></span><span>Win: you can tell a proven fix from a plausible one</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 11 · Lesson 1 of 3</p>
+  <p><strong>Your session goal:</strong> Add a regression check and run the project gate.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-11">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -122,7 +130,7 @@ Then run that test, then the whole suite, and show me both results.</pre>
   <p class="status"></p>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own agent</span>
   <ol>
     <li><label><input type="checkbox"> Pick one real bug you have seen in your app, or one small thing that is wrong on purpose. Write down what you saw and what you expected, with numbers if you have them.</label></li>
@@ -189,8 +197,18 @@ Then run that test, then the whole suite, and show me both results.</pre>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> ask for a test that fails on the bug before any fix, read the failure to check it is the right failure, and keep the test as a guard.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Next: 2.5 Linters, formatters and type checkers (coming)</span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="32" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0033-linter-formatter-type-checker.html">Continue to lesson 33 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0031-test.html">← Previous lesson</a><a href="0033-linter-formatter-type-checker.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

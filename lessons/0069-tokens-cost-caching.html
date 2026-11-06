@@ -13,6 +13,14 @@
   <h1>Tokens, cost, and caching: why long sessions get expensive</h1>
   <p class="lede">Everything an agent reads or writes is counted in small units called tokens, and you pay for them. A cache keeps repeated reads cheap — until something invalidates it.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0068-context-window.html">5.1 Context window</a></span><span>Win: you can explain why a one-line question in a long session still costs tokens, and what the cache does about it</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 22 · Lesson 2 of 4</p>
+  <p><strong>Your session goal:</strong> Inspect context, tool use, and the boundaries of a delegated task.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-22">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -49,7 +57,7 @@
   <li><strong>Set a budget in dollars or time.</strong> Lesson <a href="0058-budgets.html">4.4</a> shows how to cap a run so "keep going" cannot become 20 hours.</li>
 </ul>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own session</span>
   <ol>
     <li><label><input type="checkbox"> Open (or continue) a session with your agent in your project folder.</label></li>
@@ -120,8 +128,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain what a token is, why every turn re-sends the whole session, how prompt caching makes repeated reads cheap, and what expires or invalidates it.</p>
   <p>Quick reference: <a href="../reference/agent-loop.html">The agent loop (one page)</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Next: 5.3 Tools (coming)</span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="69" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0070-tools.html">Continue to lesson 70 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0068-context-window.html">← Previous lesson</a><a href="0070-tools.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

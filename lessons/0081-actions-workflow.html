@@ -13,6 +13,14 @@
   <h1>An Actions workflow: a recipe GitHub runs on every push</h1>
   <p class="lede">The checks on your pull request and the publishing of your site are not done by your laptop. They are done by a small recipe file in your repo that GitHub runs for you, on a fresh machine, every time you push.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0045-pull-request.html">3.7 The pull request</a></span><span>Win: you can add a workflow that runs on every push and read its result in the Actions tab</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 25 · Lesson 3 of 4</p>
+  <p><strong>Your session goal:</strong> Inspect the build and deployment result and document the live URL.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-25">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -64,7 +72,7 @@ jobs:
 </div>
 
 <h2>Do this with your own project</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <ol>
     <li><label><input type="checkbox"> In your project folder, ask your agent to create the file <code>.github/workflows/hello.yml</code> with the minimal recipe above (you can paste it from this page). Keep approval prompts on and approve the file write.</label></li>
     <li><label><input type="checkbox"> Commit the file on a new branch and push it, then open a pull request as in <a href="0045-pull-request.html">3.7</a>.</label></li>
@@ -134,8 +142,18 @@ jobs:
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain the four ingredients of a workflow, add a recipe file that GitHub runs on every push, and read a run's green or red result in the Actions tab.</p>
   <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><span>Next: <a href="0082-readme-repo-description.html">6.7 README and repo description</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="81" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0082-readme-repo-description.html">Continue to lesson 82 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0080-size-limits-big-files.html">← Previous lesson</a><a href="0082-readme-repo-description.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

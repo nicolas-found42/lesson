@@ -13,6 +13,14 @@
   <h1>The pull request: a proposal, not a merge</h1>
   <p class="lede">A branch keeps your work separate. A pull request is how that work gets looked at, checked, and only then allowed into <code>main</code>.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0011-remote-origin-push.html">3.6 Remote, origin and push</a></span><span>Win: you can open a pull request and read its checks before anything merges</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 15 · Lesson 1 of 3</p>
+  <p><strong>Your session goal:</strong> Open a pull request and distinguish local checks from CI.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-15">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -88,7 +96,7 @@
 Do not merge it.
 Write the description as three short parts: what changed, why, and exactly how you checked it.
 Then run gh pr checks and tell me the state of every check, including any that were skipped.</pre></div>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Your turn</span>
   <ol>
     <li><label><input type="checkbox"> Paste the prompt above. Approve the push and the pull request creation when asked.</label></li>
@@ -153,8 +161,18 @@ Then run gh pr checks and tell me the state of every check, including any that w
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain why a pull request changes nothing by itself, write a description someone can check, and read the checks and merge box before merging.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Next: 3.8 Merge vs squash (coming)</span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="45" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0046-local-vs-ci.html">Continue to lesson 46 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0044-branch.html">← Previous lesson</a><a href="0046-local-vs-ci.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

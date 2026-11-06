@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.7</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.7</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 8 · Lesson 8.7</p>
   <h1>OAuth in pieces: what a "Sign in with…" button sets up</h1>
   <p class="lede">When your app wants to read a user's data from another service, you never ask for their password. OAuth is the standard handshake that lets the user grant your app limited access instead — and it comes down to five pieces you can name.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0094-logins-token-expiry.html">8.6 Logins and token expiry</a></span><span>Win: you can name the five pieces of an OAuth sign-in and say which values must stay secret</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 29 · Lesson 3 of 4</p>
+  <p><strong>Your session goal:</strong> Map data sharing, sign-in, and browser access restrictions.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-29">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -76,6 +84,16 @@ the browser downloads. Request the narrowest scopes, added incrementally.
 Then show me how we will verify it with a real browser sign-in, and stop.</pre></div>
 <span class="sidenote">The plan gate from lesson 1.7 applies here too: OAuth setup touches credentials, so a human "go" before any code is written is worth the thirty seconds.</span>
 
+<div class="doit" id="lesson-practice">
+  <span class="label">Draw the sign-in journey</span>
+  <ol>
+    <li><label><input type="checkbox"> On paper, draw the user, your app, and the sign-in provider.</label></li>
+    <li><label><input type="checkbox"> Label where the user consents and where the app receives the result. Compare your drawing with the lesson.</label></li>
+  </ol>
+  <div class="expect">Your drawing keeps the user password with the sign-in provider and distinguishes permission from identity.</div>
+  <p class="progress" aria-live="polite"></p>
+</div>
+
 <h2>Check yourself</h2>
 <div class="quiz" data-correct="1">
   <span class="label">Question 1 of 4</span>
@@ -135,8 +153,18 @@ Then show me how we will verify it with a real browser sign-in, and stop.</pre><
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> name the five pieces of an OAuth sign-in — client ID, client secret, scopes, redirect URI, consent screen — and explain per-user tokens vs shared tokens, including which values must stay on the server.</p>
   <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/safety-checklist.html">Safety checklist (secrets)</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Previous: <a href="0094-logins-token-expiry.html">8.6 Logins and token expiry</a></span><span>Next: <a href="0096-cors.html">8.8 CORS: why tests pass and the real click fails</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="95" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0096-cors.html">Continue to lesson 96 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0094-logins-token-expiry.html">← Previous lesson</a><a href="0096-cors.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

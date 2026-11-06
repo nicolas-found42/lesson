@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.3</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.3</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 8 · Lesson 8.3</p>
   <h1>Never print, never commit</h1>
   <p class="lede">A secret key that appears on your screen or in your project's history is a key a stranger can use. This lesson gives you two habits — never print a secret, never commit one — and one repair move: rotate a leaked key immediately.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="../lessons/0089-secrets.html">8.1 Secrets</a></span><span>Win: you can explain why deleting a key file is not enough, and rotate a leaked key</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 28 · Lesson 3 of 4</p>
+  <p><strong>Your session goal:</strong> Map secrets and configure an API credential without exposing it.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-28">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -61,7 +69,7 @@ or echo its contents. Steps:
 </div>
 
 <h2>See the history trap yourself</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it: prove a deleted file survives in history</span>
   <p>You will build a tiny throwaway git repository, leak a <em>fake</em> key into it, delete the file, and then watch git hand the "deleted" secret right back. Nothing here touches your real project or any remote.</p>
   <p>In your terminal, one line at a time:</p>
@@ -130,8 +138,18 @@ git show HEAD~1:.env</code></pre>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> keep secrets out of printed output and commits, explain why git history preserves deleted secrets, and rotate a leaked key as the first response.</p>
   <p>Quick reference: <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a></p>
-  <div class="pager"><span>Next: 8.4 Third-party API keys</span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="91" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0092-third-party-api-keys.html">Continue to lesson 92 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0090-env-vars.html">← Previous lesson</a><a href="0092-third-party-api-keys.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

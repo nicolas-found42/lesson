@@ -13,6 +13,14 @@
   <h1>LLM calls as a dependency: limits, timeouts, retries, JSON</h1>
   <p class="lede">When your app calls an AI model at runtime, that model is a dependency like any other service — it can be slow, capped, overloaded, and it does not guarantee well-formed output. Learn the four ways those calls fail and the rules that make them safe.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0092-third-party-api-keys.html">8.4 Third-party API keys</a></span><span>Win: you can write retry, timeout, and output-shape rules your agent will actually follow</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 31 · Lesson 4 of 4</p>
+  <p><strong>Your session goal:</strong> Distinguish mocks from live evidence and bound a slow dependency.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-31">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -72,7 +80,7 @@
 5. Set a spend cap with the provider before any long run (lesson 8.4).</pre></div>
 
 <h2>Try it with your agent</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <ol>
     <li><label><input type="checkbox"> Open your project folder and start your agent.</label></li>
     <li><label><input type="checkbox"> Paste the rules block above and say: "Add these to my rules file."</label></li>
@@ -131,8 +139,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> name the four failure shapes of an LLM call (timeout, output limit, overload/rate limit, bad JSON shape) and write retry, truncation, and validation rules into your rules file so your agent handles them every time.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><a href="0103-third-party-churn.html">← 8.15 Third-party churn</a><a href="0105-data-dont-own.html">8.17 Data you don't own →</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="104" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0105-data-dont-own.html">Continue to lesson 105 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0103-third-party-churn.html">← Previous lesson</a><a href="0105-data-dont-own.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

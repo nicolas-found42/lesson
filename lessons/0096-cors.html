@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.8</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.8</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 8 · Lesson 8.8</p>
   <h1>CORS: why tests pass and the real click fails</h1>
   <p class="lede">Your app's page and the service it calls live at different addresses. Browsers only allow that when the service explicitly says so — and only a real browser enforces the rule, which is why every test can be green while the first real click fails.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0095-oauth-pieces.html">8.7 OAuth in pieces</a>, <a href="0035-real-vs-simulated.html">2.7 Real vs simulated</a></span><span>Win: you can read a CORS error in the browser console and point the fix at the server, not the page</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 29 · Lesson 4 of 4</p>
+  <p><strong>Your session goal:</strong> Map data sharing, sign-in, and browser access restrictions.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-29">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -57,7 +65,7 @@
 
 <h2>See it yourself, then fix the right side</h2>
 <p>The reliable loop is: reproduce in a real browser, read the console, fix the server, re-click. Do this in your own app:</p>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <ol>
     <li><label><input type="checkbox"> Start your app and open the page in a real browser (not the test runner), then open the browser's developer tools and its <strong>Console</strong> tab.</label></li>
     <li><label><input type="checkbox"> Click the control that calls the other service (for example, the connect or sign-in button).</label></li>
@@ -139,8 +147,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain why a cross-origin call fails only in a real browser, read the CORS error in the devtools console, and direct the fix at the server's response headers.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><a href="0095-oauth-pieces.html">Previous: 8.7 OAuth in pieces</a> · <a href="0097-backends.html">Next: 8.9 Backends</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="96" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0097-backends.html">Continue to lesson 97 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0095-oauth-pieces.html">← Previous lesson</a><a href="0097-backends.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

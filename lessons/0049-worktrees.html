@@ -13,6 +13,14 @@
   <h1>Worktrees: two checkouts, one repository</h1>
   <p class="lede">A worktree gives you a second folder showing a different branch of the same project at the same time. It removes the need to keep switching, and it creates a new way to lose track of where the agent is typing.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0044-branch.html">3.5 Branch</a></span><span>Win: you can keep two checkouts straight and tell your agent which one to edit</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 16 · Lesson 2 of 3</p>
+  <p><strong>Your session goal:</strong> Practice conflict handling, isolated work, and undo in a disposable copy.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-16">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -83,7 +91,7 @@ fatal: 'main' is already used by worktree at '/…/my-app'</code></pre>
 </ol>
 <p>For larger work, the same rule can live in the project rules file from lesson <a href="0027-project-rules-file.html">1.12</a>, so it applies to every session rather than the one where you remembered.</p>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own project</span>
   <ol>
     <li><label><input type="checkbox"> Commit whatever is in progress, so both folders start from a known state. Run <code>git status</code> and expect a clean working tree.</label></li>
@@ -190,7 +198,18 @@ Stop there. Do not merge, do not push, and do not remove the worktree.</pre>
 <footer class="lesson-foot">
   <p><a href="../index.html">Course index</a> · <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a></p>
   <p>Lesson 3.10 of <em>Building apps with a coding agent</em>. Next: <a href="0050-undo.html">3.11 Undo</a>.</p>
+<!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="49" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0050-undo.html">Continue to lesson 50 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0048-merge-conflicts.html">← Previous lesson</a><a href="0050-undo.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

@@ -13,6 +13,14 @@
   <h1>Tests passed, but the screen was wrong</h1>
   <p class="lede">A passing test can be honest and still say nothing about what a person sees. Before you ship, someone has to open the page in a real browser and look at it.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0029-run-yourself.html">2.1 Run it yourself</a></span><span>Win: you can tell a simulated check from a real one, and ask for the real one</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 12 · Lesson 1 of 4</p>
+  <p><strong>Your session goal:</strong> Collect browser evidence and request an independent review.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-12">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -95,7 +103,7 @@ Do not say "done" on the strength of tests alone.</pre></div>
   <div class="answer"><p>A simulated check can prove things about the page's structure and logic: the right elements exist, the text matches, a click runs the handler. It cannot show layout or painting, because it does not render. Only a real browser shows what a person sees: overlap, overflow, cut-off text, wrong colours, and whether the page is usable at a given window size.</p></div>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it now: catch the gap yourself</span>
   <ol>
     <li><label><input type="checkbox"> Ask your agent to open your project's page in a real browser and describe what it sees, at a wide window and at a narrow one.</label></li>
@@ -160,8 +168,18 @@ Do not say "done" on the strength of tests alone.</pre></div>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> say which checks run in a simulated page and which in a real browser, and ask for the real check before anyone else sees the page.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="0036-screenshots-as-evidence.html">Next: 2.8 Screenshots as evidence</a></p>
-  <div class="pager"><span>Previous: <a href="0034-one-command-gate.html">2.6 One-command gate</a></span><span>Next: <a href="0036-screenshots-as-evidence.html">2.8 Screenshots as evidence</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="35" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0036-screenshots-as-evidence.html">Continue to lesson 36 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0034-one-command-gate.html">← Previous lesson</a><a href="0036-screenshots-as-evidence.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

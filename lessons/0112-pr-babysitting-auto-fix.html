@@ -13,6 +13,14 @@
   <h1>Babysitting a pull request: bots review, you merge</h1>
   <p class="lede">Once you run many changes through pull requests, you cannot watch every page yourself. Automated reviewers and CI can do the watching — but the decision to merge, and the patience to wait for green checks, stays with you.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0045-pull-request.html">3.7 The pull request</a> · <a href="0046-local-vs-ci.html">2.12 Local vs CI</a></span><span>Win: you can hand a pull request to auto-fix and still merge only on finished, green checks</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 33 · Lesson 4 of 4</p>
+  <p><strong>Your session goal:</strong> Map ticket dependencies and integrate changes with review checks.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-33">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -78,7 +86,7 @@
 </div>
 
 <h2>Do this with your own project</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <ol>
     <li><label><input type="checkbox"> Push a small branch and open a pull request for it, as in lesson <a href="0045-pull-request.html">3.7</a>.</label></li>
     <li><label><input type="checkbox"> In your terminal, run <code>gh pr checks --watch</code> and watch every check move from pending to a final state. Note the exit code while pending (8).</label></li>
@@ -144,8 +152,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> set up auto-fix babysitting on a pull request, treat bot comments as data to verify, and merge only on finished green checks — using auto-merge that waits, never a bypass.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure modes (one page)</a> · <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a></p>
-  <div class="pager"><span>Next: 9.5 Swarm research and reconciling contradictory reports (coming)</span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="112" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0113-swarm-research-reconciling-contradictory-reports.html">Continue to lesson 113 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0111-parallel-agents-shared-build-folders.html">← Previous lesson</a><a href="0113-swarm-research-reconciling-contradictory-reports.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

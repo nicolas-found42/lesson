@@ -76,7 +76,7 @@ sup.cite a { text-decoration: none; }
 .recall textarea { width: 100%; min-height: 4.5rem; font: inherit; padding: 0.5rem; border: 1px solid var(--rule); border-radius: 4px; background: var(--bg); color: var(--fg); }
 .recall button, .quiz button.opt, .btn { font: 600 0.85rem system-ui, sans-serif; cursor: pointer; border-radius: 4px; min-height: 44px; }
 .btn { background: var(--accent); color: var(--bg); border: 0; padding: 0.5rem 1rem; margin-top: 0.6rem; }
-.recall .answer { display: none; margin-top: 0.8rem; padding: 0.6rem 0.8rem; background: var(--ok-bg); border-radius: 4px; }
+.recall .answer { display: block; margin-top: 0.8rem; padding: 0.6rem 0.8rem; background: var(--ok-bg); border-radius: 4px; }
 .recall .answer.show { display: block; }
 .quiz .q { font-weight: 600; margin: 0 0 0.6rem; }
 .quiz button.opt, .quiz .q { overflow-wrap: anywhere; }
@@ -84,7 +84,7 @@ sup.cite a { text-decoration: none; }
 .quiz button.opt:hover:not(:disabled) { border-color: var(--accent); }
 .quiz button.opt.correct { background: var(--ok-bg); border-color: var(--ok); }
 .quiz button.opt.wrong { background: var(--bad-bg); border-color: var(--bad); }
-.quiz .why { display: none; margin-top: 0.6rem; font-size: 0.92rem; }
+.quiz .why { display: block; margin-top: 0.6rem; font-size: 0.92rem; }
 .quiz .why.show { display: block; }
 .quiz .score { font: 0.8rem system-ui, sans-serif; color: var(--muted); margin-top: 0.6rem; }
 footer.lesson-foot { border-top: 1px solid var(--rule); margin-top: 2.5rem; padding: 1rem 0 3rem; font: 0.85rem/1.5 system-ui, sans-serif; color: var(--muted); }
@@ -120,7 +120,7 @@ footer.lesson-foot .pager { display: flex; justify-content: space-between; gap: 
 .doit ol { list-style: none; padding: 0; margin: 0 0 0.6rem; counter-reset: s; }
 .doit li { counter-increment: s; display: flex; gap: 0.6rem; align-items: flex-start; margin-bottom: 0.6rem; }
 .doit li input { margin-top: 0.35rem; width: 1.1rem; height: 1.1rem; flex: none; }
-.doit .expect { display: none; margin-top: 0.4rem; padding: 0.6rem 0.8rem; background: var(--ok-bg); border-radius: 4px; }
+.doit .expect { display: block; margin-top: 0.4rem; padding: 0.6rem 0.8rem; background: var(--ok-bg); border-radius: 4px; }
 .doit .expect.show { display: block; }
 .doit .progress { font: 0.8rem system-ui, sans-serif; color: var(--muted); }
 /* Click-to-order exercise */
@@ -157,3 +157,32 @@ header.lesson-head h1 { font-weight: 800; letter-spacing: -0.045em; }
   :root:not([data-motion="off"]) .quiz button.opt:active,
   :root:not([data-motion="off"]) .order button.item:active { transform: scale(0.98); }
 }
+
+/* Study steps enhance the full static lesson; no script is needed to read it. */
+[hidden] { display: none !important; }
+.lesson-brief { padding: 1rem; margin-bottom: 1rem; background: var(--accent-soft); border-radius: 6px; font: .85rem/1.5 system-ui, sans-serif; }
+.lesson-brief p:last-child { margin-bottom: 0; }
+.reading-controls { border-block: 1px solid var(--rule); padding-block: .8rem; margin-bottom: 1rem; font: .85rem/1.5 system-ui, sans-serif; }
+.reading-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+.reading-actions button { min-height: 44px; border: 1px solid var(--rule); padding: .5rem .8rem; background: var(--card); color: var(--fg); border-radius: 5px; cursor: pointer; font: inherit; }
+.reading-actions button:disabled { color: var(--muted); cursor: default; }
+.reading-controls p { margin-block: .5rem; }
+.reading-step { display: flow-root; }
+.reading-step > h2:first-child { margin-top: .8rem; }
+.lesson-checkpoint { padding: 1rem; background: var(--accent-soft); border-radius: 6px; margin-block: 1rem; }
+.lesson-checkpoint h2 { margin-top: 0; font-size: 1.15rem; font-style: normal; }
+.lesson-checkpoint .btn { line-height: 1.5; }
+.checkpoint-status { margin-block: .8rem; }
+.checkpoint-next { display: inline-block; padding-block: .5rem; }
+@media print {
+  .reading-controls, [data-complete] { display: none !important; }
+  .reading-step[hidden] { display: flow-root !important; }
+  .doit .expect, .quiz .why, .recall .answer { display: block; }
+}
+
+.js .recall .answer:not(.show), .js .quiz .why:not(.show), .js .doit .expect:not(.show) { display: none; }
+@media print { .js .recall .answer:not(.show), .js .quiz .why:not(.show), .js .doit .expect:not(.show) { display: block; } }
+
+.skip-link { position: absolute; top: .5rem; left: .5rem; padding: .6rem; background: var(--card); transform: translateY(-200%); z-index: 10; }
+.skip-link:focus { transform: none; }
+.reading-bottom a { padding: .6rem; }

@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 0 · Orientation · Lesson 0.3</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 0 · Orientation · Lesson 0.3</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 0 · Lesson 0.3 · First-ship path ★</p>
   <h1>Your project is a folder</h1>
   <p class="lede">An app is not a cloud, a database or a website. Before any of that, it is a folder of text files on your computer, and the agent only works on the folder it was pointed at.</p>
   <div class="meta"><span>About 15 minutes</span><span>Needs: nothing</span><span>Win: you can find your project on disk and say exactly which folder the agent works in</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 1 · Lesson 3 of 3</p>
+  <p><strong>Your session goal:</strong> Explain the agent loop and choose a folder for your first page.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-1">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -90,7 +98,7 @@
   <p>Some systems hide extensions by default, so a file that looks like <code>index.html</code> may really be <code>index.html.txt</code>. Ask your file manager to show full names before you trust one. This is the single most common beginner file problem.</p>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it now: build the folder by hand</span>
   <ol>
     <li><label><input type="checkbox"> In Finder (macOS) or File Explorer (Windows), open your home folder and create a new folder named <code>my-app</code>.</label></li>
@@ -163,8 +171,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> say what a project folder is, read a file path, explain why files are text, and name the folder your agent works in.</p>
   <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Next: <a href="0004-the-terminal-in-five-commands.html">0.4 The terminal in five commands</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="3" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0004-the-terminal-in-five-commands.html">Continue to lesson 4 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0002-the-three-agents.html">← Previous lesson</a><a href="0004-the-terminal-in-five-commands.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

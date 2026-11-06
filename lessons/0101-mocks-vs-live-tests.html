@@ -13,6 +13,14 @@
   <h1>Mocks vs live tests: what each one can catch</h1>
   <p class="lede">A test that talks to a pretend service is fast and free, but it can only catch problems in your own code. A test that goes live can catch the opposite. This lesson is about knowing which is which, and asking for the right mix.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0031-test.html">2.3 What a test is</a></span><span>Win: you can read a test suite and say which checks pretend, which go over the wire, and which go live</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 31 · Lesson 1 of 4</p>
+  <p><strong>Your session goal:</strong> Distinguish mocks from live evidence and bound a slow dependency.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-31">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -63,7 +71,7 @@
   <div class="answer"><p>Mocked tests (pretend objects answering canned replies, with fixtures), wire tests (real requests over the real protocol to a local fake server), and live tests (real calls to the real service). A mocked test can never prove the real service will accept your real request.</p></div>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own agent</span>
   <ol>
     <li><label><input type="checkbox"> Open your agent in your project folder, with approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</label></li>
@@ -135,8 +143,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> tell mocked, wire and live tests apart, read what each kind proves, and ask your agent for the right mix with live tests budgeted and isolated.</p>
   <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Previous: <a href="0100-docker.html">8.12 Docker</a></span><span>Next: <a href="0102-deploy-blockers.html">8.14 Deploy blockers</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="101" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0102-deploy-blockers.html">Continue to lesson 102 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0100-docker.html">← Previous lesson</a><a href="0102-deploy-blockers.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

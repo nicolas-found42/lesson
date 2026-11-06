@@ -13,6 +13,14 @@
   <h1>Show, don't tell: screenshots as bug reports</h1>
   <p class="lede">The agent reads files and command output. It does not look at your screen. When something is wrong in a way words keep missing, a picture is the shortest true description you can give.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0007-first-prompt-to-a-page.html">0.7 First prompt to a page</a></span><span>Win: you can report a visual problem so the agent fixes the real one</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 8 · Lesson 2 of 3</p>
+  <p><strong>Your session goal:</strong> Use a reference and a screenshot to steer one change.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-8">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -102,7 +110,7 @@ Fix that and change nothing else. Then take a new screenshot at the same size an
 <p><strong>Ask for the after picture.</strong> The fix is not proven by the agent saying it is fixed. Ask it to repeat the same view and attach the result, or reopen the page yourself. This is the same rule as lesson 0.1 — "done" is a claim — applied to something you can now see side by side.</p>
 <p>If the agent has a browser tool, you can also tell it to keep its own screenshot as a file: <q>Take a screenshot of the checkout page and save it to disk</q> is the example in Claude Code's Chrome page.<sup class="cite"><a href="#src-chrome">[1]</a></sup> That file is evidence you can compare later, not only a message that scrolls away.</p>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it now, in your own project</span>
   <ol>
     <li><label><input type="checkbox"> Start the page you made in <a href="0007-first-prompt-to-a-page.html">lesson 0.7</a> and open it in your browser.</label></li>
@@ -177,8 +185,18 @@ Fix that and change nothing else. Then take a new screenshot at the same size an
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> describe what an agent can and cannot see, attach a cropped screenshot with a four-line explanation, and ask for a fresh screenshot as proof.</p>
   <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/failure-modes.html">Failure modes</a></p>
-  <div class="pager"><span>Previous: <a href="0023-reference-as-spec.html">1.8 A reference as a spec</a></span> · <span>Next: <a href="0025-steering-mid-run.html">1.10 Steering mid-run</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="24" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0025-steering-mid-run.html">Continue to lesson 25 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0023-reference-as-spec.html">← Previous lesson</a><a href="0025-steering-mid-run.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

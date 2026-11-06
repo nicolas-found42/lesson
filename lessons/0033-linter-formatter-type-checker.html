@@ -13,6 +13,14 @@
   <h1>Linters, formatters and type checkers</h1>
   <p class="lede">A test runs your app and watches what happens. Three cheaper readers never run it at all: they read the code and complain. Knowing which one to ask for turns a vague "looks fine" into a pass or a fail.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0031-test.html">2.3 What a test is</a></span><span>Win: you can name the three checks and ask for each one</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 11 · Lesson 2 of 3</p>
+  <p><strong>Your session goal:</strong> Add a regression check and run the project gate.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-11">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -114,7 +122,7 @@ error: Type checking failed.</code></pre>
 </div>
 <p>Lesson <a href="0027-project-rules-file.html">1.12</a> covers writing that file well. For now, three lines are enough: the formatter check, the linter, and the type checker, each exactly as the project runs it.</p>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own project</span>
   <ol>
     <li><label><input type="checkbox"> Open your agent in your practice project, with approval prompts on.</label></li>
@@ -181,8 +189,18 @@ error: Type checking failed.</code></pre>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> tell a formatter from a linter and a type checker, ask for each one by name, and read a check result as evidence rather than a slogan.</p>
   <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure modes</a></p>
-  <div class="pager"><span>Next: <a href="0034-one-command-gate.html">2.6 One command that runs every check</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="33" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0034-one-command-gate.html">Continue to lesson 34 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0032-regression-test.html">← Previous lesson</a><a href="0034-one-command-gate.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

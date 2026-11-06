@@ -13,6 +13,14 @@
   <h1>Third-party churn: deprecations and dead documentation</h1>
   <p class="lede">The services your app calls are run by other people, and they change without asking. Features get deprecated, doc pages move or die, and a confident agent can quote a dead page as if it were fact. Learn to spot churn early and to verify every link before you build on it.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0075-stale-invented-claims.html">5.8 Stale or invented claims</a></span><span>Win: you can check a provider's deprecation notices yourself and make your agent prove a doc link is alive before using it</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 31 · Lesson 3 of 4</p>
+  <p><strong>Your session goal:</strong> Distinguish mocks from live evidence and bound a slow dependency.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-31">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -65,7 +73,7 @@
 </div>
 
 <h2>Do it in your own project</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own project</span>
   <ol>
     <li><label><input type="checkbox"> List every third-party service your app uses (maps, login, payments, AI) in your README or rules file, each with its docs and changelog URL.</label></li>
@@ -153,8 +161,18 @@ Report what you found and what you did NOT verify. Use read-only checks; change 
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain 404 vs 410, check a provider's changelog for deprecations before building, and make your agent prove a doc link returns 200 before quoting it.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><a href="0102-deploy-blockers.html">← 8.14 Deploy blockers</a><a href="0104-llm-calls-as-dependency.html">8.16 LLM calls as a dependency →</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="103" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0104-llm-calls-as-dependency.html">Continue to lesson 104 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0102-deploy-blockers.html">← Previous lesson</a><a href="0104-llm-calls-as-dependency.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

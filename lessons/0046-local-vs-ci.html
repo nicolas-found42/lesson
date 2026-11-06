@@ -13,6 +13,14 @@
   <h1>Local vs CI: skipped locally, failed in the cloud</h1>
   <p class="lede">Your checks passed on your laptop. Then the pull request went red. Nothing is broken in your code and nothing is lying to you: two different computers ran two different sets of checks.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0031-test.html">2.3 What a test is</a> · <a href="0045-pull-request.html">3.7 The pull request</a></span><span>Win: you can tell a real pass from a skipped one, and read a CI failure</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 15 · Lesson 2 of 3</p>
+  <p><strong>Your session goal:</strong> Open a pull request and distinguish local checks from CI.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-15">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -97,7 +105,7 @@
 </div>
 
 <h2>Do this with your own project</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <ol>
     <li><label><input type="checkbox"> In your project folder, ask your agent: <em>"Run our checks and show me the full summary line, including any skipped count."</em> Keep the output.</label></li>
     <li><label><input type="checkbox"> Push a branch and open a pull request, as in <a href="0045-pull-request.html">3.7</a>. Wait for the checks to finish. You want the finished list, not a spinner.</label></li>
@@ -161,8 +169,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain why a green laptop run and a red pull request can both be true, read a skip as "not checked", and find the first error line in a CI log.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure modes (one page)</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a></p>
-  <div class="pager"><span>Next: <a href="0040-be-first-time-user.html">2.13 Be a first-time user</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="46" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0047-merge-vs-squash.html">Continue to lesson 47 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0045-pull-request.html">← Previous lesson</a><a href="0047-merge-vs-squash.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

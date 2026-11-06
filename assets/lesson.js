@@ -7,6 +7,7 @@
  *          Keep every option the same length; vary which index is correct between questions.
  */
 (function () {
+  document.documentElement.classList.add("js");
   // Carry the reader's motion choice from the home page into reading pages.
   try {
     if (localStorage.getItem("lesson.motion") === "off") document.documentElement.dataset.motion = "off";
@@ -100,7 +101,7 @@
     function upd() {
       var n = boxes.filter(function (b) { return b.checked; }).length;
       if (pr) pr.textContent = n + " of " + boxes.length + " steps done";
-      if (ex) ex.classList.toggle("show", n === boxes.length && boxes.length > 0);
+      if (ex) ex.classList.toggle("show", n === boxes.length);
     }
     boxes.forEach(function (b) { b.addEventListener("change", upd); });
     upd();

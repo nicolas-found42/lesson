@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.10</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 6 · Shipping a static app · Lesson 6.10</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 6 · Lesson 6.10</p>
   <h1>Your own address for the site (optional)</h1>
   <p class="lede">Your app already has a working address like YOUR_USERNAME.github.io/my-app. A custom domain — yourname.com — is a nice extra, not a requirement. This lesson shows what it involves so you can decide whether it is worth it.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0083-other-hosts.html">6.8 Other hosts</a></span><span>Win: you can decide whether a custom domain is worth it, and if so, point one at your live site yourself</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 26 · Lesson 3 of 3</p>
+  <p><strong>Your session goal:</strong> Choose a host and rehearse a rollback before adding a domain.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-26">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -50,7 +58,7 @@
 </div>
 
 <h2>Do it (only if you already own a domain)</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it now — optional, needs a domain you own</span>
   <ol>
     <li><label><input type="checkbox"> In your site's repo on GitHub: <strong>Settings → Pages → Custom domain</strong>, type <code>www.yourdomain.com</code>, click <strong>Save</strong>. Confirm a commit added a <code>CNAME</code> file to your branch.</label></li>
@@ -125,8 +133,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> decide whether a custom domain is worth it for your app, and if you own one, point it at your live site in the safe order — host first, DNS second — then verify with dig and a private window.</p>
   <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><a href="0084-rollback.html">Previous: Rollback</a> · <a href="0086-choose-idea.html">Next: Choose an idea</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="85" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0086-choose-idea.html">Continue to lesson 86 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0084-rollback.html">← Previous lesson</a><a href="0086-choose-idea.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

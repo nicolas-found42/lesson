@@ -13,6 +13,14 @@
 <h1>Permission errors: when the server says no</h1>
 <p class="lede">A refused push does not mean your app is broken. Find out which account, repository and permission the request actually used before changing anything.</p>
 <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0011-remote-origin-push.html">3.6 Remote, origin, push</a></span><span>Win: you can turn a permission refusal into a specific access request</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 17 · Lesson 1 of 4</p>
+  <p><strong>Your session goal:</strong> Diagnose permission failures and set a checkpoint policy.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-17">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 <h2>Why this matters for shipping your app</h2>
@@ -70,7 +78,7 @@
 <p>Credentials go stale. A token can expire, be revoked, or stay cached after you switch accounts. A login that worked last month is not evidence about today. That is why the first check is what the tool says it is using right now.</p>
 <div class="warn"><span class="label">Keep secrets out of the diagnosis</span><p>GitHub says <q>Treat your access tokens like passwords.</q><sup class="cite"><a href="#src-token">[4]</a></sup> Never paste a token into your prompt, screenshot or error report. Share the status code, operation and redacted message instead.</p></div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
 <span class="label">Do it in your own project</span>
 <ol>
 <li><label><input type="checkbox"> Keep approval prompts on, as in <a href="0006-approvals-and-permissions.html">lesson 0.6</a>. Open your project and use the prompt below.</label></li>
@@ -132,8 +140,18 @@ Finish with the smallest specific access request I could send to the repository 
 <footer class="lesson-foot">
 <p><strong>You can now:</strong> distinguish a refused request from missing access, explain why a fork has separate permissions, and ask for a specific role or token permission without exposing credentials.</p>
 <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../reference/safety-checklist.html">Safety checklist</a></p>
-<div class="pager"><a href="0050-undo.html">Previous: Undo</a> · <a href="0052-checkpoint-often.html">Next: Checkpoint often</a></div>
+<!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="51" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0052-checkpoint-often.html">Continue to lesson 52 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0050-undo.html">← Previous lesson</a><a href="0052-checkpoint-often.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

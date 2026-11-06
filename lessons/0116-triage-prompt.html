@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 9 · Working at scale · Lesson 9.8</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 9 · Working at scale · Lesson 9.8</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 9 · Lesson 9.8</p>
   <h1>Triage first: diagnose before you act</h1>
   <p class="lede">When a project has grown several branches and open questions, the expensive mistake is acting on a guess. A read-only triage pass turns "something is off" into a ranked list you approve before anything changes.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0044-branch.html">3.5 Branch</a></span><span>Win: you can run a triage pass and approve a plan before letting the agent touch anything</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 34 · Lesson 4 of 4</p>
+  <p><strong>Your session goal:</strong> Reconcile research and write a handoff another person can follow.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-34">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -74,7 +82,7 @@ Report four things:
 <p>Triage is a tool, not a ritual. Skip it when the mess is one file you can name, or the change is a single word you wrote this morning — asking for a full report there is over-asking (lesson <a href="0065-over-asking.html">4.11</a>). Use it when the state is genuinely unknown: many branches, unclear what is merged, or a bug you have not diagnosed. A good middle size is "triage only the branches" rather than "triage everything".</p>
 
 <h2>Do it in your own agent</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Practice on your own repo</span>
   <ol>
     <li><label><input type="checkbox"> Open your agent in your project folder from the earlier lessons, with approval prompts on.</label></li>
@@ -147,8 +155,18 @@ Report four things:
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> send a read-only triage prompt, read a state-plus-diagnosis-plus-ranked-recommendations report, and approve action in one sentence.</p>
   <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Previous: <a href="0115-handoff-docs-long-sessions.html">9.7 Handoff docs</a></span> · <span>End of Unit 9 — see <a href="../index.html">the course index</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="116" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="../index.html#study-plan">Return to the study plan →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0115-handoff-docs-long-sessions.html">← Previous lesson</a><a href="../index.html#study-plan">Return to your study plan →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

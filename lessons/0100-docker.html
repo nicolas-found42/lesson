@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.12</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.12</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 8 · Lesson 8.12</p>
   <h1>Docker: run tests in a throwaway box, not on your real data</h1>
   <p class="lede">Once your app has a backend, every test can write to a database. Docker lets you start a private, disposable copy of that backend so tests never touch what is real. Four words cover it: image, container, volume, port.</p>
   <div class="meta"><span>About 15 minutes</span><span>Needs: <a href="0076-background-processes-exit-codes-waiting-vs.html">5.9 Background processes, exit codes, waiting vs polling</a></span><span>Win: you can ask for an isolated test run that cannot touch your real data</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 30 · Lesson 4 of 4</p>
+  <p><strong>Your session goal:</strong> Separate local infrastructure from production and inspect its logs.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-30">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -69,7 +77,7 @@
 
 <h2>Do it: one throwaway container, by hand</h2>
 <p>Keep your approval prompts on. These commands are safe: nothing is deleted except the throwaway container itself.</p>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Try it in your terminal</span>
   <ol>
     <li><label><input type="checkbox"> Type <code>docker --version</code> and read the version line.</label></li>
@@ -147,8 +155,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> name image, container, volume and port; explain why tests belong in a throwaway container; and ask your agent for an isolated run that cannot touch real data.</p>
   <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><a href="0099-ci-logging-without-key-file.html">← 8.11 CI logging without a key file</a><a href="0101-mocks-vs-live-tests.html">Next: 8.13 Mocks vs live tests →</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="100" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0101-mocks-vs-live-tests.html">Continue to lesson 101 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0099-ci-logging-without-key-file.html">← Previous lesson</a><a href="0101-mocks-vs-live-tests.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

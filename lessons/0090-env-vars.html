@@ -13,6 +13,14 @@
   <h1>Environment variables: settings that stay out of your code</h1>
   <p class="lede">Your app will need values it must not carry inside its files — a key, a password, an address. Environment variables are the place those values live, and a <code>.env</code> file is how you keep them on your own machine without committing them.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0089-secrets.html">8.1 Secrets: what they are and why not in code</a></span><span>Win: you can give your app a secret safely and explain the difference between <code>.env</code> and <code>.env.example</code></span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 28 · Lesson 2 of 4</p>
+  <p><strong>Your session goal:</strong> Map secrets and configure an API credential without exposing it.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-28">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -61,7 +69,7 @@ MAP_TOKEN=PASTE_YOUR_KEY_HERE
 
 <h2>Set it up in your own project</h2>
 <p>This is a doing lesson, so do it in the project folder of your app — or in any throwaway folder if you are not mid-project. Keep your agent's approval prompts on; creating two small text files is exactly the kind of change you should see and approve.</p>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <ol>
     <li><label><input type="checkbox"> In your project folder, create a file named <code>.env</code> containing one line: <code>MY_APP_KEY=PASTE_YOUR_KEY_HERE</code></label></li>
     <li><label><input type="checkbox"> Create <code>.env.example</code> with the same line but an empty value: <code>MY_APP_KEY=</code></label></li>
@@ -134,8 +142,18 @@ never print its value back to me.</pre>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain what an environment variable is, keep a real secret in a git-ignored <code>.env</code>, ship a placeholder <code>.env.example</code> to teammates, and restart a session after changing <code>.env</code>.</p>
   <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Previous: <a href="0089-secrets.html">8.1 Secrets</a></span><span>Next: <a href="0091-never-print-commit.html">8.3 Never print or commit a secret</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="90" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0091-never-print-commit.html">Continue to lesson 91 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0089-secrets.html">← Previous lesson</a><a href="0091-never-print-commit.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

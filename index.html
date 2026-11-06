@@ -5,62 +5,361 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Building Apps with a Coding Agent — Course Home</title>
 <link rel="stylesheet" href="assets/lesson.css">
-<link rel="stylesheet" href="assets/home-motion.css">
-<link rel="stylesheet" href="assets/home-lab.css">
+<link rel="stylesheet" href="assets/home.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to the content</a>
-<nav class="crumbs lab-nav" aria-label="Course">
-  <a class="lab-brand" href="index.html"><span class="brand-mark" aria-hidden="true">✳</span> zero to shipped<span class="brand-dot" aria-hidden="true">.</span></a>
-  <div class="lab-nav-actions"><a href="#unit-0">The lessons <span aria-hidden="true">↗</span></a><button id="motion-toggle" type="button" aria-pressed="true" hidden>Motion <span class="motion-state" aria-hidden="true">on</span></button></div>
-</nav>
+<nav class="crumbs home-nav" aria-label="Course"><a href="index.html">zero to shipped.</a><a href="#library">Lesson library</a></nav>
 <header class="lesson-head">
-  <div class="hero-copy">
-    <p class="kicker"><span aria-hidden="true">✦</span> Big ideas start small</p>
-    <h1>Your idea.<br>Your AI sidekick.<br><span class="hero-highlight">A real web app.</span></h1>
-    <p class="lede">Learn to build with a coding agent: a helper that can change files and try things out. You bring the idea. You stay in charge.</p>
-    <div class="cta-row">
-      <a class="cta cta-primary" href="lessons/0001-what-a-coding-agent-is.html">Let’s build something <span aria-hidden="true">↗</span></a>
-      <a class="hero-secondary" href="#playground">Try the mini demo <span aria-hidden="true">↓</span></a>
-    </div>
-    <div class="meta"><span>116 bite-size lessons</span><span>About 15 min each</span><span>Start from zero</span></div>
-  </div>
-  <section class="build-lab" id="playground" aria-labelledby="lab-title" data-step="0">
-    <div class="lab-topline"><span class="live-dot" aria-hidden="true"></span><span>THE BUILD LAB</span><span class="demo-label">Mini demo</span></div>
-    <div class="lab-heading"><h2 id="lab-title">So, what does an agent do?</h2><span class="lab-spark" aria-hidden="true">✳</span></div>
-    <p class="lab-instruction">An idea becomes files. Then you try the page.</p>
-    <div class="lab-steps" role="group" aria-label="Explore the agent loop" hidden>
-      <button type="button" data-lab-step="0" aria-pressed="true"><span>1</span> You ask</button>
-      <button type="button" data-lab-step="1" aria-pressed="false"><span>2</span> Agent builds</button>
-      <button type="button" data-lab-step="2" aria-pressed="false"><span>3</span> You check</button>
-    </div>
-    <div class="lab-scene">
-      <div class="lab-message" aria-live="polite" aria-atomic="true"><span id="lab-speaker">YOU → AGENT</span><p id="lab-message">“Make a page for my space club, with a big purple planet.”</p></div>
-      <div class="lab-workbench">
-        <div class="bot" aria-hidden="true">
-          <svg viewBox="0 0 120 140" fill="none"><path d="M60 27V12" stroke="currentColor" stroke-width="6"/><circle cx="60" cy="9" r="7" fill="#edff8d"/><rect x="13" y="29" width="94" height="73" rx="25" fill="#edff8d" stroke="currentColor" stroke-width="4"/><rect x="26" y="43" width="68" height="37" rx="14" fill="#19284a"/><path d="M42 57v8m35-8v8" stroke="#edff8d" stroke-width="7" stroke-linecap="round"/><path d="M50 90h20M37 108l-9 19m55-19 9 19" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M5 57v18m110-18v18" stroke="#edff8d" stroke-width="8" stroke-linecap="round"/></svg>
-          <span>Your sidekick</span>
-        </div>
-        <div class="mini-preview" role="group" aria-label="Example space club page">
-          <div class="preview-chrome"><span aria-hidden="true">● ● ●</span><span>space-club.html</span></div>
-          <div class="preview-page"><span class="planet" aria-hidden="true">✦</span><strong>SPACE CLUB</strong><span class="preview-detail">Big ideas. Bigger galaxies.</span><button class="preview-join" type="button" disabled>Join the adventure <span aria-hidden="true">↗</span></button></div>
-          <div class="preview-caption" id="preview-caption">Your idea goes here</div>
-        </div>
-      </div>
-      <p class="lab-explanation" id="lab-explanation">You describe what you want. The agent needs a clear goal before it starts.</p>
-      <div class="lab-confetti" aria-hidden="true"></div>
-    </div>
-    <noscript><p class="lab-fallback">You ask → the agent changes files → you open the page and check it. You decide what happens next.</p></noscript>
-    <p class="lab-note">A pretend project to show the idea. Your real project starts in lesson 0.1.</p>
-  </section>
+  <p class="kicker">A practical course for complete beginners</p>
+  <h1>Build a small page.<br>Learn to put it on the web.</h1>
+  <p class="lede">Use a coding agent to make something of your own. Start with one lesson, try its task, and leave with a result you can check.</p>
+  <p>No coding experience needed. Choose one agent and keep the same tiny page as you learn.</p>
+  <div class="meta"><span>About 15–20 minutes of reading per lesson</span><span>Practice and setup take extra time</span></div>
 </header>
 <main id="main" tabindex="-1">
-
-<div class="hero-box">
-  <span class="path-icon" aria-hidden="true">★</span><div><p class="path-label">YOUR FIRST MISSION</p><p><strong>Make something. Put it on the web.</strong> Follow the 41 ★ lessons for your first launch. Explore the others whenever you’re curious.</p></div><a class="cta" href="lessons/0001-what-a-coding-agent-is.html">Start here <span aria-hidden="true">↗</span></a>
-</div>
-
-<div class="browse-heading"><div><p class="kicker">Pick your next discovery</p><h2>Your learning map<span aria-hidden="true">.</span></h2></div><a href="#reference">Need a quick answer? <span aria-hidden="true">↗</span></a></div>
+<section class="course-start" aria-labelledby="start-title">
+  <p class="kicker">Your next small step</p>
+  <h2 id="start-title">Understand what your agent can do</h2>
+  <p id="next-description">Today: learn the three-part loop, then write down how you would check a change. No installation needed yet.</p>
+  <a class="cta" id="course-resume" href="lessons/0001-what-a-coding-agent-is.html">Start lesson 1 →</a>
+  <p id="course-progress" class="course-note" aria-live="polite">One lesson is enough for today. You can stop after its task.</p>
+  <p class="course-note" id="storage-note">Checkpoints are optional and saved only in this browser when storage is available. They are your own record, not a grade. Without JavaScript, follow the study plan and bookmark your next lesson.</p>
+</section>
+<section id="study-plan" aria-labelledby="plan-title">
+  <h2 id="plan-title">Your path to a first launch</h2>
+  <p>Five study sessions, three lessons each. Split a session across days: each lesson has its own task and stopping point. Read in order so the setup comes before publishing.</p>
+  <p><strong>Your project:</strong> a page with a heading and a sentence about something you care about. Use the same project folder throughout. Save any notes beside it; keep passwords and keys out.</p>
+  <!-- COURSE_PLAN -->
+<details class="course-session" id="session-1" open>
+  <summary><span class="session-number">Session 1 · 3 lessons</span><h3>Get your bearings</h3><span class="session-outcome">Explain the agent loop and choose a folder for your first page.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="1" href="lessons/0001-what-a-coding-agent-is.html">1. What a coding agent actually is</a><span class="completion-label"></span></li>
+    <li><a data-lesson="2" href="lessons/0002-the-three-agents.html">2. The three agents: same ideas, different shells</a><span class="completion-label"></span></li>
+    <li><a data-lesson="3" href="lessons/0003-your-project-is-a-folder.html">3. Your project is a folder</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-2">
+  <summary><span class="session-number">Session 2 · 3 lessons</span><h3>Set up a safe workspace</h3><span class="session-outcome">Open your project in one agent with approval prompts on.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="4" href="lessons/0004-the-terminal-in-five-commands.html">4. The terminal in five commands</a><span class="completion-label"></span></li>
+    <li><a data-lesson="5" href="lessons/0005-install-and-sign-in.html">5. Install and sign in</a><span class="completion-label"></span></li>
+    <li><a data-lesson="6" href="lessons/0006-approvals-and-permissions.html">6. Approvals and permissions: what your agent may do</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-3">
+  <summary><span class="session-number">Session 3 · 3 lessons</span><h3>Make a page on your screen</h3><span class="session-outcome">Build a tiny page, identify its files, and explain why you need a save point.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="7" href="lessons/0007-first-prompt-to-a-page.html">7. Your first prompt, and a page on your screen</a><span class="completion-label"></span></li>
+    <li><a data-lesson="8" href="lessons/0008-anatomy-of-a-web-page.html">8. Anatomy of a web page</a><span class="completion-label"></span></li>
+    <li><a data-lesson="9" href="lessons/0009-why-save-points-exist.html">9. Why save points exist</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-4">
+  <summary><span class="session-number">Session 4 · 3 lessons</span><h3>Save your work</h3><span class="session-outcome">Make a commit, connect a remote, and check that your page can use static hosting.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="10" href="lessons/0010-repo-working-tree-uncommitted-change.html">10. Repository, working tree, uncommitted change</a><span class="completion-label"></span></li>
+    <li><a data-lesson="11" href="lessons/0011-remote-origin-push.html">11. Remote, origin and push</a><span class="completion-label"></span></li>
+    <li><a data-lesson="12" href="lessons/0012-static-vs-dynamic.html">12. Static or dynamic, and what hosting means</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-5">
+  <summary><span class="session-number">Session 5 · 3 lessons</span><h3>Publish your first page</h3><span class="session-outcome">Open your public page in a private browser window and check the result.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="13" href="lessons/0013-github-pages.html">13. GitHub Pages: what your URL will be</a><span class="completion-label"></span></li>
+    <li><a data-lesson="14" href="lessons/0014-deploy-merge-live.html">14. Merged is not live</a><span class="completion-label"></span></li>
+    <li><a data-lesson="15" href="lessons/0015-ship-a-hello-world-page.html">15. Ship a hello world page</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="later-study"><summary>After your first launch: grow your skills and build your own app</summary><p>Keep using the same page for practice. These sessions lead to a project of your own in session 27. Take one session at a time.</p>
+<details class="course-session" id="session-6">
+  <summary><span class="session-number">Session 6 · 3 lessons</span><h3>Describe the change</h3><span class="session-outcome">Write a goal, inspect the project, and clarify one unfamiliar word.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="16" href="lessons/0016-goal-audience-not-method.html">16. Goal and audience, not method</a><span class="completion-label"></span></li>
+    <li><a data-lesson="17" href="lessons/0017-orient-first.html">17. Orient first</a><span class="completion-label"></span></li>
+    <li><a data-lesson="18" href="lessons/0018-ask-word-means.html">18. Ask what a word means</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-7">
+  <summary><span class="session-number">Session 7 · 4 lessons</span><h3>Agree on a plan</h3><span class="session-outcome">Answer an interview and approve a bounded plan.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="19" href="lessons/0019-interview.html">19. The interview: numbered questions with a recommended answer</a><span class="completion-label"></span></li>
+    <li><a data-lesson="20" href="lessons/0020-yes-all.html">20. &quot;Yes to all&quot; — and amending inside the yes</a><span class="completion-label"></span></li>
+    <li><a data-lesson="21" href="lessons/0021-when-override-recommendation.html">21. When to override a recommendation</a><span class="completion-label"></span></li>
+    <li><a data-lesson="22" href="lessons/0022-plan-then-human-go.html">22. Plan, then a human &quot;go&quot;</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-8">
+  <summary><span class="session-number">Session 8 · 3 lessons</span><h3>Give useful feedback</h3><span class="session-outcome">Use a reference and a screenshot to steer one change.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="23" href="lessons/0023-reference-as-spec.html">23. A reference is a spec</a><span class="completion-label"></span></li>
+    <li><a data-lesson="24" href="lessons/0024-show-dont-tell.html">24. Show, don&#x27;t tell: screenshots as bug reports</a><span class="completion-label"></span></li>
+    <li><a data-lesson="25" href="lessons/0025-steering-mid-run.html">25. Steering an agent that is already running</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-9">
+  <summary><span class="session-number">Session 9 · 3 lessons</span><h3>Keep your instructions</h3><span class="session-outcome">Record project rules and ask for one outcome-sized change.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="26" href="lessons/0026-skills-slash-commands-mentions.html">26. Skills, slash commands and @-mentions</a><span class="completion-label"></span></li>
+    <li><a data-lesson="27" href="lessons/0027-project-rules-file.html">27. Write the procedure once</a><span class="completion-label"></span></li>
+    <li><a data-lesson="28" href="lessons/0028-outcome-sized-prompts-vs-micro-managing.html">28. Outcome-sized prompts, not micro-managing</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-10">
+  <summary><span class="session-number">Session 10 · 3 lessons</span><h3>Collect evidence</h3><span class="session-outcome">Try the app yourself and record what its tests actually prove.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="29" href="lessons/0029-run-yourself.html">29. Run it yourself</a><span class="completion-label"></span></li>
+    <li><a data-lesson="30" href="lessons/0030-claims-vs-evidence.html">30. Claims versus evidence</a><span class="completion-label"></span></li>
+    <li><a data-lesson="31" href="lessons/0031-test.html">31. What a test is</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-11">
+  <summary><span class="session-number">Session 11 · 3 lessons</span><h3>Build a checking habit</h3><span class="session-outcome">Add a regression check and run the project gate.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="32" href="lessons/0032-regression-test.html">32. Prove the bug before you fix it</a><span class="completion-label"></span></li>
+    <li><a data-lesson="33" href="lessons/0033-linter-formatter-type-checker.html">33. Linters, formatters and type checkers</a><span class="completion-label"></span></li>
+    <li><a data-lesson="34" href="lessons/0034-one-command-gate.html">34. One command gate: put the checks in the repo</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-12">
+  <summary><span class="session-number">Session 12 · 4 lessons</span><h3>Inspect the real result</h3><span class="session-outcome">Collect browser evidence and request an independent review.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="35" href="lessons/0035-real-vs-simulated.html">35. Tests passed, but the screen was wrong</a><span class="completion-label"></span></li>
+    <li><a data-lesson="36" href="lessons/0036-screenshots-as-evidence.html">36. Screenshots as evidence</a><span class="completion-label"></span></li>
+    <li><a data-lesson="37" href="lessons/0037-logs-telemetry.html">37. Logs and telemetry: enough to diagnose?</a><span class="completion-label"></span></li>
+    <li><a data-lesson="38" href="lessons/0038-independent-reviewer.html">38. The independent reviewer</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-13">
+  <summary><span class="session-number">Session 13 · 3 lessons</span><h3>Test as a new user</h3><span class="session-outcome">Challenge a checker and reproduce a user report.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="39" href="lessons/0039-checker-can-be-wrong.html">39. The checker can be wrong</a><span class="completion-label"></span></li>
+    <li><a data-lesson="40" href="lessons/0040-be-first-time-user.html">40. Be a first-time user</a><span class="completion-label"></span></li>
+    <li><a data-lesson="41" href="lessons/0041-reading-screenshots-diagnostics-from-real-user.html">41. Reading a real user&#x27;s screenshot</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-14">
+  <summary><span class="session-number">Session 14 · 3 lessons</span><h3>Create safe save points</h3><span class="session-outcome">Ignore generated files, name a commit, and work on a branch.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="42" href="lessons/0042-gitignore.html">42. What not to track: .gitignore</a><span class="completion-label"></span></li>
+    <li><a data-lesson="43" href="lessons/0043-commit-messages.html">43. Commit messages, and what a commit includes</a><span class="completion-label"></span></li>
+    <li><a data-lesson="44" href="lessons/0044-branch.html">44. Branch: a parallel line of work</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-15">
+  <summary><span class="session-number">Session 15 · 3 lessons</span><h3>Review before merging</h3><span class="session-outcome">Open a pull request and distinguish local checks from CI.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="45" href="lessons/0045-pull-request.html">45. The pull request: a proposal, not a merge</a><span class="completion-label"></span></li>
+    <li><a data-lesson="46" href="lessons/0046-local-vs-ci.html">46. Local vs CI: skipped locally, failed in the cloud</a><span class="completion-label"></span></li>
+    <li><a data-lesson="47" href="lessons/0047-merge-vs-squash.html">47. Merge or squash, and what &quot;merged&quot; means</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-16">
+  <summary><span class="session-number">Session 16 · 3 lessons</span><h3>Recover safely</h3><span class="session-outcome">Practice conflict handling, isolated work, and undo in a disposable copy.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="48" href="lessons/0048-merge-conflicts.html">48. When two changes collide</a><span class="completion-label"></span></li>
+    <li><a data-lesson="49" href="lessons/0049-worktrees.html">49. Worktrees: two checkouts, one repository</a><span class="completion-label"></span></li>
+    <li><a data-lesson="50" href="lessons/0050-undo.html">50. Undo: revert, reset, and the copy of the remote you cannot see</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-17">
+  <summary><span class="session-number">Session 17 · 4 lessons</span><h3>Protect working software</h3><span class="session-outcome">Diagnose permission failures and set a checkpoint policy.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="51" href="lessons/0051-permission-errors.html">51. Permission errors: when the server says no</a><span class="completion-label"></span></li>
+    <li><a data-lesson="52" href="lessons/0052-checkpoint-often.html">52. Checkpoint often</a><span class="completion-label"></span></li>
+    <li><a data-lesson="53" href="lessons/0053-default-branch-rename.html">53. Renaming the default branch and retiring branches</a><span class="completion-label"></span></li>
+    <li><a data-lesson="54" href="lessons/0054-branch-protection-prs-only-convention.html">54. Branch protection: making &quot;PRs only&quot; a rule</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-18">
+  <summary><span class="session-number">Session 18 · 4 lessons</span><h3>Set the finish line</h3><span class="session-outcome">Give one task acceptance checks, a stop condition, and a budget.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="55" href="lessons/0055-definition-done-acceptance-criteria.html">55. Definition of done: deciding what &quot;finished&quot; means</a><span class="completion-label"></span></li>
+    <li><a data-lesson="56" href="lessons/0056-scope-creep-scope-ladder.html">56. Scope creep and the scope ladder</a><span class="completion-label"></span></li>
+    <li><a data-lesson="57" href="lessons/0057-stop-conditions.html">57. Stop conditions: decide where the run ends</a><span class="completion-label"></span></li>
+    <li><a data-lesson="58" href="lessons/0058-budgets.html">58. Budgets: time, attempts, dollars</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-19">
+  <summary><span class="session-number">Session 19 · 3 lessons</span><h3>Resolve the right problem</h3><span class="session-outcome">Separate a cause from a workaround and reconcile competing requirements.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="59" href="lessons/0059-root-cause-vs-workaround.html">59. Root cause versus workaround</a><span class="completion-label"></span></li>
+    <li><a data-lesson="60" href="lessons/0060-conflicting-requirements.html">60. Conflicting requirements: spot them, surface them, choose</a><span class="completion-label"></span></li>
+    <li><a data-lesson="61" href="lessons/0061-reward-hacking-goodhart.html">61. Reward hacking, or the metric gets gamed</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-20">
+  <summary><span class="session-number">Session 20 · 3 lessons</span><h3>Recover a drifting run</h3><span class="session-outcome">Check scope and resume from a known working checkpoint.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="62" href="lessons/0062-vague-prompts-safe-only-when-repo.html">62. Vague prompts are safe only when the repo defines &quot;works&quot;</a><span class="completion-label"></span></li>
+    <li><a data-lesson="63" href="lessons/0063-long-unsupervised-runs.html">63. Long runs you don&#x27;t watch: checkpoints and progress logs</a><span class="completion-label"></span></li>
+    <li><a data-lesson="64" href="lessons/0064-recovering-derail.html">64. Recovering a derail</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-21">
+  <summary><span class="session-number">Session 21 · 3 lessons</span><h3>Keep decisions manageable</h3><span class="session-outcome">Resolve useful questions and cut a feature on purpose.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="65" href="lessons/0065-over-asking.html">65. Over-asking: cap the interview before it runs too long</a><span class="completion-label"></span></li>
+    <li><a data-lesson="66" href="lessons/0066-questions-agent-cant-answer-vs-ones.html">66. Which questions the agent can&#x27;t answer — and which you can</a><span class="completion-label"></span></li>
+    <li><a data-lesson="67" href="lessons/0067-cutting-scope-purpose.html">67. Cutting scope on purpose: ship the smaller thing</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-22">
+  <summary><span class="session-number">Session 22 · 4 lessons</span><h3>Manage the agent workspace</h3><span class="session-outcome">Inspect context, tool use, and the boundaries of a delegated task.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="68" href="lessons/0068-context-window.html">68. The context window: what your agent remembers</a><span class="completion-label"></span></li>
+    <li><a data-lesson="69" href="lessons/0069-tokens-cost-caching.html">69. Tokens, cost, and caching: why long sessions get expensive</a><span class="completion-label"></span></li>
+    <li><a data-lesson="70" href="lessons/0070-tools.html">70. Tools: what your agent can see and do</a><span class="completion-label"></span></li>
+    <li><a data-lesson="71" href="lessons/0071-subagents.html">71. Subagents: one agent can hire helpers</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-23">
+  <summary><span class="session-number">Session 23 · 4 lessons</span><h3>Question confident answers</h3><span class="session-outcome">Bound a persistent goal and check an agent claim against evidence.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="72" href="lessons/0072-goal-mode-persistent-objectives.html">72. Goal mode and persistent objectives</a><span class="completion-label"></span></li>
+    <li><a data-lesson="73" href="lessons/0073-models-effort.html">73. Models and effort: picking the right brain</a><span class="completion-label"></span></li>
+    <li><a data-lesson="74" href="lessons/0074-prompt-injection.html">74. Instructions hiding in your files</a><span class="completion-label"></span></li>
+    <li><a data-lesson="75" href="lessons/0075-stale-invented-claims.html">75. Stale or invented claims: check the source of truth</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-24">
+  <summary><span class="session-number">Session 24 · 3 lessons</span><h3>Handle work you must supervise</h3><span class="session-outcome">Check a background job and identify steps only you can complete.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="76" href="lessons/0076-background-processes-exit-codes-waiting-vs.html">76. Background processes: started is not finished</a><span class="completion-label"></span></li>
+    <li><a data-lesson="77" href="lessons/0077-human-only-steps.html">77. Human-only steps: logins, attestations, and runbooks</a><span class="completion-label"></span></li>
+    <li><a data-lesson="78" href="lessons/0078-desktop-app-features.html">78. Desktop apps vs the terminal: buttons, cards, and checklists</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-25">
+  <summary><span class="session-number">Session 25 · 4 lessons</span><h3>Understand your publish pipeline</h3><span class="session-outcome">Inspect the build and deployment result and document the live URL.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="79" href="lessons/0079-build-step.html">79. The build step: source becomes deployable files</a><span class="completion-label"></span></li>
+    <li><a data-lesson="80" href="lessons/0080-size-limits-big-files.html">80. Size limits and big files: host them elsewhere</a><span class="completion-label"></span></li>
+    <li><a data-lesson="81" href="lessons/0081-actions-workflow.html">81. An Actions workflow: a recipe GitHub runs on every push</a><span class="completion-label"></span></li>
+    <li><a data-lesson="82" href="lessons/0082-readme-repo-description.html">82. Put the link where people look</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-26">
+  <summary><span class="session-number">Session 26 · 3 lessons</span><h3>Plan recovery after launch</h3><span class="session-outcome">Choose a host and rehearse a rollback before adding a domain.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="83" href="lessons/0083-other-hosts.html">83. Other free hosts, and the guardrails on every free plan</a><span class="completion-label"></span></li>
+    <li><a data-lesson="84" href="lessons/0084-rollback.html">84. Rollback: main is not the live site</a><span class="completion-label"></span></li>
+    <li><a data-lesson="85" href="lessons/0085-custom-domains.html">85. Your own address for the site (optional)</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-27">
+  <summary><span class="session-number">Session 27 · 3 lessons</span><h3>Build your own small app</h3><span class="session-outcome">Scope, build, verify, publish, and reflect on one app of your own.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="86" href="lessons/0086-choose-idea.html">86. Choose your capstone idea</a><span class="completion-label"></span></li>
+    <li><a data-lesson="87" href="lessons/0087-interview-plan-build-verify-ship-share.html">87. The capstone path: interview, plan, build, verify, ship, share</a><span class="completion-label"></span></li>
+    <li><a data-lesson="88" href="lessons/0088-retrospective.html">88. Retrospective: which failure modes did you hit?</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+</details>
+<details class="later-study"><summary>Optional studies: services, security, and working at scale</summary><p>Your first page and capstone do not need these topics. Return when your own project needs them. Use a disposable project for risky experiments.</p>
+<details class="course-session" id="session-28">
+  <summary><span class="session-number">Optional study 28 · 4 lessons</span><h3>Protect credentials</h3><span class="session-outcome">Map secrets and configure an API credential without exposing it.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="89" href="lessons/0089-secrets.html">89. Secrets: what they are and why they never live in your code</a><span class="completion-label"></span></li>
+    <li><a data-lesson="90" href="lessons/0090-env-vars.html">90. Environment variables: settings that stay out of your code</a><span class="completion-label"></span></li>
+    <li><a data-lesson="91" href="lessons/0091-never-print-commit.html">91. Never print, never commit</a><span class="completion-label"></span></li>
+    <li><a data-lesson="92" href="lessons/0092-third-party-api-keys.html">92. Third-party API keys, rate limits, and spend caps</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-29">
+  <summary><span class="session-number">Optional study 29 · 4 lessons</span><h3>Understand service boundaries</h3><span class="session-outcome">Map data sharing, sign-in, and browser access restrictions.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="93" href="lessons/0093-send-third-parties.html">93. What you send to third parties</a><span class="completion-label"></span></li>
+    <li><a data-lesson="94" href="lessons/0094-logins-token-expiry.html">94. Logins and token expiry</a><span class="completion-label"></span></li>
+    <li><a data-lesson="95" href="lessons/0095-oauth-pieces.html">95. OAuth in pieces: what a &quot;Sign in with…&quot; button sets up</a><span class="completion-label"></span></li>
+    <li><a data-lesson="96" href="lessons/0096-cors.html">96. CORS: why tests pass and the real click fails</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-30">
+  <summary><span class="session-number">Optional study 30 · 4 lessons</span><h3>Try a backend safely</h3><span class="session-outcome">Separate local infrastructure from production and inspect its logs.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="97" href="lessons/0097-backends.html">97. Backends: hosting vs functions vs database</a><span class="completion-label"></span></li>
+    <li><a data-lesson="98" href="lessons/0098-emulator-vs-production.html">98. Emulator vs production</a><span class="completion-label"></span></li>
+    <li><a data-lesson="99" href="lessons/0099-ci-logging-without-key-file.html">99. How CI logs in without a key file</a><span class="completion-label"></span></li>
+    <li><a data-lesson="100" href="lessons/0100-docker.html">100. Docker: run tests in a throwaway box, not on your real data</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-31">
+  <summary><span class="session-number">Optional study 31 · 4 lessons</span><h3>Handle outside failures</h3><span class="session-outcome">Distinguish mocks from live evidence and bound a slow dependency.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="101" href="lessons/0101-mocks-vs-live-tests.html">101. Mocks vs live tests: what each one can catch</a><span class="completion-label"></span></li>
+    <li><a data-lesson="102" href="lessons/0102-deploy-blockers.html">102. Deploy blockers: missing secrets and secret managers</a><span class="completion-label"></span></li>
+    <li><a data-lesson="103" href="lessons/0103-third-party-churn.html">103. Third-party churn: deprecations and dead documentation</a><span class="completion-label"></span></li>
+    <li><a data-lesson="104" href="lessons/0104-llm-calls-as-dependency.html">104. LLM calls as a dependency: limits, timeouts, retries, JSON</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-32">
+  <summary><span class="session-number">Optional study 32 · 4 lessons</span><h3>Make the app usable and shareable</h3><span class="session-outcome">Check data rights, asset licenses, performance, and accessibility.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="105" href="lessons/0105-data-dont-own.html">105. Data you don&#x27;t own: provenance, units, evidence status</a><span class="completion-label"></span></li>
+    <li><a data-lesson="106" href="lessons/0106-assets-licensing.html">106. Assets &amp; licensing — and the reverse-engineering caution</a><span class="completion-label"></span></li>
+    <li><a data-lesson="107" href="lessons/0107-performance.html">107. Performance: measuring what is slow</a><span class="completion-label"></span></li>
+    <li><a data-lesson="108" href="lessons/0108-accessibility-basics.html">108. Accessibility basics: targets, keyboard, reduced motion</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-33">
+  <summary><span class="session-number">Optional study 33 · 4 lessons</span><h3>Coordinate several changes</h3><span class="session-outcome">Map ticket dependencies and integrate changes with review checks.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="109" href="lessons/0109-spec-tickets-dependency-graph.html">109. From one big spec to a frontier of tickets</a><span class="completion-label"></span></li>
+    <li><a data-lesson="110" href="lessons/0110-integration-branch-vs-per-ticket-branches.html">110. Integration branch vs per-ticket branches</a><span class="completion-label"></span></li>
+    <li><a data-lesson="111" href="lessons/0111-parallel-agents-shared-build-folders.html">111. Parallel agents and the shared build folder</a><span class="completion-label"></span></li>
+    <li><a data-lesson="112" href="lessons/0112-pr-babysitting-auto-fix.html">112. Babysitting a pull request: bots review, you merge</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+<details class="course-session" id="session-34">
+  <summary><span class="session-number">Optional study 34 · 4 lessons</span><h3>Leave a useful handoff</h3><span class="session-outcome">Reconcile research and write a handoff another person can follow.</span><span class="session-progress" aria-live="polite"></span></summary>
+  <ol class="session-lessons">
+    <li><a data-lesson="113" href="lessons/0113-swarm-research-reconciling-contradictory-reports.html">113. Fan out the research, reconcile the reports</a><span class="completion-label"></span></li>
+    <li><a data-lesson="114" href="lessons/0114-agent-as-scheduler.html">114. Let the agent schedule the work</a><span class="completion-label"></span></li>
+    <li><a data-lesson="115" href="lessons/0115-handoff-docs-long-sessions.html">115. Handoff docs: carrying a long session forward</a><span class="completion-label"></span></li>
+    <li><a data-lesson="116" href="lessons/0116-triage-prompt.html">116. Triage first: diagnose before you act</a><span class="completion-label"></span></li>
+  </ol>
+  <p class="course-note">Stop after any lesson. At the end, try the task and check the result before recording your checkpoint.</p>
+</details>
+</details>
+<!-- /COURSE_PLAN -->
+</section>
+<details class="course-library" id="library">
+<summary><h2>Browse the lesson library</h2><span>116 lessons and 8 reference cards. Open when you need a particular topic.</span></summary>
+<div class="browse-heading"><div><h2>Find a topic</h2></div><a href="#reference">Need a quick answer? <span aria-hidden="true">↗</span></a></div>
 <div class="browse" id="browse" role="search" aria-label="Find a lesson" hidden>
   <div class="browse-row">
     <label class="browse-label" for="lesson-search">Find a lesson</label>
@@ -86,7 +385,7 @@
 <p class="no-results" id="no-results" hidden>No lesson or reference card matches those filters. Clear the search box or the ★ toggle to see the full list again.</p>
 
 <section class="unit-section" id="unit-0" tabindex="-1">
-  <details class="unit" open>
+  <details class="unit">
     <summary>
       <h2 class="unit-title">Unit 0 &mdash; Orientation &amp; setup</h2>
       <span class="unit-count">9 lessons · 8 ★</span>
@@ -1009,7 +1308,7 @@
 </section>
 
 <section class="unit-section" id="reference" tabindex="-1">
-  <details class="unit" open>
+  <details class="unit">
     <summary>
       <h2 class="unit-title">Reference cards</h2>
       <span class="unit-count">8 cards</span>
@@ -1076,6 +1375,8 @@
   </details>
 </section>
 
+</details>
+
 <script>
 (function () {
   "use strict";
@@ -1094,17 +1395,6 @@
   // would replace the card's markup with its own text).
   var units = [].map.call(document.querySelectorAll("section.unit-section"), function (section) {
     var details = section.querySelector("details.unit");
-    // One listener per row, bound once. transitionend bubbles, so the chevron
-    // (150 ms) and any card transition arrive here before the disclosure's own
-    // 220 ms block-size run; the target/property guard ignores them, and the
-    // class is only cleared if it is still set, so a later timer cannot undo it.
-    if (details) {
-      details.addEventListener("transitionend", function (event) {
-        if (event.target === details && event.propertyName === "block-size") {
-          details.classList.remove("animatable");
-        }
-      });
-    }
     var heading = section.querySelector(".unit-title");
     var title = heading ? heading.textContent.replace(/\s+/g, " ").trim() : "";
     var number = (/(\d+)/.exec(title) || ["", ""])[1];
@@ -1155,33 +1445,11 @@
   // the open state, and the styling derived from one source of truth.
   var expandMode = "auto";
 
-  // Motion belongs to a row the reader actually opened. A summary click sets
-  // .animatable on its own <details> just before the native toggle, and the
-  // class is dropped once the transition ends (or after 400 ms if it never
-  // starts). update() rewrites `open` for every unit on each keystroke; those
-  // disclosures carry no class, so nothing animates and no keystroke can start
-  // a pile of simultaneous transitions.
-  var MOTION_MS = 400;
-
-  function armMotion(details) {
-    details.classList.add("animatable");
-    // The per-row transitionend listener (bound once, in the units map) clears
-    // the class when the height run ends; this timer is the fallback for a row
-    // whose transition never starts. Re-toggling mid-run must move the deadline,
-    // not add a second one: an old 400 ms timer would fire inside the new
-    // 220 ms run and drop the class early, snapping the height to its end.
-    if (details.motionTimer) window.clearTimeout(details.motionTimer);
-    details.motionTimer = window.setTimeout(function () {
-      details.motionTimer = 0;
-      details.classList.remove("animatable");
-    }, MOTION_MS);
-  }
-
   document.addEventListener("click", function (event) {
     var summary = event.target.closest ? event.target.closest("summary") : null;
     var details = summary && summary.parentElement;
     if (!details || !details.classList.contains("unit")) return;
-    armMotion(details);
+
     // A hand toggle is the row's newest default. The click event runs before
     // the native toggle flips `open`, so the post-click state is the inverse
     // of what the DOM still shows. Without this sync, the next update() — a
@@ -1332,6 +1600,7 @@
     link.addEventListener("click", function () {
       var target = document.getElementById(link.getAttribute("href").slice(1));
       if (!target) return;
+      document.getElementById("library").open = true;
       clearFilters();
       units.forEach(function (unit) {
         if (unit.section === target) unit.defaultOpen = true;
@@ -1346,10 +1615,16 @@
     units.forEach(function (unit) {
       if (unit.section === target) unit.defaultOpen = true;
     });
-    if (target.querySelector("details.unit")) clearFilters();
+    if (target.querySelector("details.unit")) {
+      document.getElementById("library").open = true;
+      clearFilters();
+    }
     update();
   }
 
+  document.querySelectorAll('a[href="#library"]').forEach(function (link) {
+    link.addEventListener("click", function () { document.getElementById("library").open = true; });
+  });
   window.addEventListener("hashchange", revealHash);
   update();
   revealHash();
@@ -1363,11 +1638,10 @@
 
 </main>
 <footer class="lesson-foot" style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: 0.85rem; color: var(--muted);">
-  <p>Built with Tufte-inspired typography for Claude Code, Codex, and omp.</p>
+  <p>One small project, one checked result at a time. For Claude Code, Codex, and omp.</p>
 </footer>
 
 <script src="assets/lesson.js"></script>
-<script src="assets/vendor/anime-4.5.0.umd.min.js"></script>
-<script src="assets/home-lab.js"></script>
+<script src="assets/course.js"></script>
 </body>
 </html>

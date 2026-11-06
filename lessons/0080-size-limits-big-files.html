@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.4</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 6 · Shipping a static app · Lesson 6.4</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 6 · Lesson 6.4 · First-ship path ★</p>
   <h1>Size limits and big files: host them elsewhere</h1>
   <p class="lede">Free hosting has hard size limits. Learn to measure your project, read the limits, and keep big files somewhere else — so your link still loads for your friends.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0013-github-pages.html">6.3 GitHub Pages</a></span><span>Win: you can measure your project and keep a too-big app shippable</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 25 · Lesson 2 of 4</p>
+  <p><strong>Your session goal:</strong> Inspect the build and deployment result and document the live URL.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-25">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -84,7 +92,7 @@ nothing yet — show me the plan first, and stop there.</pre>
 
 <p>Notice the stop condition: <em>"show me the plan first, and stop there."</em> A size plan is a decision you should read before anything changes.</p>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it now</span>
   <ol>
     <li><label><input type="checkbox"> In a terminal inside your project folder, run <code>du -sh .</code> and write down the number. (Or ask your agent to measure it.)</label></li>
@@ -166,8 +174,18 @@ nothing yet — show me the plan first, and stop there.</pre>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> measure your project, name the Pages and repository size limits, and keep big files outside the published site behind absolute links.</p>
   <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><span>Previous: <a href="0079-build-step.html">6.2 Build step</a></span><span>Next: <a href="0081-actions-workflow.html">6.5 An Actions workflow</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="80" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0081-actions-workflow.html">Continue to lesson 81 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0079-build-step.html">← Previous lesson</a><a href="0081-actions-workflow.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

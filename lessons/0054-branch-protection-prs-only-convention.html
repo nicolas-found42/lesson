@@ -13,6 +13,14 @@
   <h1>Branch protection: making "PRs only" a rule</h1>
   <p class="lede">A convention lives in your head and in a rules file. A branch protection rule lives in GitHub, where a tired agent at midnight cannot talk its way past it.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0045-pull-request.html">3.7 The pull request</a></span><span>Win: you can turn "changes go through a pull request" into a setting that enforces itself</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 17 · Lesson 4 of 4</p>
+  <p><strong>Your session goal:</strong> Diagnose permission failures and set a checkpoint policy.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-17">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -68,7 +76,7 @@
 
 <h2>Set it up on your own repository</h2>
 <p>This is a web-interface task, identical in all three agents, so there are no tool tabs here. Do it once on the repository that publishes your app.</p>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <ol>
     <li><label><input type="checkbox"> Open your repository on GitHub and click <strong>Settings</strong>.</label></li>
     <li><label><input type="checkbox"> In the sidebar section "Code, planning, and automation", click <strong>Branches</strong>.</label></li>
@@ -139,8 +147,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain what a branch protection rule enforces and what it leaves open, create one on <code>main</code>, and recognise a <code>GH006</code> rejection as the rule working rather than the tool breaking.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/safety-checklist.html">Safety checklist</a></p>
-  <div class="pager"><span>Next: 4.1 Definition of done (coming)</span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="54" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0055-definition-done-acceptance-criteria.html">Continue to lesson 55 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0053-default-branch-rename.html">← Previous lesson</a><a href="0055-definition-done-acceptance-criteria.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.6</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 6 · Shipping a static app · Lesson 6.6</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 6 · Lesson 6.6 · First-ship path ★</p>
   <h1>Merged is not live</h1>
   <p class="lede">Your pull request says Merged and the checks are green. The page your friend opens is still yesterday's. Three different states are all called "done", and only one of them is the address you will share.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0013-github-pages.html">6.3 GitHub Pages</a></span><span>Win: you can prove what the public URL serves before you send it</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 5 · Lesson 2 of 3</p>
+  <p><strong>Your session goal:</strong> Open your public page in a private browser window and check the result.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-5">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -91,7 +99,7 @@
 </div>
 
 <h2>Check it yourself in about a minute</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it now — on your own site, or on any URL</span>
   <ol>
     <li><label><input type="checkbox"> Write down the exact URL you intend to send, including the <code>/repository-name/</code> part.</label></li>
@@ -214,8 +222,18 @@ Do not make unrelated edits while waiting. Keep approval prompts on.</pre></div>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> tell a merge from a deployment from a live page, and prove which version the public URL serves before you share it.</p>
   <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><a href="0013-github-pages.html">Previous: GitHub Pages</a> · <a href="0015-ship-a-hello-world-page.html">Next: Ship a hello world page</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="14" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0015-ship-a-hello-world-page.html">Continue to lesson 15 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0013-github-pages.html">← Previous lesson</a><a href="0015-ship-a-hello-world-page.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

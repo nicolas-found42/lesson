@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 0 · Orientation · Lesson 0.1</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 0 · Orientation · Lesson 0.1</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 0 · Lesson 0.1 · First-ship path ★</p>
   <h1>What a coding agent actually is</h1>
   <p class="lede">A chat can only talk. An agent can look at your files, run things, and check what happened. Everything else in this course builds on that difference.</p>
   <div class="meta"><span>About 15 minutes</span><span>Needs: nothing</span><span>Win: you can tell an agent's work from its claims</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 1 · Lesson 1 of 3</p>
+  <p><strong>Your session goal:</strong> Explain the agent loop and choose a folder for your first page.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-1">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -103,6 +111,16 @@ agent    says   "Done. Here is the link."</code></pre>
   <p>Treat the agent's report as a claim. Look at the real result yourself, and give the agent a way to check its own work. Unit 2 teaches how.</p>
 </div>
 
+<div class="doit" id="lesson-practice">
+  <span class="label">Spot the loop without installing anything</span>
+  <ol>
+    <li><label><input type="checkbox"> Write three lines for a pretend task: what the agent would read, what it would change, and what you would open to check it.</label></li>
+    <li><label><input type="checkbox"> Answer the three questions in this lesson, then explain in your own words why “done” needs a check.</label></li>
+  </ol>
+  <div class="expect">You have named gather, act, and verify, and your check observes a real result rather than asking for reassurance.</div>
+  <p class="progress" aria-live="polite"></p>
+</div>
+
 <h2>Check yourself</h2>
 <div class="quiz" data-correct="1">
   <span class="label">Question 1 of 3</span>
@@ -158,8 +176,18 @@ agent    says   "Done. Here is the link."</code></pre>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> describe the loop, explain why one message means many tool calls, and treat "done" as a claim to check.</p>
   <p>Quick reference: <a href="../reference/agent-loop.html">The agent loop (one page)</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Next: 0.2 The three agents (coming)</span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="1" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0002-the-three-agents.html">Continue to lesson 2 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="../index.html">Course home</a><a href="0002-the-three-agents.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

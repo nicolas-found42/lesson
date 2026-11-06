@@ -13,6 +13,14 @@
   <h1>Recovering a derail</h1>
   <p class="lede">A run has gone sideways. The fix is not a third correction in the same conversation. It is four moves: stop, commit, open a pull request, restart with a fresh goal.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0052-checkpoint-often.html">3.13 Checkpoint often</a> · <a href="0057-stop-conditions.html">4.3 Stop conditions</a></span><span>Win: you can walk a derailed run back to safety without losing the work</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 20 · Lesson 3 of 3</p>
+  <p><strong>Your session goal:</strong> Check scope and resume from a known working checkpoint.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-20">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -103,7 +111,7 @@ what you tried instead of trying something new.</pre></div>
 </div>
 
 <h2>Do it: rehearse the recovery before you need it</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it now: park a run on purpose</span>
   <ol>
     <li><label><input type="checkbox"> Open your project in the terminal and run <code>git status</code>. Note every changed file — this is the evidence of what the run touched.</label></li>
@@ -173,8 +181,18 @@ what you tried instead of trying something new.</pre></div>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> name the four moves of a recovery, interrupt a run without losing files, park unfinished work in a draft pull request, and restart with a goal that names its own stop condition.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../reference/agent-loop.html">The agent loop (one page)</a></p>
-  <div class="pager"><span>Next: 4.11 <a href="0065-over-asking.html">Over-asking</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="64" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0065-over-asking.html">Continue to lesson 65 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0063-long-unsupervised-runs.html">← Previous lesson</a><a href="0065-over-asking.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

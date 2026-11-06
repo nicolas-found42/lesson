@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 1 · Telling the agent what you want · Lesson 1.11</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 1 · Telling the agent what you want · Lesson 1.11</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 1 · Lesson 1.11</p>
   <h1>Skills, slash commands and @-mentions</h1>
   <p class="lede">You will type the same instructions again and again: how to check a page, how to review a change, how to write a release note. A skill saves that procedure once, under a name. This lesson shows what those packs are, how to start one, and how to point the agent at a file.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0001-what-a-coding-agent-is.html">Lesson 0.1</a></span><span>Win: you can load a saved procedure by name and attach a file on purpose</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 9 · Lesson 1 of 3</p>
+  <p><strong>Your session goal:</strong> Record project rules and ask for one outcome-sized change.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-9">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -97,7 +105,7 @@
 </div>
 <p>The point is not that you need three packs. A name can carry a whole way of working, and the same mechanism can hold a gate. All three tools can keep a skill out of automatic reach: Claude Code's <code>disable-model-invocation: true</code> means <q>Claude can't invoke the skill on its own</q>;<sup class="cite"><a href="#src-a8">[1]</a></sup> Codex's <code>allow_implicit_invocation: false</code> turns off matching while keeping explicit <code>$skill</code> calls working;<sup class="cite"><a href="#src-b10">[3]</a></sup> omp's <code>hide</code> removes a skill from automatic matching and keeps <code>/skill:&lt;name&gt;</code> available.<sup class="cite"><a href="#src-c9">[7]</a></sup> Use that for anything that publishes, deletes, or sends.</p>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Try it in your own project</span>
   <ol>
     <li><label><input type="checkbox"> Open your project folder, start your agent, and type a single <code>/</code> at the start of the prompt. Read the list. Do not run anything yet.</label></li>
@@ -166,8 +174,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> say what a skill is, start one by name, attach a file on purpose, and check a pack before you trust it.</p>
   <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Previous: 1.10 <a href="0025-steering-mid-run.html">Steering mid-run</a></span><span>Next: 1.12 <a href="0027-project-rules-file.html">The project rules file</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="26" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0027-project-rules-file.html">Continue to lesson 27 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0025-steering-mid-run.html">← Previous lesson</a><a href="0027-project-rules-file.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

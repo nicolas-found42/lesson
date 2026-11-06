@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.19</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.19</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 8 · Lesson 8.19</p>
   <h1>Performance: measuring what is slow</h1>
   <p class="lede">"It feels slow" is not something an agent can fix. A number can be. This lesson teaches four words — frames per second, benchmark, bottleneck, parallel worker — and how to make the agent <em>measure</em> before it <em>changes</em>.</p>
   <div class="meta"><span>About 15 minutes</span><span>Needs: <a href="0031-test.html">2.3 What a test is</a></span><span>Win: you can ask for a measured speed, and ask for the slowest part to be found before anything is rewritten</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 32 · Lesson 3 of 4</p>
+  <p><strong>Your session goal:</strong> Check data rights, asset licenses, performance, and accessibility.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-32">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -62,7 +70,7 @@ Stop after step 3 and wait for my approval.</pre></div>
 <p>That is the goal: when the agent <em>measures</em>, it can tell you honestly that a target is impossible, and you decide the trade-off. When it only guesses, it may claim success.</p>
 
 <h2>Do it: make your agent measure something</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <ol>
     <li><label><input type="checkbox"> Open your coding agent in any project folder (even a scratch folder is fine).</label></li>
     <li><label><input type="checkbox"> Paste this prompt: <em>"Write a tiny benchmark that measures how long it takes to count to ten million, run it, and tell me the number. Don't change anything else."</em></label></li>
@@ -132,8 +140,18 @@ Stop after step 3 and wait for my approval.</pre></div>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> name what fps means, ask for a benchmark before a fix, ask for the bottleneck to be found first, and ask whether parallel workers apply.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Next: 8.20 Accessibility basics (<a href="0108-accessibility-basics.html">coming</a>)</span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="107" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0108-accessibility-basics.html">Continue to lesson 108 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0106-assets-licensing.html">← Previous lesson</a><a href="0108-accessibility-basics.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

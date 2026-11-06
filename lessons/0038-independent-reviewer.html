@@ -13,6 +13,14 @@
   <h1>The independent reviewer</h1>
   <p class="lede">The agent that wrote the change believes the change is right. A second agent that never saw the reasoning can disagree for a useful reason — as long as you treat its report as advice, not as an order.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0030-claims-vs-evidence.html">2.2 Claims versus evidence</a></span><span>Win: you can get a second opinion and decide what to do with it</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 12 · Lesson 4 of 4</p>
+  <p><strong>Your session goal:</strong> Collect browser evidence and request an independent review.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-12">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -122,7 +130,7 @@ and list the two things you checked least thoroughly.</pre>
 <p>A review you trigger is easy to keep at arm's length. A standing reviewer is different: it comments while you work, and its notes can steer the agent before you read them. omp's advisor is the clearest documented example. It <q>can flag a missed requirement, a risky API, weak verification, or unnecessary complexity</q> while the work is still running.<sup class="cite"><a href="#src-c1">[6]</a></sup> Its notes arrive with a severity — nit, concern, or blocker — and only a blocker may interrupt the work.</p>
 <p>Two facts keep this honest. The advisor <q>makes its own model requests, uses its own context, and is billed separately</q>, so a chatty reviewer costs money as well as attention.<sup class="cite"><a href="#src-c1">[6]</a></sup> And it is still advisory: omp's page tells you to treat a note as review, not as a new instruction. If the working agent ignores a note you think is right, quote it in your next message. That is judgement, with the reviewer's evidence in hand.</p>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own agent</span>
   <ol>
     <li><label><input type="checkbox"> Open your agent in your practice project, with approval prompts on.</label></li>
@@ -188,8 +196,18 @@ and list the two things you checked least thoroughly.</pre>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> ask a second agent for an independent review, read each finding on its evidence, and accept or reject it with a reason instead of obeying or ignoring the whole report.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a></p>
-  <div class="pager"><a href="0039-checker-can-be-wrong.html">Next: 2.11 The checker can be wrong</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="38" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0039-checker-can-be-wrong.html">Continue to lesson 39 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0037-logs-telemetry.html">← Previous lesson</a><a href="0039-checker-can-be-wrong.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

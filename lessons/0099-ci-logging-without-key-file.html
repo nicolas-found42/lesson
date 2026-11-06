@@ -13,6 +13,14 @@
   <h1>How CI logs in without a key file</h1>
   <p class="lede">Your workflow runs on a fresh machine that belongs to GitHub, so it cannot carry a key file. The modern trick is a short-lived digital ID that proves which repo and which run is asking — no stored secret at all.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0081-actions-workflow.html">6.5 An Actions workflow</a>, <a href="0089-secrets.html">8.1 Secrets</a></span><span>Win: you can explain why a CI job can log in with no key file, and spot the <code>id-token: write</code> line that enables it</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 30 · Lesson 3 of 4</p>
+  <p><strong>Your session goal:</strong> Separate local infrastructure from production and inspect its logs.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-30">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -63,6 +71,16 @@
   <textarea aria-label="Your answer"></textarea>
   <button class="btn reveal" type="button">Check my answer</button>
   <div class="answer"><p>A signed OIDC identity token naming the repo, branch and run. The cloud exchanges it for an access token <strong>valid for a single job only</strong>, which then expires by itself — so a leaked token is soon worthless, unlike a stored key.</p></div>
+</div>
+
+<div class="doit" id="lesson-practice">
+  <span class="label">Inspect a CI log safely</span>
+  <ol>
+    <li><label><input type="checkbox"> Read a test or deployment log from your project, or use the example in this lesson. Never print a credential to test logging.</label></li>
+    <li><label><input type="checkbox"> Identify what proves the check ran and one detail that must be redacted before sharing.</label></li>
+  </ol>
+  <div class="expect">Your note identifies a result and a redaction rule without copying any secret.</div>
+  <p class="progress" aria-live="polite"></p>
 </div>
 
 <h2>Check yourself</h2>
@@ -125,8 +143,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain how a CI job logs in with no key file, recognize the <code>id-token: write</code> permission, and choose between a stored secret and a short-lived identity.</p>
   <p>Quick reference: <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><span>Next: <a href="0100-docker.html">8.12 Docker</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="99" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0100-docker.html">Continue to lesson 100 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0098-emulator-vs-production.html">← Previous lesson</a><a href="0100-docker.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

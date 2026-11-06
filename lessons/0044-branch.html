@@ -13,6 +13,14 @@
   <h1>Branch: a parallel line of work</h1>
   <p class="lede">A branch lets you try something unfinished without putting it in the version of your app you would hand to a friend. It also costs one line of typing, not a second copy of your folder.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0009-why-save-points-exist.html">3.1 Why save points exist</a></span><span>Win: you can start a change on its own branch and get back to main safely</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 14 · Lesson 3 of 3</p>
+  <p><strong>Your session goal:</strong> Ignore generated files, name a commit, and work on a branch.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-14">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -95,7 +103,7 @@ $ cat index.html
   <p>Branches live in the same repository on the same disk. If the folder is lost, every branch goes with it. Copies leave your machine only when you push, which is lesson <a href="0011-remote-origin-push.html">3.6</a>. Two branches are two versions of your work, not two safes.</p>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own project</span>
   <ol>
     <li><label><input type="checkbox"> Commit whatever is in progress, so the switch has nothing to lose. Run <code>git status</code> and expect a clean working tree.</label></li>
@@ -203,8 +211,18 @@ Do not merge, do not push, and stop after showing me the file on main.</pre>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain a branch as a movable label rather than a copy, start a change on its own branch, switch back to main, and check your position with <code>git branch</code> instead of trusting a summary.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><a href="0043-commit-messages.html">Previous: Commit messages and staging</a> · <a href="0045-pull-request.html">Next: Pull request</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="44" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0045-pull-request.html">Continue to lesson 45 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0043-commit-messages.html">← Previous lesson</a><a href="0045-pull-request.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

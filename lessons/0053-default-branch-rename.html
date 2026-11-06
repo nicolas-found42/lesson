@@ -13,6 +13,14 @@
   <h1>Renaming the default branch and retiring branches</h1>
   <p class="lede">The name of your main line is a setting, not a law. Changing it in one place leaves three copies of that name out of step, and deleting a branch is safe only after you have checked what would be lost.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0044-branch.html">3.5 Branch</a></span><span>Win: you can rename your default branch without breaking your copy, and delete a finished branch only after checking it is merged</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 17 · Lesson 3 of 4</p>
+  <p><strong>Your session goal:</strong> Diagnose permission failures and set a checkpoint policy.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-17">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -87,7 +95,7 @@ hint: If you are sure you want to delete it, run 'git branch -D unmerged'</code>
 
 <h2>Do it in your own project</h2>
 <p>Use a repository you own. Keep approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>). The commands are ordinary Git commands, identical whichever of the three agents runs them. A repository already named <code>main</code> needs no rename.</p>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Your turn</span>
   <ol>
     <li><label><input type="checkbox"> Ask the agent to inspect your branches using the prompt below. Do not approve changes during the inventory.</label></li>
@@ -165,8 +173,18 @@ Do not force-delete, force-push, or merge anything. Finish by showing the local 
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> rename a default branch across your clone and the server, update the tracking link, and delete a branch only after checking that its work is already merged.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure modes</a></p>
-  <div class="pager"><a href="0052-checkpoint-often.html">← 3.13 Checkpoint often</a><a href="0054-branch-protection-prs-only-convention.html">3.15 Branch protection →</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="53" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0054-branch-protection-prs-only-convention.html">Continue to lesson 54 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0052-checkpoint-often.html">← Previous lesson</a><a href="0054-branch-protection-prs-only-convention.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

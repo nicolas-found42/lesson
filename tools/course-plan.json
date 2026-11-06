@@ -1,0 +1,240 @@
+[
+  {
+    "start": 1,
+    "end": 3,
+    "title": "Get your bearings",
+    "outcome": "Explain the agent loop and choose a folder for your first page.",
+    "optional": false
+  },
+  {
+    "start": 4,
+    "end": 6,
+    "title": "Set up a safe workspace",
+    "outcome": "Open your project in one agent with approval prompts on.",
+    "optional": false
+  },
+  {
+    "start": 7,
+    "end": 9,
+    "title": "Make a page on your screen",
+    "outcome": "Build a tiny page, identify its files, and explain why you need a save point.",
+    "optional": false
+  },
+  {
+    "start": 10,
+    "end": 12,
+    "title": "Save your work",
+    "outcome": "Make a commit, connect a remote, and check that your page can use static hosting.",
+    "optional": false
+  },
+  {
+    "start": 13,
+    "end": 15,
+    "title": "Publish your first page",
+    "outcome": "Open your public page in a private browser window and check the result.",
+    "optional": false
+  },
+  {
+    "start": 16,
+    "end": 18,
+    "title": "Describe the change",
+    "outcome": "Write a goal, inspect the project, and clarify one unfamiliar word.",
+    "optional": false
+  },
+  {
+    "start": 19,
+    "end": 22,
+    "title": "Agree on a plan",
+    "outcome": "Answer an interview and approve a bounded plan.",
+    "optional": false
+  },
+  {
+    "start": 23,
+    "end": 25,
+    "title": "Give useful feedback",
+    "outcome": "Use a reference and a screenshot to steer one change.",
+    "optional": false
+  },
+  {
+    "start": 26,
+    "end": 28,
+    "title": "Keep your instructions",
+    "outcome": "Record project rules and ask for one outcome-sized change.",
+    "optional": false
+  },
+  {
+    "start": 29,
+    "end": 31,
+    "title": "Collect evidence",
+    "outcome": "Try the app yourself and record what its tests actually prove.",
+    "optional": false
+  },
+  {
+    "start": 32,
+    "end": 34,
+    "title": "Build a checking habit",
+    "outcome": "Add a regression check and run the project gate.",
+    "optional": false
+  },
+  {
+    "start": 35,
+    "end": 38,
+    "title": "Inspect the real result",
+    "outcome": "Collect browser evidence and request an independent review.",
+    "optional": false
+  },
+  {
+    "start": 39,
+    "end": 41,
+    "title": "Test as a new user",
+    "outcome": "Challenge a checker and reproduce a user report.",
+    "optional": false
+  },
+  {
+    "start": 42,
+    "end": 44,
+    "title": "Create safe save points",
+    "outcome": "Ignore generated files, name a commit, and work on a branch.",
+    "optional": false
+  },
+  {
+    "start": 45,
+    "end": 47,
+    "title": "Review before merging",
+    "outcome": "Open a pull request and distinguish local checks from CI.",
+    "optional": false
+  },
+  {
+    "start": 48,
+    "end": 50,
+    "title": "Recover safely",
+    "outcome": "Practice conflict handling, isolated work, and undo in a disposable copy.",
+    "optional": false
+  },
+  {
+    "start": 51,
+    "end": 54,
+    "title": "Protect working software",
+    "outcome": "Diagnose permission failures and set a checkpoint policy.",
+    "optional": false
+  },
+  {
+    "start": 55,
+    "end": 58,
+    "title": "Set the finish line",
+    "outcome": "Give one task acceptance checks, a stop condition, and a budget.",
+    "optional": false
+  },
+  {
+    "start": 59,
+    "end": 61,
+    "title": "Resolve the right problem",
+    "outcome": "Separate a cause from a workaround and reconcile competing requirements.",
+    "optional": false
+  },
+  {
+    "start": 62,
+    "end": 64,
+    "title": "Recover a drifting run",
+    "outcome": "Check scope and resume from a known working checkpoint.",
+    "optional": false
+  },
+  {
+    "start": 65,
+    "end": 67,
+    "title": "Keep decisions manageable",
+    "outcome": "Resolve useful questions and cut a feature on purpose.",
+    "optional": false
+  },
+  {
+    "start": 68,
+    "end": 71,
+    "title": "Manage the agent workspace",
+    "outcome": "Inspect context, tool use, and the boundaries of a delegated task.",
+    "optional": false
+  },
+  {
+    "start": 72,
+    "end": 75,
+    "title": "Question confident answers",
+    "outcome": "Bound a persistent goal and check an agent claim against evidence.",
+    "optional": false
+  },
+  {
+    "start": 76,
+    "end": 78,
+    "title": "Handle work you must supervise",
+    "outcome": "Check a background job and identify steps only you can complete.",
+    "optional": false
+  },
+  {
+    "start": 79,
+    "end": 82,
+    "title": "Understand your publish pipeline",
+    "outcome": "Inspect the build and deployment result and document the live URL.",
+    "optional": false
+  },
+  {
+    "start": 83,
+    "end": 85,
+    "title": "Plan recovery after launch",
+    "outcome": "Choose a host and rehearse a rollback before adding a domain.",
+    "optional": false
+  },
+  {
+    "start": 86,
+    "end": 88,
+    "title": "Build your own small app",
+    "outcome": "Scope, build, verify, publish, and reflect on one app of your own.",
+    "optional": false
+  },
+  {
+    "start": 89,
+    "end": 92,
+    "title": "Protect credentials",
+    "outcome": "Map secrets and configure an API credential without exposing it.",
+    "optional": true
+  },
+  {
+    "start": 93,
+    "end": 96,
+    "title": "Understand service boundaries",
+    "outcome": "Map data sharing, sign-in, and browser access restrictions.",
+    "optional": true
+  },
+  {
+    "start": 97,
+    "end": 100,
+    "title": "Try a backend safely",
+    "outcome": "Separate local infrastructure from production and inspect its logs.",
+    "optional": true
+  },
+  {
+    "start": 101,
+    "end": 104,
+    "title": "Handle outside failures",
+    "outcome": "Distinguish mocks from live evidence and bound a slow dependency.",
+    "optional": true
+  },
+  {
+    "start": 105,
+    "end": 108,
+    "title": "Make the app usable and shareable",
+    "outcome": "Check data rights, asset licenses, performance, and accessibility.",
+    "optional": true
+  },
+  {
+    "start": 109,
+    "end": 112,
+    "title": "Coordinate several changes",
+    "outcome": "Map ticket dependencies and integrate changes with review checks.",
+    "optional": true
+  },
+  {
+    "start": 113,
+    "end": 116,
+    "title": "Leave a useful handoff",
+    "outcome": "Reconcile research and write a handoff another person can follow.",
+    "optional": true
+  }
+]

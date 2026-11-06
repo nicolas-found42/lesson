@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 0 · Orientation · Lesson 0.7</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 0 · Orientation · Lesson 0.7</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 0 · Lesson 0.7 · First-ship path ★</p>
   <h1>Your first prompt, and a page on your screen</h1>
@@ -17,6 +17,14 @@
     <span>Builds on: <a href="0005-install-and-sign-in.html">0.5 Install and sign in</a>, <a href="0006-approvals-and-permissions.html">0.6 Approvals and permissions</a></span>
     <span>Win: you can ask for a page, open it yourself, and say what the address means</span>
   </div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 3 · Lesson 1 of 3</p>
+  <p><strong>Your session goal:</strong> Build a tiny page, identify its files, and explain why you need a save point.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-3">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -82,7 +90,7 @@ Then start it on a local server and open it in my browser so I can see it. Tell 
 
 <h2>Do it: one page, in front of you</h2>
 <p>Use an empty folder, not an existing project. Lesson 0.3 covers making one and moving into it; lesson 0.4 covers the commands. Keep approvals on, as lesson 0.6 argued.</p>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Your turn — about 5 minutes</span>
   <ol>
     <li><label><input type="checkbox"> Open your terminal and go into an empty folder, for example <code>cd ~/Desktop/my-first-page</code>.</label></li>
@@ -181,8 +189,18 @@ Then start it on a local server and open it in my browser so I can see it. Tell 
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> write a first prompt that names an outcome, ask for it to be started and opened, and explain what the localhost address and its port mean.</p>
   <p>Quick reference: <a href="../reference/setup.html">Setup</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../reference/agent-loop.html">The agent loop</a></p>
-  <div class="pager"><span>Next: 0.8 Anatomy of a web page — <a href="0008-anatomy-of-a-web-page.html">what you are looking at</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="7" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0008-anatomy-of-a-web-page.html">Continue to lesson 8 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0006-approvals-and-permissions.html">← Previous lesson</a><a href="0008-anatomy-of-a-web-page.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

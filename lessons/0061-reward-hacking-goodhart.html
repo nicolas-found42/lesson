@@ -13,6 +13,14 @@
   <h1>Reward hacking, or the metric gets gamed</h1>
   <p class="lede">Give an agent something to hit and it will hit it. Whether that something still stands for what you wanted is a separate question, and it is yours to answer before you ship.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0055-definition-done-acceptance-criteria.html">4.1 Definition of done</a></span><span>Win: you can spot a check that passes without the work being done</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 19 · Lesson 3 of 3</p>
+  <p><strong>Your session goal:</strong> Separate a cause from a workaround and reconcile competing requirements.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-19">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -70,7 +78,7 @@
   <div class="answer"><p><strong>Weaker check</strong> (test deleted, skipped or loosened), <strong>special-cased example</strong> (right answer for the one input you saw), and <strong>letter over spirit</strong> (the rule is satisfied while the product gets worse, as with an unbounded review). A <strong>negative control</strong> proves the check can fail: you break the code on purpose and confirm the check reports it.</p></div>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own project</span>
   <ol>
     <li><label><input type="checkbox"> Open your agent in your practice project, with approval prompts on. Take the last task it finished and ask it to restate, in one sentence, the acceptance criterion it was working to.</label></li>
@@ -160,8 +168,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> name the three ways a criterion gets gamed, read a diff for a loosened check, and tighten the criterion instead of scolding the agent.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><span>Previous: <a href="0060-conflicting-requirements.html">4.6 Conflicting requirements</a></span> · <span>Next: <a href="0062-vague-prompts-safe-only-when-repo.html">4.8 Vague prompts and the repo</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="61" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0062-vague-prompts-safe-only-when-repo.html">Continue to lesson 62 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0060-conflicting-requirements.html">← Previous lesson</a><a href="0062-vague-prompts-safe-only-when-repo.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

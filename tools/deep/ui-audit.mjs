@@ -30,14 +30,13 @@ async function audit(page, label) {
   check(`${label}: axe WCAG violations ${JSON.stringify(result)}`, result.length === 0);
 }
 try {
-  const cases = ['ask', 'build', 'check', 'joined', 'search', 'expanded'];
+  const cases = ['start', 'session', 'library', 'search', 'expanded'];
   for (const scheme of ['light', 'dark']) {
     const page = await browser.newPage({ colorScheme: scheme, reducedMotion: 'reduce' });
     for (const state of cases) {
       await page.goto(new URL('index.html', site).href);
-      if (state === 'build') await page.locator('[data-lab-step="1"]').click();
-      if (state === 'check' || state === 'joined') await page.locator('[data-lab-step="2"]').click();
-      if (state === 'joined') await page.locator('.preview-join').click();
+      if (state === 'session') await page.locator('#session-2 summary').click();
+      if (['library', 'search', 'expanded'].includes(state)) await page.locator('#library > summary').click();
       if (state === 'search') await page.locator('#lesson-search').fill('git');
       if (state === 'expanded') await page.locator('#expand-toggle').click();
       await audit(page, `home/${scheme}/${state}`);
@@ -59,6 +58,8 @@ try {
       errors.length = 0;
       const response = await page.goto(new URL(target, site).href);
       check(`${label}: document loaded`, !response || response.status() === 200);
+      const full = page.getByRole('button', { name: 'Show full lesson', exact: true });
+      if (await full.count()) await full.click();
       await audit(page, label);
       const controls = await page.evaluate(() => [...document.querySelectorAll('.quiz button.opt, .agent-tabs [role="tab"], .recall button, .order button.item, .prompt .copy')]
         .filter(el => el.getClientRects().length)

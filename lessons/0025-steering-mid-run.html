@@ -13,6 +13,14 @@
   <h1>Steering an agent that is already running</h1>
   <p class="lede">A run that takes twenty minutes is not a black box. You can add a condition, stop a wrong turn, ask where things stand, and send it on again, all without losing the work it already did.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0001-what-a-coding-agent-is.html">0.1 What a coding agent is</a></span><span>Win: you can redirect a running agent without restarting it</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 8 · Lesson 3 of 3</p>
+  <p><strong>Your session goal:</strong> Use a reference and a screenshot to steer one change.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-8">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -112,7 +120,7 @@ Answer in four parts:
   <div class="answer"><p><strong>Queue</strong> a message for after the current action, <strong>interrupt</strong> to stop the action in progress, and <strong>continue</strong> to resume the same intent. All three keep the work; an interrupt cancels one action rather than deleting files or ending the session. Asking for the task's state is the move to make before choosing.</p></div>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Try it, in your own project</span>
   <ol>
     <li><label><input type="checkbox"> Start your agent in your project folder with approvals on, as usual.</label></li>
@@ -180,8 +188,18 @@ Answer in four parts:
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> queue a condition without stopping the run, interrupt one action without losing the work, ask for the task's state, and send the agent on with "continue".</p>
   <p>Quick reference: <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/agent-loop.html">The agent loop</a></p>
-  <div class="pager"><a href="0024-show-dont-tell.html">Previous: Show, don't tell</a> · <a href="0026-skills-slash-commands-mentions.html">Next: Skills, slash commands, mentions</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="25" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0026-skills-slash-commands-mentions.html">Continue to lesson 26 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0024-show-dont-tell.html">← Previous lesson</a><a href="0026-skills-slash-commands-mentions.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

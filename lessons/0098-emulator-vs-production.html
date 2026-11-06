@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.10</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.10</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 8 · Lesson 8.10</p>
   <h1>Emulator vs production</h1>
   <p class="lede">Your app's backend can be imitated on your own machine so you can test without touching the real service. An imitation is fast and safe — and it is also the place where "all tests passed" most often stops being true.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0097-backends.html">8.9 Backends</a></span><span>Win: you can say which parts of a test run were real and which were imitated</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 30 · Lesson 2 of 4</p>
+  <p><strong>Your session goal:</strong> Separate local infrastructure from production and inspect its logs.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-30">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -66,7 +74,7 @@ first real check passes or you tell me what only I can do.</pre>
 <p>This is the same claim-versus-evidence habit from Unit 2, pointed at a new border. Claude Code's own best-practices page names the underlying failure honestly: <q>Claude said it was done and it wasn't quite, usually because it had no way to check its own work.</q><sup class="cite"><a href="#src-a7">[3]</a></sup> An emulator that was never connected to is precisely a way of checking work that checks the wrong world.</p>
 
 <h2>Try it yourself</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">In your project</span>
   <p>If your app has a backend, ask your agent:</p>
   <pre class="prompt">Make a two-column table: "runs in the emulator" and "touches
@@ -128,8 +136,18 @@ proves a test write landed in the emulator, not production.</pre>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> say what an emulator imitates, name the gaps it cannot close, and ask the agent to prove which backend a test really touched.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Next: <a href="0099-ci-logging-without-key-file.html">8.11 CI logging in without a key file</a> · See also: <a href="0035-real-vs-simulated.html">2.7 Real vs simulated</a>, <a href="0101-mocks-vs-live-tests.html">8.13 Mocks vs live tests</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="98" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0099-ci-logging-without-key-file.html">Continue to lesson 99 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0097-backends.html">← Previous lesson</a><a href="0099-ci-logging-without-key-file.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

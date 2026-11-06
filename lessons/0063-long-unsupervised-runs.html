@@ -13,6 +13,14 @@
   <h1>Long runs you don't watch: checkpoints and progress logs</h1>
   <p class="lede">Some tasks take twenty minutes or two hours, and you cannot stare at the chat the whole time. Two habits make a long run safe: demand the first piece of evidence early, and make the run write down what it is doing as it goes.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0052-checkpoint-often.html">3.13 Checkpoint often</a></span><span>Win: you can start a long task and still learn within minutes whether it is going wrong</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 20 · Lesson 2 of 3</p>
+  <p><strong>Your session goal:</strong> Check scope and resume from a known working checkpoint.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-20">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -95,7 +103,7 @@
   <p>A progress log is not a commit. It records what a run did, not a save point you can return to — lesson <a href="0052-checkpoint-often.html">3.13</a> covers committing often during long work. An evidence checkpoint is not a budget; <q>until no issues remain</q> never ends, as lesson <a href="0058-budgets.html">4.4</a> explains. And neither one lets you turn off approval prompts — keep them on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</p>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Try it in your own project</span>
   <ol>
     <li><label><input type="checkbox"> Pick one task that takes the agent more than a few minutes (a build, a multi-file change, a test run).</label></li>
@@ -164,8 +172,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> hand a long task to an agent with an early evidence checkpoint and a progress log, read the log mid-run to see where the run actually is, and steer before the whole run is wasted.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><a href="0062-vague-prompts-safe-only-when-repo.html">Previous: 4.8 Vague prompts</a> · <a href="0064-recovering-derail.html">Next: 4.10 Recovering a derail</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="63" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0064-recovering-derail.html">Continue to lesson 64 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0062-vague-prompts-safe-only-when-repo.html">← Previous lesson</a><a href="0064-recovering-derail.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

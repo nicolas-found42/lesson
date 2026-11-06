@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.3</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 6 · Shipping a static app · Lesson 6.3</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 6 · Lesson 6.3 · First-ship path ★</p>
   <h1>GitHub Pages: what your URL will be</h1>
   <p class="lede">Pages turns your repository into a website at a predictable address. Learn the address shape now, and your links will keep working after you send them to someone.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0012-static-vs-dynamic.html">6.1 Static vs dynamic</a>, <a href="0011-remote-origin-push.html">3.6 Remote, origin, push</a></span><span>Win: you can predict any page's URL and write links that survive it</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 5 · Lesson 1 of 3</p>
+  <p><strong>Your session goal:</strong> Open your public page in a private browser window and check the result.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-5">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -90,7 +98,7 @@
   <p>Relative links survive a repository rename, a switch between a project site and a user site, and a later custom domain — all of which change the part of the address before your files. GitHub also notes that switching a repository between public and private <q>will change the URL of your GitHub Pages site, which will result in broken links until the site is rebuilt</q>.<sup class="cite"><a href="#src-g3">[3]</a></sup> Relative links are the version that does not need repairing.</p>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it now</span>
   <ol>
     <li><label><input type="checkbox"> Find the folder you intend to publish and note your repository's name. On paper, write the public address you expect for your entry page and for one page in a subfolder, using the <code>https://YOUR_USERNAME.github.io/REPOSITORY/…</code> shape.</label></li>
@@ -176,8 +184,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> read a GitHub Pages address, predict where any file will appear, and write links that keep working from a subpath.</p>
   <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><span>Previous: <a href="0012-static-vs-dynamic.html">6.1 Static vs dynamic</a></span><span>Next: <a href="0014-deploy-merge-live.html">6.6 Deploy, merge, live</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="13" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0014-deploy-merge-live.html">Continue to lesson 14 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0012-static-vs-dynamic.html">← Previous lesson</a><a href="0014-deploy-merge-live.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

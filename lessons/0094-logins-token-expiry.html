@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 8 · Beyond static · Lesson 8.6</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 8 · Beyond static · Lesson 8.6</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 8 · Lesson 8.6</p>
   <h1>Logins and token expiry</h1>
   <p class="lede">Signing in is not a one-time event. Logins turn into tokens, tokens expire, and sometimes your organization forces a re-login on its own schedule. Here is how to recognize each case and what to do.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0089-secrets.html">8.1 Secrets</a></span><span>Win: you can tell an expired token from an organization policy, and you know the exact command that renews a login in your agent</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 29 · Lesson 2 of 4</p>
+  <p><strong>Your session goal:</strong> Map data sharing, sign-in, and browser access restrictions.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-29">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -66,6 +74,16 @@
 
 <h2>Keep the stored credential safe</h2>
 <p>These tokens are secrets (lesson 8.1). Where they are stored matters. Claude Code keeps credentials in the encrypted macOS Keychain on a Mac. Elsewhere it falls back to a permission-locked file (<code>0600</code>).<sup class="cite"><a href="#src-1">[1]</a></sup> omp is more candid: <q>The local database is not encrypted at rest</q>. It relies on directory permissions instead: <q>protect the entire directory and any backups or sync copies, not only agent.db</q>.<sup class="cite"><a href="#src-3">[3]</a></sup> And never paste a credential into the chat itself. <q>Paste credentials only into that login prompt</q>, the docs say — not into a chat message or a shell argument.<sup class="cite"><a href="#src-3">[3]</a></sup> A token that was already issued <q>may remain valid until the provider expires or revokes them</q>. Signing out also means revoking it in the provider's console.<sup class="cite"><a href="#src-3">[3]</a></sup> See the <a href="../reference/safety-checklist.html">safety checklist</a>.</p>
+
+<div class="doit" id="lesson-practice">
+  <span class="label">Plan for an expired sign-in</span>
+  <ol>
+    <li><label><input type="checkbox"> In a note, describe what your app should show when a session expires. Do not paste a token.</label></li>
+    <li><label><input type="checkbox"> Name how the user signs in again and which unfinished work should be kept.</label></li>
+  </ol>
+  <div class="expect">Your plan includes a recovery action and a way to preserve unfinished work.</div>
+  <p class="progress" aria-live="polite"></p>
+</div>
 
 <h2>Check yourself</h2>
 <div class="quiz" data-correct="0">
@@ -130,8 +148,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain what an access token and a refresh token are, recognize an expired login, run the re-login command in your agent, and spot when an organization policy — not a bug — is forcing re-logins.</p>
   <p>Quick reference: <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><span>Next: <a href="0095-oauth-pieces.html">8.7 OAuth in pieces</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="94" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0095-oauth-pieces.html">Continue to lesson 95 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0093-send-third-parties.html">← Previous lesson</a><a href="0095-oauth-pieces.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

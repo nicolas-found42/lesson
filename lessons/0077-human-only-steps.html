@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 5 · How agents work · Lesson 5.10</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 5 · How agents work · Lesson 5.10</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 5 · Lesson 5.10</p>
   <h1>Human-only steps: logins, attestations, and runbooks</h1>
   <p class="lede">Some steps of shipping your app are yours alone: typing a password, agreeing to terms, confirming which plan you are on. Your agent cannot do them — and a good agent will write you a numbered list, called a runbook, telling you exactly what to do and when.</p>
   <div class="meta"><span>About 15 minutes</span><span>Needs: <a href="0006-approvals-and-permissions.html">0.6 Approvals &amp; permissions</a></span><span>Win: you can ask for — and follow — a runbook of the steps only you can do</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 24 · Lesson 2 of 3</p>
+  <p><strong>Your session goal:</strong> Check a background job and identify steps only you can complete.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-24">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -64,7 +72,7 @@ numbered steps to do, then wait for me to say when it is done.</pre></div>
 <p>Approval settings do not protect you here. A permission mode decides which <em>tool calls</em> run without asking — Codex's docs describe the boundary as <q>asks when it needs to go beyond that boundary</q><sup class="cite"><a href="#src-b4">[3]</a></sup>, and omp's docs note its modes describe what runs without a prompt but <q>do not make model output trustworthy</q><sup class="cite"><a href="#src-c6">[6]</a></sup>. Neither is a guarantee about what appears in your transcript. That judgement stays yours.</p>
 
 <h2>Your turn: get your first runbook</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Your turn — about 5 minutes</span>
   <ol>
     <li><label><input type="checkbox"> Open your project folder and start your agent (<code>claude</code>, <code>codex</code>, or <code>omp</code>).</label></li>
@@ -142,8 +150,18 @@ numbered steps to do, then wait for me to say when it is done.</pre></div>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> name the three kinds of human-only step, ask for a runbook up front or just in time, and keep secrets out of the handoff.</p>
   <p>Quick reference: <a href="../reference/safety-checklist.html">Safety checklist</a> · <a href="../reference/prompt-patterns.html">Prompt patterns</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><span>Next: 5.11 Desktop-app features vs CLI (<a href="0078-desktop-app-features.html">coming</a>)</span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="77" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0078-desktop-app-features.html">Continue to lesson 78 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0076-background-processes-exit-codes-waiting-vs.html">← Previous lesson</a><a href="0078-desktop-app-features.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

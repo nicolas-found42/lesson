@@ -13,6 +13,14 @@
   <h1>Undo: revert, reset, and the copy of the remote you cannot see</h1>
   <p class="lede">There are two ways to take a change back, and they make opposite promises. Choosing the wrong one is the fastest way for a beginner to lose work that other people can no longer recover.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0011-remote-origin-push.html">3.6 Remote, origin, push</a></span><span>Win: you can name the safe undo before you run it</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 16 · Lesson 3 of 3</p>
+  <p><strong>Your session goal:</strong> Practice conflict handling, isolated work, and undo in a disposable copy.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-16">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -130,7 +138,7 @@ $ git branch -r
 Then show me the file and the log again, and stop there. Do not push.</pre>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own project</span>
   <ol>
     <li><label><input type="checkbox"> Commit whatever is in progress, so <code>git status</code> reports a clean working tree.</label></li>
@@ -206,7 +214,18 @@ Then show me the file and the log again, and stop there. Do not push.</pre>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> choose between a revert that adds a correction and a reset that moves a branch, say why force pushing is the wrong tool on shared work, and check a branch list against the server with <code>git fetch --prune</code> instead of trusting a stale memory.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../RESOURCES.md">Resources</a></p>
+<!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="50" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0051-permission-errors.html">Continue to lesson 51 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0049-worktrees.html">← Previous lesson</a><a href="0051-permission-errors.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

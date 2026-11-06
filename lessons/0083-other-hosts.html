@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.8</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 6 · Shipping a static app · Lesson 6.8</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 6 · Lesson 6.8</p>
   <h1>Other free hosts, and the guardrails on every free plan</h1>
   <p class="lede">GitHub Pages is not the only free place to put a static site. Cloudflare, Netlify, and Vercel all do the same job with different extras — and every free plan comes with limits that can pause your site. Learn to read them before you depend on them.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0013-github-pages.html">6.3 GitHub Pages</a></span><span>Win: you can pick a second free host for a project and name the free-plan limit most likely to bite you</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 26 · Lesson 1 of 3</p>
+  <p><strong>Your session goal:</strong> Choose a host and rehearse a rollback before adding a domain.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-26">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -55,7 +63,7 @@
 <h2>What changes and what does not</h2>
 <p>Switching hosts changes the domain in front of your files; it does not change your files. The relative-link habit from lesson 6.3 is exactly why: links between your own pages are written without any domain, so they survive a move from <code>github.io</code> to <code>pages.dev</code>, <code>netlify.app</code>, or <code>vercel.app</code> unchanged. What you must re-check after moving is the new host's guardrails against your real numbers — file count, biggest file, expected visitors — and its deploy settings, which you confirm in the host's dashboard. Adding your own domain name on top is lesson 6.10; rollback if a deploy goes wrong is lesson 6.9.</p>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it now</span>
   <ol>
     <li><label><input type="checkbox"> Ask your agent: <em>&ldquo;Count the files in the folder I publish, the size of the biggest single file, and the total size. Report the three numbers.&rdquo;</em></label></li>
@@ -147,8 +155,18 @@
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> name a second free host for a static site and read a free plan's guardrails well enough to say which limit your own project would hit first.</p>
   <p>Quick reference: <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><span>Previous: <a href="0082-readme-repo-description.html">6.7 README and repo description</a></span><span>Next: <a href="0084-rollback.html">6.9 Rollback</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="83" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0084-rollback.html">Continue to lesson 84 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0082-readme-repo-description.html">← Previous lesson</a><a href="0084-rollback.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

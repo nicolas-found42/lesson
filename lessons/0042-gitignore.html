@@ -13,6 +13,14 @@
   <h1>What not to track: <code>.gitignore</code></h1>
   <p class="lede">A save point should contain the things you meant to keep, and nothing else. One small text file decides which files git refuses to save, and that same file can quietly erase work you thought was safe.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0010-repo-working-tree-uncommitted-change.html">3.2 Repository, working tree, uncommitted change</a></span><span>Win: you can tell what your save points leave out, and why</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 14 · Lesson 1 of 3</p>
+  <p><strong>Your session goal:</strong> Ignore generated files, name a commit, and work on a branch.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-14">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -95,7 +103,7 @@ agent    says  "It is ignored by line 7 of .gitignore, so it has
   <p>Your project's rules file is the other thing an agent reads to know how your project works. It is a normal file in the project and belongs in a commit. The same goes for the <code>.gitignore</code> file itself: it is only useful to others if they receive it.</p>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Try it in your own project</span>
   <ol>
     <li><label><input type="checkbox"> In your project folder, run <code>ls -a</code> and look for a file named <code>.gitignore</code>.</label></li>
@@ -166,8 +174,18 @@ agent    says  "It is ignored by line 7 of .gitignore, so it has
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain what <code>.gitignore</code> does, name the three kinds of files you keep out of a save point, untrack a file that slipped in, and check whether a skill folder is being silently excluded.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/safety-checklist.html">Safety checklist</a></p>
-  <div class="pager"><a href="0010-repo-working-tree-uncommitted-change.html">Previous: 3.2 Repository, working tree, uncommitted change</a> · <a href="0043-commit-messages.html">Next: 3.4 Commit messages</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="42" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0043-commit-messages.html">Continue to lesson 43 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0041-reading-screenshots-diagnostics-from-real-user.html">← Previous lesson</a><a href="0043-commit-messages.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

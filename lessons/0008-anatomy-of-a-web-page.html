@@ -13,6 +13,14 @@
   <h1>Anatomy of a web page</h1>
   <p class="lede">Every page you ship is a small set of text files. One holds the words, one holds the look, one holds the behaviour. Learn to tell them apart and you can point your agent at the right one.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0003-your-project-is-a-folder.html">0.3 Your project is a folder</a></span><span>Win: you can name which file does which job</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 3 · Lesson 2 of 3</p>
+  <p><strong>Your session goal:</strong> Build a tiny page, identify its files, and explain why you need a save point.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-3">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -87,7 +95,7 @@ document.getElementById("add").addEventListener("click", () =&gt; {
   <div class="answer"><p><strong>HTML</strong> gives structure and content, <strong>CSS</strong> gives appearance, <strong>JavaScript</strong> gives behaviour. The browser reads the HTML file first, then fetches the files it names. If the stylesheet cannot be found, the page still appears, but unstyled.</p></div>
 </div>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own agent</span>
   <ol>
     <li><label><input type="checkbox"> Open your agent in the practice folder from lesson <a href="0007-first-prompt-to-a-page.html">0.7</a>, with approval prompts on (lesson <a href="0006-approvals-and-permissions.html">0.6</a>).</label></li>
@@ -153,8 +161,18 @@ document.getElementById("add").addEventListener("click", () =&gt; {
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> name the three files behind a page, say what each one does, and point your agent at the right one when something looks or behaves wrong.</p>
   <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/setup.html">Setup</a></p>
-  <div class="pager"><a href="0007-first-prompt-to-a-page.html">Previous: First prompt to a page</a> · <a href="0009-why-save-points-exist.html">Next: Why save points exist</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="8" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0009-why-save-points-exist.html">Continue to lesson 9 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0007-first-prompt-to-a-page.html">← Previous lesson</a><a href="0009-why-save-points-exist.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

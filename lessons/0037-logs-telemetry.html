@@ -13,6 +13,14 @@
   <h1>Logs and telemetry: enough to diagnose?</h1>
   <p class="lede">When something goes wrong, a screenshot shows you the symptom. A log shows you what the app was doing at that moment. Without one, every fix is a guess.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0030-claims-vs-evidence.html">2.2 Claims versus evidence</a></span><span>Win: you can tell whether a bug is diagnosable before you try to fix it</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 12 · Lesson 3 of 4</p>
+  <p><strong>Your session goal:</strong> Collect browser evidence and request an independent review.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-12">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -87,7 +95,7 @@ Do not guess at a cause yet. If the answer is "not enough", say so plainly.</pre
 </ul>
 <p>One more distinction, because it causes real confusion. Your agent's session transcript, the list of tool calls it made, is <em>not</em> your app's log. It records what the agent did while building; it says nothing about what your app did when a visitor clicked. When a bug appears at runtime, the evidence has to come from the running app.</p>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own agent</span>
   <ol>
     <li><label><input type="checkbox"> Open the project you ran in lesson 2.1, with approval prompts on, and start the page as usual.</label></li>
@@ -153,8 +161,18 @@ Do not guess at a cause yet. If the answer is "not enough", say so plainly.</pre
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> say what a log is, tell a diagnosable line from a useless one, and ask whether the app recorded enough to explain a bug before anyone tries to fix it.</p>
   <p>Quick reference: <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a></p>
-  <div class="pager"><a href="0036-screenshots-as-evidence.html">Previous: 2.8 Screenshots as evidence</a><a href="0038-independent-reviewer.html">Next: 2.10 Independent reviewer</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="37" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0038-independent-reviewer.html">Continue to lesson 38 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0036-screenshots-as-evidence.html">← Previous lesson</a><a href="0038-independent-reviewer.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

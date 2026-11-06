@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 6 · Shipping a static app · Lesson 6.9</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 6 · Shipping a static app · Lesson 6.9</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 6 · Lesson 6.9</p>
   <h1>Rollback: main is not the live site</h1>
   <p class="lede">A friend reports your app is broken. The fastest way back is not "undo everything" — it is knowing which of two separate records you need to fix: the branch called main, or the copy your host is serving.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0014-deploy-merge-live.html">6.6 Merged is not live</a></span><span>Win: you can say whether main or the live site is ahead, and pick the matching way back</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 26 · Lesson 2 of 3</p>
+  <p><strong>Your session goal:</strong> Choose a host and rehearse a rollback before adding a domain.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-26">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -68,7 +76,7 @@
 </div>
 
 <h2>Compare your two ledgers in about a minute</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it now — on your own project</span>
   <ol>
     <li><label><input type="checkbox"> In your project folder, run <code>git log --oneline -5</code>. Write down the newest commit message you see. This is main's side of the story.</label></li>
@@ -160,8 +168,18 @@ Keep approval prompts on. Make no unrelated edits.</pre></div>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> compare what main contains with what the live URL serves, and choose between a revert (fix the code) and a host rollback (buy time) — instead of guessing which record to rewind.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/deploy-checklist.html">Deploy checklist</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><a href="0083-other-hosts.html">Previous: Other hosts</a> · <a href="0085-custom-domains.html">Next: Custom domains</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="84" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0085-custom-domains.html">Continue to lesson 85 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0083-other-hosts.html">← Previous lesson</a><a href="0085-custom-domains.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

@@ -7,12 +7,20 @@
 <link rel="stylesheet" href="../assets/lesson.css">
 </head>
 <body>
-<nav class="crumbs" aria-label="Breadcrumb"><a href="../MISSION.md">Mission</a> · Unit 5 · How agents work · Lesson 5.1</nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Course</a> · Unit 5 · How agents work · Lesson 5.1</nav>
 <header class="lesson-head">
   <p class="kicker">Unit 5 · Lesson 5.1</p>
   <h1>The context window: what your agent remembers</h1>
   <p class="lede">An agent does not remember your project the way you remember a room you are standing in. It holds a working memory that fills up, gets summarized, and can lose early instructions. Knowing that explains a lot of strange behaviour on long builds.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0001-what-a-coding-agent-is.html">0.1 What a coding agent actually is</a></span><span>Win: you can explain why a long session forgets, and keep it on track</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 22 · Lesson 1 of 4</p>
+  <p><strong>Your session goal:</strong> Inspect context, tool use, and the boundaries of a delegated task.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-22">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -116,7 +124,7 @@ Save it as HANDOFF.md in the project folder. Then stop and wait for me.</pre></d
 
 <h2>Try it in your own agent</h2>
 <p>This works best in a practice project folder — anything small you made in Unit 0. Keep approval prompts on, as always.</p>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it now</span>
   <ol>
     <li><input type="checkbox" aria-label="step 1"> <div class="step">In your project folder, start your agent and ask: <em>"Read the main files in this project and summarize what it does."</em>
@@ -184,8 +192,18 @@ Save it as HANDOFF.md in the project folder. Then stop and wait for me.</pre></d
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> explain what the context window holds, why compaction loses early instructions, and when to resume, fork, or hand off to a fresh session.</p>
   <p>Quick reference: <a href="../reference/agent-loop.html">The agent loop (one page)</a> · <a href="../reference/glossary.html">Glossary</a> · <a href="../reference/failure-modes.html">Failure-mode field guide</a></p>
-  <div class="pager"><span>Next: <a href="0069-tokens-cost-caching.html">5.2 Tokens, cost, and caching</a></span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="68" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0069-tokens-cost-caching.html">Continue to lesson 69 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0067-cutting-scope-purpose.html">← Previous lesson</a><a href="0069-tokens-cost-caching.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

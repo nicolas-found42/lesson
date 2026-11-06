@@ -13,6 +13,14 @@
   <h1>The checker can be wrong</h1>
   <p class="lede">A green check is a claim too. Tests can pass without testing anything, the same test can give two answers for one unchanged file, and an AI asked to judge your work has good days and bad days. The skill is telling a real pass from a quiet one.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0031-test.html">2.3 What a test is</a>, <a href="0038-independent-reviewer.html">2.10 The independent reviewer</a></span><span>Win: you can prove a check can fail before you believe it</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 13 · Lesson 1 of 3</p>
+  <p><strong>Your session goal:</strong> Challenge a checker and reproduce a user report.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-13">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -114,7 +122,7 @@ test('adds up three prices', () =&gt; {
 </ol>
 <p>None of these steps requires reading code. Each produces a sentence for another person: "the test fails when I break the total", or "the grader moved with no edits". That turns a check from a ritual into evidence.</p>
 
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do it in your own project</span>
   <ol>
     <li><label><input type="checkbox"> Open your agent in your practice project, with approval prompts on. Ask it to make a scratch copy of one small function and its test, outside the shipping files.</label></li>
@@ -184,8 +192,18 @@ test('adds up three prices', () =&gt; {
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> prove a check can fail before trusting it, tell a flaky result from a real bug, and judge an AI review by how much it moves.</p>
   <p>Quick reference: <a href="../reference/failure-modes.html">Failure-mode field guide</a> · <a href="../reference/glossary.html">Glossary</a></p>
-  <div class="pager"><a href="0038-independent-reviewer.html">Previous: 2.10 The independent reviewer</a> · <a href="0040-be-first-time-user.html">Next: 2.13 Be a first-time user</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="39" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0040-be-first-time-user.html">Continue to lesson 40 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0038-independent-reviewer.html">← Previous lesson</a><a href="0040-be-first-time-user.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

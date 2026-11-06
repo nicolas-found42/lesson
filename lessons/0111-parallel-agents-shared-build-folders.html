@@ -13,6 +13,14 @@
   <h1>Parallel agents and the shared build folder</h1>
   <p class="lede">Two agents working at once can finish in half the time — or quietly overwrite each other's work. The difference is usually one folder: where the build writes its output.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0049-worktrees.html">3.10 Worktrees</a></span><span>Win: you can run two agents at once without their builds corrupting each other</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Optional study 33 · Lesson 3 of 4</p>
+  <p><strong>Your session goal:</strong> Map ticket dependencies and integrate changes with review checks.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-33">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -62,7 +70,7 @@ Then show me `git status --short` and the path of the finished files.</pre>
 </div>
 
 <h2>Try it yourself</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Skills practice</span>
   <ol>
     <li><label><input type="checkbox"> In your project folder, run <code>git worktree add ../my-app-parallel -b parallel-test</code> and confirm with <code>git worktree list</code> that two folders now exist.</label></li>
@@ -127,8 +135,18 @@ Then show me `git status --short` and the path of the finished files.</pre>
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> run agents in parallel using worktrees, explain why a shared build output folder races, and give each worker its own build folder.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../reference/failure-modes.html">Failure modes</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><a href="0110-integration-branch-vs-per-ticket-branches.html">Previous: 9.2 Integration branch vs per-ticket branches</a> · <span>Next: 9.4 PR babysitting (coming)</span></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="111" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0112-pr-babysitting-auto-fix.html">Continue to lesson 112 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0110-integration-branch-vs-per-ticket-branches.html">← Previous lesson</a><a href="0112-pr-babysitting-auto-fix.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

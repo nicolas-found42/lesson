@@ -26,7 +26,7 @@ const out = { reduced: {}, contrast: {} };
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' });
   await page.goto(URL);
-  await page.evaluate(() => { document.querySelectorAll('details.unit').forEach((d) => { d.open = true; }); });
+  await page.evaluate(() => { document.querySelector('#library').open = true; document.querySelectorAll('details.unit').forEach((d) => { d.open = true; }); });
   await page.waitForTimeout(200);
   out.reduced = await page.evaluate(() => {
     let elements = 0, generated = 0;
@@ -53,6 +53,7 @@ for (const scheme of ['light', 'dark']) {
   for (const state of ['default', 'unit4', 'starred', 'expanded']) {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, colorScheme: scheme });
     await page.goto(URL);
+    await page.locator('#library > summary').click();
     if (state === 'unit4') await page.fill('#lesson-search', 'unit 4');
     if (state === 'starred') await page.click('#star-toggle');
     if (state === 'expanded') await page.click('#expand-toggle');

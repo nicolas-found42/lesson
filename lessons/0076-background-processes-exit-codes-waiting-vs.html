@@ -13,6 +13,14 @@
 <h1>Background processes: started is not finished</h1>
 <p class="lede">A command can keep working after the agent speaks. Learn what to wait for, what an exit code tells you, and when checking again helps.</p>
 <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0004-the-terminal-in-five-commands.html">the terminal</a></span><span>Win: distinguish a running job from a completed result</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 24 · Lesson 1 of 3</p>
+  <p><strong>Your session goal:</strong> Check a background job and identify steps only you can complete.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-24">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 <h2>Why this matters for your app</h2>
@@ -68,7 +76,7 @@
 <p>Before doing the practice, keep approval prompts on; <a href="0006-approvals-and-permissions.html">lesson 0.6</a> explains the settings. Approval to start a command is not approval to launch unlimited copies or leave unwanted work running.</p>
 
 <h2>Practice: observe one harmless run</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
 <ol>
 <li><label><input type="checkbox"> In your agent, ask for a harmless demonstration that waits briefly, prints a short completion message, and exits. Require no file edits, installation, network requests, or persistent server. Ask it to explain the command before you approve it.</label></li>
 <li><label><input type="checkbox"> Before approving, identify what will count as completion. Ask whether this demonstration will run in the foreground, where you wait for its response, or in the background.</label></li>
@@ -114,8 +122,18 @@
 <footer class="lesson-foot">
 <p>You can now: distinguish a running job from a completed result, and ask for the right completion evidence.</p>
 <p><a href="../reference/glossary.html">Glossary</a> · <a href="../reference/agent-loop.html">Agent loop</a> · <a href="../reference/failure-modes.html">Failure modes</a></p>
-<div class="pager"><a href="0075-stale-invented-claims.html">← Previous: stale or invented claims</a><a href="0077-human-only-steps.html">Next: human-only steps →</a></div>
+<!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="76" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0077-human-only-steps.html">Continue to lesson 77 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0075-stale-invented-claims.html">← Previous lesson</a><a href="0077-human-only-steps.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>

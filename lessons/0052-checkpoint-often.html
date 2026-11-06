@@ -13,6 +13,14 @@
   <h1>Checkpoint often</h1>
   <p class="lede">A coding agent can work for an hour and change a hundred lines across a dozen files. If none of that is committed, the folder holds one undivided lump of work. A checkpoint cuts the lump into pieces you can keep, compare and drop.</p>
   <div class="meta"><span>About 15 minutes</span><span>Builds on: <a href="0009-why-save-points-exist.html">3.1 Why save points exist</a></span><span>Win: you know when to ask for a commit, and why the moment matters</span></div>
+<!-- COURSE_BRIEF -->
+<section class="lesson-brief" aria-label="Your study session">
+  <p class="kicker">Session 17 · Lesson 2 of 4</p>
+  <p><strong>Your session goal:</strong> Diagnose permission failures and set a checkpoint policy.</p>
+  <p>One section, then <a href="#lesson-practice">try the task</a>. Stop after one lesson.</p>
+  <p><a href="../index.html#session-17">Back to this session</a> · <a href="../index.html#library">Lesson library</a></p>
+</section>
+<!-- /COURSE_BRIEF -->
 </header>
 <main>
 
@@ -120,7 +128,7 @@ remaining status. Do not push, deploy or begin another task.</pre></div>
 <span class="sidenote">A session transcript records a conversation; a commit records selected project content. Keep the distinction clear.</span>
 
 <h2>Try it in your own project</h2>
-<div class="doit">
+<div class="doit" id="lesson-practice">
   <span class="label">Do this now (about 6 minutes)</span>
   <ol>
     <li><label><input type="checkbox"> In your project folder, run <code>git status --short</code>. Note how many files are changed or untracked.</label></li>
@@ -199,8 +207,18 @@ $ git status --short
 <footer class="lesson-foot">
   <p><strong>You can now:</strong> say why an uncommitted run is fragile, choose the four moments that need a checkpoint, and ask your agent for one without stopping the work.</p>
   <p>Quick reference: <a href="../reference/git-cheat-sheet.html">Git cheat sheet</a> · <a href="../RESOURCES.md">Resources</a></p>
-  <div class="pager"><a href="0051-permission-errors.html">← 3.12 Permission errors</a> · <a href="0053-default-branch-rename.html">3.14 Default branch rename →</a></div>
+  <!-- COURSE_CHECKPOINT -->
+<section class="lesson-checkpoint" data-lesson="52" aria-labelledby="checkpoint-title">
+  <h2 id="checkpoint-title">A good place to stop</h2>
+  <p><a href="#lesson-practice">Try the task</a>. Check the expected result; ask your teacher if you are stuck.</p>
+  <button class="btn" type="button" data-complete aria-pressed="false" hidden>I did the task — record checkpoint</button>
+  <p class="checkpoint-status" aria-live="polite">Stop here; bookmark this lesson to return.</p>
+  <a class="checkpoint-next" href="0053-default-branch-rename.html">Continue to lesson 53 →</a>
+</section>
+<!-- /COURSE_CHECKPOINT -->
+<div class="pager"><a href="0051-permission-errors.html">← Previous lesson</a><a href="0053-default-branch-rename.html">Next lesson →</a></div>
 </footer>
 <script src="../assets/lesson.js"></script>
+<script src="../assets/course.js"></script>
 </body>
 </html>
